@@ -1,5 +1,7 @@
 # cs0320 Term Project 2018
 
+fish idea approved by adehovit
+
 **Team Members:**  
 Louis Kilfoyle  
 Ethan Sattler  
