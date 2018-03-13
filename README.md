@@ -15,6 +15,9 @@ Our greatest weakness is a lack of diversity. All of us took CS19. We're also pr
 **Fish Mutation Game**  
 Players enter a game and distribute skill points among categories. Players are given a population of fish whose mean category values align with the chosen distribution. Multiple players are in the same game. Events trigger throughout the game (fish grow, eat eachother, fight, reproduce, disease, etc...) that affect the fish depending on their traits. The game persists for some unspecified amount of time. Fish populations evolve even while players aren't present, generally passing on similar traits, although mutations can occur. The goal is to ultimately dominate the "global" fish population, having effectively killed off other players' populations.
 
+**Multiplayer Pokemon Game**
+A first generation Pokemon game with a simple 2-D UI. Players move around on a large, tiled map, entering brush and battling to capture Pokemon that they discover. As players run into eachother, they can opt to battle their Pokemon. Ranked and unranked battles exist, with ranked battles adjusting players' ELOs on a ladder. Pokemon gain experience from battling eachother and can evolve, as usual. Possible additions include: world events (e.g. legendary Pokemon appear), custom abilities, items, etc.
+
 Ideas sorted by interest:
 1. Fish mutation game
 2. Custom fantasty sports website
