@@ -36,7 +36,7 @@ Packet Structure
 
 ## Normal Gameplay
 
-```json
+```js
 {
   // Update local entities (other players, etc.)
   local_enty_ops:
