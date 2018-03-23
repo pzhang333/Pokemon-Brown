@@ -38,11 +38,26 @@ public class PokeType {
     this.pokeRawType = pokeRawType;
   }
 
-  protected Double getDefensiveEffectiveness(PokeType moveType) {
+  /**
+   * Check the effectiveness of a PokeType when used AGAINST the current
+   * PokeType.
+   *
+   * @param moveType
+   *          The type of the move to check the effectiveness of.
+   * @return The effectiveness multiplier.
+   */
+  public Double getDefensiveEffectiveness(PokeType moveType) {
     return 1.0;
   }
 
-  protected Double getOffensiveEffectiveness(PokeType moveType) {
+  /**
+   * Check the effectiveness of a PokeType when used BY the current PokeType.
+   *
+   * @param moveType
+   *          The type of the move to check the effectiveness of.
+   * @return The effectiveness multiplier.
+   */
+  public Double getOffensiveEffectiveness(PokeType moveType) {
     /* The same-attack-type bonus (1.5x) */
     if (pokeRawType.equals(moveType)) {
       return SAME_ATTACK_TYPE_MULTIPLIER;
@@ -68,4 +83,52 @@ public class PokeType {
 
     return typeMap.get(rawType);
   }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "PokeType(" + pokeRawType + ")";
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result
+        + ((pokeRawType == null) ? 0 : pokeRawType.hashCode());
+    return result;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    PokeType other = (PokeType) obj;
+    if (pokeRawType != other.pokeRawType) {
+      return false;
+    }
+    return true;
+  }
+
 }

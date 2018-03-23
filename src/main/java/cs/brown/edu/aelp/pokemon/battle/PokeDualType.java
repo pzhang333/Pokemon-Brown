@@ -22,12 +22,12 @@ public class PokeDualType extends PokeType {
   }
 
   @Override
-  protected Double getDefensiveEffectiveness(PokeType moveType) {
+  public Double getDefensiveEffectiveness(PokeType moveType) {
     return 1.0;
   }
 
   @Override
-  protected Double getOffensiveEffectiveness(PokeType moveType) {
+  public Double getOffensiveEffectiveness(PokeType moveType) {
 
     if (rawTypeA.equals(moveType) || rawTypeB.equals(moveType)) {
       return SAME_ATTACK_TYPE_MULTIPLIER;
@@ -35,4 +35,55 @@ public class PokeDualType extends PokeType {
 
     return 1.0;
   }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "PokeDualType(" + rawTypeA + ", " + rawTypeB + ")";
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((rawTypeA == null) ? 0 : rawTypeA.hashCode());
+    result = prime * result + ((rawTypeB == null) ? 0 : rawTypeB.hashCode());
+    return result;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!super.equals(obj)) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    PokeDualType other = (PokeDualType) obj;
+    if (rawTypeA != other.rawTypeA) {
+      return false;
+    }
+    if (rawTypeB != other.rawTypeB) {
+      return false;
+    }
+    return true;
+  }
+
 }
