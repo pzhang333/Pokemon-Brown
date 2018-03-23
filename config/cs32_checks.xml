@@ -193,6 +193,11 @@
             <property name="caseIndent" value="2"/>
             <property name="throwsIndent" value="2"/>
         </module>
+        
+        <module name="ParameterNumber">
+			<property name="max" value="100"/>
+			<property name="ignoreOverriddenMethods" value="true"/>
+		</module>
 
     </module>
 
