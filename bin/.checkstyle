@@ -4,10 +4,7 @@
   <local-check-config name="CS32 Tests" location="C:\Users\mcdas\cs0320\final-project\config\cs32_checks.xml" type="external" description="">
     <additional-data name="protect-config-file" value="false"/>
   </local-check-config>
-  <local-check-config name="CS32-Tests" location="C:\Users\Ethan\cs0320\final-project\config\cs32_checks.xml" type="external" description="">
-    <additional-data name="protect-config-file" value="false"/>
-  </local-check-config>
-  <fileset name="all" enabled="true" check-config-name="CS32-Tests" local="true">
+  <fileset name="all" enabled="true" check-config-name="CS32 Tests" local="true">
     <file-match-pattern match-pattern="." include-pattern="true"/>
   </fileset>
   <filter name="FilesFromPackage" enabled="true">
