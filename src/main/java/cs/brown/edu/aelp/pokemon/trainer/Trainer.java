@@ -3,11 +3,15 @@ package cs.brown.edu.aelp.pokemon.trainer;
 import java.util.ArrayList;
 import java.util.List;
 
+import cs.brown.edu.aelp.pokemon.battle.EffectSlot;
+
 public class Trainer {
 
   private final String id;
 
-  public List<Pokemon> team = new ArrayList<>();
+  private List<Pokemon> team = new ArrayList<>();
+
+  private EffectSlot effectSlot = new EffectSlot();
 
   public Trainer(String id) {
     this.id = id;
@@ -68,6 +72,10 @@ public class Trainer {
 
   public String getId() {
     return id;
+  }
+
+  public EffectSlot getEffectSlot() {
+    return effectSlot;
   }
 
 }

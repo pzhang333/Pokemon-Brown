@@ -2,6 +2,9 @@ package cs.brown.edu.aelp.pokemon.battle;
 
 import java.util.EnumSet;
 
+import cs.brown.edu.aelp.pokemon.battle.MoveResult.MoveOutcome;
+import cs.brown.edu.aelp.pokemon.battle.events.AttackEvent;
+
 /**
  * Pokemon Move class.
  */
@@ -40,7 +43,7 @@ public class Move {
 
   private final Double number;
 
-  private final Boolean accuracy;
+  private final Double accuracy;
 
   private final Double basePower;
 
@@ -97,7 +100,7 @@ public class Move {
    * @param complexity
    *          Whether or not this move expects a Java Handler.
    */
-  public Move(String id, Double number, Boolean accuracy, Double basePower,
+  public Move(String id, Double number, Double accuracy, Double basePower,
       MoveCategory category, String description, String shortDescription,
       String name, Integer pp, Integer priority, MoveTarget target,
       PokeType type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
@@ -135,7 +138,7 @@ public class Move {
   /**
    * @return the accuracy
    */
-  public Boolean getAccuracy() {
+  public Double getAccuracy() {
     return accuracy;
   }
 
@@ -270,6 +273,26 @@ public class Move {
       return false;
     }
     return true;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "Move [name=" + name + "]";
+  }
+
+  public MoveResult getResult(AttackEvent evt) {
+    MoveResult mr = new MoveResult();
+
+    mr.setDamage(100 * Math.random());
+
+    mr.setOutcome(MoveOutcome.HIT);
+
+    return mr;
   }
 
 }
