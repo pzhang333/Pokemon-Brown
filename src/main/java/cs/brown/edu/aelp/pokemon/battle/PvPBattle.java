@@ -5,8 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cs.brown.edu.aelp.pokemon.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemon.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemon.battle.action.Turn;
-import cs.brown.edu.aelp.pokemon.battle.action.Turn.Action;
+import cs.brown.edu.aelp.pokemon.battle.events.AttackEvent;
+import cs.brown.edu.aelp.pokemon.battle.events.StartOfTurnEvent;
+import cs.brown.edu.aelp.pokemon.trainer.Pokemon;
 import cs.brown.edu.aelp.pokemon.trainer.Trainer;
 
 public class PvPBattle extends Battle {
@@ -36,22 +40,128 @@ public class PvPBattle extends Battle {
     turns.sort(this::turnComparator);
 
     boolean stop = false;
-    for (Turn turn : turns) {
 
+    StartOfTurnEvent startEvent = new StartOfTurnEvent(this);
+    for (Turn turn : turns) {
+      // start of turn
       if (stop) {
         break;
       }
 
-      if (turn.getAction().equals(Action.NULL)) {
-        continue;
+      turn.getTrainer().getEffectSlot().handle(startEvent);
+    }
+
+    for (Turn turn : turns) {
+      // turn
+      if (stop) {
+        break;
       }
 
-      if (turn.getAction().equals(Action.RUN)) {
-        victory(other(turn.getTrainer()));
+      if (turn instanceof NullTurn) {
+        handleTurn((NullTurn) turn);
+      } else if (turn instanceof FightTurn) {
+        handleTurn((FightTurn) turn);
+      } else {
+        handleTurn(turn);
       }
     }
 
+    for (Turn turn : turns) {
+      // end of turn
+
+      if (stop) {
+        break;
+      }
+    }
+
+    /*
+     * BattleEvent startOfTurn = new BattleEvent(BattleEventType.START_OF_TURN,
+     * this); for (Turn turn : turns) {
+     * turn.getTrainer().getActivePokemon().getEffectSlot().handle(startOfTurn);
+     * }
+     * 
+     * for (Turn turn : turns) {
+     * 
+     * if (stop) { break; }
+     * 
+     * if (turn.getAction().equals(Action.NULL)) { continue; }
+     * 
+     * if (turn.getAction().equals(Action.RUN)) {
+     * victory(other(turn.getTrainer())); stop = true; }
+     * 
+     * if (turn.getAction().equals(Action.FIGHT)) {
+     * 
+     * // Events... Trainer cur = turn.getTrainer();
+     * 
+     * BattleEvent attackEvent = new BattleEvent(BattleEventType.ATTACK, this);
+     * 
+     * cur.getActivePokemon().getEffectSlot().handle(attackEvent);
+     * 
+     * MoveResult mr = turn.getMove().getResult(attackEvent);
+     * 
+     * other(cur).getActivePokemon().getEffectSlot() .handle(new
+     * BattleEvent(BattleEventType.DEFEND, this));
+     * 
+     * other(cur).getActivePokemon().getEffectSlot() .handle(new
+     * BattleEvent(BattleEventType.AFTER_ATTACK, this));
+     * 
+     * other(cur).getActivePokemon().getEffectSlot() .handle(new
+     * BattleEvent(BattleEventType.AFTER_DEFEND, this));
+     * 
+     * if (mr.getOutcome().equals(MoveOutcome.HIT)) {
+     * other(cur).getActivePokemon().setHealth(
+     * other(cur).getActivePokemon().getHealth() - mr.getDamage());
+     * 
+     * other(cur).getActivePokemon().getEffectSlot() .handle(new
+     * BattleEvent(BattleEventType.ON_HIT, this)); }
+     * 
+     * } }
+     * 
+     * BattleEvent endOfTurn = new BattleEvent(BattleEventType.END_OF_TURN,
+     * this); for (Turn turn : turns) {
+     * turn.getTrainer().getActivePokemon().getEffectSlot().handle(endOfTurn); }
+     */
+
     turnsMap.clear();
+
+    setBattleState(BattleState.WAITING);
+  }
+
+  private void handleTurn(Turn turn) {
+    throw new IllegalArgumentException("No turn handler!");
+  }
+
+  private void handleTurn(NullTurn turn) {
+    System.out.println("Null turn");
+  }
+
+  public void handleTurn(FightTurn turn) {
+    System.out.println("Fight turn");
+
+    Trainer atkTrainer = turn.getTrainer();
+    Trainer defTrainer = other(atkTrainer);
+
+    AttackEvent atkEvent = new AttackEvent(this, atkTrainer, defTrainer);
+
+    // Attacking event
+    atkTrainer.getEffectSlot().handle(atkEvent);
+    atkTrainer.getActivePokemon().getEffectSlot().handle(atkEvent);
+
+    MoveResult result = turn.getMove().getResult(atkEvent);
+    // Todo: defending events
+
+    if (result.getOutcome().equals(MoveResult.MoveOutcome.HIT)) {
+      // Other events...
+
+      Pokemon defendingPokemon = defTrainer.getActivePokemon();
+
+      defendingPokemon
+          .setHealth(defendingPokemon.getBaseHealth() - result.getDamage());
+
+      if (defendingPokemon.getHealth() <= 0) {
+        System.out.println("KO!");
+      }
+    }
   }
 
   public void victory(Trainer t) {

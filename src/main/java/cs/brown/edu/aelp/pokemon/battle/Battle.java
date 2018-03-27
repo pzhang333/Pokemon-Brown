@@ -1,7 +1,7 @@
 package cs.brown.edu.aelp.pokemon.battle;
 
+import cs.brown.edu.aelp.pokemon.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemon.battle.action.Turn;
-import cs.brown.edu.aelp.pokemon.battle.action.Turn.Action;
 
 public class Battle {
 
@@ -34,17 +34,20 @@ public class Battle {
       return actionComparison;
     }
 
-    if (t1.getAction().equals(Action.FIGHT)) {
+    if (t1 instanceof FightTurn && t2 instanceof FightTurn) {
 
-      int priorityComparison = -t1.getMove().getPriority()
-          .compareTo(t2.getMove().getPriority());
+      FightTurn ft1 = (FightTurn) t1;
+      FightTurn ft2 = (FightTurn) t2;
+
+      int priorityComparison = -ft1.getMove().getPriority()
+          .compareTo(ft2.getMove().getPriority());
 
       if (priorityComparison != 0) {
         return priorityComparison;
       }
 
-      int speedComparison = -t1.getTrainer().getActivePokemon().getSpeed()
-          .compareTo(t2.getTrainer().getActivePokemon().getSpeed());
+      int speedComparison = -ft1.getTrainer().getActivePokemon().getSpeed()
+          .compareTo(ft2.getTrainer().getActivePokemon().getSpeed());
 
       if (speedComparison != 0) {
         return speedComparison;
