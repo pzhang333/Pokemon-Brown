@@ -12,7 +12,7 @@ import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
 public class WishMove extends Move {
 
-  public WishMove(String id, Double number, Double accuracy, Double basePower,
+  public WishMove(String id, Integer number, Double accuracy, Double basePower,
       MoveCategory category, String description, String shortDescription,
       String name, Integer pp, Integer priority, MoveTarget target,
       PokeType type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
