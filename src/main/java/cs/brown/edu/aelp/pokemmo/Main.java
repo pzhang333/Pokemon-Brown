@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
 import cs.brown.edu.aelp.pokemmo.battle.impl.PvPBattle;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
@@ -58,6 +59,9 @@ public final class Main {
     Pokemon p2 = new Pokemon("Chauncy", 150, 150, 160, 100, 95, 65, 100, 30,
         PokeType.getType(PokeRawType.NORMAL), Arrays.asList(atk, wish));
 
+    Pokemon p3 = new Pokemon("Pikachu", 150, 150, 160, 100, 95, 65, 100, 30,
+        PokeType.getType(PokeRawType.ELECTRIC), Arrays.asList(atk, wish));
+
     Arena arena = new Arena();
 
     Trainer t1 = new Trainer("1");
@@ -65,6 +69,7 @@ public final class Main {
 
     Trainer t2 = new Trainer("2");
     t2.addPokemonToTeam(p2);
+    t2.addPokemonToTeam(p3);
 
     PvPBattle battle = new PvPBattle(arena, t1, t2);
 
@@ -90,8 +95,8 @@ public final class Main {
     battle.setTurn(new NullTurn(t2));
     battle.evaluate();
 
-    System.out.println(p1);
-    System.out.println(p2);
+    System.out.println(t1.getActivePokemon());
+    System.out.println(t2.getActivePokemon());
 
     battle.setTurn(new FightTurn(t1, atk));
     battle.setTurn(new NullTurn(t2));
@@ -105,12 +110,44 @@ public final class Main {
     battle.setTurn(new NullTurn(t2));
     battle.evaluate();
 
+    System.out.println(t1.getActivePokemon());
+    System.out.println(t2.getActivePokemon());
+
     battle.setTurn(new FightTurn(t1, atk));
     battle.setTurn(new NullTurn(t2));
     battle.evaluate();
 
-    System.out.println(p1);
-    System.out.println(p2);
+    System.out.println(t1.getActivePokemon());
+    System.out.println(t2.getActivePokemon());
+
+    battle.setTurn(new FightTurn(t1, atk));
+    battle.setTurn(new SwitchTurn(t2, p3, t2.getActivePokemon()));
+    battle.evaluate();
+
+    System.out.println(t1.getActivePokemon());
+    System.out.println(t2.getActivePokemon());
+
+    battle.setTurn(new FightTurn(t1, atk));
+    battle.setTurn(new NullTurn(t2));
+    battle.evaluate();
+
+    battle.setTurn(new FightTurn(t1, atk));
+    battle.setTurn(new NullTurn(t2));
+    battle.evaluate();
+
+    battle.setTurn(new FightTurn(t1, atk));
+    battle.setTurn(new NullTurn(t2));
+    battle.evaluate();
+
+    System.out.println(t1.getActivePokemon());
+    System.out.println(t2.getActivePokemon());
+
+    battle.setTurn(new FightTurn(t1, atk));
+    battle.setTurn(new NullTurn(t2));
+    battle.evaluate();
+
+    System.out.println(t1.getActivePokemon());
+    System.out.println(t2.getActivePokemon());
 
   }
 

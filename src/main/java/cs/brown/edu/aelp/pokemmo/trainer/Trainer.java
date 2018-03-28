@@ -89,6 +89,16 @@ public class Trainer {
     return team;
   }
 
+  public boolean allPokemonKnockedOut() {
+    for (Pokemon p : getTeam()) {
+      if (!p.isKnockedOut()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   public void setActivePokemon(Pokemon pokemonIn) {
     if (!team.contains(pokemonIn)) {
       throw new IllegalArgumentException("Pokemon not in team!");

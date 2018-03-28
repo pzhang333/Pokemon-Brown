@@ -38,6 +38,9 @@ public class PvPBattle extends Battle {
   }
 
   public void evaluate() {
+
+    System.out.println(turnsMap);
+
     if (!getBattleState().equals(BattleState.READY)) {
       throw new RuntimeException("Not in ready state!");
     }
@@ -57,6 +60,8 @@ public class PvPBattle extends Battle {
     }
 
     for (Turn turn : turns) {
+
+      System.out.println(turn);
 
       if (turn instanceof NullTurn) {
         handleTurn((NullTurn) turn);
@@ -143,6 +148,10 @@ public class PvPBattle extends Battle {
 
     System.out.println(result);
 
+    // TODO: Check if the player knocked themselves out or...
+    // Basically just make sure the self-destruct isn't broken... or really
+    // maybe it doesn't matter
+
     if (result.getOutcome().equals(MoveResult.MoveOutcome.HIT)) {
       // Other events...
 
@@ -155,6 +164,11 @@ public class PvPBattle extends Battle {
         System.out.println("KO!");
         defendingPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
             result.getAttackingPokemon(), defendingPokemon));
+
+        if (defTrainer.allPokemonKnockedOut()) {
+          victory(atkTrainer);
+        }
+
       }
     }
   }
@@ -188,7 +202,8 @@ public class PvPBattle extends Battle {
       // If the other trainer's pokemon isn't knocked out skip their current
       // turn.
       if (!other(t.getTrainer()).getActivePokemon().isKnockedOut()) {
-        turnsMap.put(t.getTrainer(), new NullTurn(t.getTrainer()));
+        turnsMap.put(other(t.getTrainer()),
+            new NullTurn(other(t.getTrainer())));
       }
 
     } else if (other(t.getTrainer()).getActivePokemon().isKnockedOut()) {
