@@ -10,7 +10,7 @@ import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 public class MoveResult {
 
   public enum MoveOutcome {
-    HIT, MISS, EVADE, BLOCKED, NON_ATTACK_SUCCESS, NON_ATTACK_FAIL, NO_EFFECT
+    HIT, MISS, BLOCKED, NON_ATTACK_SUCCESS, NON_ATTACK_FAIL, NO_EFFECT
   }
 
   public enum ModifierType {

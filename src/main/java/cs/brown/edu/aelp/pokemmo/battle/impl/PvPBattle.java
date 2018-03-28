@@ -19,6 +19,7 @@ import cs.brown.edu.aelp.pokemmo.battle.events.SwitchInEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchOutEvent;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
 public class PvPBattle extends Battle {
@@ -152,8 +153,10 @@ public class PvPBattle extends Battle {
     // Basically just make sure the self-destruct isn't broken... or really
     // maybe it doesn't matter
 
-    if (result.getOutcome().equals(MoveResult.MoveOutcome.HIT)) {
+    if (result.getOutcome().equals(MoveOutcome.HIT)) {
       // Other events...
+
+      System.out.println("The attack was effect or perhaps not...");
 
       Pokemon defendingPokemon = result.getDefendingPokemon();
 
@@ -170,6 +173,16 @@ public class PvPBattle extends Battle {
         }
 
       }
+    } else if (result.getOutcome().equals(MoveOutcome.MISS)) {
+      System.out.println("The attack missed");
+    } else if (result.getOutcome().equals(MoveOutcome.BLOCKED)) {
+      System.out.println("The attack was blocked");
+    } else if (result.getOutcome().equals(MoveOutcome.NO_EFFECT)) {
+      System.out.println("The attack had no effect");
+    } else if (result.getOutcome().equals(MoveOutcome.NON_ATTACK_SUCCESS)) {
+      System.out.println("The move succeded");
+    } else if (result.getOutcome().equals(MoveOutcome.NON_ATTACK_FAIL)) {
+      System.out.println("The move failed");
     }
   }
 
