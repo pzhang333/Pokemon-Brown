@@ -1,16 +1,14 @@
-package cs.brown.edu.aelp.pokemon.battle.moves;
+package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
 import java.util.EnumSet;
 
-import cs.brown.edu.aelp.pokemon.battle.Effect;
-import cs.brown.edu.aelp.pokemon.battle.Move;
-import cs.brown.edu.aelp.pokemon.battle.MoveResult;
-import cs.brown.edu.aelp.pokemon.battle.MoveResult.MoveOutcome;
-import cs.brown.edu.aelp.pokemon.battle.PokeType;
-import cs.brown.edu.aelp.pokemon.battle.events.AttackEvent;
-import cs.brown.edu.aelp.pokemon.battle.events.StartOfTurnEvent;
-import cs.brown.edu.aelp.pokemon.trainer.Pokemon;
-import cs.brown.edu.aelp.pokemon.trainer.Trainer;
+import cs.brown.edu.aelp.pokemmo.battle.Effect;
+import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
 public class WishMove extends Move {
 
@@ -42,6 +40,8 @@ public class WishMove extends Move {
         p.setHealth(p.getBaseHealth());
 
         getEffectSlot().deregister(this);
+
+        System.out.println("Wish came true!");
         return;
       }
 

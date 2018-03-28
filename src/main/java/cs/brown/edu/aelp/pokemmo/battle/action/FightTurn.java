@@ -1,7 +1,7 @@
-package cs.brown.edu.aelp.pokemon.battle.action;
+package cs.brown.edu.aelp.pokemmo.battle.action;
 
-import cs.brown.edu.aelp.pokemon.battle.Move;
-import cs.brown.edu.aelp.pokemon.trainer.Trainer;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
 public class FightTurn extends Turn {
 

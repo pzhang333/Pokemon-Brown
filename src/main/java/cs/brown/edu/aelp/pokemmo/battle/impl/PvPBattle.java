@@ -1,21 +1,22 @@
-package cs.brown.edu.aelp.pokemon.battle;
+package cs.brown.edu.aelp.pokemmo.battle.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cs.brown.edu.aelp.pokemon.battle.action.FightTurn;
-import cs.brown.edu.aelp.pokemon.battle.action.NullTurn;
-import cs.brown.edu.aelp.pokemon.battle.action.Turn;
-import cs.brown.edu.aelp.pokemon.battle.events.AttackEvent;
-import cs.brown.edu.aelp.pokemon.battle.events.StartOfTurnEvent;
-import cs.brown.edu.aelp.pokemon.trainer.Pokemon;
-import cs.brown.edu.aelp.pokemon.trainer.Trainer;
+import cs.brown.edu.aelp.pokemmo.battle.Arena;
+import cs.brown.edu.aelp.pokemmo.battle.Battle;
+import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
+import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
 public class PvPBattle extends Battle {
-
-  private final Arena arena;
 
   private final Trainer a;
 
@@ -24,7 +25,7 @@ public class PvPBattle extends Battle {
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
 
   public PvPBattle(Arena arena, Trainer a, Trainer b) {
-    this.arena = arena;
+    super(arena);
     this.a = a;
     this.b = b;
 
@@ -141,7 +142,9 @@ public class PvPBattle extends Battle {
     Trainer atkTrainer = turn.getTrainer();
     Trainer defTrainer = other(atkTrainer);
 
-    AttackEvent atkEvent = new AttackEvent(this, atkTrainer, defTrainer);
+    AttackEvent atkEvent = new AttackEvent(this, atkTrainer,
+        atkTrainer.getActivePokemon(), defTrainer,
+        defTrainer.getActivePokemon());
 
     // Attacking event
     atkTrainer.getEffectSlot().handle(atkEvent);
@@ -149,6 +152,8 @@ public class PvPBattle extends Battle {
 
     MoveResult result = turn.getMove().getResult(atkEvent);
     // Todo: defending events
+
+    System.out.println(result);
 
     if (result.getOutcome().equals(MoveResult.MoveOutcome.HIT)) {
       // Other events...
@@ -158,7 +163,7 @@ public class PvPBattle extends Battle {
       defendingPokemon
           .setHealth(defendingPokemon.getBaseHealth() - result.getDamage());
 
-      if (defendingPokemon.getHealth() <= 0) {
+      if (defendingPokemon.isKnockedOut()) {
         System.out.println("KO!");
       }
     }

@@ -1,18 +1,18 @@
-package cs.brown.edu.aelp.pokemon;
+package cs.brown.edu.aelp.pokemmo;
 
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import cs.brown.edu.aelp.pokemon.battle.Arena;
-import cs.brown.edu.aelp.pokemon.battle.Move;
-import cs.brown.edu.aelp.pokemon.battle.PokeType;
-import cs.brown.edu.aelp.pokemon.battle.PokeType.PokeRawType;
-import cs.brown.edu.aelp.pokemon.battle.PvPBattle;
-import cs.brown.edu.aelp.pokemon.battle.action.FightTurn;
-import cs.brown.edu.aelp.pokemon.battle.action.NullTurn;
-import cs.brown.edu.aelp.pokemon.battle.moves.WishMove;
-import cs.brown.edu.aelp.pokemon.trainer.Pokemon;
-import cs.brown.edu.aelp.pokemon.trainer.Trainer;
+import cs.brown.edu.aelp.pokemmo.battle.Arena;
+import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
+import cs.brown.edu.aelp.pokemmo.battle.impl.PvPBattle;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.WishMove;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
 /**
  * The Main class entry point.
@@ -52,11 +52,11 @@ public final class Main {
         Move.MoveTarget.NORMAL, PokeType.getType(PokeRawType.NORMAL),
         EnumSet.noneOf(Move.MoveFlag.class), Move.MoveComplexity.COMPLEX);
 
-    Pokemon p1 = new Pokemon("A", 100.0, 100.0,
-        PokeType.getType(PokeRawType.NORMAL), Arrays.asList(wish, atk));
+    Pokemon p1 = new Pokemon("Slaking", 150, 150, 160, 100, 95, 65, 100, 30,
+        PokeType.getType(PokeRawType.NORMAL), Arrays.asList(atk));
 
-    Pokemon p2 = new Pokemon("B", 100.0, 100.0,
-        PokeType.getType(PokeRawType.NORMAL), Arrays.asList(wish, atk));
+    Pokemon p2 = new Pokemon("Chauncy", 150, 150, 160, 100, 95, 65, 100, 30,
+        PokeType.getType(PokeRawType.NORMAL), Arrays.asList(atk, wish));
 
     Arena arena = new Arena();
 

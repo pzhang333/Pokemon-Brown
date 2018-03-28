@@ -1,8 +1,9 @@
-package cs.brown.edu.aelp.pokemon.battle.events;
+package cs.brown.edu.aelp.pokemmo.battle.events;
 
-import cs.brown.edu.aelp.pokemon.battle.Battle;
+import cs.brown.edu.aelp.pokemmo.battle.Battle;
+import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 
-public class BattleEvent {
+public abstract class BattleEvent {
 
   /*
    * public enum BattleEventType { ON_BATTLE_START, ATTACK, AFTER_ATTACK,
@@ -23,4 +24,5 @@ public class BattleEvent {
     return battle;
   }
 
+  public abstract void invokeOn(EffectSlot slot);
 }

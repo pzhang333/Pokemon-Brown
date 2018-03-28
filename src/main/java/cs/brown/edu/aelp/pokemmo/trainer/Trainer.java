@@ -1,9 +1,10 @@
-package cs.brown.edu.aelp.pokemon.trainer;
+package cs.brown.edu.aelp.pokemmo.trainer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cs.brown.edu.aelp.pokemon.battle.EffectSlot;
+import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 
 public class Trainer {
 
