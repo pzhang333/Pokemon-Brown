@@ -53,7 +53,8 @@ public class WishMove extends Move {
 
   @Override
   public MoveResult getResult(AttackEvent evt) {
-    MoveResult mr = new MoveResult();
+    MoveResult mr = new MoveResult(evt.getAttackingPokemon(),
+        evt.getDefendingPokemon());
 
     mr.setOutcome(MoveOutcome.NON_ATTACK_SUCCESS);
 

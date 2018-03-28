@@ -12,6 +12,8 @@ public class Trainer {
 
   private List<Pokemon> team = new ArrayList<>();
 
+  private Pokemon activePokemon = null;
+
   private EffectSlot effectSlot = new EffectSlot();
 
   public Trainer(String id) {
@@ -23,12 +25,16 @@ public class Trainer {
       return false;
     }
 
+    if (team.isEmpty()) {
+      activePokemon = pokemon;
+    }
+
     team.add(pokemon);
     return true;
   }
 
   public Pokemon getActivePokemon() {
-    return team.get(0);
+    return activePokemon;
   }
 
   /*
@@ -77,6 +83,17 @@ public class Trainer {
 
   public EffectSlot getEffectSlot() {
     return effectSlot;
+  }
+
+  public List<Pokemon> getTeam() {
+    return team;
+  }
+
+  public void setActivePokemon(Pokemon pokemonIn) {
+    if (!team.contains(pokemonIn)) {
+      throw new IllegalArgumentException("Pokemon not in team!");
+    }
+    activePokemon = pokemonIn;
   }
 
 }

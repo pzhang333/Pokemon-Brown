@@ -336,7 +336,8 @@ public class Move {
   }
 
   public MoveResult getResult(AttackEvent evt) {
-    MoveResult mr = new MoveResult();
+    MoveResult mr = new MoveResult(evt.getAttackingPokemon(),
+        evt.getDefendingPokemon());
 
     // This does not account for stat stages...
 

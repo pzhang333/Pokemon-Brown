@@ -3,8 +3,11 @@ package cs.brown.edu.aelp.pokemmo.battle;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.EndOfBattleEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.EndOfTurnEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.KnockedOutEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.StartOfBattleEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.SwitchInEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.SwitchOutEvent;
 
 public abstract class Effect {
 
@@ -38,4 +41,15 @@ public abstract class Effect {
     return effectSlot;
   }
 
+  public void handle(SwitchInEvent switchInEvent) {
+    System.out.printf("Got Switch In Event -- No handler\n");
+  }
+
+  public void handle(SwitchOutEvent switchOutEvent) {
+    System.out.printf("Got Switch Out Event -- No handler\n");
+  }
+
+  public void handle(KnockedOutEvent knockedOutEvent) {
+    System.out.printf("Got Knocked Out Event -- No handler\n");
+  }
 }

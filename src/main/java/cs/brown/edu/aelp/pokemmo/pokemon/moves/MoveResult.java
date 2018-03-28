@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+
 public class MoveResult {
 
   public enum MoveOutcome {
@@ -25,8 +27,13 @@ public class MoveResult {
 
   private MoveOutcome outcome = MoveOutcome.NO_EFFECT;
 
-  public MoveResult() {
+  private Pokemon attackingPokemon;
 
+  private Pokemon defendingPokemon;
+
+  public MoveResult(Pokemon attackingPokemon, Pokemon defendingPokemon) {
+    this.attackingPokemon = attackingPokemon;
+    this.defendingPokemon = defendingPokemon;
   }
 
   /**
@@ -90,4 +97,11 @@ public class MoveResult {
         + "]";
   }
 
+  public Pokemon getAttackingPokemon() {
+    return attackingPokemon;
+  }
+
+  public Pokemon getDefendingPokemon() {
+    return defendingPokemon;
+  }
 }

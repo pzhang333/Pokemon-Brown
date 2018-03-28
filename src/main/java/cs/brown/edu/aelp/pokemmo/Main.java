@@ -93,6 +93,25 @@ public final class Main {
     System.out.println(p1);
     System.out.println(p2);
 
+    battle.setTurn(new FightTurn(t1, atk));
+    battle.setTurn(new NullTurn(t2));
+    battle.evaluate();
+
+    battle.setTurn(new FightTurn(t1, atk));
+    battle.setTurn(new NullTurn(t2));
+    battle.evaluate();
+
+    battle.setTurn(new FightTurn(t1, atk));
+    battle.setTurn(new NullTurn(t2));
+    battle.evaluate();
+
+    battle.setTurn(new FightTurn(t1, atk));
+    battle.setTurn(new NullTurn(t2));
+    battle.evaluate();
+
+    System.out.println(p1);
+    System.out.println(p2);
+
   }
 
 }
