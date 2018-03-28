@@ -1,6 +1,8 @@
 package cs.brown.edu.aelp.pokemmo.battle;
 
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.EndOfBattleEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.EndOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.StartOfBattleEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 
@@ -12,8 +14,16 @@ public abstract class Effect {
     System.out.printf("Got Start of Turn Event -- No handler\n");
   }
 
+  public void handle(EndOfTurnEvent event) {
+    System.out.printf("Got End of Turn Event -- No handler\n");
+  }
+
   public void handle(StartOfBattleEvent startOfBattleEvent) {
     System.out.printf("Got Start of Battle Event -- No handler\n");
+  }
+
+  public void handle(EndOfBattleEvent endOffBattleEvent) {
+    System.out.printf("Got End of Battle Event -- No handler\n");
   }
 
   public void handle(AttackEvent event) {

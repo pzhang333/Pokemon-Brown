@@ -3,11 +3,16 @@ package cs.brown.edu.aelp.pokemmo.battle.events;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Effect;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
+import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
 
 public class StartOfTurnEvent extends BattleEvent {
 
-  public StartOfTurnEvent(Battle battle) {
+  private Turn turn;
+
+  public StartOfTurnEvent(Battle battle, Turn turn) {
     super(battle);
+
+    this.turn = turn;
   }
 
   @Override
