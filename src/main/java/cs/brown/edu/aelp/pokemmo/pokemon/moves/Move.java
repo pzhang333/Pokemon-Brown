@@ -44,7 +44,7 @@ public class Move {
 
   private final String id;
 
-  private final Double number;
+  private final Integer number;
 
   private final Double accuracy;
 
@@ -103,7 +103,7 @@ public class Move {
    * @param complexity
    *          Whether or not this move expects a Java Handler.
    */
-  public Move(String id, Double number, Double accuracy, Double basePower,
+  public Move(String id, Integer number, Double accuracy, Double basePower,
       MoveCategory category, String description, String shortDescription,
       String name, Integer pp, Integer priority, MoveTarget target,
       PokeType type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
@@ -134,7 +134,7 @@ public class Move {
   /**
    * @return the number
    */
-  public Double getNumber() {
+  public Integer getNumber() {
     return number;
   }
 
@@ -332,6 +332,8 @@ public class Move {
         * (evt.getAttackingPokemon().getAccuracy()
             / evt.getAttackingPokemon().getEvasion());
 
+    System.out.println("effective Accuracy: " + effAccuracy);
+
     return (Math.random() <= effAccuracy);
   }
 
@@ -340,6 +342,11 @@ public class Move {
         evt.getDefendingPokemon());
 
     // This does not account for stat stages...
+
+    if (!accuracyCheck(evt)) {
+      mr.setOutcome(MoveOutcome.MISS);
+      return mr;
+    }
 
     mr.setOutcome(MoveOutcome.HIT);
 

@@ -137,7 +137,7 @@ public class Pokemon {
   }
 
   public Integer getEffectiveAttack() {
-    return (int) Math.round(((1.0 / 3) * attackStage) * getAttack());
+    return (int) Math.round(((1.0 / 2) * attackStage) * getAttack());
   }
 
   public void modifyAttackStage(int dif) {
@@ -154,7 +154,7 @@ public class Pokemon {
 
   public Integer getEffectiveSpecialAttack() {
     return (int) Math
-        .round(((1.0 / 3) * specialAttackStage) * getSpecialAttack());
+        .round(((1.0 / 2) * specialAttackStage) * getSpecialAttack());
   }
 
   public Integer getSpecialAttack() {
@@ -166,7 +166,7 @@ public class Pokemon {
   }
 
   public Integer getEffectiveDefense() {
-    return (int) Math.round(((1.0 / 3) * defenseStage) * getDefense());
+    return (int) Math.round(((1.0 / 2) * defenseStage) * getDefense());
   }
 
   public Integer getDefense() {
@@ -179,7 +179,7 @@ public class Pokemon {
 
   public Integer getEffectiveSpecialDefense() {
     return (int) Math
-        .round(((1.0 / 3) * specialDefenseStage) * getSpecialDefense());
+        .round(((1.0 / 2) * specialDefenseStage) * getSpecialDefense());
   }
 
   public Integer getSpecialDefense() {
