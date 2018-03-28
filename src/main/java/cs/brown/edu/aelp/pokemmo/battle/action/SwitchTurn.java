@@ -10,7 +10,7 @@ public class SwitchTurn extends Turn {
   private final Pokemon out;
 
   public SwitchTurn(Trainer trainer, Pokemon in, Pokemon out) {
-    super(trainer, Action.NULL);
+    super(trainer, Action.SWITCH);
 
     this.in = in;
     this.out = out;

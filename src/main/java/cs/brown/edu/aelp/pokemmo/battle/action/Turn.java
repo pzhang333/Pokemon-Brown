@@ -5,7 +5,7 @@ import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 public abstract class Turn {
 
   public enum Action {
-    NULL, RUN, SWITCH, USE_ITEM, FIGHT
+    RUN, SWITCH, USE_ITEM, FIGHT, NULL
   };
 
   private final Trainer trainer;
