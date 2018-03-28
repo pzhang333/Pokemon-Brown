@@ -15,14 +15,14 @@ public final class PacketSender {
   }
 
   public static void sendGamePackets() {
-    Main.sessionToPlayer.keySet().stream().filter(Session::isOpen).forEach(session -> {
+    Main.sessionToID.keySet().stream().filter(Session::isOpen).forEach(session -> {
       try {
-        Player player = Main.sessionToPlayer.get(session);
+        Player player = Main.sessionIDToPlayer.get(Main.sessionToID.get(session));
 
         // create our GamePacket object
         // TODO: Figure out background stuff (currently just passing empty map)
         GamePacket packet = new GamePacket(player.getPosition(), 
-            Main.playerPositionMap, player.getUserState(), Collections.emptyMap());
+            Main.sessionIDToPlayer.values(), player.getUserState(), Collections.emptyMap());
         
         // converting this packet to JSON using Gson
         Gson gson = new Gson();

@@ -14,13 +14,13 @@ import spark.Spark;
  */
 public final class Main {
   
-  // we use this to map sessions to players
-  public static Map<Session, Player> sessionToPlayer = new ConcurrentHashMap<>();
+  // we use this to map sessions to session ids
+  public static Map<Session, String> sessionToID = new ConcurrentHashMap<>();
   // We use this for websockets to continue creating unique session id's
   public static int sessionNumber = 0;
   
-  // maps players to their coordinate's
-  public static Map<Player, Coordinate3d> playerPositionMap;
+  // maps session id's to Player objects
+  public static Map<String, Player> sessionIDToPlayer;
 
   /**
    * @param args

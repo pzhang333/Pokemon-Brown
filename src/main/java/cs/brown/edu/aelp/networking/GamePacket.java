@@ -3,36 +3,35 @@ package cs.brown.edu.aelp.networking;
 import cs.brown.edu.aelp.Player.Player;
 import cs.brown.edu.aelp.general_datastructures.Coordinate3d;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GamePacket {
   
   private Coordinate3d position;
-  private Map<Player, Coordinate3d> otherPlayersPositionsMap;
+  private Collection<Player> otherPlayers;
   private Map<Coordinate3d, Integer> background;
   private Integer userState;
 
   public GamePacket(Coordinate3d playerPosition, 
-      Map<Player, Coordinate3d> positionPlayerMap, 
+      Collection<Player> otherPlayers, 
       int userState, 
       Map<Coordinate3d, Integer> backgroundMap) {
     
     this.position = playerPosition;
     this.background = backgroundMap;
-    this.otherPlayersPositionsMap = 
-        new HashMap<Player, Coordinate3d>(localize(positionPlayerMap));
+    this.setOtherPlayers(localize(otherPlayers));
     this.userState = userState;
     
   }
   
   // Helper functions:
   
-  private Map<Player, Coordinate3d> localize(Map<Player, Coordinate3d> wholeMap) {
-    return wholeMap.entrySet().stream()
-        .filter(map -> map.getValue().getZ() == position.getZ())
-        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+  private Collection<Player> localize(Collection<Player> players) {
+    return players.stream().filter(p -> p.getPosition().getZ() 
+        == this.position.getZ())
+        .collect(Collectors.toList());
   }
 
   // Getters and Setters for Package Properties:
@@ -43,14 +42,6 @@ public class GamePacket {
 
   public void setPosition(Coordinate3d position) {
     this.position = position;
-  }
-
-  public Map<Player, Coordinate3d> getOtherPlayersPositionsMap() {
-    return otherPlayersPositionsMap;
-  }
-
-  public void setOtherPlayersPositionsMap(Map<Player, Coordinate3d> otherPlayersPositionsMap) {
-    this.otherPlayersPositionsMap = otherPlayersPositionsMap;
   }
 
   public Map<Coordinate3d, Integer> getBackground() {
@@ -67,6 +58,14 @@ public class GamePacket {
 
   public void setUserState(Integer userState) {
     this.userState = userState;
+  }
+
+  public Collection<Player> getOtherPlayers() {
+    return otherPlayers;
+  }
+
+  public void setOtherPlayers(Collection<Player> otherPlayers) {
+    this.otherPlayers = otherPlayers;
   }
 
 }
