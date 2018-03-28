@@ -1,6 +1,6 @@
-package cs.brown.edu.aelp.pokemon.battle.action;
+package cs.brown.edu.aelp.pokemmo.battle.action;
 
-import cs.brown.edu.aelp.pokemon.trainer.Trainer;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
 public abstract class Turn {
 

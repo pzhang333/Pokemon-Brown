@@ -1,9 +1,15 @@
-package cs.brown.edu.aelp.pokemon.battle;
+package cs.brown.edu.aelp.pokemmo.battle;
 
-import cs.brown.edu.aelp.pokemon.battle.action.FightTurn;
-import cs.brown.edu.aelp.pokemon.battle.action.Turn;
+import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
 
 public class Battle {
+
+  private Arena arena;
+
+  public Battle(Arena arena) {
+    this.arena = arena;
+  }
 
   public enum BattleState {
     SETUP, WAITING, READY, DONE
@@ -55,5 +61,9 @@ public class Battle {
     }
 
     return 0;
+  }
+
+  public Arena getArena() {
+    return arena;
   }
 }

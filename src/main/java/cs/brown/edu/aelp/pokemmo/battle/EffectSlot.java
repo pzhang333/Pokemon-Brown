@@ -1,9 +1,9 @@
-package cs.brown.edu.aelp.pokemon.battle;
+package cs.brown.edu.aelp.pokemmo.battle;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import cs.brown.edu.aelp.pokemon.battle.events.BattleEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.BattleEvent;
 
 public class EffectSlot {
 
@@ -27,7 +27,11 @@ public class EffectSlot {
     effects.clear();
   }
 
-  public <T extends BattleEvent> void handle(T event) {
-    effects.forEach(e -> e.handle(event));
+  public List<Effect> getEffects() {
+    return effects;
+  }
+
+  public void handle(BattleEvent event) {
+    event.invokeOn(this);
   }
 }
