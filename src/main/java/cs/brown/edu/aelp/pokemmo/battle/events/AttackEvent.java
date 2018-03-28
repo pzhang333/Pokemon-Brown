@@ -6,6 +6,9 @@ import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
+/**
+ * An attack event.
+ */
 public class AttackEvent extends BattleEvent {
 
   private final Trainer attackingTrainer;
@@ -16,6 +19,20 @@ public class AttackEvent extends BattleEvent {
 
   private final Pokemon defendingPokemon;
 
+  /**
+   * Construct an AttackEvent.
+   *
+   * @param battle
+   *          The battle in which the event is occuring.
+   * @param attackingTrainer
+   *          The attacking trainer.
+   * @param attackingPokemon
+   *          The attacking pokemon.
+   * @param defendingTrainer
+   *          The defending trainer.
+   * @param defendingPokemon
+   *          The defending pokemon.
+   */
   public AttackEvent(Battle battle, Trainer attackingTrainer,
       Pokemon attackingPokemon, Trainer defendingTrainer,
       Pokemon defendingPokemon) {
@@ -27,12 +44,19 @@ public class AttackEvent extends BattleEvent {
   }
 
   /**
+   * Get the attacking trainer.
+   *
    * @return the attacking
    */
   public Trainer getAttackingTrainer() {
     return attackingTrainer;
   }
 
+  /**
+   * Get the defending trainer.
+   *
+   * @return The defending trainer.
+   */
   public Trainer getDefendingTrainer() {
     return defendingTrainer;
   }

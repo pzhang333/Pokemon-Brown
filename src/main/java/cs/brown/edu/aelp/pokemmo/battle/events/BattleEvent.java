@@ -3,6 +3,9 @@ package cs.brown.edu.aelp.pokemmo.battle.events;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 
+/**
+ * The battle event.
+ */
 public abstract class BattleEvent {
 
   /*
@@ -13,6 +16,12 @@ public abstract class BattleEvent {
 
   private final Battle battle;
 
+  /**
+   * Construct a battle event.
+   *
+   * @param battle
+   *          The battle in which the battle occurs.
+   */
   public BattleEvent(Battle battle) {
     this.battle = battle;
   }
@@ -24,5 +33,11 @@ public abstract class BattleEvent {
     return battle;
   }
 
+  /**
+   * Invoke the event upon an effect slot.
+   *
+   * @param slot
+   *          The slot to invoke the battle event on.
+   */
   public abstract void invokeOn(EffectSlot slot);
 }

@@ -13,15 +13,29 @@ public class Pokemon {
 
   private Integer health;
 
+  private Integer attackStage;
+
   private Integer attack;
+
+  private Integer defenseStage;
 
   private Integer defense;
 
+  private Integer specialAttackStage;
+
   private Integer specialAttack;
+
+  private Integer specialDefenseStage;
 
   private Integer specialDefense;
 
+  private Integer speedStage;
+
   private Integer speed;
+
+  private Integer accuracyStage = 3;
+
+  private Integer evasionStage = 3;
 
   private Integer level;
 
@@ -46,10 +60,26 @@ public class Pokemon {
     this.level = level;
     this.type = type;
     this.moves = moves;
+
+    resetStatStages();
+  }
+
+  public void resetStatStages() {
+    attackStage = 3;
+    defenseStage = 3;
+    specialAttackStage = 3;
+    specialDefenseStage = 3;
+    speedStage = 3;
+    accuracyStage = 3;
+    evasionStage = 3;
   }
 
   public Integer getSpeed() {
     return speed;
+  }
+
+  public Integer getEffectiveSpeed() {
+    return (int) Math.round(((1.0 / 3) * speedStage) * getSpeed());
   }
 
   public Integer getHealth() {
@@ -87,6 +117,18 @@ public class Pokemon {
     return health == 0;
   }
 
+  private int calcStage(int curStage, int dif) {
+    int stage = curStage + dif;
+
+    if (stage > 6) {
+      stage = 6;
+    } else if (stage < -6) {
+      stage = -6;
+    }
+
+    return stage;
+  }
+
   /**
    * @return the level
    */
@@ -94,16 +136,50 @@ public class Pokemon {
     return level;
   }
 
+  public Integer getEffectiveAttack() {
+    return (int) Math.round(((1.0 / 3) * attackStage) * getAttack());
+  }
+
+  public void modifyAttackStage(int dif) {
+    attackStage = calcStage(attackStage, dif);
+  }
+
   public Integer getAttack() {
     return attack;
+  }
+
+  public void modifySpecialAttackStage(int dif) {
+    specialAttackStage = calcStage(specialAttackStage, dif);
+  }
+
+  public Integer getEffectiveSpecialAttack() {
+    return (int) Math
+        .round(((1.0 / 3) * specialAttackStage) * getSpecialAttack());
   }
 
   public Integer getSpecialAttack() {
     return specialAttack;
   }
 
+  public void modifyDefenseStage(int dif) {
+    defenseStage = calcStage(defenseStage, dif);
+  }
+
+  public Integer getEffectiveDefense() {
+    return (int) Math.round(((1.0 / 3) * defenseStage) * getDefense());
+  }
+
   public Integer getDefense() {
     return defense;
+  }
+
+  public void modifySpecialDefenseStage(int dif) {
+    specialDefenseStage = calcStage(specialDefenseStage, dif);
+  }
+
+  public Integer getEffectiveSpecialDefense() {
+    return (int) Math
+        .round(((1.0 / 3) * specialDefenseStage) * getSpecialDefense());
   }
 
   public Integer getSpecialDefense() {
@@ -112,5 +188,21 @@ public class Pokemon {
 
   public PokeType getType() {
     return type;
+  }
+
+  public void modifyEvasionStage(int dif) {
+    evasionStage = calcStage(evasionStage, dif);
+  }
+
+  public Integer getEvasion() {
+    return evasionStage;
+  }
+
+  public void modifyAccuracyStage(int dif) {
+    accuracyStage = calcStage(accuracyStage, dif);
+  }
+
+  public Integer getAccuracy() {
+    return accuracyStage;
   }
 }

@@ -321,6 +321,20 @@ public class Move {
     return 2;
   }
 
+  public boolean accuracyCheck(AttackEvent evt) {
+
+    // If accuracy is -1 don't bother to calculate as the move ALWAYS hits.
+    if (getAccuracy() == -1) {
+      return true;
+    }
+
+    double effAccuracy = getAccuracy()
+        * (evt.getAttackingPokemon().getAccuracy()
+            / evt.getAttackingPokemon().getEvasion());
+
+    return (Math.random() <= effAccuracy);
+  }
+
   public MoveResult getResult(AttackEvent evt) {
     MoveResult mr = new MoveResult();
 
@@ -335,12 +349,12 @@ public class Move {
     double atkDefRatio = 0;
 
     if (getCategory().equals(MoveCategory.PHYSICAL)) {
-      atkDefRatio = evt.getAttackingPokemon().getAttack()
-          / evt.getDefendingPokemon().getDefense();
+      atkDefRatio = evt.getAttackingPokemon().getEffectiveAttack()
+          / evt.getDefendingPokemon().getEffectiveDefense();
 
     } else if (getCategory().equals(MoveCategory.SPECIAL)) {
-      atkDefRatio = evt.getAttackingPokemon().getSpecialAttack()
-          / evt.getDefendingPokemon().getSpecialDefense();
+      atkDefRatio = evt.getAttackingPokemon().getEffectiveSpecialAttack()
+          / evt.getDefendingPokemon().getEffectiveSpecialDefense();
     }
 
     double baseDamage = ((((((2 * evt.getAttackingPokemon().getLevel()
