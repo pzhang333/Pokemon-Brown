@@ -5,11 +5,11 @@ import cs.brown.edu.aelp.pokemmo.battle.Effect;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
-public class StartOfBattleEvent extends BattleEvent {
+public class EndOfBattleEvent extends BattleEvent {
 
   private Trainer trainer;
 
-  public StartOfBattleEvent(Battle battle, Trainer trainer) {
+  public EndOfBattleEvent(Battle battle, Trainer trainer) {
     super(battle);
 
     this.trainer = trainer;
@@ -21,4 +21,5 @@ public class StartOfBattleEvent extends BattleEvent {
       e.handle(this);
     }
   }
+
 }

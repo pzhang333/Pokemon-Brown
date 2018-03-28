@@ -3,16 +3,16 @@ package cs.brown.edu.aelp.pokemmo.battle.events;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Effect;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
-import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
 
-public class StartOfBattleEvent extends BattleEvent {
+public class EndOfTurnEvent extends BattleEvent {
 
-  private Trainer trainer;
+  private Turn turn;
 
-  public StartOfBattleEvent(Battle battle, Trainer trainer) {
+  public EndOfTurnEvent(Battle battle, Turn turn) {
     super(battle);
 
-    this.trainer = trainer;
+    this.turn = turn;
   }
 
   @Override

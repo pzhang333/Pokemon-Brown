@@ -11,6 +11,7 @@ import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.EndOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
@@ -42,14 +43,14 @@ public class PvPBattle extends Battle {
 
     boolean stop = false;
 
-    StartOfTurnEvent startEvent = new StartOfTurnEvent(this);
     for (Turn turn : turns) {
       // start of turn
       if (stop) {
         break;
       }
 
-      turn.getTrainer().getEffectSlot().handle(startEvent);
+      turn.getTrainer().getEffectSlot()
+          .handle(new StartOfTurnEvent(this, turn));
     }
 
     for (Turn turn : turns) {
@@ -73,55 +74,10 @@ public class PvPBattle extends Battle {
       if (stop) {
         break;
       }
-    }
 
-    /*
-     * BattleEvent startOfTurn = new BattleEvent(BattleEventType.START_OF_TURN,
-     * this); for (Turn turn : turns) {
-     * turn.getTrainer().getActivePokemon().getEffectSlot().handle(startOfTurn);
-     * }
-     * 
-     * for (Turn turn : turns) {
-     * 
-     * if (stop) { break; }
-     * 
-     * if (turn.getAction().equals(Action.NULL)) { continue; }
-     * 
-     * if (turn.getAction().equals(Action.RUN)) {
-     * victory(other(turn.getTrainer())); stop = true; }
-     * 
-     * if (turn.getAction().equals(Action.FIGHT)) {
-     * 
-     * // Events... Trainer cur = turn.getTrainer();
-     * 
-     * BattleEvent attackEvent = new BattleEvent(BattleEventType.ATTACK, this);
-     * 
-     * cur.getActivePokemon().getEffectSlot().handle(attackEvent);
-     * 
-     * MoveResult mr = turn.getMove().getResult(attackEvent);
-     * 
-     * other(cur).getActivePokemon().getEffectSlot() .handle(new
-     * BattleEvent(BattleEventType.DEFEND, this));
-     * 
-     * other(cur).getActivePokemon().getEffectSlot() .handle(new
-     * BattleEvent(BattleEventType.AFTER_ATTACK, this));
-     * 
-     * other(cur).getActivePokemon().getEffectSlot() .handle(new
-     * BattleEvent(BattleEventType.AFTER_DEFEND, this));
-     * 
-     * if (mr.getOutcome().equals(MoveOutcome.HIT)) {
-     * other(cur).getActivePokemon().setHealth(
-     * other(cur).getActivePokemon().getHealth() - mr.getDamage());
-     * 
-     * other(cur).getActivePokemon().getEffectSlot() .handle(new
-     * BattleEvent(BattleEventType.ON_HIT, this)); }
-     * 
-     * } }
-     * 
-     * BattleEvent endOfTurn = new BattleEvent(BattleEventType.END_OF_TURN,
-     * this); for (Turn turn : turns) {
-     * turn.getTrainer().getActivePokemon().getEffectSlot().handle(endOfTurn); }
-     */
+      // Clean this up:
+      turn.getTrainer().getEffectSlot().handle(new EndOfTurnEvent(this, turn));
+    }
 
     turnsMap.clear();
 
