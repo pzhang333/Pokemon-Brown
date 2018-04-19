@@ -144,10 +144,11 @@ CREATE TABLE IF NOT EXISTS users (
     username text NOT NULL,
     email text NOT NULL,
     chunk text,
-    "X_pos" integer,
-    "Y_pos" integer,
+    "row" integer,
+    col integer,
     currency integer DEFAULT 0 NOT NULL,
-    hashed_pw text NOT NULL
+    hashed_pw text NOT NULL,
+    session_token text
 );
 
 
