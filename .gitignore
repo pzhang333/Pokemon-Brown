@@ -66,6 +66,10 @@ local.properties
 .idea/**/gradle.xml
 .idea/**/libraries
 
+# IntelliJ Files
+.idea/*
+.idea/
+
 ########
 # MISC #
 ########
