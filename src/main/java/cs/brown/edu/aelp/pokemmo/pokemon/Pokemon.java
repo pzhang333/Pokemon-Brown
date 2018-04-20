@@ -111,7 +111,7 @@ public class Pokemon {
       return this;
     }
 
-    public Builder type(PokeType type) {
+    public Builder withType(PokeType type) {
       this.type = type;
       return this;
     }

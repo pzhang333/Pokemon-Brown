@@ -17,6 +17,8 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveHandler;
@@ -106,6 +108,10 @@ public class SQLDataSource implements DataSource {
               .withGender(rs.getInt("gender")).withExp(rs.getInt("experience"))
               .asStored(rs.getBoolean("stored")).withHp(rs.getInt("cur_health"))
               .withMaxHp(rs.getInt("max_health"));
+
+          // TODO: ADD CORRECT TYPE
+          b.withType(PokeType.getType(PokeRawType.NORMAL));
+
           pokemon.add(b.build());
         }
         return pokemon;
