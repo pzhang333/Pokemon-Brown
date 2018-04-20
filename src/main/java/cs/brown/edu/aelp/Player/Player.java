@@ -7,11 +7,20 @@ public class Player {
   private String uuid;
   private Coordinate3d position;
   private int playerState;
+  private int orientation;
   
   public Player(String uuid) {
     this.setUuid(uuid);
     this.setPosition(null);
     this.setPlayerState(0);
+    this.orientation = 0;
+  }
+  
+  public Player(String uuid, Coordinate3d position, int playerState, int orientation) {
+    this.setUuid(uuid);
+    this.setPosition(position);
+    this.setPlayerState(orientation);
+    this.orientation = orientation;
   }
 
   // Getters and Setters: 
@@ -38,6 +47,14 @@ public class Player {
 
   public void setPlayerState(int playerState) {
     this.playerState = playerState;
+  }
+
+  public int getOrientation() {
+    return orientation;
+  }
+
+  public void setOrientation(int orientation) {
+    this.orientation = orientation;
   }
 
 }
