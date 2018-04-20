@@ -1,16 +1,18 @@
 package cs.brown.edu.aelp.pokemon;
 
+import com.google.common.collect.ImmutableMap;
+import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
+import cs.brown.edu.aelp.pokemmo.data.DataSource;
+import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
+import cs.brown.edu.aelp.pokemmo.map.World;
+import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
+import cs.brown.edu.aelp.util.JsonFile;
+import freemarker.template.Configuration;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
-
-import com.google.common.collect.ImmutableMap;
-
-import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
-import cs.brown.edu.aelp.pokemmo.map.World;
-import freemarker.template.Configuration;
+import java.sql.SQLException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -29,6 +31,7 @@ public final class Main {
   // TODO: Actually load a world in when the server spins up
   private static World world;
   private static final int DEFAULT_PORT = 4567;
+  private static DataSource datasrc;
 
   /**
    * @param args
@@ -55,8 +58,22 @@ public final class Main {
     // Parse command line arguments
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
-    parser.accepts("port").withRequiredArg().ofType(Integer.class).defaultsTo(DEFAULT_PORT);
+    parser.accepts("port").withRequiredArg().ofType(Integer.class)
+        .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
+
+    // ip, port, database, user, pass
+    /*
+    try {
+      JsonFile cfg = new JsonFile("config/database_info.json");
+      Main.datasrc = new SQLDataSource(cfg.getKey("ip"),
+          Integer.parseInt(cfg.getKey("port")), cfg.getKey("database"),
+          cfg.getKey("user"), cfg.getKey("pass"));
+    } catch (IOException | SQLException e) {
+      System.out.println("Something went wrong connecting to the database.");
+      return;
+    }
+    */
 
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
@@ -86,7 +103,9 @@ public final class Main {
 
     FreeMarkerEngine freeMarker = createEngine();
 
-    Spark.get("/main", new FrontHandler(), freeMarker);
+    Spark.get("/main", new IndexHandler(), freeMarker);
+    Spark.get("/", new IndexHandler(), freeMarker);
+    Spark.post("/register", new RegisterHandler(Main.getDataSource()));
 
     // Setup Spark Routes
   }
@@ -94,12 +113,10 @@ public final class Main {
   /**
    * Handle requests to the front page of our website.
    */
-  private static class FrontHandler implements TemplateViewRoute {
+  private static class IndexHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of("title", "Pokemon", "content", "something",
-          "readmessage", "something", "message", "something");
-      return new ModelAndView(variables, "query.ftl");
+      return new ModelAndView(ImmutableMap.of(), "main.ftl");
     }
   }
 
@@ -111,7 +128,8 @@ public final class Main {
     try {
       config.setDirectoryForTemplateLoading(templates);
     } catch (IOException ioe) {
-      System.out.printf("ERROR: Unable use %s for template loading.%n", templates);
+      System.out.printf("ERROR: Unable use %s for template loading.%n",
+          templates);
       System.exit(1);
     }
     return new FreeMarkerEngine(config);
@@ -137,7 +155,11 @@ public final class Main {
   }
 
   public static World getWorld() {
-    return world;
+    return Main.world;
+  }
+
+  public static DataSource getDataSource() {
+    return Main.datasrc;
   }
 
 }
