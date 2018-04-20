@@ -148,6 +148,7 @@ CREATE TABLE IF NOT EXISTS users (
     col integer,
     currency integer DEFAULT 0 NOT NULL,
     hashed_pw text NOT NULL,
+    salt text NOT NULL,
     session_token text
 );
 

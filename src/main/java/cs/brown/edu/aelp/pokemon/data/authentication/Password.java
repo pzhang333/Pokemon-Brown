@@ -1,4 +1,4 @@
-package cs.brown.edu.aelp.security;
+package cs.brown.edu.aelp.pokemon.data.authentication;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;

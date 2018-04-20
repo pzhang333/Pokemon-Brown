@@ -1,8 +1,7 @@
 package cs.brown.edu.aelp.pokemon.battle;
 
-import java.util.EnumSet;
-
 import cs.brown.edu.aelp.pokemon.PokeTypes;
+import java.util.EnumSet;
 
 // TODO: Javadocs, remove depreciated code
 
@@ -338,6 +337,10 @@ public class Move {
    */
   public MoveComplexity getComplexity() {
     return complexity;
+  }
+
+  public void setPP(int pp) {
+    this.pp = pp;
   }
 
   /*

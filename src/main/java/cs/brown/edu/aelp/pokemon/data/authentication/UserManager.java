@@ -4,7 +4,7 @@ import cs.brown.edu.aelp.util.Pair;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserManager {
+public final class UserManager {
 
   private static final Map<Pair<String, String>, User> users = new HashMap<>();
 

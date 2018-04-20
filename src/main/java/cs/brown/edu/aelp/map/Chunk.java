@@ -1,17 +1,21 @@
 package cs.brown.edu.aelp.map;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Chunk {
 
   private final String id;
   private final int width;
   private final int height;
-  private Tile[][] tiles;
+  private Map<Location, List<Entity>> entities = new HashMap<>();
 
   public Chunk(String id, int width, int height) {
     this.id = id;
     this.width = width;
     this.height = height;
-    tiles = new Tile[height][width];
   }
 
   public String getId() {
@@ -26,19 +30,40 @@ public class Chunk {
     return this.height;
   }
 
-  public Tile getTileAt(int row, int col) {
-    assert row < this.height;
-    assert col < this.width;
-    // may be null
-    return tiles[row][col];
+  public List<Entity> getEntitiesAt(Location loc) {
+    if (this.entities.containsKey(loc)) {
+      return new ArrayList<>(this.entities.get(loc));
+    }
+    return new ArrayList<>();
   }
 
-  public Tile createTile(TileType type, int row, int col) {
-    Tile t = new Tile(this, row, col);
-    t.setType(type);
-    this.tiles[row][col] = t;
-    // portal setting has to be done elsewhere,
-    // probably after all chunks have been created
-    return t;
+  public void setEntitiesAt(Location loc, List<Entity> entities) {
+    this.entities.put(loc, entities);
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Chunk other = (Chunk) obj;
+    if (id == null) {
+      if (other.id != null)
+        return false;
+    } else if (!id.equals(other.id))
+      return false;
+    return true;
+  }
+
 }
