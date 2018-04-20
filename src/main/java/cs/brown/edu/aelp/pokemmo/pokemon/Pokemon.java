@@ -45,9 +45,9 @@ public class Pokemon {
 
   private EffectSlot effectSlot = new EffectSlot();
 
-  public Pokemon(String id, Integer baseHealth, Integer health, Integer attack,
-      Integer defense, Integer specialAttack, Integer specialDefense,
-      Integer speed, Integer level, PokeType type, List<Move> moves) {
+  public Pokemon(String id, Integer baseHealth, Integer health, Integer attack, Integer defense,
+      Integer specialAttack, Integer specialDefense, Integer speed, Integer level, PokeType type,
+      List<Move> moves) {
     super();
     this.id = id;
     this.baseHealth = baseHealth;
@@ -97,8 +97,8 @@ public class Pokemon {
    */
   @Override
   public String toString() {
-    return "Pokemon [id=" + id + ", health=" + health + ", type=" + type
-        + ", moves=" + moves + ", effectSlot=" + effectSlot + "]";
+    return "Pokemon [id=" + id + ", health=" + health + ", type=" + type + ", moves=" + moves
+        + ", effectSlot=" + effectSlot + "]";
   }
 
   public void setHealth(int health) {
@@ -153,8 +153,7 @@ public class Pokemon {
   }
 
   public Integer getEffectiveSpecialAttack() {
-    return (int) Math
-        .round(((1.0 / 2) * specialAttackStage) * getSpecialAttack());
+    return (int) Math.round(((1.0 / 2) * specialAttackStage) * getSpecialAttack());
   }
 
   public Integer getSpecialAttack() {
@@ -178,8 +177,7 @@ public class Pokemon {
   }
 
   public Integer getEffectiveSpecialDefense() {
-    return (int) Math
-        .round(((1.0 / 2) * specialDefenseStage) * getSpecialDefense());
+    return (int) Math.round(((1.0 / 2) * specialDefenseStage) * getSpecialDefense());
   }
 
   public Integer getSpecialDefense() {
@@ -204,5 +202,9 @@ public class Pokemon {
 
   public Integer getAccuracy() {
     return accuracyStage;
+  }
+
+  public Integer getId() {
+    return 1;
   }
 }
