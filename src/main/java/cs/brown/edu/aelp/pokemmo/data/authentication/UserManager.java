@@ -1,8 +1,9 @@
-package cs.brown.edu.aelp.pokemon.data.authentication;
+package cs.brown.edu.aelp.pokemmo.data.authentication;
 
-import cs.brown.edu.aelp.util.Pair;
 import java.util.HashMap;
 import java.util.Map;
+
+import cs.brown.edu.aelp.util.Pair;
 
 public final class UserManager {
 

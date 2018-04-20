@@ -1,9 +1,10 @@
-package cs.brown.edu.aelp.pokemon.data.authentication;
+package cs.brown.edu.aelp.pokemmo.data.authentication;
 
-import cs.brown.edu.aelp.map.Location;
-import cs.brown.edu.aelp.pokemon.Pokemon;
 import java.util.HashMap;
 import java.util.Map;
+
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 
 public class User {
 

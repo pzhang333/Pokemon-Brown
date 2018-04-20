@@ -1,6 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
-import cs.brown.edu.aelp.pokemon.PokeTypes;
 import java.util.EnumSet;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -17,8 +16,8 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 public class Move {
 
   /**
-   * Move Complexity Type. Simple moves are calculated normally. Complex moves
-   * require Java implemented Handlers.
+   * Move Complexity Type. Simple moves are calculated normally. Complex moves require Java
+   * implemented Handlers.
    */
   public enum MoveComplexity {
     SIMPLE, COMPLEX
@@ -48,9 +47,9 @@ public class Move {
   public static class Builder {
     private String id;
 
-    private Double number;
+    private Integer number;
 
-    private Integer accuracy;
+    private Double accuracy;
 
     private Double basePower;
 
@@ -68,7 +67,7 @@ public class Move {
 
     private MoveTarget target;
 
-    private PokeTypes type;
+    private PokeType type;
 
     private EnumSet<MoveFlag> flags;
 
@@ -82,12 +81,12 @@ public class Move {
       return this;
     }
 
-    public Builder withNumber(Double number) {
+    public Builder withNumber(Integer number) {
       this.number = number;
       return this;
     }
 
-    public Builder withAccuracy(Integer accuracy) {
+    public Builder withAccuracy(Double accuracy) {
       this.accuracy = accuracy;
       return this;
     }
@@ -132,7 +131,7 @@ public class Move {
       return this;
     }
 
-    public Builder ofType(PokeTypes type) {
+    public Builder ofType(PokeType type) {
       this.type = type;
       return this;
     }
@@ -172,17 +171,11 @@ public class Move {
 
   private String id;
 
-  private Double number;
+  private Integer number;
 
-<<<<<<< HEAD:src/main/java/cs/brown/edu/aelp/pokemmo/pokemon/moves/Move.java
-  private final Integer number;
-
-  private final Double accuracy;
-=======
-  private Integer accuracy;
+  private Double accuracy;
 
   private Double basePower;
->>>>>>> master:src/main/java/cs/brown/edu/aelp/pokemon/battle/Move.java
 
   private MoveCategory category;
 
@@ -198,7 +191,7 @@ public class Move {
 
   private MoveTarget target;
 
-  private PokeTypes type;
+  private PokeType type;
 
   private EnumSet<MoveFlag> flags;
 
@@ -232,8 +225,7 @@ public class Move {
    * @param priority
    *          The move's priority.
    * @param target
-   *          The move's target (NORMAL usually, can sometimes be all on battle
-   *          field).
+   *          The move's target (NORMAL usually, can sometimes be all on battle field).
    * @param type
    *          The move's type.
    * @param flags
@@ -241,11 +233,10 @@ public class Move {
    * @param complexity
    *          Whether or not this move expects a Java Handler.
    */
-<<<<<<< HEAD:src/main/java/cs/brown/edu/aelp/pokemmo/pokemon/moves/Move.java
-  public Move(String id, Integer number, Double accuracy, Double basePower,
-      MoveCategory category, String description, String shortDescription,
-      String name, Integer pp, Integer priority, MoveTarget target,
-      PokeType type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
+
+  public Move(String id, Integer number, Double accuracy, Double basePower, MoveCategory category,
+      String description, String shortDescription, String name, Integer pp, Integer priority,
+      MoveTarget target, PokeType type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
     super();
     this.id = id;
     this.number = number;
@@ -262,19 +253,6 @@ public class Move {
     this.flags = flags;
     this.complexity = complexity;
   }
-=======
-  /**
-   * public Move(String id, Double number, Integer accuracy, Double basePower,
-   * MoveCategory category, String description, String shortDescription, String
-   * name, Integer pp, Integer priority, MoveTarget target, PokeType type,
-   * EnumSet<MoveFlag> flags, MoveComplexity complexity) { super(); this.id =
-   * id; this.number = number; this.accuracy = accuracy; this.basePower =
-   * basePower; this.category = category; this.description = description;
-   * this.shortDescription = shortDescription; this.name = name; this.pp = pp;
-   * this.priority = priority; this.target = target; this.type = type;
-   * this.flags = flags; this.complexity = complexity; }
-   */
->>>>>>> master:src/main/java/cs/brown/edu/aelp/pokemon/battle/Move.java
 
   /**
    * @return the id
@@ -293,11 +271,8 @@ public class Move {
   /**
    * @return the accuracy
    */
-<<<<<<< HEAD:src/main/java/cs/brown/edu/aelp/pokemmo/pokemon/moves/Move.java
+
   public Double getAccuracy() {
-=======
-  public Integer getAccuracy() {
->>>>>>> master:src/main/java/cs/brown/edu/aelp/pokemon/battle/Move.java
     return accuracy;
   }
 
@@ -360,7 +335,7 @@ public class Move {
   /**
    * @return the type
    */
-  public PokeTypes getType() {
+  public PokeType getType() {
     return type;
   }
 
@@ -453,24 +428,21 @@ public class Move {
     applyEffectivenessModifiers(evt, mr);
 
     // Target modifier
-    mr.setModifier(ModifierType.TARGET,
-        (getTarget().equals(MoveTarget.NORMAL)) ? 1 : .75);
+    mr.setModifier(ModifierType.TARGET, (getTarget().equals(MoveTarget.NORMAL)) ? 1 : .75);
 
     // Technically this is not inclusive on 1
-    mr.setModifier(ModifierType.RANDOM,
-        ThreadLocalRandom.current().nextDouble(.85, 1));
+    mr.setModifier(ModifierType.RANDOM, ThreadLocalRandom.current().nextDouble(.85, 1));
   }
 
   public void applyEffectivenessModifiers(AttackEvent evt, MoveResult mr) {
 
-    mr.setModifier(ModifierType.STAB, evt.getAttackingPokemon().getType()
-        .getOffensiveEffectiveness(getType()));
+    mr.setModifier(ModifierType.STAB,
+        evt.getAttackingPokemon().getType().getOffensiveEffectiveness(getType()));
 
-    mr.setModifier(ModifierType.TYPE, evt.getDefendingPokemon().getType()
-        .getDefensiveEffectiveness(getType()));
+    mr.setModifier(ModifierType.TYPE,
+        evt.getDefendingPokemon().getType().getDefensiveEffectiveness(getType()));
 
-    mr.setModifier(ModifierType.WEATHER,
-        evt.getBattle().getArena().getWeatherModifier(getType()));
+    mr.setModifier(ModifierType.WEATHER, evt.getBattle().getArena().getWeatherModifier(getType()));
   }
 
   public boolean isCrit() {
@@ -489,8 +461,7 @@ public class Move {
     }
 
     double effAccuracy = getAccuracy()
-        * (evt.getAttackingPokemon().getAccuracy()
-            / evt.getAttackingPokemon().getEvasion());
+        * (evt.getAttackingPokemon().getAccuracy() / evt.getAttackingPokemon().getEvasion());
 
     System.out.println("effective Accuracy: " + effAccuracy);
 
@@ -498,8 +469,7 @@ public class Move {
   }
 
   public MoveResult getResult(AttackEvent evt) {
-    MoveResult mr = new MoveResult(evt.getAttackingPokemon(),
-        evt.getDefendingPokemon());
+    MoveResult mr = new MoveResult(evt.getAttackingPokemon(), evt.getDefendingPokemon());
 
     // This does not account for stat stages...
 
@@ -525,8 +495,8 @@ public class Move {
           / evt.getDefendingPokemon().getEffectiveSpecialDefense();
     }
 
-    double baseDamage = ((((((2 * evt.getAttackingPokemon().getLevel()
-        * critModifier) / 5) + 2) * getBasePower() * atkDefRatio) / 50) + 2);
+    double baseDamage = ((((((2 * evt.getAttackingPokemon().getLevel() * critModifier) / 5) + 2)
+        * getBasePower() * atkDefRatio) / 50) + 2);
 
     mr.setBaseDamage(baseDamage);
 
