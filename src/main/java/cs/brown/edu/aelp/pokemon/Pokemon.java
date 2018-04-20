@@ -27,6 +27,8 @@ public final class Pokemon {
     private int eva;
     private int acc;
 
+    private int exp;
+
     // Some Pokemon have 2 types, some have only 1 type
     private PokeTypes type;
     private PokeTypes type2;
@@ -39,11 +41,34 @@ public final class Pokemon {
 
     private String nickname; // Captured Pokemon can have a nickname
     private String species; // The actual species of Pokemon
+    private int id;
+    private int gender;
+    private boolean stored;
 
     /**
      * Constructs the builder.
      */
     public Builder() {
+    }
+
+    public Builder asStored(boolean stored) {
+      this.stored = stored;
+      return this;
+    }
+
+    public Builder withExp(int exp) {
+      this.exp = exp;
+      return this;
+    }
+
+    public Builder withGender(int gender) {
+      this.gender = gender;
+      return this;
+    }
+
+    public Builder withId(int id) {
+      this.id = id;
+      return this;
     }
 
     public Builder withHp(int hp) {
@@ -150,6 +175,8 @@ public final class Pokemon {
       pokemon.eva = this.eva;
       pokemon.acc = this.acc;
 
+      pokemon.exp = this.exp;
+
       pokemon.type = this.type;
       pokemon.type2 = this.type2;
 
@@ -160,6 +187,9 @@ public final class Pokemon {
 
       pokemon.nickname = this.nickname;
       pokemon.species = this.species;
+      pokemon.id = this.id;
+      pokemon.gender = this.gender;
+      pokemon.stored = this.stored;
 
       return pokemon;
     }
@@ -176,6 +206,8 @@ public final class Pokemon {
   private int eva;
   private int acc;
 
+  private int exp;
+
   // Some Pokemon have 2 types, some have only 1 type
   private PokeTypes type;
   private PokeTypes type2;
@@ -188,9 +220,16 @@ public final class Pokemon {
 
   private String nickname; // Captured Pokemon can have a nickname
   private String species; // The actual species of Pokemon
+  private int id;
+  private int gender;
+  private boolean stored;
 
   // We want to only make Pokemon using the builder
   private Pokemon() {
+  }
+
+  public int getId() {
+    return this.id;
   }
 
   /**

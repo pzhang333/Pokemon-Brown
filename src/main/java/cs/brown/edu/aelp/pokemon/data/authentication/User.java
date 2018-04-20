@@ -1,7 +1,9 @@
 package cs.brown.edu.aelp.pokemon.data.authentication;
 
-import cs.brown.edu.aelp.map.Chunk;
-import cs.brown.edu.aelp.map.Tile;
+import cs.brown.edu.aelp.map.Location;
+import cs.brown.edu.aelp.pokemon.Pokemon;
+import java.util.HashMap;
+import java.util.Map;
 
 public class User {
 
@@ -9,9 +11,9 @@ public class User {
   private final String username;
   private final String email;
   private final String sessionToken;
-  private Chunk chunk;
-  private Tile tile;
-  private int currency;
+  private final Map<Integer, Pokemon> pokemon = new HashMap<>();
+  private Location location;
+  private int currency = 0;
 
   public User(int id, String username, String email, String sessionToken) {
     this.id = id;
@@ -20,24 +22,16 @@ public class User {
     this.sessionToken = sessionToken;
   }
 
-  public void setChunk(Chunk c) {
-    this.chunk = c;
+  public void setLocation(Location loc) {
+    this.location = loc;
   }
 
-  public void setTile(Tile t) {
-    this.tile = t;
+  public Location getLocation() {
+    return this.location;
   }
 
   public void setCurrency(int c) {
     this.currency = c;
-  }
-
-  public Chunk getChunk() {
-    return this.chunk;
-  }
-
-  public Tile getTile() {
-    return this.tile;
   }
 
   public int getCurrency() {
@@ -58,6 +52,15 @@ public class User {
 
   public String getToken() {
     return this.sessionToken;
+  }
+
+  public void addPokemon(Pokemon p) {
+    this.pokemon.put(p.getId(), p);
+  }
+
+  public Pokemon getPokemonById(int id) {
+    assert this.pokemon.containsKey(id);
+    return this.pokemon.get(id);
   }
 
 }

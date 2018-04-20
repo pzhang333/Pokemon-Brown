@@ -4,12 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import cs.brown.edu.aelp.pokemon.data.authentication.Password;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
 import org.junit.Test;
-
-import cs.brown.edu.aelp.security.Password;
 
 public class PasswordTest {
   @Test

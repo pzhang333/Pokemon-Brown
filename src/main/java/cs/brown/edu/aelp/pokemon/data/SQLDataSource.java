@@ -1,13 +1,25 @@
 package cs.brown.edu.aelp.pokemon.data;
 
+import cs.brown.edu.aelp.map.Chunk;
+import cs.brown.edu.aelp.map.Location;
+import cs.brown.edu.aelp.pokemon.Main;
+import cs.brown.edu.aelp.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemon.battle.Move;
+import cs.brown.edu.aelp.pokemon.battle.MoveHandler;
+import cs.brown.edu.aelp.pokemon.data.authentication.Password;
+import cs.brown.edu.aelp.pokemon.data.authentication.User;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLDataSource implements DataSource {
 
@@ -45,7 +57,7 @@ public class SQLDataSource implements DataSource {
   }
 
   private PreparedStatement prepStatementFromFile(String path)
-      throws Exception {
+      throws IOException, SQLException {
     File f = new File(path);
     if (!f.isFile() || !path.endsWith(".sql")) {
       throw new IllegalArgumentException(
@@ -61,17 +73,146 @@ public class SQLDataSource implements DataSource {
     return p;
   }
 
-  @Override
-  public void authenticateUser(String email, String password) throws Exception {
-    // TODO Auto-generated method stub
-
+  private List<Pokemon> loadPokemonForUser(String username)
+      throws IOException, SQLException {
+    List<Pokemon> pokemon = new ArrayList<>();
+    try (PreparedStatement p = this.prepStatementFromFile(
+        "src/main/resources/sql/get_pokemon_for_user.sql")) {
+      p.setString(1, username);
+      try (ResultSet rs = p.executeQuery()) {
+        while (rs.next()) {
+          Pokemon.Builder b = new Pokemon.Builder();
+          String id1 = rs.getString("move_1");
+          String id2 = rs.getString("move_2");
+          String id3 = rs.getString("move_3");
+          String id4 = rs.getString("move_4");
+          if (id1 != null) {
+            Move m = MoveHandler.getMoveById(id1);
+            m.setPP(rs.getInt("pp_1"));
+            b.withMove1(m);
+          }
+          if (id2 != null) {
+            Move m = MoveHandler.getMoveById(id2);
+            m.setPP(rs.getInt("pp_2"));
+            b.withMove1(m);
+          }
+          if (id3 != null) {
+            Move m = MoveHandler.getMoveById(id3);
+            m.setPP(rs.getInt("pp_3"));
+            b.withMove1(m);
+          }
+          if (id4 != null) {
+            Move m = MoveHandler.getMoveById(id4);
+            m.setPP(rs.getInt("pp_4"));
+            b.withMove1(m);
+          }
+          b.withId(rs.getInt("id")).withNickName(rs.getString("nickname"))
+              .withGender(rs.getInt("gender")).withExp(rs.getInt("experience"))
+              .asStored(rs.getBoolean("stored")).withHp(rs.getInt("cur_health"))
+              .withMaxHp(rs.getInt("max_health"));
+          pokemon.add(b.build());
+        }
+        return pokemon;
+      }
+    }
   }
 
   @Override
-  public void registerUser(String username, String email, String password)
-      throws Exception {
-    // TODO Auto-generated method stub
-
+  public User authenticateUser(String username, String password)
+      throws AuthException {
+    try (PreparedStatement p = this
+        .prepStatementFromFile("src/main/resources/sql/get_user_by_name.sql")) {
+      p.setString(1, username);
+      try (ResultSet rs = p.executeQuery()) {
+        if (rs.next()) {
+          boolean auth = false;
+          String token = rs.getString("session_token");
+          // first see if they gave us a valid token
+          if (token != null) {
+            auth = password == token;
+          }
+          // if not, see if they gave us a valid password
+          if (!auth) {
+            auth = Password.authenticate(password,
+                rs.getString("hashed_pw").getBytes(),
+                rs.getString("salt").getBytes());
+          }
+          if (auth) {
+            // id, username, email, token
+            User user = new User(rs.getInt("id"), rs.getString("username"),
+                rs.getString("email"), rs.getString("session_token"));
+            user.setCurrency(rs.getInt("currency"));
+            Chunk c = Main.getWorld().getChunk(rs.getString("chunk"));
+            Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
+            user.setLocation(loc);
+            for (Pokemon pokemon : this
+                .loadPokemonForUser(user.getUsername())) {
+              user.addPokemon(pokemon);
+            }
+            return user;
+          } else {
+            // I think this is typically a bad idea, but this is hardly a
+            // high-security project
+            throw new AuthException("Incorrect password.");
+          }
+        } else {
+          throw new AuthException("Invalid username.");
+        }
+      }
+    } catch (Exception e) {
+      // we can differentiate here between SQLException and IOException for
+      // debugging, if needed
+      throw new AuthException();
+    }
   }
 
+  @Override
+  public User registerUser(String username, String email, String password)
+      throws AuthException {
+    // first check if the username is taken
+    try {
+      try (PreparedStatement p = this.prepStatementFromFile(
+          "src/main/resources/sql/check_username_taken.sql")) {
+        p.setString(1, username);
+        try (ResultSet rs = p.executeQuery()) {
+          if (rs.next() && rs.getInt(1) > 0) {
+            throw new AuthException("That username is already in use.");
+          }
+        }
+      }
+      // then check if email is taken
+      try (PreparedStatement p = this.prepStatementFromFile(
+          "src/main/resources/sql/check_email_taken.sql")) {
+        p.setString(1, email);
+        try (ResultSet rs = p.executeQuery()) {
+          if (rs.next() && rs.getInt(1) > 0) {
+            throw new AuthException("That email is already in use.");
+          }
+        }
+      }
+      // if neither failed, we can hope we are good to insert
+      // race conditions are possible, but worst case scenario we fail
+      // generically
+      try (PreparedStatement p = this
+          .prepStatementFromFile("src/main/resources/sql/register_user.sql")) {
+        byte[] salt = Password.generateSalt();
+        byte[] token = new byte[32];
+        new SecureRandom().nextBytes(token);
+        p.setString(1, username);
+        p.setString(2, email);
+        p.setString(3, Password.hashPassword(password, salt).toString());
+        p.setString(4, salt.toString());
+        p.setString(5, token.toString());
+        try (ResultSet rs = p.executeQuery()) {
+          if (rs.next()) {
+            return new User(rs.getInt("id"), username, email, token.toString());
+          } else {
+            throw new AuthException();
+          }
+        }
+      }
+    } catch (Exception e) {
+      throw new AuthException();
+    }
+  }
 }
