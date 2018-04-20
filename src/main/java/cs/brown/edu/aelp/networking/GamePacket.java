@@ -4,7 +4,6 @@ import cs.brown.edu.aelp.Player.Player;
 import cs.brown.edu.aelp.general_datastructures.Coordinate3d;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GamePacket {
@@ -13,7 +12,7 @@ public class GamePacket {
   private Player player;
 
   public GamePacket(Player player, 
-      Collection<Player> otherPlayers, Map<Coordinate3d, Integer> backgroundMap) {
+      Collection<Player> otherPlayers) {
     
     this.setOtherPlayers(localize(player.getPosition(), otherPlayers));
     this.setPlayer(player);

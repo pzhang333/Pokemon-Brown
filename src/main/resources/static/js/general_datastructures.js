@@ -1,9 +1,10 @@
 // class containing necessary information about a player
 class Player {
-    constructor(uuid, position, playerState) {
+    constructor(uuid, position, playerState, orientation) {
       this.uuid = uuid;
       this.position = position;
       this.playerState = playerState;
+      this.orientation = orientation;
   }
 }
 
