@@ -75,3 +75,8 @@ local.properties
 ########
 
 .DS_Store
+
+##############
+# SQL Config #
+##############
+config/database_info.json
