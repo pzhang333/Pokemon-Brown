@@ -1,7 +1,7 @@
 {
-  "database" : "database-name",
-  "ip" : "localhost",
-  "port" : 5432,
-  "username" : "admin",
-  "password" : "password"
+	"database" : "database-name",
+	"ip" : "localhost",
+	"port" : 5432,
+	"username" : "admin",
+	"password" : "password"
 }

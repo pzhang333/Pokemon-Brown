@@ -1,18 +1,17 @@
 package cs.brown.edu.aelp.pokemon;
 
-import com.google.common.collect.ImmutableMap;
-import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
-import cs.brown.edu.aelp.pokemmo.data.DataSource;
-import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
-import cs.brown.edu.aelp.pokemmo.map.World;
-import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
-import cs.brown.edu.aelp.util.JsonFile;
-import freemarker.template.Configuration;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
+
+import com.google.common.collect.ImmutableMap;
+
+import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
+import cs.brown.edu.aelp.pokemmo.data.DataSource;
+import cs.brown.edu.aelp.pokemmo.map.World;
+import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
+import freemarker.template.Configuration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -58,23 +57,17 @@ public final class Main {
     // Parse command line arguments
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
-    parser.accepts("port").withRequiredArg().ofType(Integer.class)
-        .defaultsTo(DEFAULT_PORT);
+    parser.accepts("port").withRequiredArg().ofType(Integer.class).defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
 
     // ip, port, database, user, pass
     /*
-    try {
-      JsonFile cfg = new JsonFile("config/database_info.json");
-      Main.datasrc = new SQLDataSource(cfg.getKey("ip"),
-          Integer.parseInt(cfg.getKey("port")), cfg.getKey("database"),
-          cfg.getKey("user"), cfg.getKey("pass"));
-    } catch (IOException | SQLException e) {
-      System.out.println(
-          "Something went wrong connecting to the database. Check your configuration file.");
-      return;
-    }
-    */
+     * try { JsonFile cfg = new JsonFile("config/database_info.json"); Main.datasrc = new
+     * SQLDataSource(cfg.getKey("ip"), Integer.parseInt(cfg.getKey("port")), cfg.getKey("database"),
+     * cfg.getKey("user"), cfg.getKey("pass")); } catch (IOException | SQLException e) {
+     * System.out.println(
+     * "Something went wrong connecting to the database. Check your configuration file."); return; }
+     */
 
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
@@ -85,13 +78,13 @@ public final class Main {
     // temporary repl
     long sleepTime = 1000;
     while (5 != 6) {
-        PlayerWebSocketHandler.sendGamePackets();
-        try {
-          Thread.sleep(sleepTime);
-        } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
+      PlayerWebSocketHandler.sendGamePackets();
+      try {
+        Thread.sleep(sleepTime);
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
   }
 
@@ -129,8 +122,7 @@ public final class Main {
     try {
       config.setDirectoryForTemplateLoading(templates);
     } catch (IOException ioe) {
-      System.out.printf("ERROR: Unable use %s for template loading.%n",
-          templates);
+      System.out.printf("ERROR: Unable use %s for template loading.%n", templates);
       System.exit(1);
     }
     return new FreeMarkerEngine(config);
