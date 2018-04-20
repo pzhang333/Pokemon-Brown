@@ -51,14 +51,14 @@ public final class BattleSim {
         0, Move.MoveTarget.NORMAL, PokeType.getType(PokeRawType.NORMAL),
         EnumSet.noneOf(Move.MoveFlag.class), Move.MoveComplexity.COMPLEX);
 
-    Pokemon p1 = new Pokemon(1, "Slaking", 150, 150, 160, 100, 95, 65, 100, 30,
-        PokeType.getType(PokeRawType.NORMAL), Arrays.asList(atk));
+    Pokemon p1 = new Pokemon(1, "Slaking", 150, 150, 160, 100, 95, 65, 100,
+        Pokemon.getXPByLevel(30), PokeType.getType(PokeRawType.NORMAL), Arrays.asList(atk));
 
-    Pokemon p2 = new Pokemon(2, "Chauncy", 150, 150, 160, 100, 95, 65, 100, 30,
-        PokeType.getType(PokeRawType.NORMAL), Arrays.asList(atk, wish));
+    Pokemon p2 = new Pokemon(2, "Chauncy", 150, 150, 160, 100, 95, 65, 100,
+        Pokemon.getXPByLevel(30), PokeType.getType(PokeRawType.NORMAL), Arrays.asList(atk, wish));
 
-    Pokemon p3 = new Pokemon(3, "Pikachu", 150, 150, 160, 100, 95, 65, 100, 30,
-        PokeType.getType(PokeRawType.ELECTRIC), Arrays.asList(atk, wish));
+    Pokemon p3 = new Pokemon(3, "Pikachu", 150, 150, 160, 100, 95, 65, 100,
+        Pokemon.getXPByLevel(30), PokeType.getType(PokeRawType.ELECTRIC), Arrays.asList(atk, wish));
 
     Arena arena = new Arena();
 

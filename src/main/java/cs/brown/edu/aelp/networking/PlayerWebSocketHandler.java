@@ -1,18 +1,18 @@
 package cs.brown.edu.aelp.networking;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import java.util.Map;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.eclipse.jetty.websocket.api.*;
-import org.eclipse.jetty.websocket.api.annotations.*;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
-import cs.brown.edu.aelp.Player.Player;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 @WebSocket
 public class PlayerWebSocketHandler {
@@ -22,7 +22,7 @@ public class PlayerWebSocketHandler {
     private static int nextId = 0;
     
     // maps session id's to Player objects
-    private static Map<Session, Player> sessionToPlayer = new ConcurrentHashMap<>();
+    private static Map<Session, NetworkUser> sessionToPlayer = new ConcurrentHashMap<>();
     
     private static enum MESSAGE_TYPE {
       CONNECT,
@@ -37,7 +37,7 @@ public class PlayerWebSocketHandler {
       sessions.add(session);
       
       // TODO: Update this information on log-in 
-      Player player = new Player(String.valueOf(nextId));
+      NetworkUser player = new NetworkUser(nextId);
       sessionToPlayer.put(session, player);
       
       // Building the CONNECT message
@@ -70,7 +70,7 @@ public class PlayerWebSocketHandler {
         // we have received an update from the client
         
         String playerJson = received.get("payload").toString();
-        Player player = GSON.fromJson(playerJson, Player.class);
+        NetworkUser player = GSON.fromJson(playerJson, NetworkUser.class);
 
         // updating our player object in our map of sessions to players
         sessionToPlayer.put(session, player);
