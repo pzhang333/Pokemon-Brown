@@ -65,12 +65,13 @@ public final class Main {
     // ip, port, database, user, pass
     try {
       JsonFile cfg = new JsonFile("config/database_info.json");
-      Main.datasrc = new SQLDataSource(cfg.getKey("ip"),
-          Integer.parseInt(cfg.getKey("port")), cfg.getKey("database"),
-          cfg.getKey("user"), cfg.getKey("pass"));
+      Main.datasrc = new SQLDataSource((String) cfg.getKey("ip"),
+          (int) (double) cfg.getKey("port"), (String) cfg.getKey("database"),
+          (String) cfg.getKey("username"), (String) cfg.getKey("password"));
     } catch (IOException | SQLException e) {
       System.out.println(
           "Something went wrong connecting to the database. Check your configuration file.");
+      e.printStackTrace();
       return;
     }
 
@@ -139,7 +140,7 @@ public final class Main {
   /**
    * Display an error page when an exception occurs in the server.
    */
-  private static class ExceptionPrinter implements ExceptionHandler {
+  private static class ExceptionPrinter implements ExceptionHandler<Exception> {
     @Override
     public void handle(Exception e, Request req, Response res) {
       res.status(500);

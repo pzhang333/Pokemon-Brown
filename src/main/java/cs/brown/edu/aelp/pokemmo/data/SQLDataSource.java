@@ -1,5 +1,15 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
+import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveHandler;
+import cs.brown.edu.aelp.pokemon.Main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,17 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.map.Chunk;
-import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveHandler;
-import cs.brown.edu.aelp.pokemon.Main;
 
 public class SQLDataSource implements DataSource {
 
@@ -43,8 +42,8 @@ public class SQLDataSource implements DataSource {
     DatabaseMetaData md = c.getMetaData();
     try (ResultSet rs = md.getTables(null, null, "users", null)) {
       if (!rs.next()) {
-        try (PreparedStatement p = this
-            .prepStatementFromFile("src/main/resources/sql/create_tables.sql")) {
+        try (PreparedStatement p = this.prepStatementFromFile(
+            "src/main/resources/sql/create_tables.sql")) {
           p.execute();
         }
       }
@@ -53,15 +52,18 @@ public class SQLDataSource implements DataSource {
 
   private Connection getConn() throws SQLException {
     if (this.conn == null || this.conn.isClosed()) {
-      this.conn = DriverManager.getConnection(this.connString, this.user, this.pass);
+      this.conn = DriverManager.getConnection(this.connString, this.user,
+          this.pass);
     }
     return this.conn;
   }
 
-  private PreparedStatement prepStatementFromFile(String path) throws IOException, SQLException {
+  private PreparedStatement prepStatementFromFile(String path)
+      throws IOException, SQLException {
     File f = new File(path);
     if (!f.isFile() || !path.endsWith(".sql")) {
-      throw new IllegalArgumentException("ERROR: Bad .sql statement file path provided.");
+      throw new IllegalArgumentException(
+          "ERROR: Bad .sql statement file path provided.");
     }
     PreparedStatement p = null;
     try (FileInputStream fis = new FileInputStream(f)) {
@@ -73,10 +75,11 @@ public class SQLDataSource implements DataSource {
     return p;
   }
 
-  private List<Pokemon> loadPokemonForUser(String username) throws IOException, SQLException {
+  private List<Pokemon> loadPokemonForUser(String username)
+      throws IOException, SQLException {
     List<Pokemon> pokemon = new ArrayList<>();
-    try (PreparedStatement p = this
-        .prepStatementFromFile("src/main/resources/sql/get_pokemon_for_user.sql")) {
+    try (PreparedStatement p = this.prepStatementFromFile(
+        "src/main/resources/sql/get_pokemon_for_user.sql")) {
       p.setString(1, username);
       try (ResultSet rs = p.executeQuery()) {
         while (rs.next()) {
@@ -121,7 +124,8 @@ public class SQLDataSource implements DataSource {
   }
 
   @Override
-  public User authenticateUser(String username, String password) throws AuthException {
+  public User authenticateUser(String username, String password)
+      throws AuthException {
     try (PreparedStatement p = this
         .prepStatementFromFile("src/main/resources/sql/get_user_by_name.sql")) {
       p.setString(1, username);
@@ -135,18 +139,20 @@ public class SQLDataSource implements DataSource {
           }
           // if not, see if they gave us a valid password
           if (!auth) {
-            auth = Password.authenticate(password, rs.getString("hashed_pw").getBytes(),
+            auth = Password.authenticate(password,
+                rs.getString("hashed_pw").getBytes(),
                 rs.getString("salt").getBytes());
           }
           if (auth) {
             // id, username, email, token
-            User user = new User(rs.getInt("id"), rs.getString("username"), rs.getString("email"),
-                rs.getString("session_token"));
+            User user = new User(rs.getInt("id"), rs.getString("username"),
+                rs.getString("email"), rs.getString("session_token"));
             user.setCurrency(rs.getInt("currency"));
             Chunk c = Main.getWorld().getChunk(rs.getString("chunk"));
             Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
             user.setLocation(loc);
-            for (Pokemon pokemon : this.loadPokemonForUser(user.getUsername())) {
+            for (Pokemon pokemon : this
+                .loadPokemonForUser(user.getUsername())) {
               user.addPokemonToTeam(pokemon);
             }
             return user;
@@ -167,11 +173,12 @@ public class SQLDataSource implements DataSource {
   }
 
   @Override
-  public User registerUser(String username, String email, String password) throws AuthException {
+  public User registerUser(String username, String email, String password)
+      throws AuthException {
     // first check if the username is taken
     try {
-      try (PreparedStatement p = this
-          .prepStatementFromFile("src/main/resources/sql/check_username_taken.sql")) {
+      try (PreparedStatement p = this.prepStatementFromFile(
+          "src/main/resources/sql/check_username_taken.sql")) {
         p.setString(1, username);
         try (ResultSet rs = p.executeQuery()) {
           if (rs.next() && rs.getInt(1) > 0) {
@@ -180,8 +187,8 @@ public class SQLDataSource implements DataSource {
         }
       }
       // then check if email is taken
-      try (PreparedStatement p = this
-          .prepStatementFromFile("src/main/resources/sql/check_email_taken.sql")) {
+      try (PreparedStatement p = this.prepStatementFromFile(
+          "src/main/resources/sql/check_email_taken.sql")) {
         p.setString(1, email);
         try (ResultSet rs = p.executeQuery()) {
           if (rs.next() && rs.getInt(1) > 0) {

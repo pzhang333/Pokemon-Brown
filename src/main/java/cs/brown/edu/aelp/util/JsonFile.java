@@ -10,7 +10,7 @@ import java.util.Map;
 public class JsonFile {
 
   private static final Gson GSON = new Gson();
-  private Map<String, String> vals = new HashMap<>();
+  private Map<String, Object> vals = new HashMap<>();
 
   public JsonFile(String path) throws IOException {
     try (FileReader fr = new FileReader(path);
@@ -19,7 +19,7 @@ public class JsonFile {
     }
   }
 
-  public String getKey(String key) {
+  public Object getKey(String key) {
     if (vals.containsKey(key)) {
       return vals.get(key);
     }

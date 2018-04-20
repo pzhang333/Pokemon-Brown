@@ -220,8 +220,9 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 -- Name: users email_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
+
 ALTER TABLE ONLY users
-    ADD CONSTRAINT IF NOT EXISTS email_unique UNIQUE (email);
+    ADD CONSTRAINT email_unique UNIQUE (email);
 
 
 --
@@ -230,7 +231,7 @@ ALTER TABLE ONLY users
 --
 
 ALTER TABLE ONLY inventories
-    ADD CONSTRAINT IF NOT EXISTS inventories_pkey PRIMARY KEY (user_id, item_id);
+    ADD CONSTRAINT inventories_pkey PRIMARY KEY (user_id, item_id);
 
 
 --
