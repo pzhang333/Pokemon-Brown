@@ -1,12 +1,12 @@
 let loginURL = null;
 let registerURL = 'http://localhost/register'
-
+	
 /**
  * 
  */
 function register(username, email, password, success, fail) {
 	
-	error = null;
+	error = false;
 	
 	if (username == undefined) {
 		error = 'Please input a user name.';
@@ -42,7 +42,7 @@ function register(username, email, password, success, fail) {
 				
 			} else {
 				
-				error = (data.message != undefined) ? data.message : "Unknown error occurred.");
+				error = (data.message != undefined) ? data.message : "Unknown error occurred.";
 				
 				fail({
 					success: false,
@@ -52,14 +52,14 @@ function register(username, email, password, success, fail) {
 				return;
 			}
 		},
-		error: function(err) {
+		error: function(xhr, status, err) {
 			fail({
 				success: false,
-				error: 'Malformed response from server.'
+				error: "A network error occured!"
 			});
 			
 			return;
-		}
+		},
 		dataType: 'json'
 	});
 }
