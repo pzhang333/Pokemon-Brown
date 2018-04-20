@@ -85,22 +85,22 @@ public class SQLDataSource implements DataSource {
           if (id1 != null) {
             Move m = MoveHandler.getMoveById(id1);
             m.setPP(rs.getInt("pp_1"));
-            b.withMove1(m);
+            b.withMove(m);
           }
           if (id2 != null) {
             Move m = MoveHandler.getMoveById(id2);
             m.setPP(rs.getInt("pp_2"));
-            b.withMove1(m);
+            b.withMove(m);
           }
           if (id3 != null) {
             Move m = MoveHandler.getMoveById(id3);
             m.setPP(rs.getInt("pp_3"));
-            b.withMove1(m);
+            b.withMove(m);
           }
           if (id4 != null) {
             Move m = MoveHandler.getMoveById(id4);
             m.setPP(rs.getInt("pp_4"));
-            b.withMove1(m);
+            b.withMove(m);
           }
           b.withId(rs.getInt("id")).withNickName(rs.getString("nickname"))
               .withGender(rs.getInt("gender")).withExp(rs.getInt("experience"))

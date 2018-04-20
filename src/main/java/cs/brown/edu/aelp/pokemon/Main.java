@@ -1,8 +1,6 @@
 package cs.brown.edu.aelp.pokemon;
 
-import cs.brown.edu.aelp.map.World;
 import java.io.File;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,6 +9,7 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
+import cs.brown.edu.aelp.pokemmo.map.World;
 import freemarker.template.Configuration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -56,8 +55,7 @@ public final class Main {
     // Parse command line arguments
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
-    parser.accepts("port").withRequiredArg().ofType(Integer.class)
-        .defaultsTo(DEFAULT_PORT);
+    parser.accepts("port").withRequiredArg().ofType(Integer.class).defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
 
     if (options.has("gui")) {
@@ -81,26 +79,26 @@ public final class Main {
 
   private void runSparkServer(int port) {
     Spark.webSocket("/game", PlayerWebSocketHandler.class);
-    
+
     Spark.port(port);
     Spark.externalStaticFileLocation("src/main/resources/static");
     Spark.exception(Exception.class, new ExceptionPrinter());
-    
+
     FreeMarkerEngine freeMarker = createEngine();
 
     Spark.get("/main", new FrontHandler(), freeMarker);
 
     // Setup Spark Routes
   }
-  
+
   /**
    * Handle requests to the front page of our website.
    */
   private static class FrontHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of("title",
-          "Pokemon", "content", "something", "readmessage", "something", "message", "something");
+      Map<String, Object> variables = ImmutableMap.of("title", "Pokemon", "content", "something",
+          "readmessage", "something", "message", "something");
       return new ModelAndView(variables, "query.ftl");
     }
   }
@@ -113,8 +111,7 @@ public final class Main {
     try {
       config.setDirectoryForTemplateLoading(templates);
     } catch (IOException ioe) {
-      System.out.printf("ERROR: Unable use %s for template loading.%n",
-          templates);
+      System.out.printf("ERROR: Unable use %s for template loading.%n", templates);
       System.exit(1);
     }
     return new FreeMarkerEngine(config);
