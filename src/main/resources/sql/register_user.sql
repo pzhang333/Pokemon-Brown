@@ -1,0 +1,1 @@
+INSERT INTO users (username, email, hashed_pw, salt, session_token) VALUES (?, ?, ?, ?, ?) RETURNING id;
