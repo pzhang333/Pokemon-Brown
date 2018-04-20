@@ -309,7 +309,14 @@ public class Pokemon {
    * @return the level
    */
   public Integer getLevel() {
-    return (int) Math.floor(Math.pow((5.0 / 4.0) * getEXP(), (1.0 / 3.0))) + 1;
+    int level = (int) Math.floor(Math.pow((5.0 / 4.0) * getEXP(), (1.0 / 3.0))) + 1;
+
+    // Cap the max level.
+    if (level > 100) {
+      level = 100;
+    }
+
+    return level;
   }
 
   public Integer getEffectiveAttack() {
