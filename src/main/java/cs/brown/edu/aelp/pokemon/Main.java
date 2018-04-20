@@ -70,7 +70,8 @@ public final class Main {
           Integer.parseInt(cfg.getKey("port")), cfg.getKey("database"),
           cfg.getKey("user"), cfg.getKey("pass"));
     } catch (IOException | SQLException e) {
-      System.out.println("Something went wrong connecting to the database.");
+      System.out.println(
+          "Something went wrong connecting to the database. Check your configuration file.");
       return;
     }
     */

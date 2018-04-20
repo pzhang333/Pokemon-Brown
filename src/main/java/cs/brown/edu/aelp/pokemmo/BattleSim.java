@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
+import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
@@ -62,10 +63,10 @@ public final class BattleSim {
 
     Arena arena = new Arena();
 
-    Trainer t1 = new Trainer("1");
+    Trainer t1 = new Trainer(1);
     t1.addPokemonToTeam(p1);
 
-    Trainer t2 = new Trainer("2");
+    Trainer t2 = new Trainer(2);
     t2.addPokemonToTeam(p2);
     t2.addPokemonToTeam(p3);
 
@@ -93,60 +94,39 @@ public final class BattleSim {
     battle.setTurn(new NullTurn(t2));
     battle.evaluate();
 
-    System.out.println(t1.getActivePokemon());
-    System.out.println(t2.getActivePokemon());
+    while (battle.getBattleState().equals(BattleState.WAITING)) {
+      System.out.println(t1.getActivePokemon());
+      System.out.println(t2.getActivePokemon());
 
-    battle.setTurn(new FightTurn(t1, atk));
-    battle.setTurn(new NullTurn(t2));
-    battle.evaluate();
+      battle.setTurn(new FightTurn(t1, atk));
+      battle.setTurn(new NullTurn(t2));
 
-    battle.setTurn(new FightTurn(t1, atk));
-    battle.setTurn(new NullTurn(t2));
-    battle.evaluate();
+      if (battle.getBattleState().equals(BattleState.READY)) {
+        battle.evaluate();
+      } else {
+        break;
+      }
 
-    battle.setTurn(new FightTurn(t1, atk));
-    battle.setTurn(new NullTurn(t2));
-    battle.evaluate();
-
-    System.out.println(t1.getActivePokemon());
-    System.out.println(t2.getActivePokemon());
-
-    battle.setTurn(new FightTurn(t1, atk));
-    battle.setTurn(new NullTurn(t2));
-    battle.evaluate();
-
-    System.out.println(t1.getActivePokemon());
-    System.out.println(t2.getActivePokemon());
+      System.out.println(t1.getActivePokemon());
+      System.out.println(t2.getActivePokemon());
+    }
 
     battle.setTurn(new FightTurn(t1, atk));
     battle.setTurn(new SwitchTurn(t2, p3, t2.getActivePokemon()));
     battle.evaluate();
 
-    System.out.println(t1.getActivePokemon());
-    System.out.println(t2.getActivePokemon());
+    while (battle.getBattleState().equals(BattleState.WAITING)) {
 
-    battle.setTurn(new FightTurn(t1, atk));
-    battle.setTurn(new NullTurn(t2));
-    battle.evaluate();
+      System.out.println(t1.getActivePokemon());
+      System.out.println(t2.getActivePokemon());
 
-    battle.setTurn(new FightTurn(t1, atk));
-    battle.setTurn(new NullTurn(t2));
-    battle.evaluate();
+      battle.setTurn(new FightTurn(t1, atk));
+      battle.setTurn(new NullTurn(t2));
+      battle.evaluate();
 
-    battle.setTurn(new FightTurn(t1, atk));
-    battle.setTurn(new NullTurn(t2));
-    battle.evaluate();
-
-    System.out.println(t1.getActivePokemon());
-    System.out.println(t2.getActivePokemon());
-
-    battle.setTurn(new FightTurn(t1, atk));
-    battle.setTurn(new NullTurn(t2));
-    battle.evaluate();
-
-    System.out.println(t1.getActivePokemon());
-    System.out.println(t2.getActivePokemon());
-
+      System.out.println(t1.getActivePokemon());
+      System.out.println(t2.getActivePokemon());
+    }
   }
 
 }
