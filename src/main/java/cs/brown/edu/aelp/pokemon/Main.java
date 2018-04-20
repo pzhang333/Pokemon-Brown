@@ -1,6 +1,6 @@
 package cs.brown.edu.aelp.pokemon;
 
-import cs.brown.edu.aelp.map.World;
+import cs.brown.edu.aelp.pokemmo.map.World;
 
 /**
  * The Main class entry point.
