@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <fileset-config file-format-version="1.2.0" simple-config="true" sync-formatter="false">
+<<<<<<< HEAD
   <local-check-config name="CS32 Tests" location="C:\Users\mcdas\cs0320\final-project\config\cs32_checks.xml" type="external" description="">
     <additional-data name="protect-config-file" value="false"/>
   </local-check-config>
@@ -8,6 +9,10 @@
     <additional-data name="protect-config-file" value="false"/>
   </local-check-config>
   <fileset name="all" enabled="true" check-config-name="CS32 Tests" local="true">
+=======
+  <local-check-config name="CS32 Checks" location="internal_config_1522523227122.xml" type="internal" description=""/>
+  <fileset name="all" enabled="true" check-config-name="CS32 Checks" local="true">
+>>>>>>> master
     <file-match-pattern match-pattern="." include-pattern="true"/>
   </fileset>
   <filter name="FilesFromPackage" enabled="true">
