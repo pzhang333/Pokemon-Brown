@@ -65,15 +65,15 @@ public final class Main {
     System.out.println("Hello, World!");
 
     // temporary repl
-    int count = 0;
+    long sleepTime = 1000;
     while (5 != 6) {
-      if (count >= 100000) {
-        count = 0;
-      }
-      if (count % 10000 == 0) {
-        // this should be in our game loop and execute every tick
         PlayerWebSocketHandler.sendGamePackets();
-      }
+        try {
+          Thread.sleep(sleepTime);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
     }
   }
 

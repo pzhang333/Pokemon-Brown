@@ -11,7 +11,7 @@ public class Player {
   
   public Player(String uuid) {
     this.setUuid(uuid);
-    this.setPosition(null);
+    this.position = new Coordinate3d(-1,-1,-1);
     this.setPlayerState(0);
     this.orientation = 0;
   }
