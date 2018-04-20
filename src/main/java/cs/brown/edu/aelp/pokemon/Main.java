@@ -1,17 +1,19 @@
 package cs.brown.edu.aelp.pokemon;
 
-import cs.brown.edu.aelp.map.World;
+import com.google.common.collect.ImmutableMap;
+import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
+import cs.brown.edu.aelp.pokemmo.data.DataSource;
+import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
+import cs.brown.edu.aelp.pokemmo.map.World;
+import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
+import cs.brown.edu.aelp.util.JsonFile;
+import freemarker.template.Configuration;
 import java.io.File;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.Map;
-
-import com.google.common.collect.ImmutableMap;
-
-import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
-import freemarker.template.Configuration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -30,6 +32,7 @@ public final class Main {
   // TODO: Actually load a world in when the server spins up
   private static World world;
   private static final int DEFAULT_PORT = 4567;
+  private static DataSource datasrc;
 
   /**
    * @param args
@@ -60,6 +63,17 @@ public final class Main {
         .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
 
+    // ip, port, database, user, pass
+    try {
+      JsonFile cfg = new JsonFile("config/database_info.json");
+      Main.datasrc = new SQLDataSource(cfg.getKey("ip"),
+          Integer.parseInt(cfg.getKey("port")), cfg.getKey("database"),
+          cfg.getKey("user"), cfg.getKey("pass"));
+    } catch (IOException | SQLException e) {
+      System.out.println("Something went wrong connecting to the database.");
+      return;
+    }
+
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
     }
@@ -81,26 +95,28 @@ public final class Main {
 
   private void runSparkServer(int port) {
     Spark.webSocket("/game", PlayerWebSocketHandler.class);
-    
+
     Spark.port(port);
     Spark.externalStaticFileLocation("src/main/resources/static");
     Spark.exception(Exception.class, new ExceptionPrinter());
-    
+
     FreeMarkerEngine freeMarker = createEngine();
 
     Spark.get("/main", new FrontHandler(), freeMarker);
+    Spark.post("/register", new RegisterHandler(Main.getDataSource()));
 
     // Setup Spark Routes
   }
-  
+
   /**
    * Handle requests to the front page of our website.
    */
   private static class FrontHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of("title",
-          "Pokemon", "content", "something", "readmessage", "something", "message", "something");
+      Map<String, Object> variables = ImmutableMap.of("title", "Pokemon",
+          "content", "something", "readmessage", "something", "message",
+          "something");
       return new ModelAndView(variables, "query.ftl");
     }
   }
@@ -140,7 +156,11 @@ public final class Main {
   }
 
   public static World getWorld() {
-    return world;
+    return Main.world;
+  }
+
+  public static DataSource getDataSource() {
+    return Main.datasrc;
   }
 
 }

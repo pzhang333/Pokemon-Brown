@@ -1,10 +1,9 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import java.util.HashMap;
+import java.util.Map;
 
 public class User {
 
@@ -15,12 +14,21 @@ public class User {
   private final Map<Integer, Pokemon> pokemon = new HashMap<>();
   private Location location;
   private int currency = 0;
+  private int state;
 
   public User(int id, String username, String email, String sessionToken) {
     this.id = id;
     this.username = username;
     this.email = email;
     this.sessionToken = sessionToken;
+  }
+
+  public void setState(int i) {
+    this.state = i;
+  }
+
+  public int getState(int i) {
+    return this.state;
   }
 
   public void setLocation(Location loc) {
