@@ -117,7 +117,7 @@ public final class Main {
   private static class IndexHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      return new ModelAndView(ImmutableMap.of(), "main.ftl");
+      return new ModelAndView(ImmutableMap.of(), "index.ftl");
     }
   }
 
