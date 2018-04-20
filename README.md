@@ -25,14 +25,18 @@ Ideas sorted by interest:
 4. Broadcast music to your friends
 5. Red/blue conversation pairer
 
-**Mentor TA:** _Put your mentor TA's name and email here once you're assigned one!_
+**Mentor TA:**   
+Joshua Pattiz
+joshua_pattiz@brown.edu
 
 ## Meetings
 _On your first meeting with your mentor TA, you should plan dates for at least the following meetings:_
 
-**Specs, Mockup, and Design Meeting:** _(Schedule for on or before March 16)_
+**Specs, Mockup, and Design Meeting:**  
+3:00 PM- Saturday, March 17th
 
-**4-Way Checkpoint:** _(Schedule for on or before April 23)_
+**4-Way Checkpoint:**  
+3:00 PM- Sunday, April 22nd
 
 **Adversary Checkpoint:** _(Schedule once you are assigned an adversary TA)_
 
