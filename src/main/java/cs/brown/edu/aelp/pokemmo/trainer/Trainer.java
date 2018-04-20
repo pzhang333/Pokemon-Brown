@@ -8,7 +8,7 @@ import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 
 public class Trainer {
 
-  private final String id;
+  private final Integer id;
 
   private List<Pokemon> team = new ArrayList<>();
 
@@ -16,21 +16,8 @@ public class Trainer {
 
   private EffectSlot effectSlot = new EffectSlot();
 
-  public Trainer(String id) {
+  public Trainer(Integer id) {
     this.id = id;
-  }
-
-  public boolean addPokemonToTeam(Pokemon pokemon) {
-    if (team.size() >= 6) {
-      return false;
-    }
-
-    if (team.isEmpty()) {
-      activePokemon = pokemon;
-    }
-
-    team.add(pokemon);
-    return true;
   }
 
   public Pokemon getActivePokemon() {
@@ -77,7 +64,7 @@ public class Trainer {
     return true;
   }
 
-  public String getId() {
+  public Integer getId() {
     return id;
   }
 
@@ -106,4 +93,12 @@ public class Trainer {
     activePokemon = pokemonIn;
   }
 
+  public void addPokemonToTeam(Pokemon p) {
+
+    if (team.isEmpty()) {
+      activePokemon = p;
+    }
+
+    team.add(p);
+  }
 }

@@ -11,7 +11,7 @@ class Net {
 	constructor() {
 
 		this.cfg = {
-			url: 'ws://pokemon.blogwithme.net:4567/socket',
+			url: 'ws://localhost:4567/socket',
 		};
 		
 		this.chunkBaseURL = "/assets/maps/chunk_";

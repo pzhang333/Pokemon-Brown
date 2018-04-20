@@ -1,23 +1,21 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
 import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-import java.util.HashMap;
-import java.util.Map;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
-public class User {
+public class User extends Trainer {
 
-  private final int id;
   private final String username;
   private final String email;
   private final String sessionToken;
-  private final Map<Integer, Pokemon> pokemon = new HashMap<>();
+
   private Location location;
   private int currency = 0;
   private int state;
 
   public User(int id, String username, String email, String sessionToken) {
-    this.id = id;
+    super(id);
+
     this.username = username;
     this.email = email;
     this.sessionToken = sessionToken;
@@ -47,10 +45,6 @@ public class User {
     return this.currency;
   }
 
-  public int getId() {
-    return this.id;
-  }
-
   public String getUsername() {
     return this.username;
   }
@@ -62,14 +56,4 @@ public class User {
   public String getToken() {
     return this.sessionToken;
   }
-
-  public void addPokemon(Pokemon p) {
-    this.pokemon.put(p.getId(), p);
-  }
-
-  public Pokemon getPokemonById(int id) {
-    assert this.pokemon.containsKey(id);
-    return this.pokemon.get(id);
-  }
-
 }
