@@ -6,12 +6,12 @@ public class Player {
 
   private String uuid;
   private Coordinate3d position;
-  private int userState;
+  private int playerState;
   
   public Player(String uuid) {
     this.setUuid(uuid);
     this.setPosition(null);
-    this.setUserState(0);
+    this.setPlayerState(0);
   }
 
   // Getters and Setters: 
@@ -32,12 +32,12 @@ public class Player {
     this.position = position;
   }
 
-  public int getUserState() {
-    return userState;
+  public int getPlayerState() {
+    return playerState;
   }
 
-  public void setUserState(int userState) {
-    this.userState = userState;
+  public void setPlayerState(int playerState) {
+    this.playerState = playerState;
   }
 
 }
