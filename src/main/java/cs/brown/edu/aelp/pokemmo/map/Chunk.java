@@ -1,4 +1,4 @@
-package cs.brown.edu.aelp.map;
+package cs.brown.edu.aelp.pokemmo.map;
 
 import java.util.ArrayList;
 import java.util.HashMap;

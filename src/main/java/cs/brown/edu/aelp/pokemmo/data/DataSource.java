@@ -1,6 +1,6 @@
-package cs.brown.edu.aelp.pokemon.data;
+package cs.brown.edu.aelp.pokemmo.data;
 
-import cs.brown.edu.aelp.pokemon.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 
 public interface DataSource {
 
