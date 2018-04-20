@@ -4,6 +4,8 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveHandler;
@@ -89,27 +91,31 @@ public class SQLDataSource implements DataSource {
           if (id1 != null) {
             Move m = MoveHandler.getMoveById(id1);
             m.setPP(rs.getInt("pp_1"));
-            b.withMove1(m);
+            b.withMove(m);
           }
           if (id2 != null) {
             Move m = MoveHandler.getMoveById(id2);
             m.setPP(rs.getInt("pp_2"));
-            b.withMove1(m);
+            b.withMove(m);
           }
           if (id3 != null) {
             Move m = MoveHandler.getMoveById(id3);
             m.setPP(rs.getInt("pp_3"));
-            b.withMove1(m);
+            b.withMove(m);
           }
           if (id4 != null) {
             Move m = MoveHandler.getMoveById(id4);
             m.setPP(rs.getInt("pp_4"));
-            b.withMove1(m);
+            b.withMove(m);
           }
           b.withId(rs.getInt("id")).withNickName(rs.getString("nickname"))
               .withGender(rs.getInt("gender")).withExp(rs.getInt("experience"))
               .asStored(rs.getBoolean("stored")).withHp(rs.getInt("cur_health"))
               .withMaxHp(rs.getInt("max_health"));
+
+          // TODO: ADD CORRECT TYPE
+          b.withType(PokeType.getType(PokeRawType.NORMAL));
+
           pokemon.add(b.build());
         }
         return pokemon;
