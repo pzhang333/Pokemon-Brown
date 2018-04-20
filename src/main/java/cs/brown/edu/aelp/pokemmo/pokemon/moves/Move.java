@@ -1,5 +1,6 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
+import cs.brown.edu.aelp.pokemon.PokeTypes;
 import java.util.EnumSet;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -7,6 +8,8 @@ import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.ModifierType;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
+
+// TODO: Javadocs, remove depreciated code
 
 /**
  * Pokemon Move class.
@@ -42,33 +45,168 @@ public class Move {
     MIRROR
   }
 
-  private final String id;
+  public static class Builder {
+    private String id;
 
+    private Double number;
+
+    private Integer accuracy;
+
+    private Double basePower;
+
+    private MoveCategory category;
+
+    private String description;
+
+    private String shortDescription;
+
+    private String name;
+
+    private Integer pp;
+
+    private Integer priority;
+
+    private MoveTarget target;
+
+    private PokeTypes type;
+
+    private EnumSet<MoveFlag> flags;
+
+    private MoveComplexity complexity;
+
+    public Builder() {
+    }
+
+    public Builder ofId(String id) {
+      this.id = id;
+      return this;
+    }
+
+    public Builder withNumber(Double number) {
+      this.number = number;
+      return this;
+    }
+
+    public Builder withAccuracy(Integer accuracy) {
+      this.accuracy = accuracy;
+      return this;
+    }
+
+    public Builder withPower(Double basePower) {
+      this.basePower = basePower;
+      return this;
+    }
+
+    public Builder ofCategory(MoveCategory category) {
+      this.category = category;
+      return this;
+    }
+
+    public Builder withDescription(String description) {
+      this.description = description;
+      return this;
+    }
+
+    public Builder withShortDescription(String shortDescription) {
+      this.shortDescription = shortDescription;
+      return this;
+    }
+
+    public Builder withName(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder withPP(Integer pp) {
+      this.pp = pp;
+      return this;
+    }
+
+    public Builder withPriority(Integer priority) {
+      this.priority = priority;
+      return this;
+    }
+
+    public Builder withTarget(MoveTarget target) {
+      this.target = target;
+      return this;
+    }
+
+    public Builder ofType(PokeTypes type) {
+      this.type = type;
+      return this;
+    }
+
+    public Builder withFlags(EnumSet<MoveFlag> flags) {
+      this.flags = flags;
+      return this;
+    }
+
+    public Builder withComplexity(MoveComplexity complexity) {
+      this.complexity = complexity;
+      return this;
+    }
+
+    public Move build() {
+      Move move = new Move();
+
+      move.id = this.id;
+      move.number = this.number;
+      move.accuracy = this.accuracy;
+      move.basePower = this.basePower;
+      move.category = this.category;
+      move.description = this.description;
+      move.shortDescription = this.shortDescription;
+      move.name = this.name;
+      move.pp = this.pp;
+      move.priority = this.priority;
+      move.target = this.target;
+      move.type = this.type;
+      move.flags = this.flags;
+      move.complexity = this.complexity;
+
+      return move;
+    }
+
+  }
+
+  private String id;
+
+  private Double number;
+
+<<<<<<< HEAD:src/main/java/cs/brown/edu/aelp/pokemmo/pokemon/moves/Move.java
   private final Integer number;
 
   private final Double accuracy;
+=======
+  private Integer accuracy;
 
-  private final Double basePower;
+  private Double basePower;
+>>>>>>> master:src/main/java/cs/brown/edu/aelp/pokemon/battle/Move.java
 
-  private final MoveCategory category;
+  private MoveCategory category;
 
-  private final String description;
+  private String description;
 
-  private final String shortDescription;
+  private String shortDescription;
 
-  private final String name;
+  private String name;
 
-  private final Integer pp;
+  private Integer pp;
 
-  private final Integer priority;
+  private Integer priority;
 
-  private final MoveTarget target;
+  private MoveTarget target;
 
-  private final PokeType type;
+  private PokeTypes type;
 
-  private final EnumSet<MoveFlag> flags;
+  private EnumSet<MoveFlag> flags;
 
-  private final MoveComplexity complexity;
+  private MoveComplexity complexity;
+
+  // We want to construct moves only using the builder
+  private Move() {
+  }
 
   /**
    * Construct a Move object. This should be done dynamically.
@@ -103,6 +241,7 @@ public class Move {
    * @param complexity
    *          Whether or not this move expects a Java Handler.
    */
+<<<<<<< HEAD:src/main/java/cs/brown/edu/aelp/pokemmo/pokemon/moves/Move.java
   public Move(String id, Integer number, Double accuracy, Double basePower,
       MoveCategory category, String description, String shortDescription,
       String name, Integer pp, Integer priority, MoveTarget target,
@@ -123,6 +262,19 @@ public class Move {
     this.flags = flags;
     this.complexity = complexity;
   }
+=======
+  /**
+   * public Move(String id, Double number, Integer accuracy, Double basePower,
+   * MoveCategory category, String description, String shortDescription, String
+   * name, Integer pp, Integer priority, MoveTarget target, PokeType type,
+   * EnumSet<MoveFlag> flags, MoveComplexity complexity) { super(); this.id =
+   * id; this.number = number; this.accuracy = accuracy; this.basePower =
+   * basePower; this.category = category; this.description = description;
+   * this.shortDescription = shortDescription; this.name = name; this.pp = pp;
+   * this.priority = priority; this.target = target; this.type = type;
+   * this.flags = flags; this.complexity = complexity; }
+   */
+>>>>>>> master:src/main/java/cs/brown/edu/aelp/pokemon/battle/Move.java
 
   /**
    * @return the id
@@ -141,7 +293,11 @@ public class Move {
   /**
    * @return the accuracy
    */
+<<<<<<< HEAD:src/main/java/cs/brown/edu/aelp/pokemmo/pokemon/moves/Move.java
   public Double getAccuracy() {
+=======
+  public Integer getAccuracy() {
+>>>>>>> master:src/main/java/cs/brown/edu/aelp/pokemon/battle/Move.java
     return accuracy;
   }
 
@@ -204,7 +360,7 @@ public class Move {
   /**
    * @return the type
    */
-  public PokeType getType() {
+  public PokeTypes getType() {
     return type;
   }
 
@@ -220,6 +376,10 @@ public class Move {
    */
   public MoveComplexity getComplexity() {
     return complexity;
+  }
+
+  public void setPP(int pp) {
+    this.pp = pp;
   }
 
   /*
