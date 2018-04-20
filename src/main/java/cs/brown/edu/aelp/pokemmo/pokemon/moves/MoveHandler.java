@@ -1,4 +1,4 @@
-package cs.brown.edu.aelp.pokemon.battle;
+package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
 import java.util.HashMap;
 import java.util.Map;

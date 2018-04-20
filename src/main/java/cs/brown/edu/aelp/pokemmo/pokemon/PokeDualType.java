@@ -1,4 +1,4 @@
-package cs.brown.edu.aelp.pokemon.battle;
+package cs.brown.edu.aelp.pokemmo.pokemon;
 
 /**
  * Class representing PokemonType.
@@ -27,10 +27,15 @@ public class PokeDualType extends PokeType {
   }
 
   @Override
-  public Double getOffensiveEffectiveness(PokeType moveType) {
+  public boolean typeMatches(PokeType type) {
+    return PokeType.getType(rawTypeA).equals(type)
+        || PokeType.getType(rawTypeB).equals(type);
+  }
 
-    if (rawTypeA.equals(moveType) || rawTypeB.equals(moveType)) {
-      return SAME_ATTACK_TYPE_MULTIPLIER;
+  @Override
+  public Double getOffensiveEffectiveness(PokeType moveType) {
+    if (typeMatches(moveType)) {
+      return 1.5;
     }
 
     return 1.0;

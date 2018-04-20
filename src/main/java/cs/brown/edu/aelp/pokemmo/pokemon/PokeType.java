@@ -1,4 +1,4 @@
-package cs.brown.edu.aelp.pokemon.battle;
+package cs.brown.edu.aelp.pokemmo.pokemon;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,8 +7,6 @@ import java.util.Map;
  * Class representing PokemonType.
  */
 public class PokeType {
-
-  protected static final Double SAME_ATTACK_TYPE_MULTIPLIER = 1.5;
 
   protected static final Double NO_EFFECT_MULTIPLIER = 0.0;
 
@@ -59,11 +57,15 @@ public class PokeType {
    */
   public Double getOffensiveEffectiveness(PokeType moveType) {
     /* The same-attack-type bonus (1.5x) */
-    if (pokeRawType.equals(moveType)) {
-      return SAME_ATTACK_TYPE_MULTIPLIER;
+    if (this.equals(moveType)) {
+      return 1.5;
     }
 
     return 1.0;
+  }
+
+  public boolean typeMatches(PokeType type) {
+    return type.equals(type);
   }
 
   /**
