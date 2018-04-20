@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.Map;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -102,7 +101,8 @@ public final class Main {
 
     FreeMarkerEngine freeMarker = createEngine();
 
-    Spark.get("/main", new FrontHandler(), freeMarker);
+    Spark.get("/main", new IndexHandler(), freeMarker);
+    Spark.get("/", new IndexHandler(), freeMarker);
     Spark.post("/register", new RegisterHandler(Main.getDataSource()));
 
     // Setup Spark Routes
@@ -111,13 +111,10 @@ public final class Main {
   /**
    * Handle requests to the front page of our website.
    */
-  private static class FrontHandler implements TemplateViewRoute {
+  private static class IndexHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of("title", "Pokemon",
-          "content", "something", "readmessage", "something", "message",
-          "something");
-      return new ModelAndView(variables, "query.ftl");
+      return new ModelAndView(ImmutableMap.of(), "main.ftl");
     }
   }
 

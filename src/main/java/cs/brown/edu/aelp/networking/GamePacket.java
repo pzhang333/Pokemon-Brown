@@ -3,7 +3,6 @@ package cs.brown.edu.aelp.networking;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import java.util.Collection;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GamePacket {
@@ -11,8 +10,7 @@ public class GamePacket {
   private Collection<User> otherPlayers;
   private User player;
 
-  public GamePacket(User player, Collection<User> otherPlayers,
-      Map<Location, Integer> backgroundMap) {
+  public GamePacket(User player, Collection<User> otherPlayers) {
 
     this.setOtherPlayers(localize(player.getLocation(), otherPlayers));
     this.setPlayer(player);
@@ -20,6 +18,16 @@ public class GamePacket {
 
   // Helper functions:
 
+  /**
+   * Returns all of the players that are on the same chunk as a given player.
+   * 
+   * @param playerPosition
+   *          Player position.
+   * @param players
+   *          Collection of all players.
+   * @return Collection of players on the same chunk as the given player (based
+   *         on position).
+   */
   private Collection<User> localize(Location playerPosition,
       Collection<User> players) {
     return players.stream()

@@ -15,16 +15,16 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 @WebSocket
 public class PlayerWebSocketHandler {
 
+  private static enum MESSAGE_TYPE {
+    CONNECT, GAME_PACKET, UPDATE_USER, CLIENT_UPDATE
+  }
+
   private static final Gson GSON = new Gson();
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
   private static int nextId = 0;
 
   // maps session id's to Player objects
   private static Map<Session, User> sessionToPlayer;
-
-  private static enum MESSAGE_TYPE {
-    CONNECT, GAME_PACKET, UPDATE_USER, CLIENT_UPDATE
-  }
 
   @OnWebSocketConnect
   public void onConnect(Session session) throws Exception {
