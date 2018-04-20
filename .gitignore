@@ -79,4 +79,4 @@ local.properties
 ##############
 # SQL Config #
 ##############
-config/database_info.json
+./config/database_info.json
