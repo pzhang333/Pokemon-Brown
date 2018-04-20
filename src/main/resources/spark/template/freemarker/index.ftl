@@ -10,6 +10,10 @@
 	<body style='background-color: grey'>
 		<div id='game'></div>
 		<!-- <script src="/socket.io/socket.io.js"></script> -->
+<<<<<<< HEAD
+=======
+		<script src="/js/login.js"></script>
+>>>>>>> 8512352cf3e803a6fee56ab00b70a54869f51309
 		<script src="/js/sparseMap.js"></script>
 		<script src="/js/animation.js"></script>
 		<script src="/js/player.js"></script>

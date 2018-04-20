@@ -2,7 +2,6 @@ package cs.brown.edu.aelp.networking;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import java.util.Map;
 import java.util.Queue;
 import org.eclipse.jetty.websocket.api.Session;
@@ -15,14 +14,14 @@ public final class PacketSender {
   }
 
   public static void sendGamePackets(Queue<Session> sessions,
-      Map<Session, User> sessionToPlayer) {
+      Map<Session, NetworkUser> sessionToPlayer) {
     sessions.stream().filter(Session::isOpen).forEach(session -> {
       try {
         // System.out.println(sessionToPlayer);
-        User player = sessionToPlayer.get(session);
+        NetworkUser user = sessionToPlayer.get(session);
 
         // create our GamePacket object
-        GamePacket packet = new GamePacket(player, sessionToPlayer.values());
+        GamePacket packet = new GamePacket(user, sessionToPlayer.values());
 
         // converting this packet to JSON using Gson
         String json = gson.toJson(packet, GamePacket.class);

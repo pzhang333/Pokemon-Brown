@@ -82,14 +82,14 @@ public final class Main {
     System.out.println("Hello, World!");
 
     // temporary repl
-    int count = 0;
+    long sleepTime = 1000;
     while (5 != 6) {
-      if (count >= 100000) {
-        count = 0;
-      }
-      if (count % 10000 == 0) {
-        // this should be in our game loop and execute every tick
-        PlayerWebSocketHandler.sendGamePackets();
+      PlayerWebSocketHandler.sendGamePackets();
+      try {
+        Thread.sleep(sleepTime);
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
     }
   }
@@ -116,7 +116,7 @@ public final class Main {
   private static class IndexHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      return new ModelAndView(ImmutableMap.of(), "main.ftl");
+      return new ModelAndView(ImmutableMap.of(), "index.ftl");
     }
   }
 
@@ -140,6 +140,7 @@ public final class Main {
   /**
    * Display an error page when an exception occurs in the server.
    */
+
   private static class ExceptionPrinter implements ExceptionHandler<Exception> {
     @Override
     public void handle(Exception e, Request req, Response res) {

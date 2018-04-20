@@ -1,18 +1,20 @@
 package cs.brown.edu.aelp.networking;
 
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.map.Location;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class GamePacket {
 
-  private Collection<User> otherPlayers;
-  private User player;
+  private Collection<NetworkUser> otherPlayers;
+  private NetworkUser player;
 
-  public GamePacket(User player, Collection<User> otherPlayers) {
-
-    this.setOtherPlayers(localize(player.getLocation(), otherPlayers));
+  public GamePacket(NetworkUser player, Collection<NetworkUser> otherPlayers) {
+    if (player.getLocation().getChunkId().equals("")) {
+      this.setOtherPlayers(Collections.emptyList());
+    } else {
+      this.setOtherPlayers(localize(player, otherPlayers));
+    }
     this.setPlayer(player);
   }
 
@@ -28,28 +30,31 @@ public class GamePacket {
    * @return Collection of players on the same chunk as the given player (based
    *         on position).
    */
-  private Collection<User> localize(Location playerPosition,
-      Collection<User> players) {
+
+  private Collection<NetworkUser> localize(NetworkUser player,
+      Collection<NetworkUser> players) {
     return players.stream()
-        .filter(p -> p.getLocation().getChunk() == playerPosition.getChunk())
+        .filter(
+            p -> (!p.getLocation().getChunkId().equals("")) && p.getLocation()
+                .getChunkId().equals(player.getLocation().getChunkId()))
         .collect(Collectors.toList());
   }
 
   // Getters and Setters for Package Properties:
 
-  public Collection<User> getOtherPlayers() {
+  public Collection<NetworkUser> getOtherPlayers() {
     return otherPlayers;
   }
 
-  public void setOtherPlayers(Collection<User> otherPlayers) {
+  public void setOtherPlayers(Collection<NetworkUser> otherPlayers) {
     this.otherPlayers = otherPlayers;
   }
 
-  public User getPlayer() {
+  public NetworkUser getPlayer() {
     return player;
   }
 
-  public void setPlayer(User player) {
+  public void setPlayer(NetworkUser player) {
     this.player = player;
   }
 
