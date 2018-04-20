@@ -20,6 +20,14 @@ public class GamePacket {
   
   // Helper functions:
   
+  /**
+   * Returns all of the players that are on the same chunk as a given player.
+   * @param playerPosition
+   *        Player position.
+   * @param players
+   *        Collection of all players.
+   * @return Collection of players on the same chunk as the given player (based on position).
+   */
   private Collection<Player> localize(Coordinate3d playerPosition, Collection<Player> players) {
     return players.stream().filter(p -> p.getPosition().getZ() 
         == playerPosition.getZ())

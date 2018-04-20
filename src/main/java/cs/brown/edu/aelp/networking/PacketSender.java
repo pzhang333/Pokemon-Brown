@@ -22,10 +22,10 @@ public final class PacketSender {
   public static void sendGamePackets(Queue<Session> sessions, Map<Session, Player> sessionToPlayer) {
     sessions.stream().filter(Session::isOpen).forEach(session -> {
       try {
+        //System.out.println(sessionToPlayer);
         Player player = sessionToPlayer.get(session);
 
         // create our GamePacket object
-        // TODO: Figure out background stuff (currently just passing empty map)
         GamePacket packet = new GamePacket(player, 
             sessionToPlayer.values());
         

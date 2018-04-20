@@ -18,20 +18,20 @@ import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 /**
  * The Main class entry point.
  */
-public final class Main {
+public final class BattleSim {
 
   /**
    * @param args
    *          Command line arguments
    */
   public static void main(String[] args) {
-    new Main().run(args);
+    new BattleSim().run(args);
   }
 
   /**
    * Private constructor for main.
    */
-  private Main() {
+  private BattleSim() {
 
   }
 
