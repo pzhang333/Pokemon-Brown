@@ -101,15 +101,13 @@ public class Pokemon {
       return this;
     }
 
-    public Builder withEva(int eva) {
-      this.eva = eva;
-      return this;
-    }
+    /*
+     * public Builder withEva(int eva) { this.eva = eva; return this; }
+     */
 
-    public Builder withAcc(int acc) {
-      this.acc = acc;
-      return this;
-    }
+    /*
+     * public Builder withAcc(int acc) { this.acc = acc; return this; }
+     */
 
     public Builder withType(PokeType type) {
       this.type = type;
@@ -147,7 +145,6 @@ public class Pokemon {
       pokemon.specialAttack = this.specAtk;
       pokemon.specialDefense = this.specDef;
       pokemon.speed = this.spd;
-      pokemon.accuracyStage = this.acc;
 
       pokemon.exp = this.exp;
 
@@ -200,8 +197,6 @@ public class Pokemon {
   private Integer accuracyStage = 3;
 
   private Integer evasionStage = 3;
-
-  private Integer level;
 
   private Integer exp;
 
@@ -263,6 +258,10 @@ public class Pokemon {
     return effectSlot;
   }
 
+  public static Integer getXPByLevel(int level) {
+    return (int) Math.ceil((5.0 / 4.0) * Math.pow(level, 3));
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -302,11 +301,15 @@ public class Pokemon {
     return stage;
   }
 
+  public Integer getEXP() {
+    return exp;
+  }
+
   /**
    * @return the level
    */
   public Integer getLevel() {
-    return level;
+    return (int) Math.floor(Math.pow((5.0 / 4.0) * getEXP(), (1.0 / 3.0))) + 1;
   }
 
   public Integer getEffectiveAttack() {
