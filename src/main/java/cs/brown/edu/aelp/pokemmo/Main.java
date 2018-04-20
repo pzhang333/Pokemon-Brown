@@ -43,23 +43,21 @@ public final class Main {
    */
   private void run(String[] args) {
 
-    Move atk = new Move("atk", 1, .9, 100.0, Move.MoveCategory.SPECIAL, "", "",
-        "atk", 10, 0, Move.MoveTarget.NORMAL,
-        PokeType.getType(PokeRawType.NORMAL),
+    Move atk = new Move("atk", 1, .9, 100.0, Move.MoveCategory.SPECIAL, "", "", "atk", 10, 0,
+        Move.MoveTarget.NORMAL, PokeType.getType(PokeRawType.NORMAL),
         EnumSet.noneOf(Move.MoveFlag.class), Move.MoveComplexity.SIMPLE);
 
-    WishMove wish = new WishMove("id1", 2, 1.0, 0.0, Move.MoveCategory.SPECIAL,
-        "", "", "wish", 10, 0, Move.MoveTarget.NORMAL,
-        PokeType.getType(PokeRawType.NORMAL),
+    WishMove wish = new WishMove("id1", 2, 1.0, 0.0, Move.MoveCategory.SPECIAL, "", "", "wish", 10,
+        0, Move.MoveTarget.NORMAL, PokeType.getType(PokeRawType.NORMAL),
         EnumSet.noneOf(Move.MoveFlag.class), Move.MoveComplexity.COMPLEX);
 
-    Pokemon p1 = new Pokemon("Slaking", 150, 150, 160, 100, 95, 65, 100, 30,
+    Pokemon p1 = new Pokemon(1, "Slaking", 150, 150, 160, 100, 95, 65, 100, 30,
         PokeType.getType(PokeRawType.NORMAL), Arrays.asList(atk));
 
-    Pokemon p2 = new Pokemon("Chauncy", 150, 150, 160, 100, 95, 65, 100, 30,
+    Pokemon p2 = new Pokemon(2, "Chauncy", 150, 150, 160, 100, 95, 65, 100, 30,
         PokeType.getType(PokeRawType.NORMAL), Arrays.asList(atk, wish));
 
-    Pokemon p3 = new Pokemon("Pikachu", 150, 150, 160, 100, 95, 65, 100, 30,
+    Pokemon p3 = new Pokemon(3, "Pikachu", 150, 150, 160, 100, 95, 65, 100, 30,
         PokeType.getType(PokeRawType.ELECTRIC), Arrays.asList(atk, wish));
 
     Arena arena = new Arena();
