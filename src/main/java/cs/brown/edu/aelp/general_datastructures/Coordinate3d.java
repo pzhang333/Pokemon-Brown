@@ -27,13 +27,39 @@ public class Coordinate3d {
     this.y = y;
     this.z = z;
   }
+  
+ //Below we override isEqual (note that this still relies on the object we
+ // input to have implemented the equals() function appropriately.
+ // This is required by the Object class, but it is still worth noting.
+ @Override
+ public int hashCode() {
+   return new Integer(this.getX()).hashCode() + new Integer(this.getY()).hashCode() 
+       + new Integer(this.getZ()).hashCode();
+ }
+
+ @Override
+ public boolean equals(Object obj) {
+   try {
+     Coordinate3d castedToPair = (Coordinate3d) obj;
+
+     if (castedToPair.getX() == castedToPair.getX()
+         && castedToPair.getY() == castedToPair.getY() 
+         && castedToPair.getZ() == castedToPair.getZ()) {
+       return true;
+     }
+     return false;
+   } catch (Exception e) {
+     System.out.print("ERROR: Casting issue (see use of Coordinate3d datastructure.");
+     return false;
+   }
+ }
 
   /**
    * Gets the x property.
    *
    * @return The x property (int).
    */
-  public double getX() {
+  public int getX() {
     return this.x;
   }
 
@@ -42,7 +68,7 @@ public class Coordinate3d {
    *
    * @return The y property (int).
    */
-  public double getY() {
+  public int getY() {
     return this.y;
   }
 
@@ -51,7 +77,7 @@ public class Coordinate3d {
    *
    * @return The z property (int).
    */
-  public double getZ() {
+  public int getZ() {
     return this.z;
   }
 }

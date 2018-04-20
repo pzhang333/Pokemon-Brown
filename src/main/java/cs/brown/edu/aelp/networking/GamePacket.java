@@ -4,6 +4,7 @@ import cs.brown.edu.aelp.Player.Player;
 import cs.brown.edu.aelp.general_datastructures.Coordinate3d;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class GamePacket {
@@ -13,8 +14,11 @@ public class GamePacket {
 
   public GamePacket(Player player, 
       Collection<Player> otherPlayers) {
-    
-    this.setOtherPlayers(localize(player.getPosition(), otherPlayers));
+    if (player.getPosition().equals(new Coordinate3d(-1,-1,-1))) {
+      this.setOtherPlayers(Collections.emptyList());
+    } else {
+      this.setOtherPlayers(localize(player.getPosition(), otherPlayers));
+    }
     this.setPlayer(player);
   }
   
@@ -29,7 +33,8 @@ public class GamePacket {
    * @return Collection of players on the same chunk as the given player (based on position).
    */
   private Collection<Player> localize(Coordinate3d playerPosition, Collection<Player> players) {
-    return players.stream().filter(p -> p.getPosition().getZ() 
+    return players.stream().filter(p -> 
+    p.getPosition() != new Coordinate3d(-1,-1,-1) && p.getPosition().getZ() 
         == playerPosition.getZ())
         .collect(Collectors.toList());
   }
