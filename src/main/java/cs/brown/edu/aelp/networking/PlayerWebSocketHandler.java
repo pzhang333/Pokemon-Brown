@@ -27,13 +27,17 @@ public class PlayerWebSocketHandler {
       CONNECT,
       GAME_PACKET,
       UPDATE_USER,
-      CLIENT_UPDATE
+      CLIENT_PLAYER_UPDATE
     }
   
     @OnWebSocketConnect
     public void onConnect(Session session) throws Exception {
       
       sessions.add(session);
+      
+      // TODO: Update this information on log-in 
+      Player player = new Player(String.valueOf(nextId));
+      sessionToPlayer.put(session, player);
       
       // Building the CONNECT message
       JsonObject main = new JsonObject();
@@ -60,11 +64,15 @@ public class PlayerWebSocketHandler {
       // we have received a websocket message
       // this message will be a JSON object (in string form)
       JsonObject received = GSON.fromJson(message, JsonObject.class);
-      if (received.get("type").getAsInt() == MESSAGE_TYPE.GAME_PACKET.ordinal()) {
-        // a user has received an updated game packet
-      } 
-      else if (received.get("type").getAsInt() == MESSAGE_TYPE.UPDATE_USER.ordinal()) {
+      
+      if (received.get("type").getAsInt() == MESSAGE_TYPE.CLIENT_PLAYER_UPDATE.ordinal()) {
+        // we have received an update from the client
         
+        String playerJson = received.get("payload").toString();
+        Player player = GSON.fromJson(playerJson, Player.class);
+
+        // updating our player object in our map of sessions to players
+        sessionToPlayer.put(session, player);
       }
     }
     

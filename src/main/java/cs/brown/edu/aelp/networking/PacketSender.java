@@ -27,7 +27,7 @@ public final class PacketSender {
         // create our GamePacket object
         // TODO: Figure out background stuff (currently just passing empty map)
         GamePacket packet = new GamePacket(player, 
-            sessionToPlayer.values(), Collections.emptyMap());
+            sessionToPlayer.values());
         
         // converting this packet to JSON using Gson
         String json = gson.toJson(packet, GamePacket.class);
