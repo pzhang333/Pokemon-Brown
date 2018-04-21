@@ -49,7 +49,7 @@ public class RegisterHandler implements Route {
     }
 
     if (!pass.matches(
-        "\"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}\"")) {
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}")) {
       throw new AuthException("Password must be at least 8 characters,"
           + " containing an upper case letter, a lower case letter, a number, and a symbol.");
     }
