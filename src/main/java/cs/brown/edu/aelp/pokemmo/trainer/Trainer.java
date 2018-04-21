@@ -1,14 +1,12 @@
 package cs.brown.edu.aelp.pokemmo.trainer;
 
+import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.util.Identifiable;
 import java.util.ArrayList;
 import java.util.List;
 
-import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-
-public class Trainer {
-
-  private final Integer id;
+public class Trainer extends Identifiable {
 
   private List<Pokemon> team = new ArrayList<>();
 
@@ -17,55 +15,11 @@ public class Trainer {
   private EffectSlot effectSlot = new EffectSlot();
 
   public Trainer(Integer id) {
-    this.id = id;
+    super(id);
   }
 
   public Pokemon getActivePokemon() {
     return activePokemon;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#hashCode()
-   */
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    return result;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    Trainer other = (Trainer) obj;
-    if (id == null) {
-      if (other.id != null) {
-        return false;
-      }
-    } else if (!id.equals(other.id)) {
-      return false;
-    }
-    return true;
-  }
-
-  public Integer getId() {
-    return id;
   }
 
   public EffectSlot getEffectSlot() {

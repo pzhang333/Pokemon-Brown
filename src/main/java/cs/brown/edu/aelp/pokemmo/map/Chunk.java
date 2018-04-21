@@ -1,14 +1,14 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.util.Identifiable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Chunk {
+public class Chunk extends Identifiable {
 
-  private final int id;
   private final int width;
   private final int height;
   private Map<Location, List<Entity>> entities = new HashMap<>();
@@ -16,17 +16,13 @@ public class Chunk {
   private final boolean instanced;
 
   public Chunk(int id, int width, int height, boolean instanced) {
-    this.id = id;
+    super(id);
     this.width = width;
     this.height = height;
     this.instanced = instanced;
     if (instanced) {
       this.instanced_entities = new HashMap<>();
     }
-  }
-
-  public int getId() {
-    return this.id;
   }
 
   public int getWidth() {
@@ -70,28 +66,6 @@ public class Chunk {
       user_entities.put(loc, new ArrayList<>());
     }
     user_entities.get(loc).add(e);
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + id;
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    Chunk other = (Chunk) obj;
-    if (id != other.id)
-      return false;
-    return true;
   }
 
 }

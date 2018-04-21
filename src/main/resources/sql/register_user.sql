@@ -1,1 +1,1 @@
-INSERT INTO users (username, email, hashed_pw, salt, session_token) VALUES (?, ?, ?, ?, ?) RETURNING id;
+INSERT INTO users (username, email, hashed_pw, salt, session_token, chunk, "row", col) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;

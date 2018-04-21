@@ -1,0 +1,9 @@
+{
+    "example_int" : 0,
+    "example_string" : "hello",
+    "example_object" :
+    {
+        "inner_double" : 1.5,
+        "inner_string" : "world"
+    }
+}

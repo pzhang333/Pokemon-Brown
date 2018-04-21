@@ -24,7 +24,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SQLDataSource implements DataSource {
 
@@ -58,6 +60,7 @@ public class SQLDataSource implements DataSource {
       this.conn = DriverManager.getConnection(this.connString, this.user,
           this.pass);
     }
+    this.conn.setAutoCommit(true);
     return this.conn;
   }
 
@@ -216,6 +219,10 @@ public class SQLDataSource implements DataSource {
             .encodeToString(Password.hashPassword(password, salt)));
         p.setString(4, Base64.getEncoder().encodeToString(salt));
         p.setString(5, Base64.getEncoder().encodeToString(token));
+        Location spawn = Main.getWorld().getSpawn();
+        p.setInt(6, spawn.getChunk().getId());
+        p.setInt(7, spawn.getRow());
+        p.setInt(8, spawn.getCol());
         try (ResultSet rs = p.executeQuery()) {
           if (rs.next()) {
             return new User(rs.getInt("id"), username, email,
@@ -227,7 +234,74 @@ public class SQLDataSource implements DataSource {
       }
     } catch (IOException | SQLException | NoSuchAlgorithmException
         | InvalidKeySpecException e) {
+      e.printStackTrace();
       throw new AuthException();
+    }
+  }
+
+  @Override
+  public void save(List<BatchSavable> objects) throws SaveException {
+    // Don't know an elegant way around hardcoding these
+    Map<Class<? extends BatchSavable>, String> tables = new HashMap<>();
+    tables.put(User.class, "users");
+    tables.put(Pokemon.class, "pokemon");
+
+    Map<Class<? extends BatchSavable>, List<BatchSavable>> groups = new HashMap<>();
+    for (BatchSavable obj : objects) {
+      Class<? extends BatchSavable> c = obj.getClass();
+      if (tables.containsKey(c)) {
+        if (!groups.containsKey(c)) {
+          groups.put(c, new ArrayList<>());
+        }
+        groups.get(c).add(obj);
+      } else {
+        System.out.printf(
+            "WARNING: Not saving object of class %s with unknown SQL table name.%n",
+            c.getName());
+      }
+    }
+
+    try {
+      Connection conn = this.getConn();
+      conn.setAutoCommit(false);
+      for (Class<? extends BatchSavable> c : groups.keySet()) {
+        for (BatchSavable bs : groups.get(c)) {
+          Map<String, Object> changes = bs.getChanges();
+          if (changes.size() == 0) {
+            continue;
+          }
+          StringBuilder sb = new StringBuilder("(");
+          for (int i = 0; i < changes.size(); i++) {
+            if (i == changes.size() - 1) {
+              sb.append("?)");
+            } else {
+              sb.append("?, ");
+            }
+          }
+          String q = String.format("INSERT INTO %s %s VALUES %s;",
+              tables.get(c), sb.toString(), sb.toString());
+          try (PreparedStatement p = conn.prepareStatement(q)) {
+            int i = 1;
+            for (String key : changes.keySet()) {
+              p.setString(i, key);
+              p.setObject(i + changes.size(), changes.get(key));
+              i++;
+            }
+            p.executeUpdate();
+            bs.clearChanges();
+          }
+        }
+      }
+      conn.commit();
+    } catch (SQLException e) {
+      try {
+        conn.rollback();
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+        throw new SaveException("ERROR: Failed to rollback failed commit...");
+      }
+      e.printStackTrace();
+      throw new SaveException();
     }
   }
 }
