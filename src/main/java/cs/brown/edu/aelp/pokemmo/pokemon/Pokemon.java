@@ -218,9 +218,9 @@ public class Pokemon extends Identifiable implements BatchSavable {
 
   private Integer speed;
 
-  private Integer accuracyStage = 3;
+  private Integer accuracyStage;
 
-  private Integer evasionStage = 3;
+  private Integer evasionStage;
 
   private Integer exp;
 
@@ -323,22 +323,22 @@ public class Pokemon extends Identifiable implements BatchSavable {
     this.changes.put("cur_health", health);
   }
 
-  public void setStored(boolean stored){
+  public void setStored(boolean stored) {
     this.stored = stored;
     this.changes.put("stored", stored);
   }
 
-  public void addExp(Integer experience){
+  public void addExp(Integer experience) {
     this.exp += experience;
     this.changes.put("experience", exp);
   }
 
-  public void changeNickname(String newName){
+  public void changeNickname(String newName) {
     this.nickname = newName;
     this.changes.put("nickname", nickname);
   }
 
-  public void evolve(String evolvedSpecies){
+  public void evolve(String evolvedSpecies) {
     this.species = evolvedSpecies;
     this.changes.put("species", species);
   }
@@ -363,11 +363,11 @@ public class Pokemon extends Identifiable implements BatchSavable {
     return getSpeed() * stageMultipliers.get(speedStage);
   }
 
-  public Double getEffectiveAcc(){
+  public Double getEffectiveAcc() {
     return accEvaMultipliers.get(accuracyStage);
   }
 
-  public Double getEffectiveEva(){
+  public Double getEffectiveEva() {
     return accEvaMultipliers.get(evasionStage);
   }
 
@@ -442,7 +442,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
     return calcLevel.intValue();
   }
 
-  private static Integer calcXpByLevel(int level) {
+  public static Integer calcXpByLevel(int level) {
     Double calcLevel = Math.ceil((5.0 / 4.0) * Math.pow(level, 3));
     return calcLevel.intValue();
   }

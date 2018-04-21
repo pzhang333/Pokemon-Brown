@@ -16,8 +16,8 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 public class Move {
 
   /**
-   * Move Complexity Type. Simple moves are calculated normally. Complex moves require Java
-   * implemented Handlers.
+   * Move Complexity Type. Simple moves are calculated normally. Complex moves
+   * require Java implemented Handlers.
    */
   public enum MoveComplexity {
     SIMPLE, COMPLEX
@@ -225,7 +225,8 @@ public class Move {
    * @param priority
    *          The move's priority.
    * @param target
-   *          The move's target (NORMAL usually, can sometimes be all on battle field).
+   *          The move's target (NORMAL usually, can sometimes be all on battle
+   *          field).
    * @param type
    *          The move's type.
    * @param flags
@@ -234,9 +235,10 @@ public class Move {
    *          Whether or not this move expects a Java Handler.
    */
 
-  public Move(String id, Integer number, Double accuracy, Double basePower, MoveCategory category,
-      String description, String shortDescription, String name, Integer pp, Integer priority,
-      MoveTarget target, PokeType type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
+  public Move(String id, Integer number, Double accuracy, Double basePower,
+      MoveCategory category, String description, String shortDescription,
+      String name, Integer pp, Integer priority, MoveTarget target,
+      PokeType type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
     super();
     this.id = id;
     this.number = number;
@@ -428,21 +430,24 @@ public class Move {
     applyEffectivenessModifiers(evt, mr);
 
     // Target modifier
-    mr.setModifier(ModifierType.TARGET, (getTarget().equals(MoveTarget.NORMAL)) ? 1 : .75);
+    mr.setModifier(ModifierType.TARGET,
+        (getTarget().equals(MoveTarget.NORMAL)) ? 1 : .75);
 
     // Technically this is not inclusive on 1
-    mr.setModifier(ModifierType.RANDOM, ThreadLocalRandom.current().nextDouble(.85, 1));
+    mr.setModifier(ModifierType.RANDOM,
+        ThreadLocalRandom.current().nextDouble(.85, 1));
   }
 
   public void applyEffectivenessModifiers(AttackEvent evt, MoveResult mr) {
 
-    mr.setModifier(ModifierType.STAB,
-        evt.getAttackingPokemon().getType().getOffensiveEffectiveness(getType()));
+    mr.setModifier(ModifierType.STAB, evt.getAttackingPokemon().getType()
+        .getOffensiveEffectiveness(getType()));
 
-    mr.setModifier(ModifierType.TYPE,
-        evt.getDefendingPokemon().getType().getDefensiveEffectiveness(getType()));
+    mr.setModifier(ModifierType.TYPE, evt.getDefendingPokemon().getType()
+        .getDefensiveEffectiveness(getType()));
 
-    mr.setModifier(ModifierType.WEATHER, evt.getBattle().getArena().getWeatherModifier(getType()));
+    mr.setModifier(ModifierType.WEATHER,
+        evt.getBattle().getArena().getWeatherModifier(getType()));
   }
 
   public boolean isCrit() {
@@ -461,7 +466,8 @@ public class Move {
     }
 
     double effAccuracy = getAccuracy()
-        * (evt.getAttackingPokemon().getAccuracy() / evt.getAttackingPokemon().getEvasion());
+        * (evt.getAttackingPokemon().getEffectiveAcc()
+            / evt.getAttackingPokemon().getEffectiveEva());
 
     System.out.println("effective Accuracy: " + effAccuracy);
 
@@ -469,7 +475,8 @@ public class Move {
   }
 
   public MoveResult getResult(AttackEvent evt) {
-    MoveResult mr = new MoveResult(evt.getAttackingPokemon(), evt.getDefendingPokemon());
+    MoveResult mr = new MoveResult(evt.getAttackingPokemon(),
+        evt.getDefendingPokemon());
 
     // This does not account for stat stages...
 
@@ -495,8 +502,8 @@ public class Move {
           / evt.getDefendingPokemon().getEffectiveSpecialDefense();
     }
 
-    double baseDamage = ((((((2 * evt.getAttackingPokemon().getLevel() * critModifier) / 5) + 2)
-        * getBasePower() * atkDefRatio) / 50) + 2);
+    double baseDamage = ((((((2 * evt.getAttackingPokemon().getLevel()
+        * critModifier) / 5) + 2) * getBasePower() * atkDefRatio) / 50) + 2);
 
     mr.setBaseDamage(baseDamage);
 
