@@ -202,7 +202,7 @@ public class SQLDataSource implements DataSource {
       try (PreparedStatement p = this
           .prepStatementFromFile("src/main/resources/sql/register_user.sql")) {
         byte[] salt = Password.generateSalt();
-        byte[] token = new byte[64];
+        byte[] token = new byte[8];
         new SecureRandom().nextBytes(token);
         p.setString(1, username);
         p.setString(2, email);
