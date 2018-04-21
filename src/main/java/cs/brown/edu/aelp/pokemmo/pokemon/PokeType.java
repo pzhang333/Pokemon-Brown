@@ -22,7 +22,7 @@ public class PokeType {
    * Pokemon Types.
    */
   public enum PokeRawType {
-    NORMAL, FIRE, WATER, ELECTRIC, GRASS, ICE, FIGHTING, POISION, GROUND,
+    NORMAL, FIRE, WATER, ELECTRIC, GRASS, ICE, FIGHTING, POISON, GROUND,
     FLYING, PSYCHIC, BUG, ROCK, GHOST, DRAGON, DARK, STEEL;
   }
 
