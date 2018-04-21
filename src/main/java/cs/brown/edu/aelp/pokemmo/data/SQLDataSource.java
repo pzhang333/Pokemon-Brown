@@ -219,10 +219,13 @@ public class SQLDataSource implements DataSource {
             .encodeToString(Password.hashPassword(password, salt)));
         p.setString(4, Base64.getEncoder().encodeToString(salt));
         p.setString(5, Base64.getEncoder().encodeToString(token));
+        
         Location spawn = Main.getWorld().getSpawn();
+        
         p.setInt(6, spawn.getChunk().getId());
         p.setInt(7, spawn.getRow());
         p.setInt(8, spawn.getCol());
+        
         try (ResultSet rs = p.executeQuery()) {
           if (rs.next()) {
             return new User(rs.getInt("id"), username, email,
