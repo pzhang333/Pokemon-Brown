@@ -25,9 +25,11 @@ const setup_player_connection = () => {
       case MESSAGE_TYPE.CONNECT:
     	  // initial connection message
     	  myId = data.payload.id;
+        console.log(myId);
         break;
       case MESSAGE_TYPE.GAME_PACKET:
     	  // received new game packet from the server
+        console.log(data);
       	break;
       case MESSAGE_TYPE.UPDATE_USER:
     	  // received a specific user update
