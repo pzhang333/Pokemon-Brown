@@ -206,9 +206,10 @@ public class SQLDataSource implements DataSource {
         new SecureRandom().nextBytes(token);
         p.setString(1, username);
         p.setString(2, email);
-        p.setString(3, new String(Password.hashPassword(password, salt)));
-        p.setString(4, new String(salt));
-        p.setString(5, new String(token));
+        p.setString(3,
+            new String(Password.hashPassword(password, salt), "utf-8"));
+        p.setString(4, new String(salt, "utf-8"));
+        p.setString(5, new String(token, "utf-8"));
         try (ResultSet rs = p.executeQuery()) {
           if (rs.next()) {
             return new User(rs.getInt("id"), username, email, token.toString());
