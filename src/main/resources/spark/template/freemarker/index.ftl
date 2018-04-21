@@ -20,8 +20,8 @@
 		<script src="/js/home.js"></script>
 		<script src="/js/main.js"></script>
 		<script src="/js/websockets.js"></script>
-	<script src="/js/general_datastructures.js"></script>
-	<script src="/js/message_objects.js"></script>	
+		<script src="/js/general_datastructures.js"></script>
+		<script src="/js/message_objects.js"></script>	
 	<script>
 		$(document).ready(function() {
 		  setup_player_connection(); 

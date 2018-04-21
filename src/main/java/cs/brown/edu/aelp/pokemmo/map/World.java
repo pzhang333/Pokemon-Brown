@@ -2,8 +2,8 @@ package cs.brown.edu.aelp.pokemmo.map;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import cs.brown.edu.aelp.util.JsonFile;
 
@@ -12,7 +12,7 @@ public class World {
   private static final String DEFAULT_CHUNK_PATH = "src/main/resources/static/assets/maps";
 
   private Location spawn;
-  private Map<Integer, Chunk> chunks = new HashMap<>();
+  private Map<Integer, Chunk> chunks = new ConcurrentHashMap<>();
 
   private String prefix = "chunk_";
   private String suffix = ".json";
