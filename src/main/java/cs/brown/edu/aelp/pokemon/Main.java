@@ -1,21 +1,18 @@
 package cs.brown.edu.aelp.pokemon;
 
+import com.google.common.collect.ImmutableMap;
+import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
+import cs.brown.edu.aelp.pokemmo.data.DataSource;
+import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
+import cs.brown.edu.aelp.pokemmo.map.World;
+import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
+import cs.brown.edu.aelp.util.JsonFile;
+import freemarker.template.Configuration;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-
-import com.google.common.collect.ImmutableMap;
-
-import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
-import cs.brown.edu.aelp.pokemmo.data.DataSource;
-import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
-import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.map.World;
-import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
-import cs.brown.edu.aelp.util.JsonFile;
-import freemarker.template.Configuration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -31,9 +28,10 @@ import spark.template.freemarker.FreeMarkerEngine;
  */
 public final class Main {
 
-  private static World world = new World();
+  // TODO: Actually load a world in when the server spins up
+  private static World world;
   private static final int DEFAULT_PORT = 4567;
-  private static ThreadLocal<DataSource> datasrc;
+  private static DataSource datasrc;
 
   /**
    * @param args
@@ -66,56 +64,17 @@ public final class Main {
 
     // ip, port, database, user, pass
     /*
-=======
-    // try to connect to database
->>>>>>> 4c9d16090fb8a55a147f6b8e9308dd6726e3a459
     try {
       JsonFile cfg = new JsonFile("config/database_info.json");
-      String ip = cfg.getString("ip");
-      int port = cfg.getInt("port");
-      String db = cfg.getString("database");
-      String username = cfg.getString("username");
-      String password = cfg.getString("password");
-      Main.datasrc = new ThreadLocal<DataSource>() {
-        @Override
-        protected DataSource initialValue() {
-          try {
-            return new SQLDataSource(ip, port, db, username, password);
-          } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            System.out.println(
-                "ERROR: Something went wrong connecting to the database.");
-            return null;
-          }
-        }
-      };
-
-    } catch (IOException e) {
+      Main.datasrc = new SQLDataSource(cfg.getKey("ip"),
+          Integer.parseInt(cfg.getKey("port")), cfg.getKey("database"),
+          cfg.getKey("user"), cfg.getKey("pass"));
+    } catch (IOException | SQLException e) {
       System.out.println(
-          "ERROR: Something went wrong reading database_info.json. Check the configuration file.");
-      e.printStackTrace();
-      return;
-    }
-
-    // try to load config
-    try {
-      JsonFile cfg = new JsonFile("config/game_config.json");
-      // get cfg values as needed, e.g:
-      int i = cfg.getInt("example_int");
-      String s = cfg.getString("example_string");
-      double inner_d = cfg.getDouble("example_object", "inner_double");
-      String inner_s = cfg.getString("example_object", "inner_string");
-    } catch (IOException e) {
-      System.out.println("Something went wrong reading game_config.json");
-      e.printStackTrace();
+          "Something went wrong connecting to the database. Check your configuration file.");
       return;
     }
     */
-
-    world.loadChunks();
-    world.setSpawn(new Location(world.getChunk(1), 5, 5));
-
-    // TODO: Load a world into Main.world
 
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
@@ -180,8 +139,7 @@ public final class Main {
   /**
    * Display an error page when an exception occurs in the server.
    */
-
-  private static class ExceptionPrinter implements ExceptionHandler<Exception> {
+  private static class ExceptionPrinter implements ExceptionHandler {
     @Override
     public void handle(Exception e, Request req, Response res) {
       res.status(500);
@@ -200,11 +158,7 @@ public final class Main {
   }
 
   public static DataSource getDataSource() {
-    return Main.datasrc.get();
-  }
-
-  public static Location getSpawn() {
-    return getWorld().getSpawn();
+    return Main.datasrc;
   }
 
 }

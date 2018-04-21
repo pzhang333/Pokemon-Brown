@@ -1,15 +1,12 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
-import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
-import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.util.Identifiable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class Pokemon extends Identifiable implements BatchSavable {
+import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+
+public class Pokemon {
 
   /**
    * Builder for Pokemon class.
@@ -171,6 +168,8 @@ public class Pokemon extends Identifiable implements BatchSavable {
 
   private boolean stored;
 
+  private final Integer id;
+
   private Integer baseHealth;
 
   private Integer health;
@@ -207,14 +206,12 @@ public class Pokemon extends Identifiable implements BatchSavable {
 
   private EffectSlot effectSlot = new EffectSlot();
 
-  private Map<String, Object> changes = new HashMap<>();
-
-  public Pokemon(Integer id, String nickname, Integer baseHealth,
-      Integer health, Integer attack, Integer defense, Integer specialAttack,
-      Integer specialDefense, Integer speed, Integer exp, PokeType type,
-      List<Move> moves) {
-    super(id);
+  public Pokemon(Integer id, String nickname, Integer baseHealth, Integer health, Integer attack,
+      Integer defense, Integer specialAttack, Integer specialDefense, Integer speed, Integer exp,
+      PokeType type, List<Move> moves) {
+    super();
     this.nickname = nickname;
+    this.id = id;
     this.baseHealth = baseHealth;
     this.health = health;
     this.attack = attack;
@@ -229,12 +226,9 @@ public class Pokemon extends Identifiable implements BatchSavable {
     resetStatStages();
   }
 
-  // TODO: All setters here that update database-stored info need to reflect
-  // these changes in `this.changes`
-  // see .setHealth() for example
-
   public Pokemon(Integer id) {
-    super(id);
+    super();
+    this.id = id;
     resetStatStages();
   }
 
@@ -275,8 +269,8 @@ public class Pokemon extends Identifiable implements BatchSavable {
    */
   @Override
   public String toString() {
-    return "Pokemon [id=" + this.getId() + ", health=" + health + ", type="
-        + type + ", moves=" + moves + ", effectSlot=" + effectSlot + "]";
+    return "Pokemon [id=" + id + ", health=" + health + ", type=" + type + ", moves=" + moves
+        + ", effectSlot=" + effectSlot + "]";
   }
 
   public void setHealth(int health) {
@@ -285,7 +279,6 @@ public class Pokemon extends Identifiable implements BatchSavable {
     }
 
     this.health = health;
-    this.changes.put("cur_health", health);
   }
 
   public Integer getBaseHealth() {
@@ -316,8 +309,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
    * @return the level
    */
   public Integer getLevel() {
-    int level = (int) Math.floor(Math.pow((5.0 / 4.0) * getEXP(), (1.0 / 3.0)))
-        + 1;
+    int level = (int) Math.floor(Math.pow((5.0 / 4.0) * getEXP(), (1.0 / 3.0))) + 1;
 
     // Cap the max level.
     if (level > 100) {
@@ -344,8 +336,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
   }
 
   public Integer getEffectiveSpecialAttack() {
-    return (int) Math
-        .round(((1.0 / 2) * specialAttackStage) * getSpecialAttack());
+    return (int) Math.round(((1.0 / 2) * specialAttackStage) * getSpecialAttack());
   }
 
   public Integer getSpecialAttack() {
@@ -369,8 +360,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
   }
 
   public Integer getEffectiveSpecialDefense() {
-    return (int) Math
-        .round(((1.0 / 2) * specialDefenseStage) * getSpecialDefense());
+    return (int) Math.round(((1.0 / 2) * specialDefenseStage) * getSpecialDefense());
   }
 
   public Integer getSpecialDefense() {
@@ -397,14 +387,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
     return accuracyStage;
   }
 
-  @Override
-  public Map<String, Object> getChanges() {
-    return this.changes;
+  public Integer getId() {
+    return 1;
   }
-
-  @Override
-  public void clearChanges() {
-    this.changes.clear();
-  }
-
 }

@@ -1,7 +1,6 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import java.util.List;
 
 public interface DataSource {
 
@@ -35,15 +34,6 @@ public interface DataSource {
       throws AuthException;
 
   /**
-   * Attempts to save a list of BatchSavables, throwing a SaveException if
-   * something goes wrong.
-   * 
-   * @param objects
-   *          the list of objects to save
-   */
-  public void save(List<BatchSavable> objects) throws SaveException;
-
-  /**
    * Type of Exception thrown when something goes wrong during authentication.
    * Message should be appropriate for user-facing display.
    *
@@ -59,20 +49,6 @@ public interface DataSource {
     }
 
     public AuthException(String message) {
-      super(message);
-    }
-
-  }
-
-  class SaveException extends Exception {
-
-    private static final long serialVersionUID = -7811762281433575563L;
-
-    public SaveException() {
-      super("ERROR: Failed to perform batch save.");
-    }
-
-    public SaveException(String message) {
       super(message);
     }
 
