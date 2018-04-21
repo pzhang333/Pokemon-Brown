@@ -1,10 +1,10 @@
-class Chunk {
 
-	constructor(id, data) {
-		this.id = id;
-		this.data = data;
-	}
-}
+const MESSAGE_TYPE = {
+	CONNECT: 0,
+	GAME_PACKET: 1,
+	UPDATE_USER: 2
+};
+
 
 class Net {
 
@@ -22,6 +22,8 @@ class Net {
 		this.events = [];
 
 		this.socket = new WebSocket(this.cfg.url);
+		
+		this.socket.onmessage = this.handleMsg();
 	}
 
 	getChunk(cb) {
@@ -31,6 +33,7 @@ class Net {
 		$.getJSON(this.chunkBaseURL + id.toString() + ".json", function(data) {
 			cb(new Chunk(id, data));
 		});
+		
 	}
 
 	getCurrentChunkId() {
@@ -38,6 +41,11 @@ class Net {
 		return this.chunkId;
 	}
 
+	
+	handleMsg(msg) {
+		console.log('Got msg!');
+		console.log(msg);
+	}
 }
 
 var net = new Net();
