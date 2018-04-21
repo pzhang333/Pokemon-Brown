@@ -1,6 +1,13 @@
 package cs.brown.edu.aelp.pokemon;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
+
 import com.google.common.collect.ImmutableMap;
+
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
 import cs.brown.edu.aelp.pokemmo.data.DataSource;
 import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
@@ -9,11 +16,6 @@ import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
 import cs.brown.edu.aelp.util.JsonFile;
 import freemarker.template.Configuration;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -29,10 +31,9 @@ import spark.template.freemarker.FreeMarkerEngine;
  */
 public final class Main {
 
-  private static World world;
+  private static World world = new World();
   private static final int DEFAULT_PORT = 4567;
   private static ThreadLocal<DataSource> datasrc;
-  private static Location spawn;
 
   /**
    * @param args
@@ -105,6 +106,9 @@ public final class Main {
       e.printStackTrace();
       return;
     }
+
+    world.loadChunks();
+    world.setSpawn(new Location(world.getChunk(1), 5, 5));
 
     // TODO: Load a world into Main.world
 
@@ -197,7 +201,7 @@ public final class Main {
   }
 
   public static Location getSpawn() {
-    return Main.spawn;
+    return getWorld().getSpawn();
   }
 
 }
