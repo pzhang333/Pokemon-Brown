@@ -5,13 +5,13 @@ import java.util.Map;
 
 public class World {
 
-  private Map<String, Chunk> chunks = new HashMap<>();
+  private Map<Integer, Chunk> chunks = new HashMap<>();
 
   public void addChunk(Chunk c) {
     chunks.put(c.getId(), c);
   }
 
-  public Chunk getChunk(String id) {
+  public Chunk getChunk(int id) {
     assert chunks.containsKey(id);
     return chunks.get(id);
   }

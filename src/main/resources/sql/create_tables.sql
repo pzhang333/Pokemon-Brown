@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS users (
     id integer NOT NULL,
     username text NOT NULL,
     email text NOT NULL,
-    chunk text,
+    chunk integer,
     "row" integer,
     col integer,
     currency integer DEFAULT 0 NOT NULL,

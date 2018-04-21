@@ -10,7 +10,7 @@ public class GamePacket {
   private NetworkUser player;
 
   public GamePacket(NetworkUser player, Collection<NetworkUser> otherPlayers) {
-    if (player.getLocation().getChunkId().equals("")) {
+    if (player.getLocation().getChunkId() == -1) {
       this.setOtherPlayers(Collections.emptyList());
     } else {
       this.setOtherPlayers(localize(player, otherPlayers));
@@ -33,10 +33,8 @@ public class GamePacket {
 
   private Collection<NetworkUser> localize(NetworkUser player,
       Collection<NetworkUser> players) {
-    return players.stream()
-        .filter(
-            p -> (!p.getLocation().getChunkId().equals("")) && p.getLocation()
-                .getChunkId().equals(player.getLocation().getChunkId()))
+    return players.stream().filter(p -> (p.getLocation().getChunkId() != -1)
+        && p.getLocation().getChunkId() == player.getLocation().getChunkId())
         .collect(Collectors.toList());
   }
 
