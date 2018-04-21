@@ -17,7 +17,7 @@ class Player {
 
 		this.chunk = 'chunk_1'
 
-		this.initSprite();
+		//this.initSprite();
 	}
 
 	/**
@@ -125,7 +125,10 @@ class Player {
 	 */
 	setY(y) {
 		this.y = y;
-		this.sprite.y = 16 * y;
+		
+		if (this.sprite != undefined) {
+			this.sprite.y = 16 * y;
+		}
 	}
 
 	/**
@@ -133,7 +136,10 @@ class Player {
 	 */
 	setX(x) {
 		this.x = x;
-		this.sprite.x = 16 * x;
+		
+		if (this.sprite != undefined) {
+			this.sprite.x = 16 * x;
+		}
 	}
 
 	/**

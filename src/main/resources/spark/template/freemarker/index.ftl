@@ -23,9 +23,9 @@
 		<script src="/js/general_datastructures.js"></script>
 		<script src="/js/message_objects.js"></script>	
 	<script>
-		$(document).ready(function() {
+		/*$(document).ready(function() {
 		  setup_player_connection(); 
-		});
+		});*/
 	</script>
 	</body>
 </html>

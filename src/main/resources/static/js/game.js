@@ -4,6 +4,7 @@ var Game = {
 }
 
 Game.init = function() {
+	
 	//Game.easystar = new EasyStar.js();
 	Game.cursors = game.input.keyboard.createCursorKeys();
 };
@@ -144,6 +145,7 @@ Game.loadCurrentChunk = function() {
 
 	net.getChunk(function(chunk) {
 
+		
 		console.log(chunk)
 		Game.chunkId = chunk.id;
 
