@@ -79,4 +79,8 @@ local.properties
 ##############
 # SQL Config #
 ##############
+<<<<<<< HEAD
 config/database_info.json
+=======
+./config/database_info.json
+>>>>>>> 8512352cf3e803a6fee56ab00b70a54869f51309

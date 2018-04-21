@@ -10,7 +10,7 @@ import java.util.Map;
 public class JsonFile {
 
   private static final Gson GSON = new Gson();
-  private Map<String, String> vals = new HashMap<>();
+  private Map<String, Object> vals = new HashMap<>();
 
   public JsonFile(String path) throws IOException {
     try (FileReader fr = new FileReader(path);
@@ -19,11 +19,35 @@ public class JsonFile {
     }
   }
 
-  public String getKey(String key) {
-    if (vals.containsKey(key)) {
-      return vals.get(key);
+  @SuppressWarnings("unchecked")
+  private Object getObject(String... keys) {
+    Map<String, Object> jsonObj = vals;
+    for (int i = 0; i < keys.length; i++) {
+      String key = keys[i];
+      if (i == keys.length - 1) {
+        if (jsonObj.containsKey(key)) {
+          return jsonObj.get(key);
+        }
+      } else {
+        jsonObj = (Map<String, Object>) jsonObj.get(key);
+      }
     }
     return null;
+  }
+
+  public Integer getInt(String... keys) {
+    Object o = this.getObject(keys);
+    return o == null ? null : (int) (double) o;
+  }
+
+  public String getString(String... keys) {
+    Object o = this.getObject(keys);
+    return o == null ? null : (String) o;
+  }
+
+  public Double getDouble(String... keys) {
+    Object o = this.getObject(keys);
+    return o == null ? null : (double) o;
   }
 
 }
