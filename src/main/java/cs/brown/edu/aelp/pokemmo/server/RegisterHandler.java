@@ -48,13 +48,15 @@ public class RegisterHandler implements Route {
           "Username must have greater than 3 and fewer than 21 characters.");
     }
 
+    System.out.println(pass);
     if (!pass.matches(
         "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}")) {
       throw new AuthException("Password must be at least 8 characters,"
           + " containing an upper case letter, a lower case letter, a number, and a symbol.");
     }
 
-    if (!email.matches("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$")) {
+    if (!email.toUpperCase()
+        .matches("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$")) {
       throw new AuthException("Email must be of a valid format.");
     }
 

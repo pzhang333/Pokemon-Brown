@@ -54,7 +54,7 @@ function register(username, email, password, success, fail) {
 		data: {
 			username: username,
 			email: email,
-			password: sha1(password)
+			password: password
 		},
 		success: function(data) {
 			
