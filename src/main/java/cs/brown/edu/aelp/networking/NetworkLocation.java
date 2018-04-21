@@ -9,9 +9,9 @@ public class NetworkLocation {
 
   private int row;
   private int column;
-  private int chunkId;
+  private String chunkId;
 
-  public NetworkLocation(int chunkId, int row, int column) {
+  public NetworkLocation(String chunkId, int row, int column) {
     this.setChunkId(chunkId);
     this.setRow(row);
     this.setColumn(column);
@@ -33,11 +33,11 @@ public class NetworkLocation {
     this.column = column;
   }
 
-  public int getChunkId() {
+  public String getChunkId() {
     return chunkId;
   }
 
-  public void setChunkId(int chunkId) {
+  public void setChunkId(String chunkId) {
     this.chunkId = chunkId;
   }
 }

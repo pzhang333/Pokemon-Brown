@@ -11,9 +11,9 @@ public class NetworkUser {
     this.setUid(uid);
     this.setPlayerState(0);
     this.orientation = 0;
-    this.setLocation(new NetworkLocation(-1, -1, -1));
+    this.setLocation(new NetworkLocation("", -1, -1));
   }
-
+  
   public NetworkUser(int uid, NetworkLocation location, int playerState,
       int orientation) {
     this.setUid(uid);
@@ -21,6 +21,7 @@ public class NetworkUser {
     this.orientation = orientation;
     this.setLocation(location);
   }
+
 
   // Getters and Setters:
 

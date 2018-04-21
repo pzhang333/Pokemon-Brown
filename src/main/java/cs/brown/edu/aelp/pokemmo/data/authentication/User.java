@@ -1,8 +1,16 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
+<<<<<<< HEAD
+import java.util.HashMap;
+import java.util.Map;
+
+import cs.brown.edu.aelp.networking.NetworkLocation;
+import cs.brown.edu.aelp.networking.NetworkUser;
+=======
 import cs.brown.edu.aelp.networking.NetworkLocation;
 import cs.brown.edu.aelp.networking.NetworkUser;
 import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
+>>>>>>> 4c9d16090fb8a55a147f6b8e9308dd6726e3a459
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
@@ -32,10 +40,15 @@ public class User extends Trainer implements BatchSavable {
   }
 
   public NetworkUser toNetworkUser() {
+<<<<<<< HEAD
+    return new NetworkUser(this.getId(), new NetworkLocation(location.getChunk().getId(), 
+        location.getRow(), location.getCol()), state, orientation);
+=======
     return new NetworkUser(this.getId(),
         new NetworkLocation(location.getChunk().getId(), location.getRow(),
             location.getCol()),
         state, orientation);
+>>>>>>> 4c9d16090fb8a55a147f6b8e9308dd6726e3a459
   }
 
   public void setState(int i) {
@@ -94,6 +107,8 @@ public class User extends Trainer implements BatchSavable {
   public void setOrientation(int orientation) {
     this.orientation = orientation;
   }
+<<<<<<< HEAD
+=======
 
   @Override
   public Map<String, Object> getChanges() {
@@ -105,4 +120,5 @@ public class User extends Trainer implements BatchSavable {
     this.changes.clear();
   }
 
+>>>>>>> 4c9d16090fb8a55a147f6b8e9308dd6726e3a459
 }
