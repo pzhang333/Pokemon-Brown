@@ -22,7 +22,7 @@ public final class PacketSender {
         NetworkUser user = sessionToPlayer.get(session);
 
         // create our GamePacket object
-        GamePacket packet = new GamePacket(user, sessionToPlayer.values());
+        GamePacket packet = new GamePacket(user.getLocation().getChunkId(), sessionToPlayer.values());
 
         // converting this packet to JSON using Gson
         JsonElement json = gson.toJsonTree(packet, GamePacket.class);
