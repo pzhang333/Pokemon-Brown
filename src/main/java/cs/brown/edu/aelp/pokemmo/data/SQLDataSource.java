@@ -202,13 +202,13 @@ public class SQLDataSource implements DataSource {
       try (PreparedStatement p = this
           .prepStatementFromFile("src/main/resources/sql/register_user.sql")) {
         byte[] salt = Password.generateSalt();
-        byte[] token = new byte[32];
+        byte[] token = new byte[64];
         new SecureRandom().nextBytes(token);
         p.setString(1, username);
         p.setString(2, email);
-        p.setString(3, Password.hashPassword(password, salt).toString());
-        p.setString(4, salt.toString());
-        p.setString(5, token.toString());
+        p.setString(3, new String(Password.hashPassword(password, salt)));
+        p.setString(4, new String(salt));
+        p.setString(5, new String(token));
         try (ResultSet rs = p.executeQuery()) {
           if (rs.next()) {
             return new User(rs.getInt("id"), username, email, token.toString());

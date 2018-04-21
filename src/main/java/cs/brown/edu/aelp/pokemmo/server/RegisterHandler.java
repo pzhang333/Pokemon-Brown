@@ -54,7 +54,7 @@ public class RegisterHandler implements Route {
           + " containing an upper case letter, a lower case letter, a number, and a symbol.");
     }
 
-    if (!email.matches("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\\\.[A-Z]{2,6}$")) {
+    if (!email.matches("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$")) {
       throw new AuthException("Email must be of a valid format.");
     }
 
