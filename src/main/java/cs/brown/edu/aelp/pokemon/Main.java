@@ -80,9 +80,7 @@ public final class Main {
       runSparkServer((int) options.valueOf("port"));
     }
 
-    System.out.println("Hello, World!");
-
-    // temporary repl
+    // temporary game loop
     long sleepTime = 1000;
     while (5 != 6) {
         PlayerWebSocketHandler.sendGamePackets();
