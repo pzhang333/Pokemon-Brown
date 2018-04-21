@@ -3,7 +3,9 @@ package cs.brown.edu.aelp.pokemmo.data;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -176,8 +178,11 @@ public class SQLDataSource implements DataSource {
           .prepStatementFromFile("src/main/resources/sql/check_username_taken.sql")) {
         p.setString(1, username);
         try (ResultSet rs = p.executeQuery()) {
-          if (rs.next() && rs.getInt(1) > 0) {
-            throw new AuthException("That username is already in use.");
+
+          if (rs.next()) {
+            if (rs.getInt(1) > 0) {
+              throw new AuthException("That username is already in use.");
+            }
           }
         }
       }
@@ -213,7 +218,7 @@ public class SQLDataSource implements DataSource {
           }
         }
       }
-    } catch (Exception e) {
+    } catch (IOException | SQLException | NoSuchAlgorithmException | InvalidKeySpecException e) {
       throw new AuthException();
     }
   }
