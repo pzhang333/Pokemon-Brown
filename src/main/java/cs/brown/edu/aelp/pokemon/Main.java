@@ -65,10 +65,6 @@ public final class Main {
     OptionSet options = parser.parse(args);
 
     // ip, port, database, user, pass
-    /*
-=======
-    // try to connect to database
->>>>>>> 4c9d16090fb8a55a147f6b8e9308dd6726e3a459
     try {
       JsonFile cfg = new JsonFile("config/database_info.json");
       String ip = cfg.getString("ip");
@@ -110,12 +106,9 @@ public final class Main {
       e.printStackTrace();
       return;
     }
-    */
 
     world.loadChunks();
     world.setSpawn(new Location(world.getChunk(1), 5, 5));
-
-    // TODO: Load a world into Main.world
 
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
@@ -124,13 +117,13 @@ public final class Main {
     // temporary game loop
     long sleepTime = 1000;
     while (5 != 6) {
-        PlayerWebSocketHandler.sendGamePackets();
-        try {
-          Thread.sleep(sleepTime);
-        } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
+      PlayerWebSocketHandler.sendGamePackets();
+      try {
+        Thread.sleep(sleepTime);
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
   }
 
