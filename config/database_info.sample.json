@@ -1,16 +1,7 @@
-<<<<<<< HEAD
 {
   "database" : "database-name",
   "ip" : "localhost",
   "port" : 5432,
   "username" : "admin",
   "password" : "password"
-=======
-{
-	"database" : "database-name",
-	"ip" : "localhost",
-	"port" : 5432,
-	"username" : "admin",
-	"password" : "password"
->>>>>>> 8512352cf3e803a6fee56ab00b70a54869f51309
 }

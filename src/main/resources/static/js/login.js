@@ -1,5 +1,5 @@
 let loginURL = null;
-let registerURL = 'http://localhost/register'
+let registerURL = 'http://localhost:4567/register'
 
 function sha1(msg) {
   function rotl(n,s) { return n<<s|n>>>32-s; };
