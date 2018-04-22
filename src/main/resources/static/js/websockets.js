@@ -1,5 +1,5 @@
 // declaring our message types
-const MESSAGE_TYPE = {
+/*const MESSAGE_TYPE = {
   CONNECT: 0,
   GAME_PACKET: 1,
   UPDATE_USER: 2
@@ -43,3 +43,4 @@ const send_client_player_update = player => {
   let messageObject = new PlayerUpdateMessage(player);
   conn.send(JSON.parse(messageObject));
 }
+*/

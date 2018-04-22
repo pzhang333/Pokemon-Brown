@@ -16,3 +16,11 @@ class Point3 {
       this.z = z;
   }
 }
+
+class Chunk {
+
+	constructor(id, data) {
+		this.id = id;
+		this.data = data;
+	}
+}

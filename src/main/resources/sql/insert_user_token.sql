@@ -1,0 +1,1 @@
+UPDATE users SET session_token = ? WHERE id = ?;

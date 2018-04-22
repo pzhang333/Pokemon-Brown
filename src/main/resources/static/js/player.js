@@ -17,7 +17,7 @@ class Player {
 
 		this.chunk = 'chunk_1'
 
-		this.initSprite();
+		//this.initSprite();
 	}
 
 	/**
@@ -125,7 +125,10 @@ class Player {
 	 */
 	setY(y) {
 		this.y = y;
-		this.sprite.y = 16 * y;
+		
+		if (this.sprite != undefined) {
+			this.sprite.y = 16 * y;
+		}
 	}
 
 	/**
@@ -133,7 +136,10 @@ class Player {
 	 */
 	setX(x) {
 		this.x = x;
-		this.sprite.x = 16 * x;
+		
+		if (this.sprite != undefined) {
+			this.sprite.x = 16 * x;
+		}
 	}
 
 	/**
@@ -355,14 +361,18 @@ class Player {
 		}
 	}
 
-	tweenStop(complete) {
-		if (complete == undefined) {
-			complete = false;
-		}
+	tweenStop(cb) {
 
 		if (this.tweenRunning()) {
-			this.tween.stop(false);
-			this.setPos(this.pendingX, this.pendingY)
+			//this.tween.stop(false);
+			this.tween.onComplete.add(function() {
+				this.tween.stop(false);
+				this.setPos(this.pendingX, this.pendingY);
+				this.tween.onComplete.removeAll();
+				cb();
+			}, this, 100);
+		} else {
+			cb();
 		}
 	}
 
@@ -379,7 +389,7 @@ class Player {
 			return;
 		}
 
-		this.tweenStop();
+		this.tweenStop(function() {
 
 		this.path = path;
 		let x = path[0].x;
@@ -432,6 +442,7 @@ class Player {
 		/* Play the tween */
 		this.tween = tween;
 		tween.start();
+		}.bind(this));
 	}
 
 }

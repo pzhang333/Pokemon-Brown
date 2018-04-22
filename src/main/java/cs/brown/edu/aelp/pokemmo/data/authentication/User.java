@@ -1,20 +1,19 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import cs.brown.edu.aelp.networking.NetworkLocation;
-import cs.brown.edu.aelp.networking.NetworkUser;
 import cs.brown.edu.aelp.networking.NetworkLocation;
 import cs.brown.edu.aelp.networking.NetworkUser;
 import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class User extends Trainer implements BatchSavable {
+
+  private boolean connected = true;
 
   private final String username;
   private final String email;
@@ -37,8 +36,10 @@ public class User extends Trainer implements BatchSavable {
   }
 
   public NetworkUser toNetworkUser() {
-    return new NetworkUser(this.getId(), new NetworkLocation(location.getChunk().getId(), 
-        location.getRow(), location.getCol()), state, orientation);
+    return new NetworkUser(this.getId(),
+        new NetworkLocation(location.getChunk().getId(), location.getRow(),
+            location.getCol()),
+        state, orientation);
   }
 
   public void setState(int i) {
@@ -51,9 +52,9 @@ public class User extends Trainer implements BatchSavable {
 
   public void setLocation(Location loc) {
     this.location = loc;
-    this.changes.put("chunk", loc.getChunk().getId());
-    this.changes.put("row", loc.getRow());
-    this.changes.put("col", loc.getCol());
+    this.addChange("chunk", loc.getChunk().getId());
+    this.addChange("row", loc.getRow());
+    this.addChange("col", loc.getCol());
   }
 
   public Location getLocation() {
@@ -62,7 +63,7 @@ public class User extends Trainer implements BatchSavable {
 
   public void setCurrency(int c) {
     this.currency = c;
-    this.changes.put("currency", c);
+    this.addChange("currency", c);
   }
 
   public int getCurrency() {
@@ -98,13 +99,31 @@ public class User extends Trainer implements BatchSavable {
     this.orientation = orientation;
   }
 
-  @Override
-  public Map<String, Object> getChanges() {
-    return this.changes;
+  public boolean isConnected() {
+    return this.connected;
+  }
+
+  public void setConnected(boolean c) {
+    this.connected = c;
+  }
+
+  private void addChange(String key, Object o) {
+    synchronized (this.changes) {
+      this.changes.put(key, o);
+    }
   }
 
   @Override
-  public void clearChanges() {
-    this.changes.clear();
+  public Map<String, Object> getChangesForSaving() {
+    synchronized (this.changes) {
+      Map<String, Object> toSave = new HashMap<>(this.changes);
+      this.changes.clear();
+      return toSave;
+    }
   }
+
+  public Collection<Pokemon> getAllPokemon() {
+    return Collections.unmodifiableCollection(this.pokemon.values());
+  }
+
 }

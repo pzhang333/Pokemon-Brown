@@ -1,21 +1,28 @@
 package cs.brown.edu.aelp.pokemon;
 
+import com.google.common.collect.ImmutableMap;
+import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
+import cs.brown.edu.aelp.pokemmo.data.DataSource;
+import cs.brown.edu.aelp.pokemmo.data.DataSource.SaveException;
+import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.map.World;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
+import cs.brown.edu.aelp.util.JsonFile;
+import freemarker.template.Configuration;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-
-import com.google.common.collect.ImmutableMap;
-
-import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
-import cs.brown.edu.aelp.pokemmo.data.DataSource;
-import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
-import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.map.World;
-import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
-import cs.brown.edu.aelp.util.JsonFile;
-import freemarker.template.Configuration;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -59,7 +66,6 @@ public final class Main {
 
     // Parse command line arguments
     OptionParser parser = new OptionParser();
-    parser.accepts("gui");
     parser.accepts("port").withRequiredArg().ofType(Integer.class)
         .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
@@ -94,13 +100,10 @@ public final class Main {
     }
 
     // try to load config
+    int SAVE_PERIOD = 180; // seconds
     try {
       JsonFile cfg = new JsonFile("config/game_config.json");
-      // get cfg values as needed, e.g:
-      int i = cfg.getInt("example_int");
-      String s = cfg.getString("example_string");
-      double inner_d = cfg.getDouble("example_object", "inner_double");
-      String inner_s = cfg.getString("example_object", "inner_string");
+      SAVE_PERIOD = cfg.getInt("save_period");
     } catch (IOException e) {
       System.out.println("Something went wrong reading game_config.json");
       e.printStackTrace();
@@ -110,9 +113,33 @@ public final class Main {
     world.loadChunks();
     world.setSpawn(new Location(world.getChunk(1), 5, 5));
 
-    if (options.has("gui")) {
-      runSparkServer((int) options.valueOf("port"));
-    }
+    // try to start the save-thread
+    ScheduledExecutorService scheduler = Executors
+        .newSingleThreadScheduledExecutor();
+
+    Runnable save = new Runnable() {
+      public void run() {
+        Collection<User> users = UserManager.getAllUsers();
+        Collection<Pokemon> pokemon = new ArrayList<>();
+        for (User u : users) {
+          pokemon.addAll(u.getAllPokemon());
+        }
+        DataSource data = Main.getDataSource();
+        try {
+          data.save(users, pokemon);
+          System.out.printf("Saved %d users.%n", users.size());
+          System.out.printf("Saved %d pokemon.%n", pokemon.size());
+        } catch (SaveException e) {
+          System.out.println("ERROR: Something went wrong during saving.");
+          e.printStackTrace();
+        }
+      }
+    };
+
+    scheduler.scheduleAtFixedRate(save, SAVE_PERIOD, SAVE_PERIOD,
+        TimeUnit.SECONDS);
+
+    runSparkServer((int) options.valueOf("port"));
 
     // temporary game loop
     long sleepTime = 1000;

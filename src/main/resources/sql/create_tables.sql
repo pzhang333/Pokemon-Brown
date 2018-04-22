@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS pokemon (
     experience integer NOT NULL,
     stored boolean NOT NULL,
     cur_health integer NOT NULL,
-    max_health integer NOT NULL,
+    species text NOT NULL,
     move_1 text,
     move_2 text,
     move_3 text,
@@ -220,14 +220,8 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 -- Name: users email_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-<<<<<<< HEAD
-
 ALTER TABLE ONLY users
     ADD CONSTRAINT email_unique UNIQUE (email);
-=======
-ALTER TABLE ONLY users
-    ADD CONSTRAINT IF NOT EXISTS email_unique UNIQUE (email);
->>>>>>> 8512352cf3e803a6fee56ab00b70a54869f51309
 
 
 --
@@ -236,11 +230,7 @@ ALTER TABLE ONLY users
 --
 
 ALTER TABLE ONLY inventories
-<<<<<<< HEAD
     ADD CONSTRAINT inventories_pkey PRIMARY KEY (user_id, item_id);
-=======
-    ADD CONSTRAINT IF NOT EXISTS inventories_pkey PRIMARY KEY (user_id, item_id);
->>>>>>> 8512352cf3e803a6fee56ab00b70a54869f51309
 
 
 --
