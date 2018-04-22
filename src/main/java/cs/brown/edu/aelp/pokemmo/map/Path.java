@@ -11,18 +11,12 @@ public class Path {
    */
 
   private final long start_time = System.currentTimeMillis();
-  private final int step_time; // milliseconds
+  private final int step_time = 200; // milliseconds
   private final List<Location> steps;
 
   public Path(List<Location> steps) {
-    this(steps, 200);
-  }
-
-  public Path(List<Location> steps, int step_time) {
     assert !steps.isEmpty();
-    assert step_time > 0;
     this.steps = steps;
-    this.step_time = step_time;
   }
 
   public Location getStart() {

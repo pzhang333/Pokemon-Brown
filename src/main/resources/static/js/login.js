@@ -156,7 +156,7 @@ function simpleLogin(username, password) {
 
 function simpleRegister(username, email, password) {
 	
-	register(username, email, password, function(resp) {
+	register(username, email, password, 1, function(resp) {
 		console.log('Registration succesful!');
 		console.log(resp);
 	}, function(resp) {

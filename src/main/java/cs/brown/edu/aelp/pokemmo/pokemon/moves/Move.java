@@ -1,13 +1,13 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
-
+import cs.brown.edu.aelp.util.Identifiable;
 import java.util.EnumSet;
 
 /**
  * Pokemon Move class.
  */
-public class Move {
+public class Move extends Identifiable {
 
   /**
    * Move Complexity Type. Simple moves are calculated normally. Complex moves
@@ -39,7 +39,7 @@ public class Move {
   }
 
   public static class Builder {
-    private String id;
+    private int id;
 
     private Integer number;
 
@@ -70,7 +70,7 @@ public class Move {
     public Builder() {
     }
 
-    public Builder ofId(String id) {
+    public Builder ofId(int id) {
       this.id = id;
       return this;
     }
@@ -141,9 +141,7 @@ public class Move {
     }
 
     public Move build() {
-      Move move = new Move();
-
-      move.id = this.id;
+      Move move = new Move(id);
       move.number = this.number;
       move.accuracy = this.accuracy;
       move.basePower = this.basePower;
@@ -162,8 +160,6 @@ public class Move {
     }
 
   }
-
-  private String id;
 
   private Integer number;
 
@@ -192,7 +188,8 @@ public class Move {
   private MoveComplexity complexity;
 
   // We want to construct moves only using the builder
-  private Move() {
+  private Move(int id) {
+    super(id);
   }
 
   /**
@@ -229,12 +226,11 @@ public class Move {
    *          Whether or not this move expects a Java Handler.
    */
 
-  public Move(String id, Integer number, Double accuracy, Double basePower,
-              MoveCategory category, String description, String shortDescription,
-              String name, Integer pp, Integer priority, MoveTarget target,
-              PokeTypes type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
-    super();
-    this.id = id;
+  public Move(int id, Integer number, Double accuracy, Double basePower,
+      MoveCategory category, String description, String shortDescription,
+      String name, Integer pp, Integer priority, MoveTarget target,
+      PokeTypes type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
+    super(id);
     this.number = number;
     this.accuracy = accuracy;
     this.basePower = basePower;
@@ -248,13 +244,6 @@ public class Move {
     this.type = type;
     this.flags = flags;
     this.complexity = complexity;
-  }
-
-  /**
-   * @return the id
-   */
-  public String getId() {
-    return id;
   }
 
   /**
@@ -351,62 +340,6 @@ public class Move {
 
   public void setPP(int pp) {
     this.pp = pp;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#hashCode()
-   */
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((type == null) ? 0 : type.hashCode());
-    return result;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    Move other = (Move) obj;
-    if (id == null) {
-      if (other.id != null) {
-        return false;
-      }
-    } else if (!id.equals(other.id)) {
-      return false;
-    }
-    if (name == null) {
-      if (other.name != null) {
-        return false;
-      }
-    } else if (!name.equals(other.name)) {
-      return false;
-    }
-    if (type == null) {
-      if (other.type != null) {
-        return false;
-      }
-    } else if (!type.equals(other.type)) {
-      return false;
-    }
-    return true;
   }
 
   /*
