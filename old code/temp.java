@@ -193,4 +193,28 @@ public class temp {
   public Pokemon getDefendingPokemon() {
     return defendingPokemon;
   }
+
+
+
+  // Don't use this constructor, use the builder instead,
+  // this one doesn't have the correct stat scalings implemented
+
+  public Pokemon(Integer id, String nickname, Integer baseHealth,
+      Integer health, Integer attack, Integer defense, Integer specialAttack,
+      Integer specialDefense, Integer speed, Integer exp, PokeType type,
+      List<Move> moves) {
+    super(id);
+    this.nickname = nickname;
+    this.baseHealth = baseHealth;
+    this.health = health;
+    this.attack = attack;
+    this.defense = defense;
+    this.specialAttack = specialAttack;
+    this.specialDefense = specialDefense;
+    this.speed = speed;
+    this.exp = exp;
+    this.type = type;
+    this.moves = moves;
+
+    resetStatStages();
 }

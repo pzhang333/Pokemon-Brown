@@ -10,19 +10,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// TODO: We probably need a status column in our pokemon DB
+
 public class Pokemon extends Identifiable implements BatchSavable {
 
   private static ImmutableMap<Integer, Double> stageMultipliers = ImmutableMap
-      .<Integer, Double>builder().put(-6, 0.25).put(-5, 2.0 / 7.0)
-      .put(-4, 2.0 / 6.0).put(-3, 0.4).put(-2, 0.5).put(-1, 2.0 / 3.0)
-      .put(0, 1.0).put(1, 1.5).put(2, 2.0).put(3, 2.5).put(4, 3.0).put(5, 3.5)
-      .put(6, 4.0).build();
+      .<Integer, Double>builder()
+      .put(-6, 0.25).put(-5, 2.0 / 7.0)
+      .put(-4, 2.0 / 6.0)
+      .put(-3, 0.4)
+      .put(-2, 0.5)
+      .put(-1, 2.0 / 3.0)
+      .put(0, 1.0)
+      .put(1, 1.5)
+      .put(2, 2.0)
+      .put(3, 2.5)
+      .put(4, 3.0)
+      .put(5, 3.5)
+      .put(6, 4.0)
+      .build();
 
   private static ImmutableMap<Integer, Double> accEvaMultipliers = ImmutableMap
-      .<Integer, Double>builder().put(-6, 33.0 / 100.0).put(-5, 36.0 / 100.0)
-      .put(-4, 43.0 / 100.0).put(-3, 0.5).put(-2, 0.6).put(-1, 0.75).put(0, 1.0)
-      .put(1, 133.0 / 100.0).put(2, 166 / 100.0).put(3, 2.0).put(4, 2.5)
-      .put(5, 266.0 / 100.0).put(6, 3.0).build();
+      .<Integer, Double>builder()
+      .put(-6, 33.0 / 100.0)
+      .put(-5, 36.0 / 100.0)
+      .put(-4, 43.0 / 100.0)
+      .put(-3, 0.5)
+      .put(-2, 0.6)
+      .put(-1, 0.75)
+      .put(0, 1.0)
+      .put(1, 133.0 / 100.0)
+      .put(2, 166 / 100.0)
+      .put(3, 2.0)
+      .put(4, 2.5)
+      .put(5, 266.0 / 100.0)
+      .put(6, 3.0)
+      .build();
 
   /**
    * Builder for Pokemon class.
@@ -52,6 +75,8 @@ public class Pokemon extends Identifiable implements BatchSavable {
     private Integer id;
     private Integer gender;
     private boolean stored;
+
+    private Status status;
 
     public Builder(Integer id) {
       this.id = id;
@@ -127,6 +152,11 @@ public class Pokemon extends Identifiable implements BatchSavable {
       return this;
     }
 
+    public Builder withStatus(Status status){
+      this.status = status;
+      return this;
+    }
+
     /**
      * Builds the Pokemon class and returns the built Pokemon class.
      *
@@ -146,11 +176,13 @@ public class Pokemon extends Identifiable implements BatchSavable {
         pokemon.health = this.currHp;
       }
 
-      pokemon.attack = statScale(this.atk, pokemon.lvl);
-      pokemon.defense = statScale(this.def, pokemon.lvl);
-      pokemon.specialAttack = statScale(this.specAtk, pokemon.lvl);
-      pokemon.specialDefense = statScale(this.specDef, pokemon.lvl);
-      pokemon.speed = statScale(this.spd, pokemon.lvl);
+      pokemon.attack = this.atk;
+      pokemon.defense = this.def;
+      pokemon.specialAttack = this.specAtk;
+      pokemon.specialDefense = this.specDef;
+      pokemon.speed = this.spd;
+
+      pokemon.status = this.status;
 
       pokemon.typeList = this.typeList;
 
@@ -205,34 +237,13 @@ public class Pokemon extends Identifiable implements BatchSavable {
 
   private List<PokeTypes> typeList;
 
+  private Status status;
+
   private List<Move> moves;
 
   private EffectSlot effectSlot = new EffectSlot();
 
   private Map<String, Object> changes = new HashMap<>();
-
-  // Don't use this construct, use the builder instead,
-  // this one doesn't have the correct stat scalings implemented
-  /*
-  public Pokemon(Integer id, String nickname, Integer baseHealth,
-      Integer health, Integer attack, Integer defense, Integer specialAttack,
-      Integer specialDefense, Integer speed, Integer exp, PokeType type,
-      List<Move> moves) {
-    super(id);
-    this.nickname = nickname;
-    this.baseHealth = baseHealth;
-    this.health = health;
-    this.attack = attack;
-    this.defense = defense;
-    this.specialAttack = specialAttack;
-    this.specialDefense = specialDefense;
-    this.speed = speed;
-    this.exp = exp;
-    this.type = type;
-    this.moves = moves;
-
-    resetStatStages();
-  }*/
 
   private Pokemon(Integer id) {
     super(id);
@@ -279,6 +290,10 @@ public class Pokemon extends Identifiable implements BatchSavable {
     return typeList;
   }
 
+  public Status getStatus() {
+    return status;
+  }
+
   public EffectSlot getEffectSlot() {
     return effectSlot;
   }
@@ -313,29 +328,30 @@ public class Pokemon extends Identifiable implements BatchSavable {
     this.addChange("nickname", nickname);
   }
 
+  // TODO: Better evolution system
   public void evolve(String evolvedSpecies) {
     this.species = evolvedSpecies;
     this.addChange("species", species);
   }
 
   public Double getEffectiveAttack() {
-    return getAttack() * stageMultipliers.get(attackStage);
+    return statScale(attack, lvl) * stageMultipliers.get(attackStage);
   }
 
   public Double getEffectiveSpecialAttack() {
-    return getSpecialAttack() * stageMultipliers.get(specialAttackStage);
+    return statScale(specialAttack, lvl) * stageMultipliers.get(specialAttackStage);
   }
 
   public Double getEffectiveDefense() {
-    return getDefense() * stageMultipliers.get(defenseStage);
+    return statScale(defense, lvl) * stageMultipliers.get(defenseStage);
   }
 
   public Double getEffectiveSpecialDefense() {
-    return getSpecialDefense() * stageMultipliers.get(specialDefenseStage);
+    return statScale(specialDefense, lvl) * stageMultipliers.get(specialDefenseStage);
   }
 
   public Double getEffectiveSpeed() {
-    return getSpeed() * stageMultipliers.get(speedStage);
+    return statScale(speed, lvl) * stageMultipliers.get(speedStage);
   }
 
   public Double getEffectiveAcc() {
