@@ -13,6 +13,8 @@ public final class UserManager {
   private static final Map<String, User> users = new HashMap<>();
   private static DataSource data = Main.getDataSource();
 
+  private static final Map<Integer, User> userIdMap = new HashMap<>();
+
   private UserManager() {
   }
 
@@ -65,6 +67,10 @@ public final class UserManager {
    */
   public static Collection<User> getAllUsers() {
     return Collections.unmodifiableCollection(users.values());
+  }
+
+  public void addUser(User user) {
+    userIdMap.put(user.getId(), user);
   }
 
 }

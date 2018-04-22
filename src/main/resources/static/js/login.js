@@ -27,7 +27,7 @@ function sha1(msg) {
 /**
  * 
  */
-function register(username, email, password, success, fail) {
+function register(username, email, password, pokemon, success, fail) {
 	
 	error = false;
 	
@@ -37,6 +37,8 @@ function register(username, email, password, success, fail) {
 		error = 'Please input a password.';
 	} else if (email == undefined) {
 		error = 'Please input an email.';
+	} else if (pokemon == undefined) {
+		error = 'Please select a pokemon.';
 	}
 	
 	if (error != false) {
@@ -54,6 +56,63 @@ function register(username, email, password, success, fail) {
 		data: {
 			username: username,
 			email: email,
+			password: password,
+			pokemon: pokemon
+		},
+		success: function(data) {
+			
+			if (data.success == true) {
+				
+				success(data);
+				return;
+				
+			} else {
+				
+				error = (data.message != undefined) ? data.message : "Unknown error occurred.";
+				
+				fail({
+					success: false,
+					error: error
+				});
+				
+				return;
+			}
+		},
+		error: function(xhr, status, err) {
+			fail({
+				success: false,
+				error: "A network error occured!"
+			});
+			
+			return;
+		},
+		dataType: 'json'
+	});
+}
+
+function login(username, password, success, fail) {
+	error = false;
+	
+	if (username == undefined) {
+		error = 'Please input a user name.';
+	} else if (password == undefined) {
+		error = 'Please input a password.';
+	}
+	
+	if (error != false) {
+		 fail({
+			success: false,
+			error: error
+		 });
+		 
+		 return;
+	}
+
+	$.ajax({
+		type: "POST",
+		url: loginURL,
+		data: {
+			username: username,
 			password: password
 		},
 		success: function(data) {
@@ -84,6 +143,14 @@ function register(username, email, password, success, fail) {
 			return;
 		},
 		dataType: 'json'
+	});
+}
+
+function simpleLogin(username, password) {
+	login(username, password, function(resp) {
+		console.log('Login succesful!', resp);
+	}, function(resp) {
+		console.log('Registration failure: ' + resp.error);
 	});
 }
 

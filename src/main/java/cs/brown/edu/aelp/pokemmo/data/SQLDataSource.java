@@ -1,15 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
-import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.map.Chunk;
-import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveHandler;
-import cs.brown.edu.aelp.pokemon.Main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,6 +18,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
+import cs.brown.edu.aelp.pokemon.Main;
 
 public class SQLDataSource implements DataSource {
 
@@ -48,8 +48,8 @@ public class SQLDataSource implements DataSource {
     DatabaseMetaData md = c.getMetaData();
     try (ResultSet rs = md.getTables(null, null, "users", null)) {
       if (!rs.next()) {
-        try (PreparedStatement p = this.prepStatementFromFile(
-            "src/main/resources/sql/create_tables.sql")) {
+        try (PreparedStatement p = this
+            .prepStatementFromFile("src/main/resources/sql/create_tables.sql")) {
           p.execute();
         }
       }
@@ -58,19 +58,16 @@ public class SQLDataSource implements DataSource {
 
   private Connection getConn() throws SQLException {
     if (this.conn == null || this.conn.isClosed()) {
-      this.conn = DriverManager.getConnection(this.connString, this.user,
-          this.pass);
+      this.conn = DriverManager.getConnection(this.connString, this.user, this.pass);
     }
     this.conn.setAutoCommit(true);
     return this.conn;
   }
 
-  private PreparedStatement prepStatementFromFile(String path)
-      throws IOException, SQLException {
+  private PreparedStatement prepStatementFromFile(String path) throws IOException, SQLException {
     File f = new File(path);
     if (!f.isFile() || !path.endsWith(".sql")) {
-      throw new IllegalArgumentException(
-          "ERROR: Bad .sql statement file path provided.");
+      throw new IllegalArgumentException("ERROR: Bad .sql statement file path provided.");
     }
     PreparedStatement p = null;
     try (FileInputStream fis = new FileInputStream(f)) {
@@ -82,11 +79,10 @@ public class SQLDataSource implements DataSource {
     return p;
   }
 
-  private List<Pokemon> loadPokemonForUser(String username)
-      throws IOException, SQLException {
+  private List<Pokemon> loadPokemonForUser(String username) throws IOException, SQLException {
     List<Pokemon> pokemon = new ArrayList<>();
-    try (PreparedStatement p = this.prepStatementFromFile(
-        "src/main/resources/sql/get_pokemon_for_user.sql")) {
+    try (PreparedStatement p = this
+        .prepStatementFromFile("src/main/resources/sql/get_pokemon_for_user.sql")) {
       p.setString(1, username);
       try (ResultSet rs = p.executeQuery()) {
         while (rs.next()) {
@@ -96,32 +92,31 @@ public class SQLDataSource implements DataSource {
           String id3 = rs.getString("move_3");
           String id4 = rs.getString("move_4");
           if (id1 != null) {
-            Move m = MoveHandler.getMoveById(id1);
+            Move m = MoveLoader.getMoveById(id1);
             m.setPP(rs.getInt("pp_1"));
             b.withMove(m);
           }
           if (id2 != null) {
-            Move m = MoveHandler.getMoveById(id2);
+            Move m = MoveLoader.getMoveById(id2);
             m.setPP(rs.getInt("pp_2"));
             b.withMove(m);
           }
           if (id3 != null) {
-            Move m = MoveHandler.getMoveById(id3);
+            Move m = MoveLoader.getMoveById(id3);
             m.setPP(rs.getInt("pp_3"));
             b.withMove(m);
           }
           if (id4 != null) {
-            Move m = MoveHandler.getMoveById(id4);
+            Move m = MoveLoader.getMoveById(id4);
             m.setPP(rs.getInt("pp_4"));
             b.withMove(m);
           }
-          b.withNickName(rs.getString("nickname"))
-              .withGender(rs.getInt("gender")).withExp(rs.getInt("experience"))
-              .asStored(rs.getBoolean("stored")).withHp(rs.getInt("cur_health"))
-              .withMaxHp(rs.getInt("max_health"));
+          b.withNickName(rs.getString("nickname")).withGender(rs.getInt("gender"))
+              .withExp(rs.getInt("experience")).asStored(rs.getBoolean("stored"))
+              .withHp(rs.getInt("cur_health")).withMaxHp(rs.getInt("max_health"));
 
           // TODO: ADD CORRECT TYPE
-          b.withType(PokeType.getType(PokeRawType.NORMAL));
+          b.withType(PokeTypes.NORMAL);
 
           pokemon.add(b.build());
         }
@@ -131,8 +126,7 @@ public class SQLDataSource implements DataSource {
   }
 
   @Override
-  public User authenticateUser(String username, String password)
-      throws AuthException {
+  public User authenticateUser(String username, String password) throws AuthException {
     try (PreparedStatement p = this
         .prepStatementFromFile("src/main/resources/sql/get_user_by_name.sql")) {
       p.setString(1, username);
@@ -153,14 +147,13 @@ public class SQLDataSource implements DataSource {
           if (auth) {
             token = this.generateToken();
             this.insertTokenForUser(rs.getInt("id"), token);
-            User user = new User(rs.getInt("id"), rs.getString("username"),
-                rs.getString("email"), token);
+            User user = new User(rs.getInt("id"), rs.getString("username"), rs.getString("email"),
+                token);
             user.setCurrency(rs.getInt("currency"));
             Chunk c = Main.getWorld().getChunk(rs.getInt("chunk"));
             Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
             user.setLocation(loc);
-            for (Pokemon pokemon : this
-                .loadPokemonForUser(user.getUsername())) {
+            for (Pokemon pokemon : this.loadPokemonForUser(user.getUsername())) {
               user.addPokemonToTeam(pokemon);
             }
             return user;
@@ -181,12 +174,11 @@ public class SQLDataSource implements DataSource {
   }
 
   @Override
-  public User registerUser(String username, String email, String password)
-      throws AuthException {
+  public User registerUser(String username, String email, String password) throws AuthException {
     // first check if the username is taken
     try {
-      try (PreparedStatement p = this.prepStatementFromFile(
-          "src/main/resources/sql/check_username_taken.sql")) {
+      try (PreparedStatement p = this
+          .prepStatementFromFile("src/main/resources/sql/check_username_taken.sql")) {
         p.setString(1, username);
         try (ResultSet rs = p.executeQuery()) {
 
@@ -198,8 +190,8 @@ public class SQLDataSource implements DataSource {
         }
       }
       // then check if email is taken
-      try (PreparedStatement p = this.prepStatementFromFile(
-          "src/main/resources/sql/check_email_taken.sql")) {
+      try (PreparedStatement p = this
+          .prepStatementFromFile("src/main/resources/sql/check_email_taken.sql")) {
         p.setString(1, email);
         try (ResultSet rs = p.executeQuery()) {
           if (rs.next() && rs.getInt(1) > 0) {
@@ -214,8 +206,7 @@ public class SQLDataSource implements DataSource {
           .prepStatementFromFile("src/main/resources/sql/register_user.sql")) {
         byte[] salt = Password.generateSalt();
         String token = this.generateToken();
-        String hash = Base64.getEncoder()
-            .encodeToString(Password.hashPassword(password, salt));
+        String hash = Base64.getEncoder().encodeToString(Password.hashPassword(password, salt));
         p.setString(1, username);
         p.setString(2, email);
         p.setString(3, hash);
@@ -236,16 +227,14 @@ public class SQLDataSource implements DataSource {
           }
         }
       }
-    } catch (IOException | SQLException | NoSuchAlgorithmException
-        | InvalidKeySpecException e) {
+    } catch (IOException | SQLException | NoSuchAlgorithmException | InvalidKeySpecException e) {
       e.printStackTrace();
       throw new AuthException();
     }
   }
 
   @Override
-  public void save(Collection<? extends BatchSavable>... classes)
-      throws SaveException {
+  public void save(Collection<? extends BatchSavable>... classes) throws SaveException {
     // Don't know an elegant way around hardcoding these
     Map<Class<? extends BatchSavable>, String> tables = new HashMap<>();
     tables.put(User.class, "users");
@@ -260,8 +249,7 @@ public class SQLDataSource implements DataSource {
         }
         Class<? extends BatchSavable> c = objects.iterator().next().getClass();
         if (!tables.containsKey(c)) {
-          System.out.printf(
-              "WARNING: Not saving objects of type %s; unknown column name.%n",
+          System.out.printf("WARNING: Not saving objects of type %s; unknown column name.%n",
               c.getName());
           continue;
         }
@@ -278,8 +266,8 @@ public class SQLDataSource implements DataSource {
               sb.append("?, ");
             }
           }
-          String q = String.format("INSERT INTO %s %s VALUES %s;",
-              tables.get(c), sb.toString(), sb.toString());
+          String q = String.format("INSERT INTO %s %s VALUES %s;", tables.get(c), sb.toString(),
+              sb.toString());
           try (PreparedStatement p = conn.prepareStatement(q)) {
             int i = 1;
             for (String key : changes.keySet()) {
@@ -304,11 +292,10 @@ public class SQLDataSource implements DataSource {
     }
   }
 
-  private void insertTokenForUser(int userId, String token)
-      throws AuthException {
+  private void insertTokenForUser(int userId, String token) throws AuthException {
     try {
-      try (PreparedStatement p = this.prepStatementFromFile(
-          "src/main/resources/sql/insert_user_token.sql")) {
+      try (PreparedStatement p = this
+          .prepStatementFromFile("src/main/resources/sql/insert_user_token.sql")) {
         p.setString(1, token);
         p.setInt(2, userId);
         int updated = p.executeUpdate();
