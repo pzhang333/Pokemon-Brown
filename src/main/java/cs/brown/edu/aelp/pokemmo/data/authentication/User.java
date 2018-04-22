@@ -1,9 +1,9 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
-import cs.brown.edu.aelp.networking.NetworkLocation;
 import cs.brown.edu.aelp.networking.NetworkUser;
 import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import java.util.Collection;
@@ -21,6 +21,7 @@ public class User extends Trainer implements BatchSavable {
 
   private Map<String, Object> changes = new HashMap<>();
 
+  private Path currentPath;
   private Location location;
   private int currency = 0;
   private int state;
@@ -28,22 +29,23 @@ public class User extends Trainer implements BatchSavable {
 
   private final Map<Integer, Pokemon> pokemon = new HashMap<>();
 
+  private final NetworkUser nUser;
+
   public User(int id, String username, String email, String sessionToken) {
     super(id);
     this.username = username;
     this.email = email;
     this.sessionToken = sessionToken;
+    this.nUser = new NetworkUser(id);
   }
 
   public NetworkUser toNetworkUser() {
-    return new NetworkUser(this.getId(),
-        new NetworkLocation(location.getChunk().getId(), location.getRow(),
-            location.getCol()),
-        state, orientation);
+    return this.nUser;
   }
 
   public void setState(int i) {
     this.state = i;
+    this.nUser.setPlayerState(i);
   }
 
   public int getState(int i) {
@@ -52,13 +54,18 @@ public class User extends Trainer implements BatchSavable {
 
   public void setLocation(Location loc) {
     this.location = loc;
+    this.nUser.setLocation(loc.toNetworkLocation());
     this.addChange("chunk", loc.getChunk().getId());
     this.addChange("row", loc.getRow());
     this.addChange("col", loc.getCol());
   }
 
   public Location getLocation() {
-    return this.location;
+    if (this.currentPath == null) {
+      return this.location;
+    } else {
+      return this.currentPath.getCurrentStep();
+    }
   }
 
   public void setCurrency(int c) {
@@ -97,6 +104,7 @@ public class User extends Trainer implements BatchSavable {
 
   public void setOrientation(int orientation) {
     this.orientation = orientation;
+    this.nUser.setOrientation(orientation);
   }
 
   public boolean isConnected() {
@@ -105,6 +113,15 @@ public class User extends Trainer implements BatchSavable {
 
   public void setConnected(boolean c) {
     this.connected = c;
+  }
+
+  public void setPath(Path p) {
+    this.currentPath = p;
+    this.setLocation(p.getStart());
+  }
+
+  public Path getPath() {
+    return this.currentPath;
   }
 
   private void addChange(String key, Object o) {

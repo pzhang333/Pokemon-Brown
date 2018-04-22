@@ -7,37 +7,26 @@ package cs.brown.edu.aelp.networking;
  */
 public class NetworkLocation {
 
-  private int row;
-  private int column;
-  private int chunkId;
+  private final int row;
+  private final int column;
+  private final int chunkId;
 
   public NetworkLocation(int chunkId, int row, int column) {
-    this.setChunkId(chunkId);
-    this.setRow(row);
-    this.setColumn(column);
+    this.chunkId = chunkId;
+    this.row = row;
+    this.column = column;
   }
 
   public int getRow() {
     return row;
   }
 
-  public void setRow(int row) {
-    this.row = row;
-  }
-
   public int getColumn() {
     return column;
-  }
-
-  public void setColumn(int column) {
-    this.column = column;
   }
 
   public int getChunkId() {
     return chunkId;
   }
 
-  public void setChunkId(int chunkId) {
-    this.chunkId = chunkId;
-  }
 }
