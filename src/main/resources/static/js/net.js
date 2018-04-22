@@ -2,7 +2,11 @@
 const MESSAGE_TYPE = {
 	CONNECT: 0,
 	GAME_PACKET: 1,
-	UPDATE_USER: 2
+	UPDATE_USER: 2,
+	PATH_REQUEST_RESPONSE: 3,
+	CLIENT_PLAYER_UPDATE: 4,
+    PLAYER_REQUEST_PATH: 5,
+    PATH_REQUEST_RESPONSE: 6
 };
 
 
@@ -40,7 +44,8 @@ class Net {
 		this.handlers = {}
 		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
 		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler
-		
+		this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler
+
 		this.socket = new WebSocket(this.cfg.url);
 		
 		this.socket.onmessage = this.handleMsg.bind(this);
@@ -89,6 +94,12 @@ class Net {
 			}
 		}
 	}
+
+	pathApprovalHandler(msg) {
+		console.log("path approved");
+		let path = msg.payload.path;
+		// TODO: do something with this path
+	}
 	
 	handleMsg(event) {
 
@@ -107,9 +118,15 @@ class Net {
 
 	sendClientPlayerUpdate(networkPlayer, op){
   		// sends a message with an updated player object
-  		let messageObject = new PlayerUpdateMessage(player, op);
+  		let messageObject = new PlayerUpdateMessage(networkPlayer, op);
   		socket.send(JSON.parse(messageObject));
 	}
+
+	requestMovePath(path) {
+  		// sends a message with an updated player object
+  		let messageObject = new RequestPathMessage(path);
+  		socket.send(JSON.parse(messageObject));	
+  	}
 }
 
 var net = new Net();

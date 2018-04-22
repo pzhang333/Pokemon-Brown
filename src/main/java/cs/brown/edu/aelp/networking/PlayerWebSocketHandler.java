@@ -2,6 +2,8 @@ package cs.brown.edu.aelp.networking;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import java.io.IOException;
 import java.util.Map;
 
 import java.util.Queue;
@@ -28,7 +30,9 @@ public class PlayerWebSocketHandler {
       CONNECT,
       GAME_PACKET,
       UPDATE_USER,
-      CLIENT_PLAYER_UPDATE
+      CLIENT_PLAYER_UPDATE,
+      PLAYER_REQUEST_PATH,
+      PATH_REQUEST_RESPONSE
     }
   
     @OnWebSocketConnect
@@ -80,9 +84,30 @@ public class PlayerWebSocketHandler {
         int opcode = Integer.parseInt(opcodeString);
         
         if (opcode == 1) {
-          // player switched tiles, requires some intialization information
+          // player switched tiles, requires some initialization information
+        }
+      } else if (received.get("type").getAsInt() == MESSAGE_TYPE.PLAYER_REQUEST_PATH.ordinal()) {
+        //player is requesting a movement along a path
+        
+        // TODO: Actually verify the path
+        String path = received.getAsJsonObject("payload").get("path").toString();
+        
+        // Building the PATH_REQUEST_RESPONSE message
+        JsonObject main = new JsonObject();
+        main.addProperty("type", 6);
+        JsonObject payload = new JsonObject();
+        payload.addProperty("path", path);
+        payload.addProperty("approved", 1);
+        main.add("payload", payload);
+        
+        try {
+          session.getRemote().sendString(GSON.toJson(main));
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
         }
       }
+
     }
     
     // sends the game packets to all open sessions
