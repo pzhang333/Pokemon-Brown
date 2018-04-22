@@ -1,11 +1,12 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
+import cs.brown.edu.aelp.util.JsonFile;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import cs.brown.edu.aelp.util.JsonFile;
 
 public class World {
 
@@ -33,6 +34,10 @@ public class World {
   public Location getSpawn() {
     assert this.spawn != null;
     return this.spawn;
+  }
+
+  public Collection<Chunk> getAllChunks() {
+    return Collections.unmodifiableCollection(chunks.values());
   }
 
   public void loadChunks() {

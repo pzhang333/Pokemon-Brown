@@ -5,6 +5,7 @@ import cs.brown.edu.aelp.util.Identifiable;
 public class NetworkUser extends Identifiable {
 
   private NetworkLocation location;
+  private NetworkLocation walkingTo;
   private int playerState;
   private int orientation;
 
@@ -37,6 +38,10 @@ public class NetworkUser extends Identifiable {
 
   public void setLocation(NetworkLocation location) {
     this.location = location;
+  }
+
+  public void setWalkingTo(NetworkLocation location) {
+    this.walkingTo = location;
   }
 
 }

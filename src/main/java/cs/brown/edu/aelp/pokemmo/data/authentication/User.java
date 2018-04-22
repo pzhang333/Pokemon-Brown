@@ -53,6 +53,10 @@ public class User extends Trainer implements BatchSavable {
   }
 
   public void setLocation(Location loc) {
+    if (this.location.getChunk() != loc.getChunk()) {
+      this.location.getChunk().removeUser(this);
+      loc.getChunk().addUser(this);
+    }
     this.location = loc;
     this.nUser.setLocation(loc.toNetworkLocation());
     this.addChange("chunk", loc.getChunk().getId());
@@ -114,6 +118,7 @@ public class User extends Trainer implements BatchSavable {
   public void setPath(Path p) {
     this.currentPath = p;
     this.setLocation(p.getStart());
+    this.nUser.setWalkingTo(p.getEnd().toNetworkLocation());
   }
 
   public Path getPath() {

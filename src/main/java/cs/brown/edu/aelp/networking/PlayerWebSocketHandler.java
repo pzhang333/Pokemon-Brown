@@ -17,36 +17,19 @@ public class PlayerWebSocketHandler {
 
   private static final Gson GSON = new Gson();
 
-  private static enum MESSAGE_TYPE {
-    CONNECT, GAME_PACKET, UPDATE_USER, CLIENT_PLAYER_UPDATE, PLAYER_REQUEST_PATH, PATH_REQUEST_RESPONSE
+  public static enum MESSAGE_TYPE {
+    CONNECT, INITIALIZE, GAME_PACKET, UPDATE_USER, CLIENT_PLAYER_UPDATE, PLAYER_REQUEST_PATH, PATH_REQUEST_RESPONSE
+  }
+
+  public static enum OP_CODES {
+    ENTERED_CHUNK, LEFT_CHUNK
   }
 
   private static final MESSAGE_TYPE[] MESSAGE_TYPES = MESSAGE_TYPE.values();
 
   @OnWebSocketConnect
   public void onConnect(Session session) throws Exception {
-
-    /*
-    
-    sessions.add(session);
-    
-    // TODO: Update this information on log-in
-    NetworkUser player = new NetworkUser(nextId);
-    sessionToPlayer.put(session, player);
-    
-    // Building the CONNECT message
-    JsonObject main = new JsonObject();
-    main.addProperty("type", 0);
-    JsonObject message = new JsonObject();
-    message.addProperty("id", nextId);
-    main.add("payload", message);
-    
-    nextId++;
-    
-    // sending connect message
-    session.getRemote().sendString(GSON.toJson(main));
-    
-    */
+    // do we actually need to do anything here?
   }
 
   @OnWebSocketClose
@@ -71,7 +54,8 @@ public class PlayerWebSocketHandler {
       try {
         User u = UserManager.authenticate(id, token);
         u.setSession(session);
-        // TODO: Send them an initialization packet
+        PacketSender.sendInitializationPacket(u);
+        // TODO: Inform all other users of their connection?
       } catch (AuthException e1) {
         // their credentials were bad or something went wrong
         session.close();

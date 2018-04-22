@@ -1,13 +1,16 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.util.Identifiable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Chunk extends Identifiable {
 
@@ -18,6 +21,8 @@ public class Chunk extends Identifiable {
   private Map<Location, List<Entity>> entities = new ConcurrentHashMap<>();
 
   private Map<User, Map<Location, List<Entity>>> instanced_entities;
+
+  private Set<User> usersHere = new HashSet<>();
 
   private final boolean instanced;
 
@@ -72,6 +77,18 @@ public class Chunk extends Identifiable {
       user_entities.put(loc, new ArrayList<>());
     }
     user_entities.get(loc).add(e);
+  }
+
+  public void addUser(User u) {
+    this.usersHere.add(u);
+  }
+
+  public void removeUser(User u) {
+    this.usersHere.remove(u);
+  }
+
+  public Collection<User> getUsers() {
+    return Collections.unmodifiableSet(this.usersHere);
   }
 
 }
