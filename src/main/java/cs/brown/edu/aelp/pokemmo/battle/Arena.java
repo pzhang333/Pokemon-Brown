@@ -1,8 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.battle;
 
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
-
 /**
  * Arena class.
  */
@@ -44,22 +41,12 @@ public class Arena {
   }
 
   /*
-  public double getWeatherModifier(PokeType move) {
-    if (weather == Weather.SUN) {
-      if (move.typeMatches(PokeType.getType(PokeRawType.FIRE))) {
-        return 1.5;
-      } else if (move.typeMatches(PokeType.getType(PokeRawType.WATER))) {
-        return 0.5;
-      }
-    } else if (weather == Weather.RAIN) {
-      if (move.typeMatches(PokeType.getType(PokeRawType.FIRE))) {
-        return 0.5;
-      } else if (move.typeMatches(PokeType.getType(PokeRawType.WATER))) {
-        return 1.5;
-      }
-    }
-
-    return 1;
-  }
-  */
+   * public double getWeatherModifier(PokeType move) { if (weather == Weather.SUN) { if
+   * (move.typeMatches(PokeType.getType(PokeRawType.FIRE))) { return 1.5; } else if
+   * (move.typeMatches(PokeType.getType(PokeRawType.WATER))) { return 0.5; } } else if (weather ==
+   * Weather.RAIN) { if (move.typeMatches(PokeType.getType(PokeRawType.FIRE))) { return 0.5; } else
+   * if (move.typeMatches(PokeType.getType(PokeRawType.WATER))) { return 1.5; } }
+   * 
+   * return 1; }
+   */
 }
