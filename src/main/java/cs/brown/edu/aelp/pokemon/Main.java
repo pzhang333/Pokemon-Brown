@@ -3,8 +3,13 @@ package cs.brown.edu.aelp.pokemon;
 import com.google.common.collect.ImmutableMap;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
 import cs.brown.edu.aelp.pokemmo.data.DataSource;
+import cs.brown.edu.aelp.pokemmo.data.DataSource.SaveException;
 import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
+import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.World;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
 import cs.brown.edu.aelp.util.JsonFile;
 import freemarker.template.Configuration;
@@ -13,6 +18,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -28,10 +38,9 @@ import spark.template.freemarker.FreeMarkerEngine;
  */
 public final class Main {
 
-  // TODO: Actually load a world in when the server spins up
-  private static World world;
+  private static World world = new World();
   private static final int DEFAULT_PORT = 4567;
-  private static DataSource datasrc;
+  private static ThreadLocal<DataSource> datasrc;
 
   /**
    * @param args
@@ -57,7 +66,6 @@ public final class Main {
 
     // Parse command line arguments
     OptionParser parser = new OptionParser();
-    parser.accepts("gui");
     parser.accepts("port").withRequiredArg().ofType(Integer.class)
         .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
@@ -65,23 +73,75 @@ public final class Main {
     // ip, port, database, user, pass
     try {
       JsonFile cfg = new JsonFile("config/database_info.json");
-      Main.datasrc = new SQLDataSource((String) cfg.getKey("ip"),
-          (int) (double) cfg.getKey("port"), (String) cfg.getKey("database"),
-          (String) cfg.getKey("username"), (String) cfg.getKey("password"));
-    } catch (IOException | SQLException e) {
+      String ip = cfg.getString("ip");
+      int port = cfg.getInt("port");
+      String db = cfg.getString("database");
+      String username = cfg.getString("username");
+      String password = cfg.getString("password");
+      Main.datasrc = new ThreadLocal<DataSource>() {
+        @Override
+        protected DataSource initialValue() {
+          try {
+            return new SQLDataSource(ip, port, db, username, password);
+          } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            System.out.println(
+                "ERROR: Something went wrong connecting to the database.");
+            return null;
+          }
+        }
+      };
+
+    } catch (IOException e) {
       System.out.println(
-          "Something went wrong connecting to the database. Check your configuration file.");
+          "ERROR: Something went wrong reading database_info.json. Check the configuration file.");
       e.printStackTrace();
       return;
     }
 
-    if (options.has("gui")) {
-      runSparkServer((int) options.valueOf("port"));
+    // try to load config
+    int SAVE_PERIOD = 180; // seconds
+    try {
+      JsonFile cfg = new JsonFile("config/game_config.json");
+      SAVE_PERIOD = cfg.getInt("save_period");
+    } catch (IOException e) {
+      System.out.println("Something went wrong reading game_config.json");
+      e.printStackTrace();
+      return;
     }
 
-    System.out.println("Hello, World!");
+    world.loadChunks();
+    world.setSpawn(new Location(world.getChunk(1), 5, 5));
 
-    // temporary repl
+    // try to start the save-thread
+    ScheduledExecutorService scheduler = Executors
+        .newSingleThreadScheduledExecutor();
+
+    Runnable save = new Runnable() {
+      public void run() {
+        Collection<User> users = UserManager.getAllUsers();
+        Collection<Pokemon> pokemon = new ArrayList<>();
+        for (User u : users) {
+          pokemon.addAll(u.getAllPokemon());
+        }
+        DataSource data = Main.getDataSource();
+        try {
+          data.save(users, pokemon);
+          System.out.printf("Saved %d users.%n", users.size());
+          System.out.printf("Saved %d pokemon.%n", pokemon.size());
+        } catch (SaveException e) {
+          System.out.println("ERROR: Something went wrong during saving.");
+          e.printStackTrace();
+        }
+      }
+    };
+
+    scheduler.scheduleAtFixedRate(save, SAVE_PERIOD, SAVE_PERIOD,
+        TimeUnit.SECONDS);
+
+    runSparkServer((int) options.valueOf("port"));
+
+    // temporary game loop
     long sleepTime = 1000;
     while (5 != 6) {
       PlayerWebSocketHandler.sendGamePackets();
@@ -160,7 +220,11 @@ public final class Main {
   }
 
   public static DataSource getDataSource() {
-    return Main.datasrc;
+    return Main.datasrc.get();
+  }
+
+  public static Location getSpawn() {
+    return getWorld().getSpawn();
   }
 
 }

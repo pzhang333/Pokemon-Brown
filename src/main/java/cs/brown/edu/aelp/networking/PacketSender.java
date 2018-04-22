@@ -1,6 +1,7 @@
 package cs.brown.edu.aelp.networking;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Map;
 import java.util.Queue;
@@ -21,15 +22,15 @@ public final class PacketSender {
         NetworkUser user = sessionToPlayer.get(session);
 
         // create our GamePacket object
-        GamePacket packet = new GamePacket(user, sessionToPlayer.values());
+        GamePacket packet = new GamePacket(user.getLocation().getChunkId(), sessionToPlayer.values());
 
         // converting this packet to JSON using Gson
-        String json = gson.toJson(packet, GamePacket.class);
+        JsonElement json = gson.toJsonTree(packet, GamePacket.class);
 
         JsonObject message = new JsonObject();
         message.addProperty("type", 1);
         JsonObject properties = new JsonObject();
-        properties.addProperty("game_packet", json);
+        properties.add("game_packet", json);
         message.add("payload", properties);
         // sending the json
         session.getRemote().sendString(gson.toJson(message));

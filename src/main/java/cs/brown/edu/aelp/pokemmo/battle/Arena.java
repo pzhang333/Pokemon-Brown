@@ -43,6 +43,7 @@ public class Arena {
     this.weather = weather;
   }
 
+  /*
   public double getWeatherModifier(PokeType move) {
     if (weather == Weather.SUN) {
       if (move.typeMatches(PokeType.getType(PokeRawType.FIRE))) {
@@ -60,4 +61,5 @@ public class Arena {
 
     return 1;
   }
+  */
 }

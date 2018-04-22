@@ -119,7 +119,7 @@ Home.displayLogin = function() {
 
 	let loginButtonCb = function(ctx) {
 		Home.scroll.hideTween.onComplete.add(function() {
-			Game.player = new Player();
+			//Game.player = new Player();
 
 			// Hack. This should be loaded from the network.
 			Game.player.setPos(20, 20);

@@ -1,12 +1,28 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.ImmutableMap;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
+import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.util.Identifiable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class Pokemon {
+public class Pokemon extends Identifiable implements BatchSavable {
+
+  private static ImmutableMap<Integer, Double> stageMultipliers = ImmutableMap
+      .<Integer, Double>builder().put(-6, 0.25).put(-5, 2.0 / 7.0)
+      .put(-4, 2.0 / 6.0).put(-3, 0.4).put(-2, 0.5).put(-1, 2.0 / 3.0)
+      .put(0, 1.0).put(1, 1.5).put(2, 2.0).put(3, 2.5).put(4, 3.0).put(5, 3.5)
+      .put(6, 4.0).build();
+
+  private static ImmutableMap<Integer, Double> accEvaMultipliers = ImmutableMap
+      .<Integer, Double>builder().put(-6, 33.0 / 100.0).put(-5, 36.0 / 100.0)
+      .put(-4, 43.0 / 100.0).put(-3, 0.5).put(-2, 0.6).put(-1, 0.75).put(0, 1.0)
+      .put(1, 133.0 / 100.0).put(2, 166 / 100.0).put(3, 2.0).put(4, 2.5)
+      .put(5, 266.0 / 100.0).put(6, 3.0).build();
 
   /**
    * Builder for Pokemon class.
@@ -23,13 +39,10 @@ public class Pokemon {
     private int specAtk;
     private int specDef;
     private int spd;
-    private int eva;
-    private int acc;
-
     private int exp;
 
     // Some Pokemon have 2 types, some have only 1 type
-    private PokeType type;
+    private List<PokeTypes> typeList = new ArrayList<>();
 
     // Pokemon's moves. Some moves can be null
     private List<Move> moves = new ArrayList<>();
@@ -37,13 +50,11 @@ public class Pokemon {
     private String nickname; // Captured Pokemon can have a nickname
     private String species; // The actual species of Pokemon
     private Integer id;
-    private int gender;
+    private Integer gender;
     private boolean stored;
 
-    /**
-     * Constructs the builder.
-     */
-    public Builder() {
+    public Builder(Integer id) {
+      this.id = id;
     }
 
     public Builder asStored(boolean stored) {
@@ -58,11 +69,6 @@ public class Pokemon {
 
     public Builder withGender(int gender) {
       this.gender = gender;
-      return this;
-    }
-
-    public Builder withId(Integer id) {
-      this.id = id;
       return this;
     }
 
@@ -101,16 +107,8 @@ public class Pokemon {
       return this;
     }
 
-    /*
-     * public Builder withEva(int eva) { this.eva = eva; return this; }
-     */
-
-    /*
-     * public Builder withAcc(int acc) { this.acc = acc; return this; }
-     */
-
-    public Builder withType(PokeType type) {
-      this.type = type;
+    public Builder withType(PokeTypes type) {
+      this.typeList.add(type);
       return this;
     }
 
@@ -135,24 +133,29 @@ public class Pokemon {
      * @return the build Pokemon class
      */
     public Pokemon build() {
-      // TODO: Use asserts to ensure mandatory fields are filled out
       Pokemon pokemon = new Pokemon(this.id);
 
-      pokemon.health = this.currHp;
-      pokemon.baseHealth = this.maxHp;
-      pokemon.attack = this.atk;
-      pokemon.defense = this.def;
-      pokemon.specialAttack = this.specAtk;
-      pokemon.specialDefense = this.specDef;
-      pokemon.speed = this.spd;
-
       pokemon.exp = this.exp;
+      pokemon.lvl = calcLevel(this.exp);
 
-      pokemon.type = this.type;
+      pokemon.baseHealth = hpScale(this.maxHp, pokemon.lvl);
+
+      if (this.currHp == 0) {
+        pokemon.health = pokemon.baseHealth;
+      } else {
+        pokemon.health = this.currHp;
+      }
+
+      pokemon.attack = statScale(this.atk, pokemon.lvl);
+      pokemon.defense = statScale(this.def, pokemon.lvl);
+      pokemon.specialAttack = statScale(this.specAtk, pokemon.lvl);
+      pokemon.specialDefense = statScale(this.specDef, pokemon.lvl);
+      pokemon.speed = statScale(this.spd, pokemon.lvl);
+
+      pokemon.typeList = this.typeList;
 
       pokemon.nickname = this.nickname;
       pokemon.species = this.species;
-      // pokemon.id = this.id;
       pokemon.gender = this.gender;
       pokemon.stored = this.stored;
 
@@ -167,8 +170,6 @@ public class Pokemon {
   private Integer gender;
 
   private boolean stored;
-
-  private final Integer id;
 
   private Integer baseHealth;
 
@@ -194,24 +195,31 @@ public class Pokemon {
 
   private Integer speed;
 
-  private Integer accuracyStage = 3;
+  private Integer accuracyStage;
 
-  private Integer evasionStage = 3;
+  private Integer evasionStage;
 
   private Integer exp;
 
-  private PokeType type;
+  private Integer lvl;
+
+  private List<PokeTypes> typeList;
 
   private List<Move> moves;
 
   private EffectSlot effectSlot = new EffectSlot();
 
-  public Pokemon(Integer id, String nickname, Integer baseHealth, Integer health, Integer attack,
-      Integer defense, Integer specialAttack, Integer specialDefense, Integer speed, Integer exp,
-      PokeType type, List<Move> moves) {
-    super();
+  private Map<String, Object> changes = new HashMap<>();
+
+  // Don't use this construct, use the builder instead,
+  // this one doesn't have the correct stat scalings implemented
+  /*
+  public Pokemon(Integer id, String nickname, Integer baseHealth,
+      Integer health, Integer attack, Integer defense, Integer specialAttack,
+      Integer specialDefense, Integer speed, Integer exp, PokeType type,
+      List<Move> moves) {
+    super(id);
     this.nickname = nickname;
-    this.id = id;
     this.baseHealth = baseHealth;
     this.health = health;
     this.attack = attack;
@@ -224,72 +232,159 @@ public class Pokemon {
     this.moves = moves;
 
     resetStatStages();
-  }
+  }*/
 
-  public Pokemon(Integer id) {
-    super();
-    this.id = id;
+  private Pokemon(Integer id) {
+    super(id);
     resetStatStages();
-  }
-
-  public void resetStatStages() {
-    attackStage = 3;
-    defenseStage = 3;
-    specialAttackStage = 3;
-    specialDefenseStage = 3;
-    speedStage = 3;
-    accuracyStage = 3;
-    evasionStage = 3;
-  }
-
-  public Integer getSpeed() {
-    return speed;
-  }
-
-  public Integer getEffectiveSpeed() {
-    return (int) Math.round(((1.0 / 3) * speedStage) * getSpeed());
-  }
-
-  public Integer getHealth() {
-    return health;
-  }
-
-  public EffectSlot getEffectSlot() {
-    return effectSlot;
-  }
-
-  public static Integer getXPByLevel(int level) {
-    return (int) Math.ceil((5.0 / 4.0) * Math.pow(level, 3));
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    return "Pokemon [id=" + id + ", health=" + health + ", type=" + type + ", moves=" + moves
-        + ", effectSlot=" + effectSlot + "]";
-  }
-
-  public void setHealth(int health) {
-    if (health < 0) {
-      health = 0;
-    }
-
-    this.health = health;
   }
 
   public Integer getBaseHealth() {
     return baseHealth;
   }
 
+  public Integer getHealth() {
+    return health;
+  }
+
+  public Integer getAttack() {
+    return attack;
+  }
+
+  public Integer getSpecialAttack() {
+    return specialAttack;
+  }
+
+  public Integer getDefense() {
+    return defense;
+  }
+
+  public Integer getSpecialDefense() {
+    return specialDefense;
+  }
+
+  public Integer getExp() {
+    return exp;
+  }
+
+  public Integer getLevel() {
+    return lvl;
+  }
+
+  public Integer getSpeed() {
+    return speed;
+  }
+
+  public List<PokeTypes> getType() {
+    return typeList;
+  }
+
+  public EffectSlot getEffectSlot() {
+    return effectSlot;
+  }
+
   public boolean isKnockedOut() {
     return health == 0;
   }
 
-  private int calcStage(int curStage, int dif) {
+  public void setHealth(int health) {
+    if (health < 0) {
+      health = 0;
+    } else if (health > baseHealth) {
+      health = baseHealth;
+    }
+
+    this.health = health;
+    this.addChange("cur_health", health);
+  }
+
+  public void setStored(boolean stored) {
+    this.stored = stored;
+    this.addChange("stored", stored);
+  }
+
+  public void addExp(Integer experience) {
+    this.exp += experience;
+    this.addChange("experience", exp);
+  }
+
+  public void changeNickname(String newName) {
+    this.nickname = newName;
+    this.addChange("nickname", nickname);
+  }
+
+  public void evolve(String evolvedSpecies) {
+    this.species = evolvedSpecies;
+    this.addChange("species", species);
+  }
+
+  public Double getEffectiveAttack() {
+    return getAttack() * stageMultipliers.get(attackStage);
+  }
+
+  public Double getEffectiveSpecialAttack() {
+    return getSpecialAttack() * stageMultipliers.get(specialAttackStage);
+  }
+
+  public Double getEffectiveDefense() {
+    return getDefense() * stageMultipliers.get(defenseStage);
+  }
+
+  public Double getEffectiveSpecialDefense() {
+    return getSpecialDefense() * stageMultipliers.get(specialDefenseStage);
+  }
+
+  public Double getEffectiveSpeed() {
+    return getSpeed() * stageMultipliers.get(speedStage);
+  }
+
+  public Double getEffectiveAcc() {
+    return accEvaMultipliers.get(accuracyStage);
+  }
+
+  public Double getEffectiveEva() {
+    return accEvaMultipliers.get(evasionStage);
+  }
+
+  public void modifyAttackStage(int dif) {
+    attackStage = calcStage(attackStage, dif);
+  }
+
+  public void modifySpecialAttackStage(int dif) {
+    specialAttackStage = calcStage(specialAttackStage, dif);
+  }
+
+  public void modifyDefenseStage(int dif) {
+    defenseStage = calcStage(defenseStage, dif);
+  }
+
+  public void modifySpecialDefenseStage(int dif) {
+    specialDefenseStage = calcStage(specialDefenseStage, dif);
+  }
+
+  public void modifySpeedStage(int dif) {
+    speedStage = calcStage(speedStage, dif);
+  }
+
+  public void modifyAccuracyStage(int dif) {
+    accuracyStage = calcStage(accuracyStage, dif);
+  }
+
+  public void modifyEvasionStage(int dif) {
+    evasionStage = calcStage(evasionStage, dif);
+  }
+
+  public void resetStatStages() {
+    attackStage = 0;
+    defenseStage = 0;
+    specialAttackStage = 0;
+    specialDefenseStage = 0;
+    speedStage = 0;
+    accuracyStage = 0;
+    evasionStage = 0;
+  }
+
+  private static int calcStage(int curStage, int dif) {
     int stage = curStage + dif;
 
     if (stage > 6) {
@@ -301,93 +396,56 @@ public class Pokemon {
     return stage;
   }
 
-  public Integer getEXP() {
-    return exp;
+  private static Integer hpScale(int baseHp, int level) {
+    Double scaledHp = Math.floor((2.0 * baseHp * level) / 100.0) + level + 10;
+    return scaledHp.intValue();
   }
 
-  /**
-   * @return the level
-   */
-  public Integer getLevel() {
-    int level = (int) Math.floor(Math.pow((5.0 / 4.0) * getEXP(), (1.0 / 3.0))) + 1;
+  private static Integer statScale(int baseStat, int level) {
+    Double scaledStat = Math.floor((2.0 * baseStat * level) / 100.0) + 5;
+    return scaledStat.intValue();
+  }
+
+  private static Integer calcLevel(int exp) {
+    Double calcLevel = Math.floor(Math.pow((5.0 / 4.0) * exp, (1.0 / 3.0))) + 1;
 
     // Cap the max level.
-    if (level > 100) {
-      level = 100;
+    if (calcLevel > 100.0) {
+      calcLevel = 100.0;
     }
 
-    return level;
+    return calcLevel.intValue();
   }
 
-  public Integer getEffectiveAttack() {
-    return (int) Math.round(((1.0 / 2) * attackStage) * getAttack());
+  public static Integer calcXpByLevel(int level) {
+    Double calcLevel = Math.ceil((5.0 / 4.0) * Math.pow(level, 3));
+    return calcLevel.intValue();
   }
 
-  public void modifyAttackStage(int dif) {
-    attackStage = calcStage(attackStage, dif);
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  // TODO: Fix toString
+  @Override
+  public String toString() {
+    return "Pokemon [id=" + this.getId() + ", health=" + health + ", type="
+        + typeList.get(0) + ", moves=" + moves + ", effectSlot=" + effectSlot + "]";
   }
 
-  public Integer getAttack() {
-    return attack;
+  private void addChange(String key, Object o) {
+    synchronized (this.changes) {
+      this.changes.put(key, o);
+    }
   }
 
-  public void modifySpecialAttackStage(int dif) {
-    specialAttackStage = calcStage(specialAttackStage, dif);
-  }
-
-  public Integer getEffectiveSpecialAttack() {
-    return (int) Math.round(((1.0 / 2) * specialAttackStage) * getSpecialAttack());
-  }
-
-  public Integer getSpecialAttack() {
-    return specialAttack;
-  }
-
-  public void modifyDefenseStage(int dif) {
-    defenseStage = calcStage(defenseStage, dif);
-  }
-
-  public Integer getEffectiveDefense() {
-    return (int) Math.round(((1.0 / 2) * defenseStage) * getDefense());
-  }
-
-  public Integer getDefense() {
-    return defense;
-  }
-
-  public void modifySpecialDefenseStage(int dif) {
-    specialDefenseStage = calcStage(specialDefenseStage, dif);
-  }
-
-  public Integer getEffectiveSpecialDefense() {
-    return (int) Math.round(((1.0 / 2) * specialDefenseStage) * getSpecialDefense());
-  }
-
-  public Integer getSpecialDefense() {
-    return specialDefense;
-  }
-
-  public PokeType getType() {
-    return type;
-  }
-
-  public void modifyEvasionStage(int dif) {
-    evasionStage = calcStage(evasionStage, dif);
-  }
-
-  public Integer getEvasion() {
-    return evasionStage;
-  }
-
-  public void modifyAccuracyStage(int dif) {
-    accuracyStage = calcStage(accuracyStage, dif);
-  }
-
-  public Integer getAccuracy() {
-    return accuracyStage;
-  }
-
-  public Integer getId() {
-    return 1;
+  @Override
+  public Map<String, Object> getChangesForSaving() {
+    synchronized (this.changes) {
+      Map<String, Object> toSave = new HashMap<>(this.changes);
+      this.changes.clear();
+      return toSave;
+    }
   }
 }

@@ -6,16 +6,10 @@ import java.util.stream.Collectors;
 
 public class GamePacket {
 
-  private Collection<NetworkUser> otherPlayers;
-  private NetworkUser player;
+  private Collection<NetworkUser> players;
 
-  public GamePacket(NetworkUser player, Collection<NetworkUser> otherPlayers) {
-    if (player.getLocation().getChunkId().equals("")) {
-      this.setOtherPlayers(Collections.emptyList());
-    } else {
-      this.setOtherPlayers(localize(player, otherPlayers));
-    }
-    this.setPlayer(player);
+  public GamePacket(int chunkId, Collection<NetworkUser> players) {
+    this.setPlayers(localize(chunkId, players));
   }
 
   // Helper functions:
@@ -31,31 +25,23 @@ public class GamePacket {
    *         on position).
    */
 
-  private Collection<NetworkUser> localize(NetworkUser player,
+  private Collection<NetworkUser> localize(int chunkId,
       Collection<NetworkUser> players) {
     return players.stream()
-        .filter(
-            p -> (!p.getLocation().getChunkId().equals("")) && p.getLocation()
-                .getChunkId().equals(player.getLocation().getChunkId()))
+        .filter(p -> (!(p.getLocation().getChunkId() == -1)) 
+            && p.getLocation().getChunkId() == chunkId)
         .collect(Collectors.toList());
+  }
+
+  public Collection<NetworkUser> getPlayers() {
+    return players;
+  }
+
+  public void setPlayers(Collection<NetworkUser> players) {
+    this.players = players;
   }
 
   // Getters and Setters for Package Properties:
 
-  public Collection<NetworkUser> getOtherPlayers() {
-    return otherPlayers;
-  }
-
-  public void setOtherPlayers(Collection<NetworkUser> otherPlayers) {
-    this.otherPlayers = otherPlayers;
-  }
-
-  public NetworkUser getPlayer() {
-    return player;
-  }
-
-  public void setPlayer(NetworkUser player) {
-    this.player = player;
-  }
 
 }

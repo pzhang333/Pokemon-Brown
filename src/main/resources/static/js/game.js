@@ -4,8 +4,14 @@ var Game = {
 }
 
 Game.init = function() {
+	
 	//Game.easystar = new EasyStar.js();
 	Game.cursors = game.input.keyboard.createCursorKeys();
+	
+	Game.players = {};
+	
+	Game.players[1] = new Player();
+	Game.players[1].setPos(15, 5);
 };
 
 Game.update = function() {
@@ -32,8 +38,8 @@ Game.update = function() {
 };
 
 Game.preload = function() {
+	game.stage.disableVisibilityChange = true;
 	game.load.image('tileset', 'assets/tilesets/tileset.png');
-
 	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
 };
 
@@ -144,6 +150,7 @@ Game.loadCurrentChunk = function() {
 
 	net.getChunk(function(chunk) {
 
+		
 		console.log(chunk)
 		Game.chunkId = chunk.id;
 
@@ -165,6 +172,10 @@ Game.loadCurrentChunk = function() {
 		Game.player.initSprite();
 		Game.player.setVisible();
 		Game.player.setCameraFocus(Game.camera);
+		
+
+		Game.players[1].initSprite();
+		Game.players[1].setVisible();
 	});
 };
 
