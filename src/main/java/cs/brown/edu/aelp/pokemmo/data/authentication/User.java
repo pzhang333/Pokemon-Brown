@@ -13,11 +13,11 @@ import java.util.Map;
 
 public class User extends Trainer implements BatchSavable {
 
-  private boolean connected = true;
+  private boolean connected = false;
 
   private final String username;
   private final String email;
-  private final String sessionToken;
+  private String sessionToken;
 
   private Map<String, Object> changes = new HashMap<>();
 
@@ -122,6 +122,10 @@ public class User extends Trainer implements BatchSavable {
 
   public Path getPath() {
     return this.currentPath;
+  }
+
+  public void setToken(String t) {
+    this.sessionToken = t;
   }
 
   private void addChange(String key, Object o) {

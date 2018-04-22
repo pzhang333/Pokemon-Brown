@@ -10,6 +10,7 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.server.LoginHandler;
 import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
 import cs.brown.edu.aelp.util.JsonFile;
 import freemarker.template.Configuration;
@@ -127,6 +128,7 @@ public final class Main {
         DataSource data = Main.getDataSource();
         try {
           data.save(users, pokemon);
+          UserManager.purgeDisconnectedUsers();
           System.out.printf("Saved %d users.%n", users.size());
           System.out.printf("Saved %d pokemon.%n", pokemon.size());
         } catch (SaveException e) {
@@ -165,7 +167,8 @@ public final class Main {
 
     Spark.get("/main", new IndexHandler(), freeMarker);
     Spark.get("/", new IndexHandler(), freeMarker);
-    Spark.post("/register", new RegisterHandler(Main.getDataSource()));
+    Spark.post("/register", new RegisterHandler());
+    Spark.post("/login", new LoginHandler());
 
     // Setup Spark Routes
   }
@@ -219,6 +222,14 @@ public final class Main {
     return Main.world;
   }
 
+  /**
+   * Get the DataSource for the current thread. Make sure this is called
+   * immediately before trying to use the DataSource! Do not attempt to save the
+   * result of this call as a field on an object, or threads may try to use each
+   * other's DataSources.
+   *
+   * @return a DataSource
+   */
   public static DataSource getDataSource() {
     return Main.datasrc.get();
   }

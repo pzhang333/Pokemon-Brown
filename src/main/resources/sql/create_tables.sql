@@ -40,8 +40,8 @@ ALTER SEQUENCE inventories_user_id_seq OWNED BY inventories.user_id;
 CREATE TABLE IF NOT EXISTS pokemon (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    nickname text,
-    gender integer NOT NULL,
+    nickname text NOT NULL,
+    gender integer DEFAULT 0 NOT NULL,
     experience integer DEFAULT 100 NOT NULL,
     stored boolean DEFAULT false NOT NULL,
     cur_health integer,

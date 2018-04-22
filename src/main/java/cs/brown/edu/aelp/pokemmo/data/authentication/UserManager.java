@@ -10,39 +10,59 @@ import java.util.Map;
 
 public final class UserManager {
 
-  private static final Map<String, User> users = new HashMap<>();
-  private static DataSource data = Main.getDataSource();
-
-  private static final Map<Integer, User> userIdMap = new HashMap<>();
+  private static final Map<Integer, User> users = new HashMap<>();
 
   private UserManager() {
   }
 
   /**
-   * Attempt to authenticate a user with either a password or a token. If a
-   * token, we may be able to authenticate them from memory. If this
-   * authentication involves a User connecting to the game, be sure to use
-   * .setConnected(true) on the returned User.
+   * Attempt to authenticate a user by username and password, expiring and
+   * re-generating their token if successful.
    *
    * @param username
    *          username
    * @param pass
-   *          password or token
+   *          password
    * @return the User
    * @throws AuthException
    *           if something goes wrong
    */
   public static User authenticate(String username, String pass)
       throws AuthException {
-    if (users.containsKey(username) && users.get(username).getToken() == pass) {
-      return users.get(username);
+    DataSource data = Main.getDataSource();
+    User user = data.authenticateUser(username, pass);
+    if (users.containsKey(user.getId())) {
+      // We want to use their data from memory, but now they've got a new token.
+      User memUser = users.get(user.getId());
+      memUser.setToken(user.getToken());
+      return memUser;
     } else {
-      User user = data.authenticateUser(username, pass);
-      // if we still know about them, use their info from memory, not disk!
-      if (users.containsKey(username)) {
-        return users.get(username);
+      users.put(user.getId(), user);
+      return user;
+    }
+  }
+
+  /**
+   * Attempt to authenticate a user by id and token.
+   *
+   * @param id
+   *          their id
+   * @param token
+   *          their token
+   * @return a User
+   * @throws AuthException
+   *           if something goes wrong
+   */
+  public static User authenticate(int id, String token) throws AuthException {
+    if (users.containsKey(id)) {
+      if (users.get(id).getToken() == token) {
+        return users.get(id);
+      } else {
+        throw new AuthException("Invalid token.");
       }
-      users.put(username, user);
+    } else {
+      User user = Main.getDataSource().authenticateUser(id, token);
+      users.put(user.getId(), user);
       return user;
     }
   }
@@ -52,9 +72,9 @@ public final class UserManager {
    * unless by the saving thread, immediately after a save!
    */
   public static void purgeDisconnectedUsers() {
-    for (String s : users.keySet()) {
-      if (!users.get(s).isConnected()) {
-        users.remove(s);
+    for (int id : users.keySet()) {
+      if (!users.get(id).isConnected()) {
+        users.remove(id);
       }
     }
   }
@@ -67,10 +87,6 @@ public final class UserManager {
    */
   public static Collection<User> getAllUsers() {
     return Collections.unmodifiableCollection(users.values());
-  }
-
-  public void addUser(User user) {
-    userIdMap.put(user.getId(), user);
   }
 
 }

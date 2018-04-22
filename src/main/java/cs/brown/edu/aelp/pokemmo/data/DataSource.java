@@ -1,28 +1,43 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import java.util.Collection;
 
 public interface DataSource {
 
   /**
-   * Authenticates a user by name, returning a User fully populated with Pokemon
-   * and Inventory data if successful. On failure, throws an exception with a
-   * front-end appropriate message.
+   * Authenticates a user by name and password, returning a User fully populated
+   * with Pokemon and Inventory data if successful. If successful, this user's
+   * old token is expired and a new one is generated. On failure, throws an
+   * exception with a front-end appropriate message. Don't call this directly;
+   * use UserManager instead.
    *
-   * @param email
-   *          the email of the user trying to login
+   * @param username
+   *          the username of the user trying to login
    * @param password
-   *          either a password or session token; if a password, a new session
-   *          token is generated and the old one is expired
+   *          the password
    */
   public User authenticateUser(String username, String password)
       throws AuthException;
 
   /**
+   * Authenticates a user by id and token, returning a User fully populated with
+   * Pokemon and Inventory data if successful. On failure, throws an exception
+   * with a front-end appropriate message. Don't call this directly; use
+   * UserManager instead.
+   *
+   * @param id
+   *          the id of the user trying to login
+   * @param token
+   *          the token
+   */
+  public User authenticateUser(int id, String token) throws AuthException;
+
+  /**
    * Attempts to register a new user with the given information, returning a
    * User on success. On failure, throws an exception with a front-end
-   * appropriate message.
+   * appropriate message. Don't call this directly; use UserManager instead.
    * 
    * @param username
    *          the potential user's chosen name
@@ -44,6 +59,23 @@ public interface DataSource {
    *          should contain only objects of a single class
    */
   public void save(Collection<? extends BatchSavable>... objects)
+      throws SaveException;
+
+  /**
+   * Attempts to create a new Pokemon in the database, with given species and
+   * nickname, and belonging to the given User.
+   *
+   * @param u
+   *          the User that owns this Pokemon
+   * @param species
+   *          the species of this Pokemon
+   * @param nickname
+   *          the nickname of this Pokemon
+   * @return a Pokemon
+   * @throws SaveException
+   *           if something goes wrong
+   */
+  public Pokemon addPokemonToUser(User u, String species, String nickname)
       throws SaveException;
 
   /**
@@ -72,7 +104,7 @@ public interface DataSource {
     private static final long serialVersionUID = -7811762281433575563L;
 
     public SaveException() {
-      super("ERROR: Failed to perform batch save.");
+      super("ERROR: Something went wrong while saving to the database.");
     }
 
     public SaveException(String message) {

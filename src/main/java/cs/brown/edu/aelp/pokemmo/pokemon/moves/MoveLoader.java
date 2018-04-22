@@ -11,7 +11,7 @@ public class MoveLoader {
   private MoveLoader() {
   }
 
-  private static Map<String, Move.Builder> moveMap = new HashMap<>();
+  private static Map<Integer, Move.Builder> moveMap = new HashMap<>();
 
   /**
    * Load a set of moves from a JSON file.
@@ -31,7 +31,7 @@ public class MoveLoader {
    * @param builder
    *          The Builder we can use as a factory to clone Moves.
    */
-  public static void addMove(String id, Move.Builder builder) {
+  public static void addMove(int id, Move.Builder builder) {
     moveMap.put(id, builder);
   }
 
@@ -42,7 +42,7 @@ public class MoveLoader {
    *          the id of the move to get
    * @return a move with the given id
    */
-  public static Move getMoveById(String id) {
+  public static Move getMoveById(int id) {
     assert moveMap.containsKey(id);
     return moveMap.get(id).build();
   }

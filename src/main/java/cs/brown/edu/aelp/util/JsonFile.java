@@ -12,6 +12,10 @@ public class JsonFile {
   private static final Gson GSON = new Gson();
   private Map<String, Object> vals = new HashMap<>();
 
+  private JsonFile(Map<String, Object> obj) {
+    this.vals = obj;
+  }
+
   public JsonFile(String path) throws IOException {
     try (FileReader fr = new FileReader(path);
         JsonReader reader = new JsonReader(fr)) {
@@ -24,12 +28,15 @@ public class JsonFile {
     Map<String, Object> jsonObj = vals;
     for (int i = 0; i < keys.length; i++) {
       String key = keys[i];
-      if (i == keys.length - 1) {
-        if (jsonObj.containsKey(key)) {
+      if (jsonObj.containsKey(key)) {
+        if (i == keys.length - 1) {
           return jsonObj.get(key);
+        } else {
+          jsonObj = (Map<String, Object>) jsonObj.get(key);
         }
       } else {
-        jsonObj = (Map<String, Object>) jsonObj.get(key);
+        throw new IllegalArgumentException(
+            "Key sequence not found in JSON file.");
       }
     }
     return null;
@@ -48,6 +55,13 @@ public class JsonFile {
   public Double getDouble(String... keys) {
     Object o = this.getObject(keys);
     return o == null ? null : (double) o;
+  }
+
+  @SuppressWarnings("unchecked")
+  public JsonFile getMap(String... keys) {
+    Object o = this.getObject(keys);
+    assert Map.class.isAssignableFrom(o.getClass());
+    return new JsonFile((Map<String, Object>) o);
   }
 
 }
