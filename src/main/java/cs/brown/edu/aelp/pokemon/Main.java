@@ -107,6 +107,7 @@ public final class Main {
     }
 
     // TODO: Load a world into Main.world
+    // TODO: Launch a background thread that saves periodically
 
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
