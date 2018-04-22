@@ -1,5 +1,10 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import cs.brown.edu.aelp.networking.NetworkLocation;
+import cs.brown.edu.aelp.networking.NetworkUser;
 import cs.brown.edu.aelp.networking.NetworkLocation;
 import cs.brown.edu.aelp.networking.NetworkUser;
 import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
@@ -32,10 +37,8 @@ public class User extends Trainer implements BatchSavable {
   }
 
   public NetworkUser toNetworkUser() {
-    return new NetworkUser(this.getId(),
-        new NetworkLocation(location.getChunk().getId(), location.getRow(),
-            location.getCol()),
-        state, orientation);
+    return new NetworkUser(this.getId(), new NetworkLocation(location.getChunk().getId(), 
+        location.getRow(), location.getCol()), state, orientation);
   }
 
   public void setState(int i) {
@@ -104,5 +107,4 @@ public class User extends Trainer implements BatchSavable {
   public void clearChanges() {
     this.changes.clear();
   }
-
 }

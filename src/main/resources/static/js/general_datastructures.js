@@ -1,5 +1,5 @@
 // class containing necessary information about a player
-class Player {
+class NetworkPlayer {
     constructor(uuid, position, playerState, orientation) {
       this.uuid = uuid;
       this.position = position;
@@ -15,4 +15,12 @@ class Point3 {
       this.y = y;
       this.z = z;
   }
+}
+
+class Chunk {
+
+	constructor(id, data) {
+		this.id = id;
+		this.data = data;
+	}
 }

@@ -29,10 +29,9 @@ import spark.template.freemarker.FreeMarkerEngine;
  */
 public final class Main {
 
-  private static World world;
+  private static World world = new World();
   private static final int DEFAULT_PORT = 4567;
   private static ThreadLocal<DataSource> datasrc;
-  private static Location spawn;
 
   /**
    * @param args
@@ -63,7 +62,7 @@ public final class Main {
         .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
 
-    // try to connect to database
+    // ip, port, database, user, pass
     try {
       JsonFile cfg = new JsonFile("config/database_info.json");
       String ip = cfg.getString("ip");
@@ -106,16 +105,14 @@ public final class Main {
       return;
     }
 
-    // TODO: Load a world into Main.world
-    // TODO: Launch a background thread that saves periodically
+    world.loadChunks();
+    world.setSpawn(new Location(world.getChunk(1), 5, 5));
 
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
     }
 
-    System.out.println("Hello, World!");
-
-    // temporary repl
+    // temporary game loop
     long sleepTime = 1000;
     while (5 != 6) {
       PlayerWebSocketHandler.sendGamePackets();
@@ -198,7 +195,7 @@ public final class Main {
   }
 
   public static Location getSpawn() {
-    return Main.spawn;
+    return getWorld().getSpawn();
   }
 
 }

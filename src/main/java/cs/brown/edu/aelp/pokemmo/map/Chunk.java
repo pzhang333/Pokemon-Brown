@@ -1,18 +1,24 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.util.Identifiable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.util.Identifiable;
 
 public class Chunk extends Identifiable {
 
   private final int width;
+
   private final int height;
-  private Map<Location, List<Entity>> entities = new HashMap<>();
+
+  private Map<Location, List<Entity>> entities = new ConcurrentHashMap<>();
+
   private Map<User, Map<Location, List<Entity>>> instanced_entities;
+
   private final boolean instanced;
 
   public Chunk(int id, int width, int height, boolean instanced) {
@@ -21,7 +27,7 @@ public class Chunk extends Identifiable {
     this.height = height;
     this.instanced = instanced;
     if (instanced) {
-      this.instanced_entities = new HashMap<>();
+      this.instanced_entities = new ConcurrentHashMap<>();
     }
   }
 
