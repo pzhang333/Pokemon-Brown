@@ -3,9 +3,10 @@ package cs.brown.edu.aelp.networking;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.util.Map;
-import java.util.Queue;
-import org.eclipse.jetty.websocket.api.Session;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public final class PacketSender {
 
@@ -14,30 +15,30 @@ public final class PacketSender {
   private PacketSender() {
   }
 
-  public static void sendGamePackets(Queue<Session> sessions,
-      Map<Session, NetworkUser> sessionToPlayer) {
-    sessions.stream().filter(Session::isOpen).forEach(session -> {
-      try {
-        // System.out.println(sessionToPlayer);
-        NetworkUser user = sessionToPlayer.get(session);
+  public static void sendGamePackets() {
+    Collection<User> users = UserManager.getAllUsers();
+    Collection<NetworkUser> nUsers = users.stream().map(User::toNetworkUser)
+        .collect(Collectors.toList());
+    try {
+      for (User u : users) {
+        if (u.getSession() != null && u.getSession().isOpen()) {
+          GamePacket packet = new GamePacket(u.getLocation().getChunk().getId(),
+              nUsers);
+          // converting this packet to JSON using Gson
+          JsonElement json = gson.toJsonTree(packet, GamePacket.class);
 
-        // create our GamePacket object
-        GamePacket packet = new GamePacket(user.getLocation().getChunkId(), sessionToPlayer.values());
-
-        // converting this packet to JSON using Gson
-        JsonElement json = gson.toJsonTree(packet, GamePacket.class);
-
-        JsonObject message = new JsonObject();
-        message.addProperty("type", 1);
-        JsonObject properties = new JsonObject();
-        properties.add("game_packet", json);
-        message.add("payload", properties);
-        // sending the json
-        session.getRemote().sendString(gson.toJson(message));
-      } catch (Exception e) {
-        e.printStackTrace();
+          JsonObject message = new JsonObject();
+          message.addProperty("type", 1);
+          JsonObject properties = new JsonObject();
+          properties.add("game_packet", json);
+          message.add("payload", properties);
+          // sending the json
+          u.getSession().getRemote().sendString(gson.toJson(message));
+        }
       }
-    });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
 }

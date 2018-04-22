@@ -10,14 +10,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.jetty.websocket.api.Session;
 
 public class User extends Trainer implements BatchSavable {
-
-  private boolean connected = false;
 
   private final String username;
   private final String email;
   private String sessionToken;
+  private Session session;
 
   private Map<String, Object> changes = new HashMap<>();
 
@@ -108,11 +108,7 @@ public class User extends Trainer implements BatchSavable {
   }
 
   public boolean isConnected() {
-    return this.connected;
-  }
-
-  public void setConnected(boolean c) {
-    this.connected = c;
+    return this.session != null && this.session.isOpen();
   }
 
   public void setPath(Path p) {
@@ -126,6 +122,14 @@ public class User extends Trainer implements BatchSavable {
 
   public void setToken(String t) {
     this.sessionToken = t;
+  }
+
+  public void setSession(Session s) {
+    this.session = s;
+  }
+
+  public Session getSession() {
+    return this.session;
   }
 
   private void addChange(String key, Object o) {
