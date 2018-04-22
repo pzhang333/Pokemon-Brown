@@ -6,6 +6,22 @@ const MESSAGE_TYPE = {
 };
 
 
+function generateFakeGamePacket() {
+	return {
+		"payload": {
+			"game_packet": {
+				players: [
+					{
+						id: 1,
+						x: Math.floor(Math.random() * 20),
+						y: Math.floor(Math.random() * 20)
+					}
+				]
+			}
+		} 
+	};
+}
+
 class Net {
 
 	constructor() {
@@ -54,7 +70,24 @@ class Net {
 	}
 	
 	gamePacketHandler(msg) {
-		//console.log('Got game packet');
+		console.log('Got game packet');
+		
+		msg = generateFakeGamePacket();
+		
+		if (game.state.current != "Game") {
+			return;
+		}
+		
+		let playerUpdates = msg.payload.game_packet.players;
+		for(let i = 0; i < playerUpdates.length; i++) {
+			let update = playerUpdates[i];
+			let player = Game.players[update.id];
+			
+			console.log(player);
+			if (player != undefined) {
+				player.prepareMovement(update, true);
+			}
+		}
 	}
 	
 	handleMsg(event) {

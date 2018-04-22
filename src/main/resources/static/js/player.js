@@ -361,14 +361,18 @@ class Player {
 		}
 	}
 
-	tweenStop(complete) {
-		if (complete == undefined) {
-			complete = false;
-		}
+	tweenStop(cb) {
 
 		if (this.tweenRunning()) {
-			this.tween.stop(false);
-			this.setPos(this.pendingX, this.pendingY)
+			//this.tween.stop(false);
+			this.tween.onComplete.add(function() {
+				this.tween.stop(false);
+				this.setPos(this.pendingX, this.pendingY);
+				this.tween.onComplete.removeAll();
+				cb();
+			}, this, 100);
+		} else {
+			cb();
 		}
 	}
 
@@ -385,7 +389,7 @@ class Player {
 			return;
 		}
 
-		this.tweenStop();
+		this.tweenStop(function() {
 
 		this.path = path;
 		let x = path[0].x;
@@ -438,6 +442,7 @@ class Player {
 		/* Play the tween */
 		this.tween = tween;
 		tween.start();
+		}.bind(this));
 	}
 
 }
