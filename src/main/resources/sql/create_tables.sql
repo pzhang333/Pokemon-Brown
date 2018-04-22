@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS pokemon (
     experience integer NOT NULL,
     stored boolean NOT NULL,
     cur_health integer NOT NULL,
-    max_health integer NOT NULL,
+    species text NOT NULL,
     move_1 text,
     move_2 text,
     move_3 text,

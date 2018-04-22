@@ -1,51 +1,28 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableMap;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.util.Identifiable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Pokemon extends Identifiable implements BatchSavable {
 
-  private static ImmutableMap<Integer, Double> stageMultipliers =
-      ImmutableMap.<Integer, Double>builder()
-          .put(-6, 0.25)
-          .put(-5, 2.0/7.0)
-          .put(-4, 2.0/6.0)
-          .put(-3, 0.4)
-          .put(-2, 0.5)
-          .put(-1, 2.0/3.0)
-          .put(0, 1.0)
-          .put(1, 1.5)
-          .put(2, 2.0)
-          .put(3, 2.5)
-          .put(4, 3.0)
-          .put(5, 3.5)
-          .put(6, 4.0)
-          .build();
+  private static ImmutableMap<Integer, Double> stageMultipliers = ImmutableMap
+      .<Integer, Double>builder().put(-6, 0.25).put(-5, 2.0 / 7.0)
+      .put(-4, 2.0 / 6.0).put(-3, 0.4).put(-2, 0.5).put(-1, 2.0 / 3.0)
+      .put(0, 1.0).put(1, 1.5).put(2, 2.0).put(3, 2.5).put(4, 3.0).put(5, 3.5)
+      .put(6, 4.0).build();
 
-  private static ImmutableMap<Integer, Double> accEvaMultipliers =
-      ImmutableMap.<Integer, Double>builder()
-          .put(-6, 33.0/100.0)
-          .put(-5, 36.0/100.0)
-          .put(-4, 43.0/100.0)
-          .put(-3, 0.5)
-          .put(-2, 0.6)
-          .put(-1, 0.75)
-          .put(0, 1.0)
-          .put(1, 133.0/100.0)
-          .put(2, 166/100.0)
-          .put(3, 2.0)
-          .put(4, 2.5)
-          .put(5, 266.0/100.0)
-          .put(6, 3.0)
-          .build();
+  private static ImmutableMap<Integer, Double> accEvaMultipliers = ImmutableMap
+      .<Integer, Double>builder().put(-6, 33.0 / 100.0).put(-5, 36.0 / 100.0)
+      .put(-4, 43.0 / 100.0).put(-3, 0.5).put(-2, 0.6).put(-1, 0.75).put(0, 1.0)
+      .put(1, 133.0 / 100.0).put(2, 166 / 100.0).put(3, 2.0).put(4, 2.5)
+      .put(5, 266.0 / 100.0).put(6, 3.0).build();
 
   /**
    * Builder for Pokemon class.
@@ -256,9 +233,6 @@ public class Pokemon extends Identifiable implements BatchSavable {
     resetStatStages();
   }
 
-  // TODO: All setters here that update database-stored info need to reflect
-  // these changes in `this.changes`
-  // see .setHealth() for example
   private Pokemon(Integer id) {
     super(id);
     resetStatStages();
@@ -315,32 +289,32 @@ public class Pokemon extends Identifiable implements BatchSavable {
   public void setHealth(int health) {
     if (health < 0) {
       health = 0;
-    } else if (health > baseHealth){
+    } else if (health > baseHealth) {
       health = baseHealth;
     }
 
     this.health = health;
-    this.changes.put("cur_health", health);
+    this.addChange("cur_health", health);
   }
 
   public void setStored(boolean stored) {
     this.stored = stored;
-    this.changes.put("stored", stored);
+    this.addChange("stored", stored);
   }
 
   public void addExp(Integer experience) {
     this.exp += experience;
-    this.changes.put("experience", exp);
+    this.addChange("experience", exp);
   }
 
   public void changeNickname(String newName) {
     this.nickname = newName;
-    this.changes.put("nickname", nickname);
+    this.addChange("nickname", nickname);
   }
 
   public void evolve(String evolvedSpecies) {
     this.species = evolvedSpecies;
-    this.changes.put("species", species);
+    this.addChange("species", species);
   }
 
   public Double getEffectiveAttack() {
@@ -387,7 +361,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
     specialDefenseStage = calcStage(specialDefenseStage, dif);
   }
 
-  public void modifySpeedStage(int dif){
+  public void modifySpeedStage(int dif) {
     speedStage = calcStage(speedStage, dif);
   }
 
@@ -458,13 +432,18 @@ public class Pokemon extends Identifiable implements BatchSavable {
         + type + ", moves=" + moves + ", effectSlot=" + effectSlot + "]";
   }
 
-  @Override
-  public Map<String, Object> getChanges() {
-    return this.changes;
+  private void addChange(String key, Object o) {
+    synchronized (this.changes) {
+      this.changes.put(key, o);
+    }
   }
 
   @Override
-  public void clearChanges() {
-    this.changes.clear();
+  public Map<String, Object> getChangesForSaving() {
+    synchronized (this.changes) {
+      Map<String, Object> toSave = new HashMap<>(this.changes);
+      this.changes.clear();
+      return toSave;
+    }
   }
 }

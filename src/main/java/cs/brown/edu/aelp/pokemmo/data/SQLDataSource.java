@@ -1,5 +1,15 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
+import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveHandler;
+import cs.brown.edu.aelp.pokemon.Main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,17 +27,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.map.Chunk;
-import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveHandler;
-import cs.brown.edu.aelp.pokemon.Main;
 
 public class SQLDataSource implements DataSource {
 
@@ -270,7 +269,7 @@ public class SQLDataSource implements DataSource {
       conn.setAutoCommit(false);
       for (Class<? extends BatchSavable> c : groups.keySet()) {
         for (BatchSavable bs : groups.get(c)) {
-          Map<String, Object> changes = bs.getChanges();
+          Map<String, Object> changes = bs.getChangesForSaving();
           if (changes.size() == 0) {
             continue;
           }
@@ -292,7 +291,6 @@ public class SQLDataSource implements DataSource {
               i++;
             }
             p.executeUpdate();
-            bs.clearChanges();
           }
         }
       }
