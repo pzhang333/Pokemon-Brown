@@ -65,7 +65,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
     private int exp;
 
     // Some Pokemon have 2 types, some have only 1 type
-    private PokeType type;
+    private List<PokeTypes> typeList = new ArrayList<>();
 
     // Pokemon's moves. Some moves can be null
     private List<Move> moves = new ArrayList<>();
@@ -73,7 +73,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
     private String nickname; // Captured Pokemon can have a nickname
     private String species; // The actual species of Pokemon
     private Integer id;
-    private int gender;
+    private Integer gender;
     private boolean stored;
 
     public Builder(Integer id) {
@@ -130,8 +130,8 @@ public class Pokemon extends Identifiable implements BatchSavable {
       return this;
     }
 
-    public Builder withType(PokeType type) {
-      this.type = type;
+    public Builder withType(PokeTypes type) {
+      this.typeList.add(type);
       return this;
     }
 
@@ -175,7 +175,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
       pokemon.specialDefense = statScale(this.specDef, pokemon.lvl);
       pokemon.speed = statScale(this.spd, pokemon.lvl);
 
-      pokemon.type = this.type;
+      pokemon.typeList = this.typeList;
 
       pokemon.nickname = this.nickname;
       pokemon.species = this.species;
@@ -226,7 +226,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
 
   private Integer lvl;
 
-  private PokeType type;
+  private List<PokeTypes> typeList;
 
   private List<Move> moves;
 
@@ -236,6 +236,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
 
   // Don't use this construct, use the builder instead,
   // this one doesn't have the correct stat scalings implemented
+  /*
   public Pokemon(Integer id, String nickname, Integer baseHealth,
       Integer health, Integer attack, Integer defense, Integer specialAttack,
       Integer specialDefense, Integer speed, Integer exp, PokeType type,
@@ -254,7 +255,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
     this.moves = moves;
 
     resetStatStages();
-  }
+  }*/
 
   // TODO: All setters here that update database-stored info need to reflect
   // these changes in `this.changes`
@@ -300,8 +301,8 @@ public class Pokemon extends Identifiable implements BatchSavable {
     return speed;
   }
 
-  public PokeType getType() {
-    return type;
+  public List<PokeTypes> getType() {
+    return typeList;
   }
 
   public EffectSlot getEffectSlot() {
@@ -452,10 +453,11 @@ public class Pokemon extends Identifiable implements BatchSavable {
    *
    * @see java.lang.Object#toString()
    */
+  // TODO: Fix toString
   @Override
   public String toString() {
     return "Pokemon [id=" + this.getId() + ", health=" + health + ", type="
-        + type + ", moves=" + moves + ", effectSlot=" + effectSlot + "]";
+        + typeList.get(0) + ", moves=" + moves + ", effectSlot=" + effectSlot + "]";
   }
 
   @Override

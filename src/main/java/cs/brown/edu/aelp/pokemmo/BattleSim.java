@@ -13,7 +13,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.WishMove;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
 /**
@@ -25,15 +24,15 @@ public final class BattleSim {
    * @param args
    *          Command line arguments
    */
+  /*
   public static void main(String[] args) {
     new BattleSim().run(args);
-  }
+  }*/
 
   /**
    * Private constructor for main.
    */
   private BattleSim() {
-
   }
 
   /**
@@ -42,6 +41,9 @@ public final class BattleSim {
    * @param args
    *          Command line arguments
    */
+
+  // This code is depreciated.
+  /*
   private void run(String[] args) {
 
     Move atk = new Move("atk", 1, .9, 100.0, Move.MoveCategory.SPECIAL, "", "",
@@ -133,4 +135,5 @@ public final class BattleSim {
       System.out.println(t2.getActivePokemon());
     }
   }
+  */
 }
