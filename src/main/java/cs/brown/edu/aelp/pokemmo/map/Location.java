@@ -1,15 +1,23 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
+import cs.brown.edu.aelp.networking.NetworkLocation;
+
 public class Location {
 
   private final Chunk chunk;
   private final int row;
   private final int col;
+  private final NetworkLocation nLocation;
 
   public Location(Chunk c, int row, int col) {
     this.chunk = c;
     this.row = row;
     this.col = col;
+    this.nLocation = new NetworkLocation(chunk.getId(), row, col);
+  }
+
+  public NetworkLocation toNetworkLocation() {
+    return this.nLocation;
   }
 
   public Chunk getChunk() {
