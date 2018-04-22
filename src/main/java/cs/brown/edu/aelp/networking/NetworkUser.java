@@ -1,36 +1,18 @@
 package cs.brown.edu.aelp.networking;
 
-public class NetworkUser {
+import cs.brown.edu.aelp.util.Identifiable;
 
-  private int uid;
+public class NetworkUser extends Identifiable {
+
   private NetworkLocation location;
   private int playerState;
   private int orientation;
 
-  public NetworkUser(int uid) {
-    this.setUid(uid);
+  public NetworkUser(int id) {
+    super(id);
     this.setPlayerState(0);
     this.orientation = 0;
     this.setLocation(new NetworkLocation(-1, -1, -1));
-  }
-  
-  public NetworkUser(int uid, NetworkLocation location, int playerState,
-      int orientation) {
-    this.setUid(uid);
-    this.setPlayerState(playerState);
-    this.orientation = orientation;
-    this.setLocation(location);
-  }
-
-
-  // Getters and Setters:
-
-  public int getUid() {
-    return uid;
-  }
-
-  public void setUid(int uid) {
-    this.uid = uid;
   }
 
   public int getPlayerState() {
