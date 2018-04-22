@@ -6,12 +6,15 @@ import java.util.concurrent.ThreadLocalRandom;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.Status;
 
 public class MoveResult {
   private Pokemon atkPokemon;
   private Pokemon defPokemon;
   private Arena arena;
   private Move move;
+  private ComplexMove complexHandler;
+
   private MoveOutcome outcome = MoveOutcome.NO_EFFECT;
   private Integer damage = 0;
 
@@ -24,6 +27,10 @@ public class MoveResult {
     HIT, MISS, BLOCKED, NON_ATTACK_SUCCESS, NON_ATTACK_FAIL, NO_EFFECT
   }
 
+  public enum StatusOutcome{
+    // TODO: We probably want a separate report for negative status effects?
+  }
+
   public MoveResult(Pokemon atkPokemon, Pokemon defPokemon, Move move,
       Arena arena) {
     this.atkPokemon = atkPokemon;
@@ -32,7 +39,18 @@ public class MoveResult {
     this.arena = arena;
   }
 
+  public MoveResult(Pokemon atkPokemon, Pokemon defPokemon, Move move,
+                    Arena arena, ComplexMove complexHandler) {
+    this.atkPokemon = atkPokemon;
+    this.defPokemon = defPokemon;
+    this.move = move;
+    this.arena = arena;
+    this.complexHandler = complexHandler;
+  }
+
   public void evaluate() {
+    // TODO: Add checking for negative status effects
+
     switch (move.getComplexity()) {
       case BASIC:
         basicEval();
@@ -50,6 +68,7 @@ public class MoveResult {
       case OHKO:
         break;
       case COMPLEX:
+        complexHandler.eval();
         break;
       }
   }
@@ -59,7 +78,7 @@ public class MoveResult {
         * (atkPokemon.getEffectiveAcc()
         / defPokemon.getEffectiveEva());
 
-    // TODO: Remove sout line
+    // TODO: Remove print line
     System.out.println("Effective Accuracy: " + effAccuracy);
 
     return (Math.random() <= effAccuracy);
@@ -99,7 +118,7 @@ public class MoveResult {
     return atkPokemon;
   }
 
-  public Pokemon getDefendingPokemon(){
+  public Pokemon getDefendingPokemon() {
     return defPokemon;
   }
 
@@ -122,9 +141,10 @@ public class MoveResult {
     return 1.0;
   }
 
-  public Double calcCrit(){
-    // TODO: Implement later
-    return 1.0;
+  public Double calcCrit() {
+    // Flat 1/16th chance of critical
+    int rnd = ThreadLocalRandom.current().nextInt(0, 17);
+    return (rnd == 1) ? 2.0 : 1.0;
   }
 
   public Double calcRng() {
@@ -458,8 +478,8 @@ public class MoveResult {
     }
   }
 
-  // TODO: Implement later
   public Double burnModifier() {
-    return 1.0;
+    return (atkPokemon.getStatus() == Status.BURN
+        && move.getCategory() == Move.MoveCategory.PHYSICAL) ? 0.5 : 1.0;
   }
 }
