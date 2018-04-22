@@ -8,7 +8,7 @@ import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeType.PokeRawType;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveHandler;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
 import cs.brown.edu.aelp.pokemon.Main;
 import java.io.File;
 import java.io.FileInputStream;
@@ -96,22 +96,22 @@ public class SQLDataSource implements DataSource {
           String id3 = rs.getString("move_3");
           String id4 = rs.getString("move_4");
           if (id1 != null) {
-            Move m = MoveHandler.getMoveById(id1);
+            Move m = MoveLoader.getMoveById(id1);
             m.setPP(rs.getInt("pp_1"));
             b.withMove(m);
           }
           if (id2 != null) {
-            Move m = MoveHandler.getMoveById(id2);
+            Move m = MoveLoader.getMoveById(id2);
             m.setPP(rs.getInt("pp_2"));
             b.withMove(m);
           }
           if (id3 != null) {
-            Move m = MoveHandler.getMoveById(id3);
+            Move m = MoveLoader.getMoveById(id3);
             m.setPP(rs.getInt("pp_3"));
             b.withMove(m);
           }
           if (id4 != null) {
-            Move m = MoveHandler.getMoveById(id4);
+            Move m = MoveLoader.getMoveById(id4);
             m.setPP(rs.getInt("pp_4"));
             b.withMove(m);
           }

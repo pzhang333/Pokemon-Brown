@@ -1,14 +1,8 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
+
 import java.util.EnumSet;
-import java.util.concurrent.ThreadLocalRandom;
-
-import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeType;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.ModifierType;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
-
-// TODO: Javadocs, remove depreciated code
 
 /**
  * Pokemon Move class.
@@ -20,14 +14,14 @@ public class Move {
    * require Java implemented Handlers.
    */
   public enum MoveComplexity {
-    SIMPLE, COMPLEX
+    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO
   }
 
   /**
    * Move Category.
    */
   public enum MoveCategory {
-    PHYSICAL, SPECIAL, STATUS
+    PHYSICAL, SPECIAL
   }
 
   /**
@@ -67,7 +61,7 @@ public class Move {
 
     private MoveTarget target;
 
-    private PokeType type;
+    private PokeTypes type;
 
     private EnumSet<MoveFlag> flags;
 
@@ -131,7 +125,7 @@ public class Move {
       return this;
     }
 
-    public Builder ofType(PokeType type) {
+    public Builder ofType(PokeTypes type) {
       this.type = type;
       return this;
     }
@@ -191,7 +185,7 @@ public class Move {
 
   private MoveTarget target;
 
-  private PokeType type;
+  private PokeTypes type;
 
   private EnumSet<MoveFlag> flags;
 
@@ -236,9 +230,9 @@ public class Move {
    */
 
   public Move(String id, Integer number, Double accuracy, Double basePower,
-      MoveCategory category, String description, String shortDescription,
-      String name, Integer pp, Integer priority, MoveTarget target,
-      PokeType type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
+              MoveCategory category, String description, String shortDescription,
+              String name, Integer pp, Integer priority, MoveTarget target,
+              PokeTypes type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
     super();
     this.id = id;
     this.number = number;
@@ -337,7 +331,7 @@ public class Move {
   /**
    * @return the type
    */
-  public PokeType getType() {
+  public PokeTypes getType() {
     return type;
   }
 
@@ -424,95 +418,4 @@ public class Move {
   public String toString() {
     return "Move [name=" + name + "]";
   }
-
-  public void applyStandardModifiers(AttackEvent evt, MoveResult mr) {
-
-    applyEffectivenessModifiers(evt, mr);
-
-    // Target modifier
-    mr.setModifier(ModifierType.TARGET,
-        (getTarget().equals(MoveTarget.NORMAL)) ? 1 : .75);
-
-    // Technically this is not inclusive on 1
-    mr.setModifier(ModifierType.RANDOM,
-        ThreadLocalRandom.current().nextDouble(.85, 1));
-  }
-
-  public void applyEffectivenessModifiers(AttackEvent evt, MoveResult mr) {
-
-    mr.setModifier(ModifierType.STAB, evt.getAttackingPokemon().getType()
-        .getOffensiveEffectiveness(getType()));
-
-    mr.setModifier(ModifierType.TYPE, evt.getDefendingPokemon().getType()
-        .getDefensiveEffectiveness(getType()));
-
-    mr.setModifier(ModifierType.WEATHER,
-        evt.getBattle().getArena().getWeatherModifier(getType()));
-  }
-
-  public boolean isCrit() {
-    return false;
-  }
-
-  public double getCritModifier() {
-    return 2;
-  }
-
-  public boolean accuracyCheck(AttackEvent evt) {
-
-    // If accuracy is -1 don't bother to calculate as the move ALWAYS hits.
-    if (getAccuracy() == -1) {
-      return true;
-    }
-
-    double effAccuracy = getAccuracy()
-        * (evt.getAttackingPokemon().getEffectiveAcc()
-            / evt.getAttackingPokemon().getEffectiveEva());
-
-    System.out.println("effective Accuracy: " + effAccuracy);
-
-    return (Math.random() <= effAccuracy);
-  }
-
-  public MoveResult getResult(AttackEvent evt) {
-    MoveResult mr = new MoveResult(evt.getAttackingPokemon(),
-        evt.getDefendingPokemon());
-
-    // This does not account for stat stages...
-
-    if (!accuracyCheck(evt)) {
-      mr.setOutcome(MoveOutcome.MISS);
-      return mr;
-    }
-
-    mr.setOutcome(MoveOutcome.HIT);
-
-    boolean isCrit = isCrit();
-
-    double critModifier = isCrit ? getCritModifier() : 1;
-
-    double atkDefRatio = 0;
-
-    if (getCategory().equals(MoveCategory.PHYSICAL)) {
-      atkDefRatio = evt.getAttackingPokemon().getEffectiveAttack()
-          / evt.getDefendingPokemon().getEffectiveDefense();
-
-    } else if (getCategory().equals(MoveCategory.SPECIAL)) {
-      atkDefRatio = evt.getAttackingPokemon().getEffectiveSpecialAttack()
-          / evt.getDefendingPokemon().getEffectiveSpecialDefense();
-    }
-
-    double baseDamage = ((((((2 * evt.getAttackingPokemon().getLevel()
-        * critModifier) / 5) + 2) * getBasePower() * atkDefRatio) / 50) + 2);
-
-    mr.setBaseDamage(baseDamage);
-
-    // Apply general crit modifier
-    mr.setModifier(ModifierType.CRIT, critModifier);
-
-    applyStandardModifiers(evt, mr);
-
-    return mr;
-  }
-
 }

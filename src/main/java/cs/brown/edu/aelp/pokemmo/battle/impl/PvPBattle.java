@@ -120,8 +120,8 @@ public class PvPBattle extends Battle {
     // Events...
     SwitchInEvent switchInEvent = new SwitchInEvent(this, turn.getPokemonIn(),
         turn.getPokemonOut());
-    SwitchOutEvent switchOutEvent = new SwitchOutEvent(this, turn.getPokemonIn(),
-        turn.getPokemonOut());
+    SwitchOutEvent switchOutEvent = new SwitchOutEvent(this,
+        turn.getPokemonIn(), turn.getPokemonOut());
 
     // Broadcast switch out
     trainer.getEffectSlot().handle(switchOutEvent);
@@ -141,17 +141,20 @@ public class PvPBattle extends Battle {
     Trainer atkTrainer = turn.getTrainer();
     Trainer defTrainer = other(atkTrainer);
 
-    AttackEvent atkEvent = new AttackEvent(this, atkTrainer, atkTrainer.getActivePokemon(),
-        defTrainer, defTrainer.getActivePokemon());
+    AttackEvent atkEvent = new AttackEvent(this, atkTrainer,
+        atkTrainer.getActivePokemon(), defTrainer,
+        defTrainer.getActivePokemon());
 
     // Attacking event
     atkTrainer.getEffectSlot().handle(atkEvent);
     atkTrainer.getActivePokemon().getEffectSlot().handle(atkEvent);
 
-    MoveResult result = turn.getMove().getResult(atkEvent);
+    // TODO: ADD IN MOVE_RESULT
+    MoveResult result = new MoveResult(atkEvent.getAttackingPokemon(),
+        atkEvent.getDefendingPokemon(), turn.getMove(), getArena());
+    result.evaluate();
     // Todo: defending events
-
-    System.out.println(result);
+    // System.out.println(result);
 
     // TODO: Check if the player knocked themselves out or...
     // Basically just make sure the self-destruct isn't broken... or really
@@ -160,16 +163,17 @@ public class PvPBattle extends Battle {
     if (result.getOutcome().equals(MoveOutcome.HIT)) {
       // Other events...
 
-      System.out.println("The attack was effect or perhaps not...");
+      System.out.println("The attack was effective or perhaps not...");
 
       Pokemon defendingPokemon = result.getDefendingPokemon();
 
-      defendingPokemon.setHealth(defendingPokemon.getHealth() - result.getDamage());
+      defendingPokemon
+          .setHealth(defendingPokemon.getHealth() - result.getDamage());
 
       if (defendingPokemon.isKnockedOut()) {
-        System.out.println("KO!");
-        defendingPokemon.getEffectSlot()
-            .handle(new KnockedOutEvent(this, result.getAttackingPokemon(), defendingPokemon));
+        System.out.println("K.O.!");
+        defendingPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
+            result.getAttackingPokemon(), defendingPokemon));
 
         if (defTrainer.allPokemonKnockedOut()) {
           victory(atkTrainer);
@@ -217,7 +221,8 @@ public class PvPBattle extends Battle {
       // If the other trainer's pokemon isn't knocked out skip their current
       // turn.
       if (!other(t.getTrainer()).getActivePokemon().isKnockedOut()) {
-        turnsMap.put(other(t.getTrainer()), new NullTurn(other(t.getTrainer())));
+        turnsMap.put(other(t.getTrainer()),
+            new NullTurn(other(t.getTrainer())));
       }
 
     } else if (other(t.getTrainer()).getActivePokemon().isKnockedOut()) {
@@ -235,7 +240,6 @@ public class PvPBattle extends Battle {
     if (t.equals(a)) {
       return b;
     }
-
     return a;
   }
 }
