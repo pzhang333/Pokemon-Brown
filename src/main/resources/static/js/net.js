@@ -104,6 +104,12 @@ class Net {
 	handleErr(err) {
 		console.log('Connection error:', err);
 	}
+
+	sendClientPlayerUpdate(networkPlayer, op){
+  		// sends a message with an updated player object
+  		let messageObject = new PlayerUpdateMessage(player, op);
+  		socket.send(JSON.parse(messageObject));
+	}
 }
 
 var net = new Net();

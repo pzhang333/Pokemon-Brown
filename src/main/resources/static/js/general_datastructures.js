@@ -1,8 +1,8 @@
 // class containing necessary information about a player
-class NetworkPlayer {
-    constructor(uuid, position, playerState, orientation) {
-      this.uuid = uuid;
-      this.position = position;
+class NetworkUser {
+    constructor(uid, location, playerState, orientation) {
+      this.uid = uid;
+      this.location = location;
       this.playerState = playerState;
       this.orientation = orientation;
   }

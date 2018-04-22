@@ -69,11 +69,19 @@ public class PlayerWebSocketHandler {
       if (received.get("type").getAsInt() == MESSAGE_TYPE.CLIENT_PLAYER_UPDATE.ordinal()) {
         // we have received an update from the client
         
-        String playerJson = received.get("payload").toString();
+        String playerJson = received.getAsJsonObject("payload").get("player").toString();
         NetworkUser player = GSON.fromJson(playerJson, NetworkUser.class);
 
         // updating our player object in our map of sessions to players
         sessionToPlayer.put(session, player);
+        
+        // retrieving opcode value 
+        String opcodeString = received.getAsJsonObject("payload").get("op").toString();
+        int opcode = Integer.parseInt(opcodeString);
+        
+        if (opcode == 1) {
+          // player switched tiles, requires some intialization information
+        }
       }
     }
     
