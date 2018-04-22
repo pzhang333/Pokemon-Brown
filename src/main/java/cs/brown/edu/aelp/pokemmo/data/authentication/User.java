@@ -6,10 +6,14 @@ import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class User extends Trainer implements BatchSavable {
+
+  private boolean connected = true;
 
   private final String username;
   private final String email;
@@ -95,6 +99,14 @@ public class User extends Trainer implements BatchSavable {
     this.orientation = orientation;
   }
 
+  public boolean isConnected() {
+    return this.connected;
+  }
+
+  public void setConnected(boolean c) {
+    this.connected = c;
+  }
+
   private void addChange(String key, Object o) {
     synchronized (this.changes) {
       this.changes.put(key, o);
@@ -108,6 +120,10 @@ public class User extends Trainer implements BatchSavable {
       this.changes.clear();
       return toSave;
     }
+  }
+
+  public Collection<Pokemon> getAllPokemon() {
+    return Collections.unmodifiableCollection(this.pokemon.values());
   }
 
 }

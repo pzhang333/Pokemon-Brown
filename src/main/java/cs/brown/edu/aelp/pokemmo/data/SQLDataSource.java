@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,12 +148,13 @@ public class SQLDataSource implements DataSource {
           if (!auth) {
             auth = Password.authenticate(password,
                 Base64.getDecoder().decode(rs.getString("hashed_pw")),
-                rs.getString("salt").getBytes());
+                Base64.getDecoder().decode(rs.getString("salt")));
           }
           if (auth) {
-            // id, username, email, token
+            token = this.generateToken();
+            this.insertTokenForUser(rs.getInt("id"), token);
             User user = new User(rs.getInt("id"), rs.getString("username"),
-                rs.getString("email"), rs.getString("session_token"));
+                rs.getString("email"), token);
             user.setCurrency(rs.getInt("currency"));
             Chunk c = Main.getWorld().getChunk(rs.getInt("chunk"));
             Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
@@ -211,14 +213,14 @@ public class SQLDataSource implements DataSource {
       try (PreparedStatement p = this
           .prepStatementFromFile("src/main/resources/sql/register_user.sql")) {
         byte[] salt = Password.generateSalt();
-        byte[] token = new byte[8];
-        new SecureRandom().nextBytes(token);
+        String token = this.generateToken();
+        String hash = Base64.getEncoder()
+            .encodeToString(Password.hashPassword(password, salt));
         p.setString(1, username);
         p.setString(2, email);
-        p.setString(3, Base64.getEncoder()
-            .encodeToString(Password.hashPassword(password, salt)));
+        p.setString(3, hash);
         p.setString(4, Base64.getEncoder().encodeToString(salt));
-        p.setString(5, Base64.getEncoder().encodeToString(token));
+        p.setString(5, token);
 
         Location spawn = Main.getWorld().getSpawn();
 
@@ -228,8 +230,7 @@ public class SQLDataSource implements DataSource {
 
         try (ResultSet rs = p.executeQuery()) {
           if (rs.next()) {
-            return new User(rs.getInt("id"), username, email,
-                Base64.getEncoder().encodeToString(token));
+            return new User(rs.getInt("id"), username, email, token);
           } else {
             throw new AuthException();
           }
@@ -243,32 +244,28 @@ public class SQLDataSource implements DataSource {
   }
 
   @Override
-  public void save(List<BatchSavable> objects) throws SaveException {
+  public void save(Collection<? extends BatchSavable>... classes)
+      throws SaveException {
     // Don't know an elegant way around hardcoding these
     Map<Class<? extends BatchSavable>, String> tables = new HashMap<>();
     tables.put(User.class, "users");
     tables.put(Pokemon.class, "pokemon");
 
-    Map<Class<? extends BatchSavable>, List<BatchSavable>> groups = new HashMap<>();
-    for (BatchSavable obj : objects) {
-      Class<? extends BatchSavable> c = obj.getClass();
-      if (tables.containsKey(c)) {
-        if (!groups.containsKey(c)) {
-          groups.put(c, new ArrayList<>());
-        }
-        groups.get(c).add(obj);
-      } else {
-        System.out.printf(
-            "WARNING: Not saving object of class %s with unknown SQL table name.%n",
-            c.getName());
-      }
-    }
-
     try {
       Connection conn = this.getConn();
       conn.setAutoCommit(false);
-      for (Class<? extends BatchSavable> c : groups.keySet()) {
-        for (BatchSavable bs : groups.get(c)) {
+      for (Collection<? extends BatchSavable> objects : classes) {
+        if (objects.isEmpty()) {
+          continue;
+        }
+        Class<? extends BatchSavable> c = objects.iterator().next().getClass();
+        if (!tables.containsKey(c)) {
+          System.out.printf(
+              "WARNING: Not saving objects of type %s; unknown column name.%n",
+              c.getName());
+          continue;
+        }
+        for (BatchSavable bs : objects) {
           Map<String, Object> changes = bs.getChangesForSaving();
           if (changes.size() == 0) {
             continue;
@@ -305,5 +302,29 @@ public class SQLDataSource implements DataSource {
       e.printStackTrace();
       throw new SaveException();
     }
+  }
+
+  private void insertTokenForUser(int userId, String token)
+      throws AuthException {
+    try {
+      try (PreparedStatement p = this.prepStatementFromFile(
+          "src/main/resources/sql/insert_user_token.sql")) {
+        p.setString(1, token);
+        p.setInt(2, userId);
+        int updated = p.executeUpdate();
+        if (updated == 0) {
+          throw new AuthException();
+        }
+      }
+    } catch (SQLException | IOException e) {
+      e.printStackTrace();
+      throw new AuthException();
+    }
+  }
+
+  private String generateToken() {
+    byte[] token = new byte[8];
+    new SecureRandom().nextBytes(token);
+    return Base64.getEncoder().encodeToString(token);
   }
 }
