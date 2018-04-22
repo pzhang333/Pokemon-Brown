@@ -9,6 +9,8 @@ public final class UserManager {
 
   private static final Map<Pair<String, String>, User> users = new HashMap<>();
 
+  private static final Map<Integer, User> userIdMap = new HashMap<>();
+
   private UserManager() {
   }
 
@@ -26,6 +28,10 @@ public final class UserManager {
     // TODO: Lookup this username/pass pair in database
     // TODO: Generate token for this user and store in database
     return null;
+  }
+
+  public void addUser(User user) {
+    userIdMap.put(user.getId(), user);
   }
 
 }
