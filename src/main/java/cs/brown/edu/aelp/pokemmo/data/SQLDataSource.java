@@ -180,7 +180,8 @@ public class SQLDataSource implements DataSource {
           throw new AuthException("Invalid login credentials.");
         }
       }
-    } catch (Exception e) {
+    } catch (SQLException | IOException | InvalidKeySpecException
+        | NoSuchAlgorithmException e) {
       e.printStackTrace();
       throw new AuthException();
     }

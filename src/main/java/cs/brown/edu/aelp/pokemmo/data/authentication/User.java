@@ -129,6 +129,9 @@ public class User extends Trainer implements SQLBatchSavable {
   }
 
   public void setSession(Session s) {
+    if (this.session != null && this.session.isOpen()) {
+      this.session.close();
+    }
     this.session = s;
   }
 

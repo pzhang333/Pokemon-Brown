@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class Chunk extends Identifiable {
 
@@ -88,7 +89,8 @@ public class Chunk extends Identifiable {
   }
 
   public Collection<User> getUsers() {
-    return Collections.unmodifiableSet(this.usersHere);
+    return Collections.unmodifiableSet(this.usersHere.stream()
+        .filter(User::isConnected).collect(Collectors.toSet()));
   }
 
 }
