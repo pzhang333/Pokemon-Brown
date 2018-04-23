@@ -130,8 +130,9 @@ class Net {
 			let update = playerUpdates[i];
 			
 			//let loc = update.location;
-			let loc = update.currentPath.end;
+			let loc = update.location;
 			let id = update.id;
+
 			
 			console.log(id + " : " + net.id)
 			if (id == net.id) {
@@ -140,22 +141,28 @@ class Net {
 			
 			if (Game.players[id] == undefined) {
 				let player = new Player();
+				
 				player.setPos(loc.col, loc.row);
 				player.initSprite();
 				player.setVisible(true);
 				player.id = id;
 				
 				Game.players[id] = player;
-				continue;
 			}
 			
 			let player = Game.players[id];
 			
+			let dest = update.destination;
+			
+			if (dest == undefined) {
+				continue;
+			}
+			
 			//console.log(player);
 			if (player != undefined) {
 				player.prepareMovement({
-					x: loc.col,
-					y: loc.row
+					x: dest.col,
+					y: dest.row
 				}, true);
 			}
 		}

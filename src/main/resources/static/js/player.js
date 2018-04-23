@@ -373,7 +373,11 @@ class Player {
 			if (Game.player == this) {
 				this.teleport(door.x, door.y, door.chunk);
 			} else {
-				alert('Other player teleported');
+				//alert('Other player teleported');
+				
+				this.sprite.destroy();
+				delete Game.players[this.id];
+				return;
 			}
 		}
 
