@@ -159,6 +159,12 @@ public class User extends Trainer implements SQLBatchSavable {
     p.setInt(4, this.getCurrency());
     p.setString(5, this.getToken());
   }
+  
+  public void updateFromNetworkUser(NetworkUser networkUser) {
+    this.setOrientation(networkUser.getOrientation());
+    this.setLocation(networkUser.getLocation().toLocation());
+    this.setState(networkUser.getPlayerState());
+  }
 
   @Override
   public String getTableName() {

@@ -122,7 +122,7 @@ Home.displayLogin = function() {
 			//Game.player = new Player();
 
 			// Hack. This should be loaded from the network.
-			Game.player.setPos(20, 20);
+			//Game.player.setPos(20, 20);
 			
 			game.state.start('Game');
 		}, 

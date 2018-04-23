@@ -1,5 +1,8 @@
 package cs.brown.edu.aelp.networking;
 
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemon.Main;
+
 /**
  * NetworkLocation.java.
  *
@@ -29,4 +32,7 @@ public class NetworkLocation {
     return chunkId;
   }
 
+  public Location toLocation() {
+    return new Location(Main.getWorld().getChunk(this.chunkId), this.row, this.column);
+  }
 }
