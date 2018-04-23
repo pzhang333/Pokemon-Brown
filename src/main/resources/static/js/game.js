@@ -9,9 +9,6 @@ Game.init = function() {
 	Game.cursors = game.input.keyboard.createCursorKeys();
 	
 	Game.players = {};
-	
-	Game.players[1] = new Player();
-	Game.players[1].setPos(15, 5);
 };
 
 Game.update = function() {
@@ -172,10 +169,6 @@ Game.loadCurrentChunk = function() {
 		Game.player.initSprite();
 		Game.player.setVisible();
 		Game.player.setCameraFocus(Game.camera);
-		
-
-		Game.players[1].initSprite();
-		Game.players[1].setVisible();
 	});
 };
 

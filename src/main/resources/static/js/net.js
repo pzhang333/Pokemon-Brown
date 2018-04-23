@@ -3,25 +3,21 @@ const MESSAGE_TYPE = {
 	CONNECT: 0,
 	INITIALIZE_PACKET: 1,
 	GAME_PACKET: 2,
-	UPDATE_USER: 4,
-	PATH_REQUEST_RESPONSE: 5,
-	CLIENT_PLAYER_UPDATE: 6,
-    PLAYER_REQUEST_PATH: 7,
-    PATH_REQUEST_RESPONSE: 8
+	PLAYER_REQUEST_PATH: 3
 };
 
 function waitForSocketConnection(socket, callback) {
     setTimeout(
         function () {
             if (socket.readyState === 1) {
-                console.log("Connection is made")
+                //console.log("Connection is made")
                 if(callback != null){
                     callback(socket);
                 }
                 return;
 
             } else {
-                console.log("wait for connection...")
+                //console.log("wait for connection...")
                 waitForSocketConnection(socket, callback);
             }
 
@@ -52,6 +48,16 @@ class Net {
 
 	}
 	
+	sendPacket(type, payload) {
+		if (this.socket.readyState == this.socket.CLOSED) {
+			throw "Socket closed...";
+		}
+		
+		waitForSocketConnection(this.socket, function(socket) {
+			socket.send(net.packet(type, payload));
+		}.bind(this));
+	}
+	
 	packet(type, payload) {
 		payload.id = net.id;
 		
@@ -63,8 +69,10 @@ class Net {
 
 	connect(id, token) {
 		
-		this.id = id;
-		this.token = token;
+		console.log(id);
+		net.id = id;
+		Game.player.id = id;
+		net.token = token;
 		
 		this.socket = new WebSocket(this.cfg.url);
 		this.socket.onmessage = this.handleMsg.bind(this);
@@ -72,10 +80,8 @@ class Net {
 		
 		console.log('Auth(' + this.id + ', ' + this.token + ')');
 		
-		waitForSocketConnection(this.socket, function(socket) {
-			socket.send(net.packet(MESSAGE_TYPE.CONNECT, {
-				token: token
-			}));
+		this.sendPacket(MESSAGE_TYPE.CONNECT, {
+			token: token
 		});
 	}
 	
@@ -105,7 +111,7 @@ class Net {
 		Game.player.id = this.id;
 		
 		let loc = msg.payload.location;
-		Game.player.setPos(loc.column, loc.row);
+		Game.player.setPos(loc.col, loc.row);
 		
 		net.chunkId = loc.chunkId;
 	}
@@ -123,14 +129,33 @@ class Net {
 		for(let i = 0; i < playerUpdates.length; i++) {
 			let update = playerUpdates[i];
 			
-			let loc = playerUpdates[i].location;
-			let id = Game.players[update.id];
+			//let loc = update.location;
+			let loc = update.currentPath.end;
+			let id = update.id;
 			
-			console.log(player);
+			console.log(id + " : " + net.id)
+			if (id == net.id) {
+				continue;
+			}
+			
+			if (Game.players[id] == undefined) {
+				let player = new Player();
+				player.setPos(loc.col, loc.row);
+				player.initSprite();
+				player.setVisible(true);
+				player.id = id;
+				
+				Game.players[id] = player;
+				continue;
+			}
+			
+			let player = Game.players[id];
+			
+			//console.log(player);
 			if (player != undefined) {
 				player.prepareMovement({
-					x: loc.column,
-					y: loc.rows
+					x: loc.col,
+					y: loc.row
 				}, true);
 			}
 		}

@@ -306,8 +306,39 @@ class Player {
 			}
 		}
 
-		Game.easystar.findPath(this.x, this.y, end.x, end.y,
-			this.traversePath.bind(this));
+		//Game.easystar.findPath(this.x, this.y, end.x, end.y,
+		//	this.traversePath.bind(this));
+		
+		Game.easystar.findPath(this.x, this.y, end.x, end.y, function(path) {
+			
+			if (path == null) {
+				return;
+			}
+
+			if (path.length == 0) {
+				return;
+			}
+			
+			if (this == Game.player) {
+				
+				let xyPath = [];
+				
+				for(let i = 0; i < path.length; i++) {
+					let step = path[i];
+					xyPath.push({
+						row: step.y,
+						col: step.x
+					});
+				}
+				
+				net.sendPacket(MESSAGE_TYPE.PLAYER_REQUEST_PATH, {
+					path: xyPath
+				});
+			}
+			
+			this.traversePath(path);
+		}.bind(this));
+		
 		Game.easystar.calculate();
 	}
 
@@ -381,6 +412,7 @@ class Player {
 	}
 
 	traversePath(path) {
+		
 		if (path == null) {
 			return;
 		}
