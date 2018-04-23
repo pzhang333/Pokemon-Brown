@@ -1,6 +1,8 @@
 package cs.brown.edu.aelp.pokemon;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
 import cs.brown.edu.aelp.pokemmo.data.DataSource;
 import cs.brown.edu.aelp.pokemmo.data.DataSource.SaveException;
@@ -42,6 +44,15 @@ public final class Main {
   private static World world = new World();
   private static final int DEFAULT_PORT = 4567;
   private static ThreadLocal<DataSource> datasrc;
+  private static ThreadLocal<Gson> GSON = new ThreadLocal<Gson>() {
+    @Override
+    protected Gson initialValue() {
+      GsonBuilder b = new GsonBuilder();
+      b.registerTypeAdapter(User.class, new User.UserAdapter());
+      b.registerTypeAdapter(Location.class, new Location.LocationAdapter());
+      return b.create();
+    }
+  };
 
   /**
    * @param args
@@ -151,8 +162,8 @@ public final class Main {
     runSparkServer((int) options.valueOf("port"));
 
     // temporary game loop
-    long sleepTime = 1000;
-    while (5 != 6) {
+    long sleepTime = 200;
+    while (true) {
       PlayerWebSocketHandler.sendGamePackets();
       try {
         Thread.sleep(sleepTime);
@@ -239,6 +250,10 @@ public final class Main {
    */
   public static DataSource getDataSource() {
     return Main.datasrc.get();
+  }
+
+  public static Gson GSON() {
+    return Main.GSON.get();
   }
 
   public static Location getSpawn() {

@@ -1,12 +1,17 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
 import com.google.common.collect.Lists;
-import cs.brown.edu.aelp.networking.NetworkUser;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import cs.brown.edu.aelp.pokemon.Main;
+import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -32,26 +37,18 @@ public class User extends Trainer implements SQLBatchSavable {
 
   private final Map<Integer, Pokemon> pokemon = new HashMap<>();
 
-  private final NetworkUser nUser;
-
   public User(int id, String username, String email, String sessionToken) {
     super(id);
     this.username = username;
     this.email = email;
     this.sessionToken = sessionToken;
-    this.nUser = new NetworkUser(id);
-  }
-
-  public NetworkUser toNetworkUser() {
-    return this.nUser;
   }
 
   public void setState(int i) {
     this.state = i;
-    this.nUser.setPlayerState(i);
   }
 
-  public int getState(int i) {
+  public int getState() {
     return this.state;
   }
 
@@ -63,16 +60,17 @@ public class User extends Trainer implements SQLBatchSavable {
       loc.getChunk().addUser(this);
     }
     this.location = loc;
-    this.nUser.setLocation(loc.toNetworkLocation());
     this.setChanged(true);
   }
 
   public Location getLocation() {
-    if (this.currentPath == null) {
-      return this.location;
-    } else {
-      return this.currentPath.getCurrentStep();
+    if (this.currentPath != null) {
+      this.location = this.currentPath.getCurrentStep();
+      if (this.location.equals(this.currentPath.getEnd())) {
+        this.currentPath = null;
+      }
     }
+    return this.location;
   }
 
   public void setCurrency(int c) {
@@ -111,7 +109,6 @@ public class User extends Trainer implements SQLBatchSavable {
 
   public void setOrientation(int orientation) {
     this.orientation = orientation;
-    this.nUser.setOrientation(orientation);
   }
 
   public boolean isConnected() {
@@ -121,7 +118,6 @@ public class User extends Trainer implements SQLBatchSavable {
   public void setPath(Path p) {
     this.currentPath = p;
     this.setLocation(p.getStart());
-    this.nUser.setWalkingTo(p.getEnd().toNetworkLocation());
   }
 
   public Path getPath() {
@@ -161,12 +157,6 @@ public class User extends Trainer implements SQLBatchSavable {
     p.setInt(6, this.getId());
   }
 
-  public void updateFromNetworkUser(NetworkUser networkUser) {
-    this.setOrientation(networkUser.getOrientation());
-    this.setLocation(networkUser.getLocation().toLocation());
-    this.setState(networkUser.getPlayerState());
-  }
-
   @Override
   public String getTableName() {
     return "users";
@@ -185,5 +175,23 @@ public class User extends Trainer implements SQLBatchSavable {
   @Override
   public void setChanged(boolean b) {
     this.changed = b;
+  }
+
+  public static class UserAdapter implements JsonSerializer<User> {
+
+    @Override
+    public JsonElement serialize(User src, Type typeOfSrc,
+        JsonSerializationContext ctx) {
+      JsonObject o = new JsonObject();
+      o.addProperty("id", src.getId());
+      o.addProperty("state", src.getState());
+      o.addProperty("orientation", src.getOrientation());
+      o.add("location", Main.GSON().toJsonTree(src.getLocation()));
+      if (src.getPath() != null) {
+        o.add("destination", Main.GSON().toJsonTree(src.getPath().getEnd()));
+      }
+      return o;
+    }
+
   }
 }
