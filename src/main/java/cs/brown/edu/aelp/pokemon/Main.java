@@ -1,6 +1,8 @@
 package cs.brown.edu.aelp.pokemon;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
 import cs.brown.edu.aelp.pokemmo.data.DataSource;
 import cs.brown.edu.aelp.pokemmo.data.DataSource.SaveException;
@@ -42,6 +44,15 @@ public final class Main {
   private static World world = new World();
   private static final int DEFAULT_PORT = 4567;
   private static ThreadLocal<DataSource> datasrc;
+  private static ThreadLocal<Gson> GSON = new ThreadLocal<Gson>() {
+    @Override
+    protected Gson initialValue() {
+      GsonBuilder b = new GsonBuilder();
+      b.registerTypeAdapter(User.class, new User.UserAdapter());
+      b.registerTypeAdapter(Location.class, new Location.LocationAdapter());
+      return b.create();
+    }
+  };
 
   /**
    * @param args
@@ -93,6 +104,9 @@ public final class Main {
         }
       };
 
+      // for the sake of triggering the table creation
+      Main.getDataSource();
+
     } catch (IOException e) {
       System.out.println(
           "ERROR: Something went wrong reading database_info.json. Check the configuration file.");
@@ -114,38 +128,42 @@ public final class Main {
     world.loadChunks();
     world.setSpawn(new Location(world.getChunk(1), 5, 5));
 
-    // try to start the save-thread
-    ScheduledExecutorService scheduler = Executors
-        .newSingleThreadScheduledExecutor();
+    // try to start the save-thread if we're backed by SQL
+    if (Main.getDataSource() instanceof SQLDataSource) {
+      ScheduledExecutorService scheduler = Executors
+          .newSingleThreadScheduledExecutor();
 
-    Runnable save = new Runnable() {
-      public void run() {
-        Collection<User> users = UserManager.getAllUsers();
-        Collection<Pokemon> pokemon = new ArrayList<>();
-        for (User u : users) {
-          pokemon.addAll(u.getAllPokemon());
+      Runnable save = new Runnable() {
+        public void run() {
+          Collection<User> users = UserManager.getAllUsers();
+          Collection<Pokemon> pokemon = new ArrayList<>();
+          for (User u : users) {
+            pokemon.addAll(u.getAllPokemon());
+          }
+          SQLDataSource data = (SQLDataSource) Main.getDataSource();
+          try {
+            System.out.printf("Saved %d users.%n", data.save(users));
+            System.out.printf("Saved %d pokemon.%n", data.save(pokemon));
+            UserManager.purgeDisconnectedUsers();
+            users.stream().forEach(user -> user.setChanged(false));
+            pokemon.stream().forEach(p1 -> p1.setChanged(false));
+          } catch (SaveException e) {
+            System.out.println("ERROR: Something went wrong during saving.");
+            e.printStackTrace();
+          }
         }
-        DataSource data = Main.getDataSource();
-        try {
-          data.save(users, pokemon);
-          UserManager.purgeDisconnectedUsers();
-          System.out.printf("Saved %d users.%n", users.size());
-          System.out.printf("Saved %d pokemon.%n", pokemon.size());
-        } catch (SaveException e) {
-          System.out.println("ERROR: Something went wrong during saving.");
-          e.printStackTrace();
-        }
-      }
-    };
+      };
 
-    scheduler.scheduleAtFixedRate(save, SAVE_PERIOD, SAVE_PERIOD,
-        TimeUnit.SECONDS);
+      scheduler.scheduleAtFixedRate(save, SAVE_PERIOD, SAVE_PERIOD,
+          TimeUnit.SECONDS);
+
+    }
 
     runSparkServer((int) options.valueOf("port"));
 
     // temporary game loop
-    long sleepTime = 1000;
-    while (5 != 6) {
+    long sleepTime = 200;
+    while (true) {
       PlayerWebSocketHandler.sendGamePackets();
       try {
         Thread.sleep(sleepTime);
@@ -232,6 +250,10 @@ public final class Main {
    */
   public static DataSource getDataSource() {
     return Main.datasrc.get();
+  }
+
+  public static Gson GSON() {
+    return Main.GSON.get();
   }
 
   public static Location getSpawn() {

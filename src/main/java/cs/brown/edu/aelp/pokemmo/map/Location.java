@@ -1,23 +1,21 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
-import cs.brown.edu.aelp.networking.NetworkLocation;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import java.lang.reflect.Type;
 
 public class Location {
 
   private final Chunk chunk;
   private final int row;
   private final int col;
-  private final NetworkLocation nLocation;
 
   public Location(Chunk c, int row, int col) {
     this.chunk = c;
     this.row = row;
     this.col = col;
-    this.nLocation = new NetworkLocation(chunk.getId(), row, col);
-  }
-
-  public NetworkLocation toNetworkLocation() {
-    return this.nLocation;
   }
 
   public Chunk getChunk() {
@@ -61,6 +59,28 @@ public class Location {
     if (row != other.row)
       return false;
     return true;
+  }
+
+  public JsonObject toJson() {
+    JsonObject o = new JsonObject();
+    o.addProperty("row", this.getRow());
+    o.addProperty("col", this.getCol());
+    o.addProperty("chunkId", this.getChunk().getId());
+    return o;
+  }
+
+  public static class LocationAdapter implements JsonSerializer<Location> {
+
+    @Override
+    public JsonElement serialize(Location src, Type typeOfSrc,
+        JsonSerializationContext ctx) {
+      JsonObject o = new JsonObject();
+      o.addProperty("row", src.getRow());
+      o.addProperty("col", src.getCol());
+      o.addProperty("chunkId", src.getChunk().getId());
+      return o;
+    }
+
   }
 
 }

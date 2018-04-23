@@ -24,9 +24,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class SQLDataSource implements DataSource {
 
@@ -81,12 +81,12 @@ public class SQLDataSource implements DataSource {
     return p;
   }
 
-  private List<Pokemon> loadPokemonForUser(String username)
+  private List<Pokemon> loadPokemonForUser(int userId)
       throws IOException, SQLException {
     List<Pokemon> pokemon = new ArrayList<>();
     try (PreparedStatement p = this.prepStatementFromFile(
         "src/main/resources/sql/get_pokemon_for_user.sql")) {
-      p.setString(1, username);
+      p.setInt(1, userId);
       try (ResultSet rs = p.executeQuery()) {
         while (rs.next()) {
           Pokemon.Builder b = new Pokemon.Builder(rs.getInt("id"));
@@ -136,9 +136,9 @@ public class SQLDataSource implements DataSource {
     Chunk c = Main.getWorld().getChunk(rs.getInt("chunk"));
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
-    for (Pokemon pokemon : this.loadPokemonForUser(user.getUsername())) {
+    /*for (Pokemon pokemon : this.loadPokemonForUser(user.getId())) {
       user.addPokemonToTeam(pokemon);
-    }
+    }*/
     return user;
   }
 
@@ -148,7 +148,7 @@ public class SQLDataSource implements DataSource {
         .prepStatementFromFile("src/main/resources/sql/get_user_by_id.sql")) {
       p.setInt(1, id);
       try (ResultSet rs = p.executeQuery()) {
-        if (rs.next() && token == rs.getString("session_token")) {
+        if (rs.next() && token.equals(rs.getString("session_token"))) {
           return loadUser(rs);
         } else {
           throw new AuthException("Invalid token.");
@@ -195,7 +195,6 @@ public class SQLDataSource implements DataSource {
           "src/main/resources/sql/check_username_taken.sql")) {
         p.setString(1, username);
         try (ResultSet rs = p.executeQuery()) {
-
           if (rs.next()) {
             if (rs.getInt(1) > 0) {
               throw new AuthException("That username is already in use.");
@@ -249,63 +248,43 @@ public class SQLDataSource implements DataSource {
     }
   }
 
-  @Override
-  public void save(Collection<? extends BatchSavable>... classes)
+  /**
+   * Attempt to save a collection of SQLBatchSavables to the database.
+   *
+   * @param objects
+   *          the objects to save
+   * @return the number of objects saved
+   * @throws SaveException
+   *           if something goes wrong
+   */
+  public <E extends SQLBatchSavable> int save(Collection<E> objects)
       throws SaveException {
-    // Don't know an elegant way around hardcoding these
-    Map<Class<? extends BatchSavable>, String> tables = new HashMap<>();
-    tables.put(User.class, "users");
-    tables.put(Pokemon.class, "pokemon");
-
+    List<E> toSave = objects.stream().filter(E::hasUpdates)
+        .collect(Collectors.toList());
+    if (toSave.isEmpty()) {
+      return 0;
+    }
     try {
       Connection conn = this.getConn();
-      conn.setAutoCommit(false);
-      for (Collection<? extends BatchSavable> objects : classes) {
-        if (objects.isEmpty()) {
-          continue;
+      try (PreparedStatement p = this.getPStatementForClass(toSave.get(0))) {
+        for (E obj : toSave) {
+          obj.bindValues(p);
+          p.addBatch();
         }
-        Class<? extends BatchSavable> c = objects.iterator().next().getClass();
-        if (!tables.containsKey(c)) {
-          System.out.printf(
-              "WARNING: Not saving objects of type %s; unknown column name.%n",
-              c.getName());
-          continue;
-        }
-        for (BatchSavable bs : objects) {
-          Map<String, Object> changes = bs.getChangesForSaving();
-          if (changes.size() == 0) {
-            continue;
-          }
-          StringBuilder sb = new StringBuilder("(");
-          for (int i = 0; i < changes.size(); i++) {
-            if (i == changes.size() - 1) {
-              sb.append("?)");
-            } else {
-              sb.append("?, ");
-            }
-          }
-          String q = String.format("INSERT INTO %s %s VALUES %s;",
-              tables.get(c), sb.toString(), sb.toString());
-          try (PreparedStatement p = conn.prepareStatement(q)) {
-            int i = 1;
-            for (String key : changes.keySet()) {
-              p.setString(i, key);
-              p.setObject(i + changes.size(), changes.get(key));
-              i++;
-            }
-            p.executeUpdate();
-          }
-        }
+        conn.setAutoCommit(false);
+        int i = IntStream.of(p.executeBatch()).sum();
+        conn.commit();
+        return i;
       }
-      conn.commit();
     } catch (SQLException e) {
       try {
+        System.out.println("CRITICAL: Batch save failed:");
+        e.printStackTrace();
         conn.rollback();
       } catch (SQLException e1) {
+        System.out.println("EVEN MORE CRITICAL: Rollback failed:");
         e1.printStackTrace();
-        throw new SaveException("ERROR: Failed to rollback failed commit...");
       }
-      e.printStackTrace();
       throw new SaveException();
     }
   }
@@ -343,14 +322,40 @@ public class SQLDataSource implements DataSource {
       p.setString(2, nickname);
       p.setString(3, species);
       try (ResultSet rs = p.executeQuery()) {
-        Pokemon.Builder b = new Pokemon.Builder(rs.getInt("id"));
-        b.withGender(rs.getInt("gender")).withExp(rs.getInt("experience"))
-            .asStored(rs.getBoolean("stored"));
-        return b.build();
+        if (rs.next()) {
+          Pokemon.Builder b = new Pokemon.Builder(rs.getInt("id"));
+          b.withGender(rs.getInt("gender")).withExp(rs.getInt("experience"))
+              .asStored(rs.getBoolean("stored"));
+          return b.build();
+        } else {
+          throw new SaveException();
+        }
       }
     } catch (SQLException | IOException e) {
       e.printStackTrace();
       throw new SaveException();
+    }
+  }
+
+  private PreparedStatement getPStatementForClass(SQLBatchSavable object) {
+    // inelegant, but oh well
+    try {
+      Connection conn = this.getConn();
+      StringBuilder q = new StringBuilder();
+      q.append("UPDATE " + object.getTableName() + " SET ");
+      for (String col : object.getUpdatableColumns()) {
+        q.append(col + " = ?, ");
+      }
+      q.replace(q.length() - 2, q.length(), " ");
+      q.append("WHERE ");
+      for (String col : object.getIdentifyingColumns()) {
+        q.append(col + " = ? AND");
+      }
+      q.replace(q.length() - 4, q.length(), ";");
+      return conn.prepareStatement(q.toString());
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return null;
     }
   }
 }

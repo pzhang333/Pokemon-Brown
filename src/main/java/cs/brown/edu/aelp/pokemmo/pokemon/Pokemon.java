@@ -1,51 +1,33 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
-import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
+import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.util.Identifiable;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 // TODO: We probably need a status column in our pokemon DB
 
-public class Pokemon extends Identifiable implements BatchSavable {
+public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   private static ImmutableMap<Integer, Double> stageMultipliers = ImmutableMap
-      .<Integer, Double>builder()
-      .put(-6, 0.25).put(-5, 2.0 / 7.0)
-      .put(-4, 2.0 / 6.0)
-      .put(-3, 0.4)
-      .put(-2, 0.5)
-      .put(-1, 2.0 / 3.0)
-      .put(0, 1.0)
-      .put(1, 1.5)
-      .put(2, 2.0)
-      .put(3, 2.5)
-      .put(4, 3.0)
-      .put(5, 3.5)
-      .put(6, 4.0)
-      .build();
+      .<Integer, Double>builder().put(-6, 0.25).put(-5, 2.0 / 7.0)
+      .put(-4, 2.0 / 6.0).put(-3, 0.4).put(-2, 0.5).put(-1, 2.0 / 3.0)
+      .put(0, 1.0).put(1, 1.5).put(2, 2.0).put(3, 2.5).put(4, 3.0).put(5, 3.5)
+      .put(6, 4.0).build();
 
   private static ImmutableMap<Integer, Double> accEvaMultipliers = ImmutableMap
-      .<Integer, Double>builder()
-      .put(-6, 33.0 / 100.0)
-      .put(-5, 36.0 / 100.0)
-      .put(-4, 43.0 / 100.0)
-      .put(-3, 0.5)
-      .put(-2, 0.6)
-      .put(-1, 0.75)
-      .put(0, 1.0)
-      .put(1, 133.0 / 100.0)
-      .put(2, 166 / 100.0)
-      .put(3, 2.0)
-      .put(4, 2.5)
-      .put(5, 266.0 / 100.0)
-      .put(6, 3.0)
-      .build();
+      .<Integer, Double>builder().put(-6, 33.0 / 100.0).put(-5, 36.0 / 100.0)
+      .put(-4, 43.0 / 100.0).put(-3, 0.5).put(-2, 0.6).put(-1, 0.75).put(0, 1.0)
+      .put(1, 133.0 / 100.0).put(2, 166 / 100.0).put(3, 2.0).put(4, 2.5)
+      .put(5, 266.0 / 100.0).put(6, 3.0).build();
 
   /**
    * Builder for Pokemon class.
@@ -75,6 +57,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
     private Integer id;
     private Integer gender;
     private boolean stored;
+    private Trainer owner;
 
     private Status status;
 
@@ -152,8 +135,13 @@ public class Pokemon extends Identifiable implements BatchSavable {
       return this;
     }
 
-    public Builder withStatus(Status status){
+    public Builder withStatus(Status status) {
       this.status = status;
+      return this;
+    }
+
+    public Builder withOwner(Trainer u) {
+      this.owner = u;
       return this;
     }
 
@@ -191,6 +179,8 @@ public class Pokemon extends Identifiable implements BatchSavable {
       pokemon.gender = this.gender;
       pokemon.stored = this.stored;
 
+      pokemon.owner = this.owner;
+
       return pokemon;
     }
   }
@@ -202,6 +192,8 @@ public class Pokemon extends Identifiable implements BatchSavable {
   private Integer gender;
 
   private boolean stored;
+
+  private Trainer owner;
 
   private Integer baseHealth;
 
@@ -243,7 +235,7 @@ public class Pokemon extends Identifiable implements BatchSavable {
 
   private EffectSlot effectSlot = new EffectSlot();
 
-  private Map<String, Object> changes = new HashMap<>();
+  private boolean changed = false;
 
   private Pokemon(Integer id) {
     super(id);
@@ -310,28 +302,48 @@ public class Pokemon extends Identifiable implements BatchSavable {
     }
 
     this.health = health;
-    this.addChange("cur_health", health);
+    this.setChanged(true);
   }
 
   public void setStored(boolean stored) {
     this.stored = stored;
-    this.addChange("stored", stored);
+    this.setChanged(true);
+  }
+
+  public boolean isStored() {
+    return this.stored;
   }
 
   public void addExp(Integer experience) {
     this.exp += experience;
-    this.addChange("experience", exp);
+    this.setChanged(true);
   }
 
   public void changeNickname(String newName) {
     this.nickname = newName;
-    this.addChange("nickname", nickname);
+    this.setChanged(true);
+  }
+
+  public String getSpecies() {
+    return this.species;
+  }
+
+  public Trainer getOwner() {
+    return this.owner;
+  }
+
+  public String getNickname() {
+    return this.nickname;
+  }
+
+  public int getGender() {
+    return this.gender;
   }
 
   // TODO: Better evolution system
   public void evolve(String evolvedSpecies) {
     this.species = evolvedSpecies;
-    this.addChange("species", species);
+    this.setChanged(true);
   }
 
   public Double getEffectiveAttack() {
@@ -339,7 +351,8 @@ public class Pokemon extends Identifiable implements BatchSavable {
   }
 
   public Double getEffectiveSpecialAttack() {
-    return statScale(specialAttack, lvl) * stageMultipliers.get(specialAttackStage);
+    return statScale(specialAttack, lvl)
+        * stageMultipliers.get(specialAttackStage);
   }
 
   public Double getEffectiveDefense() {
@@ -347,7 +360,8 @@ public class Pokemon extends Identifiable implements BatchSavable {
   }
 
   public Double getEffectiveSpecialDefense() {
-    return statScale(specialDefense, lvl) * stageMultipliers.get(specialDefenseStage);
+    return statScale(specialDefense, lvl)
+        * stageMultipliers.get(specialDefenseStage);
   }
 
   public Double getEffectiveSpeed() {
@@ -447,21 +461,68 @@ public class Pokemon extends Identifiable implements BatchSavable {
   @Override
   public String toString() {
     return "Pokemon [id=" + this.getId() + ", health=" + health + ", type="
-        + typeList.get(0) + ", moves=" + moves + ", effectSlot=" + effectSlot + "]";
-  }
-
-  private void addChange(String key, Object o) {
-    synchronized (this.changes) {
-      this.changes.put(key, o);
-    }
+        + typeList.get(0) + ", moves=" + moves + ", effectSlot=" + effectSlot
+        + "]";
   }
 
   @Override
-  public Map<String, Object> getChangesForSaving() {
-    synchronized (this.changes) {
-      Map<String, Object> toSave = new HashMap<>(this.changes);
-      this.changes.clear();
-      return toSave;
-    }
+  public List<String> getUpdatableColumns() {
+    return Lists.newArrayList("user_id", "nickname", "gender", "experience",
+        "stored", "cur_health", "species", "move_1", "move_2", "move_3",
+        "move_4", "pp_1", "pp_2", "pp_3", "pp_4");
   }
+
+  @Override
+  public String getTableName() {
+    return "pokemon";
+  }
+
+  @Override
+  public void bindValues(PreparedStatement p) throws SQLException {
+    assert this.getOwner() instanceof User;
+    p.setInt(1, this.getOwner().getId());
+    p.setString(2, this.getNickname());
+    p.setInt(3, this.getGender());
+    p.setInt(4, this.getExp());
+    p.setBoolean(5, this.isStored());
+    p.setInt(6, this.getHealth());
+    p.setString(7, this.getSpecies());
+    if (this.moves.size() > 0) {
+      Move m1 = this.moves.get(0);
+      p.setInt(8, m1.getId());
+      p.setInt(12, m1.getPp());
+    }
+    if (this.moves.size() > 1) {
+      Move m2 = this.moves.get(1);
+      p.setInt(9, m2.getId());
+      p.setInt(13, m2.getPp());
+    }
+    if (this.moves.size() > 2) {
+      Move m3 = this.moves.get(2);
+      p.setInt(10, m3.getId());
+      p.setInt(14, m3.getPp());
+    }
+    if (this.moves.size() > 3) {
+      Move m4 = this.moves.get(3);
+      p.setInt(11, m4.getId());
+      p.setInt(15, m4.getPp());
+    }
+    p.setInt(16, this.getId());
+  }
+
+  @Override
+  public boolean hasUpdates() {
+    return this.changed;
+  }
+
+  @Override
+  public void setChanged(boolean b) {
+    this.changed = b;
+  }
+
+  @Override
+  public List<String> getIdentifyingColumns() {
+    return Lists.newArrayList("id");
+  }
+
 }

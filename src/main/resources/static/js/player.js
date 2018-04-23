@@ -15,8 +15,6 @@ class Player {
 		this.fps = 6;
 		this.speed = 64;
 
-		this.chunk = 'chunk_1'
-
 		//this.initSprite();
 	}
 
@@ -124,6 +122,7 @@ class Player {
 	 * Set the Y coordinate.
 	 */
 	setY(y) {
+		this.pendingY = undefined;
 		this.y = y;
 		
 		if (this.sprite != undefined) {
@@ -135,6 +134,7 @@ class Player {
 	 * Set the X coordinate.
 	 */
 	setX(x) {
+		this.pendingX = undefined;
 		this.x = x;
 		
 		if (this.sprite != undefined) {
@@ -306,13 +306,60 @@ class Player {
 			}
 		}
 
-		Game.easystar.findPath(this.x, this.y, end.x, end.y,
-			this.traversePath.bind(this));
+		let x = this.x;
+		if (this.pendingX != undefined) {
+			x = this.pendingX;
+		}
+		
+		let y = this.y;
+		if (this.pendingY != undefined) {
+			y = this.pendingY;
+		}
+		
+		//Game.easystar.findPath(this.x, this.y, end.x, end.y,
+		//	this.traversePath.bind(this));
+		
+		Game.easystar.findPath(x, y, end.x, end.y, function(path) {
+			
+			if (path == null) {
+				return;
+			}
+
+			if (path.length == 0) {
+				return;
+			}
+			
+			if (this == Game.player) {
+				
+				let xyPath = [];
+				
+				for(let i = 0; i < path.length; i++) {
+					let step = path[i];
+					xyPath.push({
+						row: step.y,
+						col: step.x
+					});
+				}
+				
+				net.sendPacket(MESSAGE_TYPE.PLAYER_REQUEST_PATH, {
+					path: xyPath
+				});
+			}
+			
+			this.traversePath(path);
+		}.bind(this));
+		
 		Game.easystar.calculate();
 	}
 
 	teleport(x, y, chunk) {
 
+		net.sendTeleport({
+			x: x,
+			y: y,
+			chunk: chunk
+		});
+		
 		Game.camera.fade('#000000', 500);
 		Game.camera.onFadeComplete.add(function() {
 
@@ -342,11 +389,21 @@ class Player {
 			if (Game.player == this) {
 				this.teleport(door.x, door.y, door.chunk);
 			} else {
-				alert('Other player teleported');
+				//alert('Other player teleported');
+				
+				this.sprite.destroy();
+				delete Game.players[this.id];
+				return;
 			}
 		}
 
 		this.idle();
+	}
+	
+	del() {
+		this.sprite.destroy();
+		delete Game.players[this.id];
+		return;
 	}
 
 	orientBy(oldX, oldY, newX, newY) {
@@ -381,6 +438,7 @@ class Player {
 	}
 
 	traversePath(path) {
+		
 		if (path == null) {
 			return;
 		}
@@ -414,7 +472,7 @@ class Player {
 		/* Setup the tween update callback */
 		tween.onUpdateCallback(function() {
 
-			if (debounce(this, 'lastMovementUpdate', Phaser.Timer.SECOND * (duration / 2))) {
+			if (debounce(this, 'lastMovementUpdate', Phaser.Timer.SECOND * (duration / 4))) {
 				return;
 			}
 

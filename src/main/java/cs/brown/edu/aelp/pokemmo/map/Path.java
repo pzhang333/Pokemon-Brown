@@ -13,18 +13,22 @@ public class Path {
   private final long start_time = System.currentTimeMillis();
   private final int step_time = 200; // milliseconds
   private final List<Location> steps;
+  private final Location start;
+  private final Location end;
 
   public Path(List<Location> steps) {
     assert !steps.isEmpty();
     this.steps = steps;
+    this.start = steps.get(0);
+    this.end = steps.get(steps.size() - 1);
   }
 
   public Location getStart() {
-    return this.steps.get(0);
+    return this.start;
   }
 
   public Location getEnd() {
-    return this.steps.get(this.steps.size() - 1);
+    return this.end;
   }
 
   public Location getStepByIndex(int i) {
@@ -35,7 +39,7 @@ public class Path {
 
   public Location getCurrentStep() {
     long diff = System.currentTimeMillis() - this.start_time;
-    long index = Math.floorDiv(diff, this.step_time);
+    int index = (int) diff / (int) this.step_time;
     if (index < 0) {
       index = 0;
     } else if (index >= this.steps.size()) {

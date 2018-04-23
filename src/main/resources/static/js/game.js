@@ -9,9 +9,6 @@ Game.init = function() {
 	Game.cursors = game.input.keyboard.createCursorKeys();
 	
 	Game.players = {};
-	
-	Game.players[1] = new Player();
-	Game.players[1].setPos(15, 5);
 };
 
 Game.update = function() {
@@ -69,8 +66,9 @@ Game.drawLayers = function() {
 	//Game.objMap = new SparseMap();
 	//Game.objMap.add(20, 29, 'Ayy Lmao');
 
+
+	Game.doors = new SparseMap();
 	if (Game.chunkId == 1) {
-		Game.doors = new SparseMap();
 
 		Game.doors.add(20, 29, {
 			chunk: 2,
@@ -172,10 +170,6 @@ Game.loadCurrentChunk = function() {
 		Game.player.initSprite();
 		Game.player.setVisible();
 		Game.player.setCameraFocus(Game.camera);
-		
-
-		Game.players[1].initSprite();
-		Game.players[1].setVisible();
 	});
 };
 

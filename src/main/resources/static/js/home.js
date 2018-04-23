@@ -118,19 +118,29 @@ Home.displayLogin = function() {
 
 
 	let loginButtonCb = function(ctx) {
-		Home.scroll.hideTween.onComplete.add(function() {
-			//Game.player = new Player();
+		
+		let username = Home.userField.value;
+		let password = Home.passwordField.value;
+		
+		login(username, password, function(resp) {
+		
+			net.connect(resp.id, resp.token);
+			Home.scroll.hideTween.onComplete.add(function() {
+				//Game.player = new Player();
 
-			// Hack. This should be loaded from the network.
-			//Game.player.setPos(20, 20);
+				// Hack. This should be loaded from the network.
+				//Game.player.setPos(20, 20);
+				
+				game.state.start('Game');
+			}, 
+			this);
 			
-			game.state.start('Game');
-		}, 
-		this);
-
-		Home.scroll.hideTween.start();
-		Home.logo.hideTween.start();
-	}
+			Home.scroll.hideTween.start();
+			Home.logo.hideTween.start();
+		}, function(resp) {
+			alert('Login failed');
+		}.bind(this));
+	}.bind(this);
 
 
 	Home.loginButton = game.add.button(Home.passwordField.x + (Home.passwordField.width / 2) + Home.passwordField.inputOptions.padding ,

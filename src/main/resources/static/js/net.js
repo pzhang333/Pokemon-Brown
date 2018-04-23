@@ -3,21 +3,22 @@ const MESSAGE_TYPE = {
 	CONNECT: 0,
 	INITIALIZE_PACKET: 1,
 	GAME_PACKET: 2,
-	TELEPORT_PACKET: 3
+	PLAYER_REQUEST_PATH: 3,
+	TELEPORT_PACKET: 4
 };
 
 function waitForSocketConnection(socket, callback) {
     setTimeout(
         function () {
             if (socket.readyState === 1) {
-                console.log("Connection is made")
+                //console.log("Connection is made")
                 if(callback != null){
                     callback(socket);
                 }
                 return;
 
             } else {
-                console.log("wait for connection...")
+                //console.log("wait for connection...")
                 waitForSocketConnection(socket, callback);
             }
 
@@ -29,8 +30,11 @@ class Net {
 
 	constructor() {
 
+		this.host = '10.38.49.136';
+		this.port = 4567;
+		
 		this.cfg = {
-			url: 'ws://10.38.49.136:4567/game',
+			url: 'ws://' + this.host + ':' + this.port.toString() + '/game',
 		};
 		
 		this.chunkBaseURL = "/assets/maps/chunk_";
@@ -48,6 +52,16 @@ class Net {
 
 	}
 	
+	sendPacket(type, payload) {
+		if (this.socket.readyState == this.socket.CLOSED) {
+			throw "Socket closed...";
+		}
+		
+		waitForSocketConnection(this.socket, function(socket) {
+			socket.send(net.packet(type, payload));
+		}.bind(this));
+	}
+	
 	packet(type, payload) {
 		payload.id = net.id;
 		
@@ -59,19 +73,22 @@ class Net {
 
 	connect(id, token) {
 		
-		this.id = id;
-		this.token = token;
+		console.log(id);
+		net.id = id;
+		Game.player.id = id;
+		net.token = token;
 		
 		this.socket = new WebSocket(this.cfg.url);
 		this.socket.onmessage = this.handleMsg.bind(this);
 		this.socket.onerror = this.handleErr.bind(this);
+		this.socket.onclose = function() {
+			game.state.start('Home');
+		};
 		
 		console.log('Auth(' + this.id + ', ' + this.token + ')');
 		
-		waitForSocketConnection(this.socket, function(socket) {
-			socket.send(net.packet(MESSAGE_TYPE.CONNECT, {
-				token: token
-			}));
+		this.sendPacket(MESSAGE_TYPE.CONNECT, {
+			token: token
 		});
 	}
 	
@@ -101,12 +118,12 @@ class Net {
 		Game.player.id = this.id;
 		
 		let loc = msg.payload.location;
-		Game.player.setPos(loc.column, loc.row);
+		Game.player.setPos(loc.col, loc.row);
 		
 		net.chunkId = loc.chunkId;
 	}
 	
-	sendTeleportPacket(loc) {
+	sendTeleport(loc) {
 		this.sendPacket(MESSAGE_TYPE.TELEPORT_PACKET, {
 			row: loc.y,
 			col: loc.x,
@@ -115,7 +132,7 @@ class Net {
 	}
 	
 	gamePacketHandler(msg) {
-		console.log('Got game packet');
+	//	console.log('Got game packet');
 		
 		//msg = generateFakeGamePacket();
 		
@@ -123,27 +140,71 @@ class Net {
 			return;
 		}
 		
+		let handled = [];
+		
 		let playerUpdates = msg.payload.users;
 		for(let i = 0; i < playerUpdates.length; i++) {
+			
 			let update = playerUpdates[i];
 			
-			let loc = playerUpdates[i].location;
-			let id = Game.players[update.id];
+			//handled.push(update.id);
 			
-			console.log(player);
+			//let loc = update.location;
+			let loc = update.location;
+			let id = update.id;
+
+			
+		//	console.log(id + " : " + net.id)
+			if (id == net.id) {
+				continue;
+			}
+			
+			if (Game.players[id] == undefined) {
+				let player = new Player();
+				
+				player.setPos(loc.col, loc.row);
+				player.initSprite();
+				player.setVisible(true);
+				player.id = id;
+				
+				Game.players[id] = player;
+			}
+			
+			let player = Game.players[id];
+			
+			let dest = update.destination;
+			
+			if (dest == undefined) {
+				continue;
+			}
+			
+			//console.log(player);
 			if (player != undefined) {
 				player.prepareMovement({
-					x: loc.column,
-					y: loc.rows
+					x: dest.col,
+					y: dest.row
 				}, true);
 			}
 		}
+		
+		/*for (var key in Game.players) {
+		    if (Game.players.hasOwnProperty(key)) {      
+		    	
+		    	// Hack
+		    	let id = parseInt(key);
+		    	
+		    	if (!handled.includes(id)) {
+		    		console.log(id);
+		    		//Game.players[id].del();
+		    	}
+		    }
+		}*/
 	}
 
 	handleMsg(event) {
 
-		console.log('test!');
-		console.log(event);
+//		console.log('test!');
+	//	console.log(event);
 		
 		const data = JSON.parse(event.data);
 		

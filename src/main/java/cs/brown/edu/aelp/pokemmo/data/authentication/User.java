@@ -1,25 +1,33 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
-import cs.brown.edu.aelp.networking.NetworkUser;
-import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import cs.brown.edu.aelp.pokemon.Main;
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.jetty.websocket.api.Session;
 
-public class User extends Trainer implements BatchSavable {
+public class User extends Trainer implements SQLBatchSavable {
 
   private final String username;
   private final String email;
   private String sessionToken;
   private Session session;
 
-  private Map<String, Object> changes = new HashMap<>();
+  private boolean changed = false;
 
   private Path currentPath;
   private Location location;
@@ -29,52 +37,45 @@ public class User extends Trainer implements BatchSavable {
 
   private final Map<Integer, Pokemon> pokemon = new HashMap<>();
 
-  private final NetworkUser nUser;
-
   public User(int id, String username, String email, String sessionToken) {
     super(id);
     this.username = username;
     this.email = email;
     this.sessionToken = sessionToken;
-    this.nUser = new NetworkUser(id);
-  }
-
-  public NetworkUser toNetworkUser() {
-    return this.nUser;
   }
 
   public void setState(int i) {
     this.state = i;
-    this.nUser.setPlayerState(i);
   }
 
-  public int getState(int i) {
+  public int getState() {
     return this.state;
   }
 
   public void setLocation(Location loc) {
-    if (this.location.getChunk() != loc.getChunk()) {
-      this.location.getChunk().removeUser(this);
+    if (this.location == null || this.location.getChunk() != loc.getChunk()) {
+      if (this.location != null) {
+        this.location.getChunk().removeUser(this);
+      }
       loc.getChunk().addUser(this);
     }
     this.location = loc;
-    this.nUser.setLocation(loc.toNetworkLocation());
-    this.addChange("chunk", loc.getChunk().getId());
-    this.addChange("row", loc.getRow());
-    this.addChange("col", loc.getCol());
+    this.setChanged(true);
   }
 
   public Location getLocation() {
-    if (this.currentPath == null) {
-      return this.location;
-    } else {
-      return this.currentPath.getCurrentStep();
+    if (this.currentPath != null) {
+      this.location = this.currentPath.getCurrentStep();
+      if (this.location.equals(this.currentPath.getEnd())) {
+        this.currentPath = null;
+      }
     }
+    return this.location;
   }
 
   public void setCurrency(int c) {
     this.currency = c;
-    this.addChange("currency", c);
+    this.setChanged(true);
   }
 
   public int getCurrency() {
@@ -108,7 +109,6 @@ public class User extends Trainer implements BatchSavable {
 
   public void setOrientation(int orientation) {
     this.orientation = orientation;
-    this.nUser.setOrientation(orientation);
   }
 
   public boolean isConnected() {
@@ -118,7 +118,6 @@ public class User extends Trainer implements BatchSavable {
   public void setPath(Path p) {
     this.currentPath = p;
     this.setLocation(p.getStart());
-    this.nUser.setWalkingTo(p.getEnd().toNetworkLocation());
   }
 
   public Path getPath() {
@@ -137,29 +136,62 @@ public class User extends Trainer implements BatchSavable {
     return this.session;
   }
 
-  private void addChange(String key, Object o) {
-    synchronized (this.changes) {
-      this.changes.put(key, o);
-    }
+  public Collection<Pokemon> getAllPokemon() {
+    return this.pokemon.values();
   }
 
   @Override
-  public Map<String, Object> getChangesForSaving() {
-    synchronized (this.changes) {
-      Map<String, Object> toSave = new HashMap<>(this.changes);
-      this.changes.clear();
-      return toSave;
+  public List<String> getUpdatableColumns() {
+    return Lists.newArrayList("chunk", "row", "col", "currency",
+        "session_token");
+  }
+
+  @Override
+  public void bindValues(PreparedStatement p) throws SQLException {
+    Location l = this.getLocation();
+    p.setInt(1, l.getChunk().getId());
+    p.setInt(2, l.getRow());
+    p.setInt(3, l.getCol());
+    p.setInt(4, this.getCurrency());
+    p.setString(5, this.getToken());
+    p.setInt(6, this.getId());
+  }
+
+  @Override
+  public String getTableName() {
+    return "users";
+  }
+
+  @Override
+  public boolean hasUpdates() {
+    return this.changed;
+  }
+
+  @Override
+  public List<String> getIdentifyingColumns() {
+    return Lists.newArrayList("id");
+  }
+
+  @Override
+  public void setChanged(boolean b) {
+    this.changed = b;
+  }
+
+  public static class UserAdapter implements JsonSerializer<User> {
+
+    @Override
+    public JsonElement serialize(User src, Type typeOfSrc,
+        JsonSerializationContext ctx) {
+      JsonObject o = new JsonObject();
+      o.addProperty("id", src.getId());
+      o.addProperty("state", src.getState());
+      o.addProperty("orientation", src.getOrientation());
+      o.add("location", Main.GSON().toJsonTree(src.getLocation()));
+      if (src.getPath() != null) {
+        o.add("destination", Main.GSON().toJsonTree(src.getPath().getEnd()));
+      }
+      return o;
     }
-  }
 
-  public Collection<Pokemon> getAllPokemon() {
-    return Collections.unmodifiableCollection(this.pokemon.values());
   }
-  
-  public void updateFromNetworkUser(NetworkUser networkUser) {
-    this.setOrientation(networkUser.getOrientation());
-    this.setLocation(networkUser.getLocation().toLocation());
-    this.setState(networkUser.getPlayerState());
-  }
-
 }

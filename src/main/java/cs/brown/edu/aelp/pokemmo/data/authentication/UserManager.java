@@ -55,7 +55,7 @@ public final class UserManager {
    */
   public static User authenticate(int id, String token) throws AuthException {
     if (users.containsKey(id)) {
-      if (users.get(id).getToken() == token) {
+      if (users.get(id).getToken().equals(token)) {
         return users.get(id);
       } else {
         throw new AuthException("Invalid token.");

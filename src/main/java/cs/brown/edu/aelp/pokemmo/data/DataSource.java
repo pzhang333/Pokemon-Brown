@@ -2,7 +2,6 @@ package cs.brown.edu.aelp.pokemmo.data;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-import java.util.Collection;
 
 public interface DataSource {
 
@@ -49,17 +48,6 @@ public interface DataSource {
    */
   public User registerUser(String username, String email, String password)
       throws AuthException;
-
-  /**
-   * Attempts to save an array of collections of BatchSavables, throwing a
-   * SaveException if something goes wrong.
-   * 
-   * @param objects
-   *          the array of collections of objects to save, each collection
-   *          should contain only objects of a single class
-   */
-  public void save(Collection<? extends BatchSavable>... objects)
-      throws SaveException;
 
   /**
    * Attempts to create a new Pokemon in the database, with given species and
