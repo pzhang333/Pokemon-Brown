@@ -302,12 +302,12 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     }
 
     this.health = health;
-    this.changed = true;
+    this.setChanged(true);
   }
 
   public void setStored(boolean stored) {
     this.stored = stored;
-    this.changed = true;
+    this.setChanged(true);
   }
 
   public boolean isStored() {
@@ -316,12 +316,12 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   public void addExp(Integer experience) {
     this.exp += experience;
-    this.changed = true;
+    this.setChanged(true);
   }
 
   public void changeNickname(String newName) {
     this.nickname = newName;
-    this.changed = true;
+    this.setChanged(true);
   }
 
   public String getSpecies() {
@@ -343,7 +343,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   // TODO: Better evolution system
   public void evolve(String evolvedSpecies) {
     this.species = evolvedSpecies;
-    this.changed = true;
+    this.setChanged(true);
   }
 
   public Double getEffectiveAttack() {
@@ -507,11 +507,22 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       p.setInt(11, m4.getId());
       p.setInt(15, m4.getPp());
     }
+    p.setInt(16, this.getId());
   }
 
   @Override
   public boolean hasUpdates() {
     return this.changed;
+  }
+
+  @Override
+  public void setChanged(boolean b) {
+    this.changed = b;
+  }
+
+  @Override
+  public List<String> getIdentifyingColumns() {
+    return Lists.newArrayList("id");
   }
 
 }

@@ -134,6 +134,8 @@ public final class Main {
             System.out.printf("Saved %d users.%n", data.save(users));
             System.out.printf("Saved %d pokemon.%n", data.save(pokemon));
             UserManager.purgeDisconnectedUsers();
+            users.stream().forEach(user -> user.setChanged(false));
+            pokemon.stream().forEach(p1 -> p1.setChanged(false));
           } catch (SaveException e) {
             System.out.println("ERROR: Something went wrong during saving.");
             e.printStackTrace();

@@ -28,10 +28,6 @@ public class NetworkUser extends Identifiable {
     return orientation;
   }
 
-  public NetworkLocation getWalkingTo() {
-    return this.walkingTo;
-  }
-
   public void setOrientation(int orientation) {
     this.orientation = orientation;
   }
@@ -47,7 +43,7 @@ public class NetworkUser extends Identifiable {
   public void setWalkingTo(NetworkLocation location) {
     this.walkingTo = location;
   }
-  
+
   public NetworkLocation getWalkingTo() {
     return this.walkingTo;
   }

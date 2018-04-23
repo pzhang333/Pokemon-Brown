@@ -17,6 +17,13 @@ public interface SQLBatchSavable {
   public List<String> getUpdatableColumns();
 
   /**
+   * Get a list of column names that identify this object.
+   *
+   * @return a list of Strings
+   */
+  public List<String> getIdentifyingColumns();
+
+  /**
    * Return the name of the table this object should be saved to.
    *
    * @return the table name
@@ -32,10 +39,18 @@ public interface SQLBatchSavable {
   public void bindValues(PreparedStatement p) throws SQLException;
 
   /**
-   * Get whether or not this object needs to be updated.
+   * Get whether or not this object needs to be saved.
    *
    * @return a boolean
    */
   public boolean hasUpdates();
+
+  /**
+   * Set whether or not this object needs to be saved.
+   *
+   * @param b
+   *          a boolean
+   */
+  public void setChanged(boolean b);
 
 }

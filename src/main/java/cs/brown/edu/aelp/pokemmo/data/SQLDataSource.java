@@ -266,24 +266,25 @@ public class SQLDataSource implements DataSource {
     }
     try {
       Connection conn = this.getConn();
-      conn.setAutoCommit(false);
       try (PreparedStatement p = this.getPStatementForClass(toSave.get(0))) {
         for (E obj : toSave) {
           obj.bindValues(p);
           p.addBatch();
         }
+        conn.setAutoCommit(false);
         int i = IntStream.of(p.executeBatch()).sum();
         conn.commit();
         return i;
       }
     } catch (SQLException e) {
       try {
+        System.out.println("CRITICAL: Batch save failed:");
+        e.printStackTrace();
         conn.rollback();
       } catch (SQLException e1) {
+        System.out.println("EVEN MORE CRITICAL: Rollback failed:");
         e1.printStackTrace();
-        throw new SaveException("ERROR: Failed to rollback failed commit...");
       }
-      e.printStackTrace();
       throw new SaveException();
     }
   }
@@ -340,20 +341,18 @@ public class SQLDataSource implements DataSource {
     // inelegant, but oh well
     try {
       Connection conn = this.getConn();
-      Class<? extends SQLBatchSavable> c = object.getClass();
-      if (c.equals(User.class)) {
-        return conn.prepareStatement(
-            "UPDATE users SET chunk = ?, row = ?, col = ?, currency = ?, "
-                + "session_token = ? WHERE id = ?");
-      } else if (c.equals(Pokemon.class)) {
-        return conn.prepareStatement(
-            "UPDATE pokemon SET user_id = ?, nickname = ?, gender = ?, "
-                + "experience = ?, stored = ?, cur_health = ?, species = ?, "
-                + "move_1 = ?, move_2 = ?, move_3 = ?, move_4 = ?, pp_1 = ?, "
-                + "pp_2 = ?, pp_3 = ?, pp_4 = ? WHERE id = ?");
-      } else {
-        return null;
+      StringBuilder q = new StringBuilder();
+      q.append("UPDATE " + object.getTableName() + " SET ");
+      for (String col : object.getUpdatableColumns()) {
+        q.append(col + " = ?, ");
       }
+      q.replace(q.length() - 2, q.length(), " ");
+      q.append("WHERE ");
+      for (String col : object.getIdentifyingColumns()) {
+        q.append(col + " = ? AND");
+      }
+      q.replace(q.length() - 4, q.length(), ";");
+      return conn.prepareStatement(q.toString());
     } catch (SQLException e) {
       e.printStackTrace();
       return null;

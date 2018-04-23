@@ -64,7 +64,7 @@ public class User extends Trainer implements SQLBatchSavable {
     }
     this.location = loc;
     this.nUser.setLocation(loc.toNetworkLocation());
-    this.changed = true;
+    this.setChanged(true);
   }
 
   public Location getLocation() {
@@ -77,7 +77,7 @@ public class User extends Trainer implements SQLBatchSavable {
 
   public void setCurrency(int c) {
     this.currency = c;
-    this.changed = true;
+    this.setChanged(true);
   }
 
   public int getCurrency() {
@@ -158,8 +158,9 @@ public class User extends Trainer implements SQLBatchSavable {
     p.setInt(3, l.getCol());
     p.setInt(4, this.getCurrency());
     p.setString(5, this.getToken());
+    p.setInt(6, this.getId());
   }
-  
+
   public void updateFromNetworkUser(NetworkUser networkUser) {
     this.setOrientation(networkUser.getOrientation());
     this.setLocation(networkUser.getLocation().toLocation());
@@ -174,5 +175,15 @@ public class User extends Trainer implements SQLBatchSavable {
   @Override
   public boolean hasUpdates() {
     return this.changed;
+  }
+
+  @Override
+  public List<String> getIdentifyingColumns() {
+    return Lists.newArrayList("id");
+  }
+
+  @Override
+  public void setChanged(boolean b) {
+    this.changed = b;
   }
 }
