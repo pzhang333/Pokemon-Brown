@@ -34,7 +34,9 @@ public final class PacketSender {
       message.add("payload", payload);
       // send to each user that has an open session
       for (User u : c.getUsers()) {
-        if (u.getSession() != null && u.getSession().isOpen()) {
+        if (u.isConnected()) {
+          // System.out.printf("Sending to: %d%n", u.getId());
+          // System.out.println(message);
           u.getSession().getRemote()
               .sendStringByFuture(Main.GSON().toJson(message));
         }
@@ -53,7 +55,9 @@ public final class PacketSender {
       List<JsonObject> otherPlayerInfo = new ArrayList<>();
       for (User other : u.getLocation().getChunk().getUsers()) {
         if (u != other) {
-          otherPlayerInfo.add(buildPlayerEnteredChunkOp(other));
+          JsonObject entered = buildPlayerOpMessage(other,
+              OP_CODES.ENTERED_CHUNK);
+          otherPlayerInfo.add(entered);
         }
       }
       values.add("ops", Main.GSON().toJsonTree(otherPlayerInfo));
@@ -65,11 +69,15 @@ public final class PacketSender {
     }
   }
 
-  private static JsonObject buildPlayerEnteredChunkOp(User u) {
+  public static JsonObject buildPlayerOpMessage(User u, OP_CODES code) {
     JsonObject message = new JsonObject();
-    message.addProperty("code", OP_CODES.ENTERED_CHUNK.ordinal());
-    // TODO: attach other info we need to initialize new players entering your
-    // chunk, don't need to attach location info
+    message.addProperty("code", code.ordinal());
+    message.addProperty("id", u.getId());
+    if (code == OP_CODES.ENTERED_CHUNK) {
+      message.addProperty("username", u.getUsername());
+    } else if (code == OP_CODES.LEFT_CHUNK) {
+      // ...
+    }
     return message;
   }
 

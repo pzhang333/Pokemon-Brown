@@ -162,7 +162,7 @@ public final class Main {
     runSparkServer((int) options.valueOf("port"));
 
     // temporary game loop
-    long sleepTime = 200;
+    long sleepTime = 100;
     while (true) {
       PlayerWebSocketHandler.sendGamePackets();
       try {

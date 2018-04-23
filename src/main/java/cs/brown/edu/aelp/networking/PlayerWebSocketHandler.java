@@ -10,6 +10,7 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
+import cs.brown.edu.aelp.pokemon.Main;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jetty.websocket.api.Session;
@@ -24,7 +25,7 @@ public class PlayerWebSocketHandler {
   private static final Gson GSON = new Gson();
 
   public static enum MESSAGE_TYPE {
-    CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, UPDATE_USER, CLIENT_PLAYER_UPDATE, PATH_REQUEST_RESPONSE
+    CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, PLAYER_TELEPORT, UPDATE_USER, CLIENT_PLAYER_UPDATE, PATH_REQUEST_RESPONSE
   }
 
   public static enum OP_CODES {
@@ -52,6 +53,8 @@ public class PlayerWebSocketHandler {
     JsonObject received = GSON.fromJson(message, JsonObject.class);
     JsonObject payload = received.getAsJsonObject("payload");
     int id;
+    User u;
+    Chunk c;
 
     switch (MESSAGE_TYPES[received.get("type").getAsInt()]) {
     case CONNECT:
@@ -59,7 +62,7 @@ public class PlayerWebSocketHandler {
       id = payload.get("id").getAsInt();
       String token = payload.get("token").getAsString();
       try {
-        User u = UserManager.authenticate(id, token);
+        u = UserManager.authenticate(id, token);
         u.setSession(session);
         System.out.println("Authenticated socket by packet: " + message);
         PacketSender.sendInitializationPacket(u);
@@ -103,14 +106,14 @@ public class PlayerWebSocketHandler {
     case PLAYER_REQUEST_PATH:
       // TODO: Actually verify the path, maybe?...
       id = payload.get("id").getAsInt();
-      User u = UserManager.getUserById(id);
+      u = UserManager.getUserById(id);
       if (u == null || u.getSession() != session) {
         session.close();
         break;
       }
       JsonArray path = received.getAsJsonObject("payload")
           .getAsJsonArray("path");
-      Chunk c = u.getLocation().getChunk();
+      c = u.getLocation().getChunk();
       List<Location> locs = new ArrayList<>();
       for (JsonElement o : path) {
         JsonObject tile = (JsonObject) o;
@@ -119,6 +122,36 @@ public class PlayerWebSocketHandler {
         locs.add(loc);
       }
       u.setPath(new Path(locs));
+      break;
+    case PLAYER_TELEPORT:
+      id = payload.get("id").getAsInt();
+      u = UserManager.getUserById(id);
+      if (u == null || u.getSession() != session) {
+        session.close();
+        break;
+      }
+      int row = payload.get("row").getAsInt();
+      int col = payload.get("col").getAsInt();
+      c = Main.getWorld().getChunk(payload.get("chunk").getAsInt());
+      Chunk old_c = u.getLocation().getChunk();
+      if (c == null) {
+        System.out.printf(
+            "WARNING: Player %d tried to teleport to non-existent chunk.%n",
+            u.getId());
+        session.close();
+      }
+      if (c == old_c) {
+        System.out.printf(
+            "WARNING: Player %d tried to teleport to same chunk.%n", u.getId());
+        session.close();
+      }
+      JsonObject leftChunkOp = PacketSender.buildPlayerOpMessage(u,
+          OP_CODES.LEFT_CHUNK);
+      PacketSender.queueOpForChunk(leftChunkOp, old_c.getId());
+      JsonObject enteredChunkOp = PacketSender.buildPlayerOpMessage(u,
+          OP_CODES.ENTERED_CHUNK);
+      PacketSender.queueOpForChunk(enteredChunkOp, c.getId());
+      u.setLocation(new Location(c, row, col));
       break;
     default:
       // something went wrong, we got an unknown message type
