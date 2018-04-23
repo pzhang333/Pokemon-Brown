@@ -63,10 +63,21 @@ public class PlayerWebSocketHandler {
 
     case CLIENT_PLAYER_UPDATE:
       // we have received an update from the client
-
-      String playerJson = received.getAsJsonObject("payload").get("player")
+      
+      String playerJson = payload.get("player")
           .toString();
-      NetworkUser player = GSON.fromJson(playerJson, NetworkUser.class);
+      NetworkUser networkUser = GSON.fromJson(playerJson, NetworkUser.class);
+      
+      // TODO: confirm session matches with user session
+      int uid = payload.get("id").getAsInt();
+      User userToUpdate = UserManager.getUserById(uid);
+      
+      // verifying that the session matches the user session
+      if (userToUpdate.getSession().equals(session)) {
+        userToUpdate.updateFromNetworkUser(networkUser);
+      } else {
+        System.out.println("ERROR: Requesting user id does not match session.");
+      }
 
       // updating our player object in our map of sessions to players
       // sessionToPlayer.put(session, player);

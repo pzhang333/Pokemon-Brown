@@ -88,5 +88,14 @@ public final class UserManager {
   public static Collection<User> getAllUsers() {
     return Collections.unmodifiableCollection(users.values());
   }
-
+  
+  /**
+   * Gets a user by an id.
+   * @param id
+   *      Id of user we are getting.
+   * @return The user that corresponds to the id.
+   */
+  public static User getUserById(int id) {
+    return users.get(id);
+  }
 }

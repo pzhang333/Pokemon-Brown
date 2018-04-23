@@ -43,5 +43,8 @@ public class NetworkUser extends Identifiable {
   public void setWalkingTo(NetworkLocation location) {
     this.walkingTo = location;
   }
-
+  
+  public NetworkLocation getWalkingTo() {
+    return this.walkingTo;
+  }
 }
