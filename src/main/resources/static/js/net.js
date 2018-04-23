@@ -3,11 +3,7 @@ const MESSAGE_TYPE = {
 	CONNECT: 0,
 	INITIALIZE_PACKET: 1,
 	GAME_PACKET: 2,
-	UPDATE_USER: 4,
-	PATH_REQUEST_RESPONSE: 5,
-	CLIENT_PLAYER_UPDATE: 6,
-    PLAYER_REQUEST_PATH: 7,
-    PATH_REQUEST_RESPONSE: 8
+	TELEPORT_PACKET: 3
 };
 
 function waitForSocketConnection(socket, callback) {
@@ -110,6 +106,14 @@ class Net {
 		net.chunkId = loc.chunkId;
 	}
 	
+	sendTeleportPacket(loc) {
+		this.sendPacket(MESSAGE_TYPE.TELEPORT_PACKET, {
+			row: loc.y,
+			col: loc.x,
+			chunk: loc.chunk
+		});
+	}
+	
 	gamePacketHandler(msg) {
 		console.log('Got game packet');
 		
@@ -136,12 +140,6 @@ class Net {
 		}
 	}
 
-	pathApprovalHandler(msg) {
-		console.log("path approved");
-		let path = msg.payload.path;
-		// TODO: do something with this path
-	}
-	
 	handleMsg(event) {
 
 		console.log('test!');
