@@ -155,5 +155,11 @@ public class User extends Trainer implements BatchSavable {
   public Collection<Pokemon> getAllPokemon() {
     return Collections.unmodifiableCollection(this.pokemon.values());
   }
+  
+  public void updateFromNetworkUser(NetworkUser networkUser) {
+    this.setOrientation(networkUser.getOrientation());
+    this.setLocation(networkUser.getLocation().toLocation());
+    this.setState(networkUser.getPlayerState());
+  }
 
 }
