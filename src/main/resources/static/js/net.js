@@ -1,37 +1,40 @@
 
 const MESSAGE_TYPE = {
 	CONNECT: 0,
-	GAME_PACKET: 1,
-	UPDATE_USER: 2,
-	PATH_REQUEST_RESPONSE: 3,
-	CLIENT_PLAYER_UPDATE: 4,
-    PLAYER_REQUEST_PATH: 5,
-    PATH_REQUEST_RESPONSE: 6
+	INITIALIZE_PACKET: 1,
+	GAME_PACKET: 2,
+	UPDATE_USER: 4,
+	PATH_REQUEST_RESPONSE: 5,
+	CLIENT_PLAYER_UPDATE: 6,
+    PLAYER_REQUEST_PATH: 7,
+    PATH_REQUEST_RESPONSE: 8
 };
 
+function waitForSocketConnection(socket, callback) {
+    setTimeout(
+        function () {
+            if (socket.readyState === 1) {
+                console.log("Connection is made")
+                if(callback != null){
+                    callback(socket);
+                }
+                return;
 
-function generateFakeGamePacket() {
-	return {
-		"payload": {
-			"game_packet": {
-				players: [
-					{
-						id: 1,
-						x: Math.floor(Math.random() * 20),
-						y: Math.floor(Math.random() * 20)
-					}
-				]
-			}
-		} 
-	};
+            } else {
+                console.log("wait for connection...")
+                waitForSocketConnection(socket, callback);
+            }
+
+        }, 5); // wait 5 milisecond for the connection...
 }
+
 
 class Net {
 
 	constructor() {
 
 		this.cfg = {
-			url: 'ws://localhost:4567/game',
+			url: 'ws://10.38.49.136:4567/game',
 		};
 		
 		this.chunkBaseURL = "/assets/maps/chunk_";
@@ -43,15 +46,39 @@ class Net {
 
 		this.handlers = {}
 		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
-		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler
-		this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler
+		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
+		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler;
+		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
-		this.socket = new WebSocket(this.cfg.url);
+	}
+	
+	packet(type, payload) {
+		payload.id = net.id;
 		
-		this.socket.onmessage = this.handleMsg.bind(this);
-		this.socket.onerror = this.handleErr.bind(this);
+		return JSON.stringify({
+			type: type,
+			payload: payload
+		});
 	}
 
+	connect(id, token) {
+		
+		this.id = id;
+		this.token = token;
+		
+		this.socket = new WebSocket(this.cfg.url);
+		this.socket.onmessage = this.handleMsg.bind(this);
+		this.socket.onerror = this.handleErr.bind(this);
+		
+		console.log('Auth(' + this.id + ', ' + this.token + ')');
+		
+		waitForSocketConnection(this.socket, function(socket) {
+			socket.send(net.packet(MESSAGE_TYPE.CONNECT, {
+				token: token
+			}));
+		});
+	}
+	
 	getChunk(cb) {
 		
 		let id = this.chunkId;
@@ -61,7 +88,7 @@ class Net {
 		});
 		
 	}
-
+	
 	getCurrentChunkId() {
 		// Hack
 		return this.chunkId;
@@ -69,28 +96,42 @@ class Net {
 
 	// Pretend this is a login packet... or something idk...
 	connectHandler(msg) {
-		console.log('Got connect packet');
+		console.log('Got connect packet', msg);
 		
-		Game.player.id = msg.payload.id;
+		//Game.player.id = msg.payload.id;
+	}
+	
+	initPacketHandler(msg) {
+		Game.player.id = this.id;
+		
+		let loc = msg.payload.location;
+		Game.player.setPos(loc.column, loc.row);
+		
+		net.chunkId = loc.chunkId;
 	}
 	
 	gamePacketHandler(msg) {
 		console.log('Got game packet');
 		
-		msg = generateFakeGamePacket();
+		//msg = generateFakeGamePacket();
 		
 		if (game.state.current != "Game") {
 			return;
 		}
 		
-		let playerUpdates = msg.payload.game_packet.players;
+		let playerUpdates = msg.payload.users;
 		for(let i = 0; i < playerUpdates.length; i++) {
 			let update = playerUpdates[i];
-			let player = Game.players[update.id];
+			
+			let loc = playerUpdates[i].location;
+			let id = Game.players[update.id];
 			
 			console.log(player);
 			if (player != undefined) {
-				player.prepareMovement(update, true);
+				player.prepareMovement({
+					x: loc.column,
+					y: loc.rows
+				}, true);
 			}
 		}
 	}
@@ -103,6 +144,9 @@ class Net {
 	
 	handleMsg(event) {
 
+		console.log('test!');
+		console.log(event);
+		
 		const data = JSON.parse(event.data);
 		
 		if (data.type in this.handlers) {
@@ -113,7 +157,7 @@ class Net {
 	}
 	
 	handleErr(err) {
-		console.log('Connection error:', err);
+		alert('Connection Error! Please refresh.');
 	}
 
 	sendClientPlayerUpdate(networkPlayer, op){
