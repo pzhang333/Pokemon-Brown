@@ -41,6 +41,7 @@ public class PlayerWebSocketHandler {
 
   @OnWebSocketMessage
   public void onMessage(Session session, String message) {
+    System.out.println(message);
     // we have received a websocket message
     // this message will be a JSON object (in string form)
     JsonObject received = GSON.fromJson(message, JsonObject.class);
@@ -58,8 +59,10 @@ public class PlayerWebSocketHandler {
         // TODO: Inform all other users of their connection?
       } catch (AuthException e1) {
         // their credentials were bad or something went wrong
+        System.out.println(e1.getMessage());
         session.close();
       }
+      break;
 
     case CLIENT_PLAYER_UPDATE:
       // we have received an update from the client
@@ -79,6 +82,7 @@ public class PlayerWebSocketHandler {
       if (opcode == 1) {
         // player switched tiles, requires some initialization information
       }
+      break;
     case PLAYER_REQUEST_PATH:
       // player is requesting a movement along a path
 
@@ -99,6 +103,7 @@ public class PlayerWebSocketHandler {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+      break;
     default:
       // something went wrong, we got an unknown message type
     }

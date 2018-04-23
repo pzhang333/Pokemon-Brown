@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemon.Main;
 import java.io.IOException;
@@ -64,13 +63,15 @@ public final class PacketSender {
         // TODO: attach other info we need to know about ourselves immediately
         // after connecting
         List<JsonObject> otherPlayerInfo = new ArrayList<>();
-        for (User other : UserManager.getAllUsers()) {
+        for (User other : u.getLocation().getChunk().getUsers()) {
           if (u != other) {
             otherPlayerInfo.add(buildPlayerEnteredChunkOp(other));
           }
         }
         values.add("ops", gson.toJsonTree(otherPlayerInfo));
         message.add("payload", values);
+        System.out.println("Sending packet:");
+        System.out.println(gson.toJson(message));
         u.getSession().getRemote().sendString(gson.toJson(message));
       }
     } catch (IOException e) {
@@ -80,7 +81,7 @@ public final class PacketSender {
 
   private static JsonObject buildPlayerEnteredChunkOp(User u) {
     JsonObject message = new JsonObject();
-    message.addProperty("op", OP_CODES.ENTERED_CHUNK.ordinal());
+    message.addProperty("code", OP_CODES.ENTERED_CHUNK.ordinal());
     // TODO: attach other info we need to initialize new players entering your
     // chunk, don't need to attach location info
     return message;

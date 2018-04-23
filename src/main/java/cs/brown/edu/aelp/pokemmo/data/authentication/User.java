@@ -1,25 +1,28 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
+import com.google.common.collect.Lists;
 import cs.brown.edu.aelp.networking.NetworkUser;
-import cs.brown.edu.aelp.pokemmo.data.BatchSavable;
+import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.jetty.websocket.api.Session;
 
-public class User extends Trainer implements BatchSavable {
+public class User extends Trainer implements SQLBatchSavable {
 
   private final String username;
   private final String email;
   private String sessionToken;
   private Session session;
 
-  private Map<String, Object> changes = new HashMap<>();
+  private boolean changed = false;
 
   private Path currentPath;
   private Location location;
@@ -53,15 +56,15 @@ public class User extends Trainer implements BatchSavable {
   }
 
   public void setLocation(Location loc) {
-    if (this.location.getChunk() != loc.getChunk()) {
-      this.location.getChunk().removeUser(this);
+    if (this.location == null || this.location.getChunk() != loc.getChunk()) {
+      if (this.location != null) {
+        this.location.getChunk().removeUser(this);
+      }
       loc.getChunk().addUser(this);
     }
     this.location = loc;
     this.nUser.setLocation(loc.toNetworkLocation());
-    this.addChange("chunk", loc.getChunk().getId());
-    this.addChange("row", loc.getRow());
-    this.addChange("col", loc.getCol());
+    this.changed = true;
   }
 
   public Location getLocation() {
@@ -74,7 +77,7 @@ public class User extends Trainer implements BatchSavable {
 
   public void setCurrency(int c) {
     this.currency = c;
-    this.addChange("currency", c);
+    this.changed = true;
   }
 
   public int getCurrency() {
@@ -137,23 +140,33 @@ public class User extends Trainer implements BatchSavable {
     return this.session;
   }
 
-  private void addChange(String key, Object o) {
-    synchronized (this.changes) {
-      this.changes.put(key, o);
-    }
+  public Collection<Pokemon> getAllPokemon() {
+    return this.pokemon.values();
   }
 
   @Override
-  public Map<String, Object> getChangesForSaving() {
-    synchronized (this.changes) {
-      Map<String, Object> toSave = new HashMap<>(this.changes);
-      this.changes.clear();
-      return toSave;
-    }
+  public List<String> getUpdatableColumns() {
+    return Lists.newArrayList("chunk", "row", "col", "currency",
+        "session_token");
   }
 
-  public Collection<Pokemon> getAllPokemon() {
-    return Collections.unmodifiableCollection(this.pokemon.values());
+  @Override
+  public void bindValues(PreparedStatement p) throws SQLException {
+    Location l = this.getLocation();
+    p.setInt(1, l.getChunk().getId());
+    p.setInt(2, l.getRow());
+    p.setInt(3, l.getCol());
+    p.setInt(4, this.getCurrency());
+    p.setString(5, this.getToken());
   }
 
+  @Override
+  public String getTableName() {
+    return "users";
+  }
+
+  @Override
+  public boolean hasUpdates() {
+    return this.changed;
+  }
 }

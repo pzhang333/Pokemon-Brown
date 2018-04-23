@@ -1,13 +1,12 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
-import cs.brown.edu.aelp.util.Identifiable;
 import java.util.EnumSet;
 
 /**
  * Pokemon Move class.
  */
-public class Move extends Identifiable {
+public class Move {
 
   /**
    * Move Complexity Type. Simple moves are calculated normally. Complex moves
@@ -141,7 +140,7 @@ public class Move extends Identifiable {
     }
 
     public Move build() {
-      Move move = new Move(id);
+      Move move = new Move(this.id);
       move.number = this.number;
       move.accuracy = this.accuracy;
       move.basePower = this.basePower;
@@ -160,6 +159,8 @@ public class Move extends Identifiable {
     }
 
   }
+
+  private int id;
 
   private Integer number;
 
@@ -189,7 +190,7 @@ public class Move extends Identifiable {
 
   // We want to construct moves only using the builder
   private Move(int id) {
-    super(id);
+    this.id = id;
   }
 
   /**
@@ -230,7 +231,7 @@ public class Move extends Identifiable {
       MoveCategory category, String description, String shortDescription,
       String name, Integer pp, Integer priority, MoveTarget target,
       PokeTypes type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
-    super(id);
+    this.id = id;
     this.number = number;
     this.accuracy = accuracy;
     this.basePower = basePower;
@@ -342,6 +343,10 @@ public class Move extends Identifiable {
     this.pp = pp;
   }
 
+  public int getId() {
+    return this.id;
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -351,4 +356,27 @@ public class Move extends Identifiable {
   public String toString() {
     return "Move [name=" + name + "]";
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + id;
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Move other = (Move) obj;
+    if (id != other.id)
+      return false;
+    return true;
+  }
+
 }

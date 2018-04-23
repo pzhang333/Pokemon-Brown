@@ -93,6 +93,9 @@ public final class Main {
         }
       };
 
+      // for the sake of triggering the table creation
+      Main.getDataSource();
+
     } catch (IOException e) {
       System.out.println(
           "ERROR: Something went wrong reading database_info.json. Check the configuration file.");
@@ -114,32 +117,34 @@ public final class Main {
     world.loadChunks();
     world.setSpawn(new Location(world.getChunk(1), 5, 5));
 
-    // try to start the save-thread
-    ScheduledExecutorService scheduler = Executors
-        .newSingleThreadScheduledExecutor();
+    // try to start the save-thread if we're backed by SQL
+    if (Main.getDataSource() instanceof SQLDataSource) {
+      ScheduledExecutorService scheduler = Executors
+          .newSingleThreadScheduledExecutor();
 
-    Runnable save = new Runnable() {
-      public void run() {
-        Collection<User> users = UserManager.getAllUsers();
-        Collection<Pokemon> pokemon = new ArrayList<>();
-        for (User u : users) {
-          pokemon.addAll(u.getAllPokemon());
+      Runnable save = new Runnable() {
+        public void run() {
+          Collection<User> users = UserManager.getAllUsers();
+          Collection<Pokemon> pokemon = new ArrayList<>();
+          for (User u : users) {
+            pokemon.addAll(u.getAllPokemon());
+          }
+          SQLDataSource data = (SQLDataSource) Main.getDataSource();
+          try {
+            System.out.printf("Saved %d users.%n", data.save(users));
+            System.out.printf("Saved %d pokemon.%n", data.save(pokemon));
+            UserManager.purgeDisconnectedUsers();
+          } catch (SaveException e) {
+            System.out.println("ERROR: Something went wrong during saving.");
+            e.printStackTrace();
+          }
         }
-        DataSource data = Main.getDataSource();
-        try {
-          data.save(users, pokemon);
-          UserManager.purgeDisconnectedUsers();
-          System.out.printf("Saved %d users.%n", users.size());
-          System.out.printf("Saved %d pokemon.%n", pokemon.size());
-        } catch (SaveException e) {
-          System.out.println("ERROR: Something went wrong during saving.");
-          e.printStackTrace();
-        }
-      }
-    };
+      };
 
-    scheduler.scheduleAtFixedRate(save, SAVE_PERIOD, SAVE_PERIOD,
-        TimeUnit.SECONDS);
+      scheduler.scheduleAtFixedRate(save, SAVE_PERIOD, SAVE_PERIOD,
+          TimeUnit.SECONDS);
+
+    }
 
     runSparkServer((int) options.valueOf("port"));
 
