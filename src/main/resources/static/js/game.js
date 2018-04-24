@@ -49,7 +49,7 @@ Game.create = function() {
 Game.drawLayers = function() {
 
 	/* TODO: Cleanup */
-	Game.layerNames = ['Base', 'Walk', 'Walkable', 'Collision', 'Top'];
+	Game.layerNames = ['Base', 'Walk', 'Collision', 'Top', 'Bush'];
 
 	Game.map.gameLayers = {};
 
@@ -86,7 +86,7 @@ Game.drawLayers = function() {
 };
 
 Game.handleMapClick = function(layer, pointer) {
-	let coords = Game.computeTileCoords(pointer.worldX, pointer.worldY + 16);
+	let coords = Game.computeTileCoords(pointer.worldX, Math.ceil((pointer.worldY - 16) / 16) * 16);
 
 	/* Hack due to offset */
 	if (coords.y == Game.map.height) {
@@ -107,10 +107,10 @@ Game.calculateCollisionMatrix = function(map) {
 
 	let collisionMatrix = [];
 
-	collisionMatrix.push(Array(map.height).fill().map(() => 1))
+	//collisionMatrix.push(Array(map.height).fill().map(() => 1))
 
 	/* Dank Hack */
-	for(let row = 0; row < map.height - 1; row++) {
+	for(let row = 0; row < map.height; row++) {
 
 		let collsionRow = [];
 
@@ -151,6 +151,16 @@ Game.clearPlayers = function() {
     		Game.players[id] = undefined;
 	    }
 	}
+}
+
+Game.startBattle = function() {
+	
+	if (Game.battle != undefined) {
+		Game.battle.del();
+	}
+	
+	Game.battle = new Battle();
+	
 }
 
 Game.loadCurrentChunk = function(clear) {

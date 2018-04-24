@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.6.3</string>
         <key>fileName</key>
-        <string>C:/Users/Ethan/Pictures/pokemon.tps</string>
+        <string>C:/Users/Ethan/cs0320/final-project/art-pipeline/pokemon.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -134,7 +134,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../../../xampp/htdocs/assets/sprites/pokemon_atlas1.json</filename>
+                <filename>../src/main/resources/static/assets/sprites/pokemon_atlas1.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -171,7 +171,7 @@
             <key>trimMargin</key>
             <uint>1</uint>
             <key>trimMode</key>
-            <enum type="SpriteSettings::TrimMode">Trim</enum>
+            <enum type="SpriteSettings::TrimMode">None</enum>
             <key>tracerTolerance</key>
             <int>200</int>
             <key>heuristicMask</key>
@@ -183,49 +183,128 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">pokemon-sprites/basic-menu-bg.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/basic-menu-bg.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>200,150,400,300</rect>
+                <rect>138,94,277,187</rect>
                 <key>scale9Paddings</key>
-                <rect>200,150,400,300</rect>
+                <rect>138,94,277,187</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">pokemon-sprites/grey_panel.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/bg-meadow.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>25,25,50,50</rect>
+                <rect>200,120,400,240</rect>
                 <key>scale9Paddings</key>
-                <rect>25,25,50,50</rect>
+                <rect>200,120,400,240</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">pokemon-sprites/logo.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/blue-button-primary/0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>181,23,361,45</rect>
+                <rect>48,11,95,23</rect>
                 <key>scale9Paddings</key>
-                <rect>181,23,361,45</rect>
+                <rect>48,11,95,23</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../Pictures/pokemon-sprites/blue-button-primary/1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>48,12,95,25</rect>
+                <key>scale9Paddings</key>
+                <rect>48,12,95,25</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../Pictures/pokemon-sprites/grey-panel.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>125,125,250,250</rect>
+                <key>scale9Paddings</key>
+                <rect>125,125,250,250</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../Pictures/pokemon-sprites/logo.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>125,46,250,92</rect>
+                <key>scale9Paddings</key>
+                <rect>125,46,250,92</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>8,8,16,16</rect>
+                <key>scale9Paddings</key>
+                <rect>8,8,16,16</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/1.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/10.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/11.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/12.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/13.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/14.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/15.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/2.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/3.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/4.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/5.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/6.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/7.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/8.png</key>
+            <key type="filename">../../../Pictures/pokemon-sprites/lucas/9.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>8,8,16,17</rect>
+                <key>scale9Paddings</key>
+                <rect>8,8,16,17</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
         </map>
         <key>fileList</key>
         <array>
-            <filename>pokemon-sprites</filename>
+            <filename>../../../Pictures/pokemon-sprites</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
