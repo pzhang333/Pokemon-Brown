@@ -30,7 +30,7 @@ class Net {
 
 	constructor() {
 
-		this.host = 'localhost';
+		this.host = '10.38.49.136';
 		this.port = 4567;
 		
 		this.cfg = {
@@ -149,7 +149,7 @@ class Net {
 			
 			let update = playerUpdates[i];
 			
-			//handled.push(update.id);
+			handled.push(update.id);
 			
 			//let loc = update.location;
 			let loc = update.location;
@@ -162,8 +162,7 @@ class Net {
 				continue;
 			}
 			
-
-			console.log('test');
+			console.log(Game.players[id])
 			if (Game.players[id] == undefined) {
 				let player = new Player();
 				
@@ -173,6 +172,8 @@ class Net {
 				player.id = id;
 				
 				Game.players[id] = player;
+
+				console.log(Game.players[id]);
 			}
 			
 			let player = Game.players[id];
@@ -199,7 +200,13 @@ class Net {
 		    	let id = parseInt(key);
 		    	
 		    	if (!handled.includes(id)) {
-		    		Game.players[id].del();
+		    		let toDel = Game.players[id];
+		    		
+		    		if (toDel != undefined) {
+		    			toDel.del();
+		    		}
+		    		
+		    		Game.players[id] = undefined;
 		    	}
 		    }
 		}

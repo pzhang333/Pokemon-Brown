@@ -160,6 +160,10 @@ class Player {
 	 */
 	playAnim(animName, opts) {
 
+		if (this.sprite == undefined) {
+			this.initSprite();
+		}
+		
 		if (opts == undefined) {
 			opts = {};
 		}
@@ -392,7 +396,7 @@ class Player {
 				//alert('Other player teleported');
 				
 				this.sprite.destroy();
-				delete Game.players[this.id];
+				Game.players[this.id] = undefined;
 				return;
 			}
 		}
@@ -402,7 +406,7 @@ class Player {
 	
 	del() {
 		this.sprite.destroy();
-		delete Game.players[this.id];
+		Game.players[this.id] = undefined;
 		return;
 	}
 

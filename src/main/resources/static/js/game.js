@@ -1,6 +1,6 @@
 
 var Game = {
-
+	players: {}
 }
 
 Game.init = function() {
@@ -8,7 +8,6 @@ Game.init = function() {
 	//Game.easystar = new EasyStar.js();
 	Game.cursors = game.input.keyboard.createCursorKeys();
 	
-	Game.players = {};
 };
 
 Game.update = function() {
@@ -44,7 +43,7 @@ Game.preload = function() {
 
 
 Game.create = function() {
-	this.loadCurrentChunk(false);
+	this.loadCurrentChunk(true);
 };
 
 Game.drawLayers = function() {
@@ -142,13 +141,20 @@ Game.clearPlayers = function() {
 	    	
 	    	// Hack
 	    	let id = parseInt(key);
-	    	Game.players[id].del();
+	    	let player = Game.players[id]
+	    	
+	    	if (player != undefined) {
+	    		player.del();
+	    	}
+	    	
+
+    		Game.players[id] = undefined;
 	    }
 	}
 }
 
 Game.loadCurrentChunk = function(clear) {
-
+	
 	if (Game.map != undefined && clear) {
 		for(idx in Game.layerNames) {
 			Game.map.gameLayers[Game.layerNames[idx]].destroy();
@@ -157,14 +163,13 @@ Game.loadCurrentChunk = function(clear) {
 
 		Game.map.destroy();
 		game.world.removeAll();
-		Game.clearPlayers();
 	}
 
 	let self = this;
 
 	net.getChunk(function(chunk) {
 
-		Game.clearPlayers();
+	//	Game.clearPlayers();
 		
 		console.log(chunk)
 		Game.chunkId = chunk.id;
@@ -187,6 +192,8 @@ Game.loadCurrentChunk = function(clear) {
 		Game.player.initSprite();
 		Game.player.setVisible();
 		Game.player.setCameraFocus(Game.camera);
+		
+		Game.clearPlayers();
 	});
 };
 
