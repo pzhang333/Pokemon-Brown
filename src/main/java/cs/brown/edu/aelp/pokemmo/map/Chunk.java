@@ -5,12 +5,9 @@ import cs.brown.edu.aelp.util.Identifiable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Chunk extends Identifiable {
@@ -19,10 +16,8 @@ public class Chunk extends Identifiable {
 
   private final int height;
 
-  private Map<Location, List<Entity>> entities = new ConcurrentHashMap<>();
-
-  private Map<User, Map<Location, List<Entity>>> instanced_entities;
-
+  private final boolean[][] grass;
+  private List<Entity> entities = new ArrayList<>();
   private Set<User> usersHere = new HashSet<>();
 
   private final boolean instanced;
@@ -32,9 +27,15 @@ public class Chunk extends Identifiable {
     this.width = width;
     this.height = height;
     this.instanced = instanced;
-    if (instanced) {
-      this.instanced_entities = new ConcurrentHashMap<>();
-    }
+    this.grass = new boolean[this.width][this.height];
+  }
+
+  public boolean isGrass(int row, int col) {
+    return this.grass[row][col];
+  }
+
+  public void setGrass(int row, int col, boolean grass) {
+    this.grass[row][col] = grass;
   }
 
   public int getWidth() {
@@ -45,39 +46,45 @@ public class Chunk extends Identifiable {
     return this.height;
   }
 
-  public List<Entity> getEntitiesAt(Location loc, User user) {
-    List<Entity> results = new ArrayList<>();
-    if (this.entities.containsKey(loc)) {
-      results.addAll(this.entities.get(loc));
-    }
-    if (this.instanced && this.instanced_entities.containsKey(user)
-        && this.instanced_entities.get(user).containsKey(loc)) {
-      results.addAll(this.instanced_entities.get(user).get(loc));
-    }
-    return results;
+  public boolean isInstanced() {
+    return this.instanced;
   }
 
-  public void addEntityAt(Entity e, Location loc) {
-    if (!this.entities.containsKey(loc)) {
-      this.entities.put(loc, new ArrayList<Entity>());
-    }
-    this.entities.get(loc).add(e);
+  public List<Entity> getEntities() {
+    return this.getEntities(null);
   }
 
-  public void addInstancedEntityAt(Entity e, Location loc, User user) {
-    if (!this.instanced) {
-      throw new IllegalArgumentException(
-          "Only instanced chunks can have instanced entities.");
+  public List<Entity> getEntities(User u) {
+    if (this.instanced) {
+      List<Entity> results = new ArrayList<>();
+      for (Entity e : this.entities) {
+        if (e instanceof InstancedEntity) {
+          InstancedEntity ie = (InstancedEntity) e;
+          if (u != null && ie.getUser().equals(u)) {
+            results.add(ie);
+          }
+        } else {
+          results.add(e);
+        }
+      }
+      return results;
+    } else {
+      return new ArrayList<>(this.entities);
     }
-    if (!this.instanced_entities.containsKey(user)) {
-      this.instanced_entities.put(user, new HashMap<>());
+  }
+
+  public void addEntity(Entity e) {
+    assert e.getLocation().getChunk() == this;
+    if (e instanceof InstancedEntity) {
+      assert this.instanced;
     }
-    Map<Location, List<Entity>> user_entities = this.instanced_entities
-        .get(user);
-    if (!user_entities.containsKey(loc)) {
-      user_entities.put(loc, new ArrayList<>());
-    }
-    user_entities.get(loc).add(e);
+    this.entities.add(e);
+    System.out.printf("Placed entity at (%d, %d)%n", e.getLocation().getRow(),
+        e.getLocation().getCol());
+  }
+
+  public void removeEntity(Entity e) {
+    this.entities.remove(e);
   }
 
   public void addUser(User u) {
