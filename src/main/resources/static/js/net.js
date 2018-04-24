@@ -128,7 +128,7 @@ class Net {
 		let loc = msg.payload.location;
 		Game.player.setPos(loc.col, loc.row);
 		
-		Game.chunkId = loc.chunkId;
+	//	Game.chunkId = loc.chunkId;
 		
 		net.chunkId = loc.chunkId;
 	}
