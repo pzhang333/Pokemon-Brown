@@ -1,15 +1,17 @@
 package cs.brown.edu.aelp.networking;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.google.gson.JsonObject;
+
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public final class PacketSender {
 
@@ -35,10 +37,9 @@ public final class PacketSender {
       // send to each user that has an open session
       for (User u : c.getUsers()) {
         if (u.isConnected()) {
-          // System.out.printf("Sending to: %d%n", u.getId());
-          // System.out.println(message);
-          u.getSession().getRemote()
-              .sendStringByFuture(Main.GSON().toJson(message));
+          System.out.printf("Sending to: %d%n", u.getId());
+          System.out.println(message);
+          u.getSession().getRemote().sendStringByFuture(Main.GSON().toJson(message));
         }
       }
     }
@@ -55,8 +56,7 @@ public final class PacketSender {
       List<JsonObject> otherPlayerInfo = new ArrayList<>();
       for (User other : u.getLocation().getChunk().getUsers()) {
         if (u != other) {
-          JsonObject entered = buildPlayerOpMessage(other,
-              OP_CODES.ENTERED_CHUNK);
+          JsonObject entered = buildPlayerOpMessage(other, OP_CODES.ENTERED_CHUNK);
           otherPlayerInfo.add(entered);
         }
       }
@@ -64,8 +64,7 @@ public final class PacketSender {
       message.add("payload", values);
       System.out.println("Sending Initialization Packet:");
       System.out.println(Main.GSON().toJson(message));
-      u.getSession().getRemote()
-          .sendStringByFuture(Main.GSON().toJson(message));
+      u.getSession().getRemote().sendStringByFuture(Main.GSON().toJson(message));
     }
   }
 

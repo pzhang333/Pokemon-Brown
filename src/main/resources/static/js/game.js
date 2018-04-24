@@ -14,8 +14,10 @@ Game.init = function() {
 Game.update = function() {
 
 	// We're in a different chunk.
-	if (net.getCurrentChunkId() != Game.chunkId) {
-		this.loadCurrentChunk();
+	let chunkId = net.getCurrentChunkId();
+	if (chunkId != Game.chunkId) {
+		this.loadCurrentChunk(true);
+		Game.chunkId = chunkId;
 		return;
 	}
 
@@ -42,7 +44,7 @@ Game.preload = function() {
 
 
 Game.create = function() {
-	this.loadCurrentChunk();
+	this.loadCurrentChunk(false);
 };
 
 Game.drawLayers = function() {
@@ -133,21 +135,36 @@ Game.getMapElement = function(x, y, map) {
 	return map.getFirst(coords.x, coords.y);
 };
 
-Game.loadCurrentChunk = function() {
+Game.clearPlayers = function() {
+	console.log('Clear');
+	for (var key in Game.players) {
+	    if (Game.players.hasOwnProperty(key)) {      
+	    	
+	    	// Hack
+	    	let id = parseInt(key);
+	    	Game.players[id].del();
+	    }
+	}
+}
 
-	if (Game.map != undefined) {
+Game.loadCurrentChunk = function(clear) {
+
+	if (Game.map != undefined && clear) {
 		for(idx in Game.layerNames) {
 			Game.map.gameLayers[Game.layerNames[idx]].destroy();
 		}
+		
 
 		Game.map.destroy();
 		game.world.removeAll();
+		Game.clearPlayers();
 	}
 
 	let self = this;
 
 	net.getChunk(function(chunk) {
 
+		Game.clearPlayers();
 		
 		console.log(chunk)
 		Game.chunkId = chunk.id;

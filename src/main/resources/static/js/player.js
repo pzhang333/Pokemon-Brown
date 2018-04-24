@@ -180,7 +180,7 @@ class Player {
 		let currentAnim = this.sprite.animations.currentAnim;
 
 		/* The current animation is already playing */
-		if(currentAnim.name == animName) {
+		if(currentAnim != undefined && currentAnim.name == animName) {
 			return;
 		}
 

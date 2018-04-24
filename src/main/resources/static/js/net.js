@@ -30,7 +30,7 @@ class Net {
 
 	constructor() {
 
-		this.host = '10.38.49.136';
+		this.host = 'localhost';
 		this.port = 4567;
 		
 		this.cfg = {
@@ -120,6 +120,8 @@ class Net {
 		let loc = msg.payload.location;
 		Game.player.setPos(loc.col, loc.row);
 		
+		Game.chuknId = loc.chunkId;
+		
 		net.chunkId = loc.chunkId;
 	}
 	
@@ -156,9 +158,12 @@ class Net {
 			
 		//	console.log(id + " : " + net.id)
 			if (id == net.id) {
+				console.log('skip: ' + id);
 				continue;
 			}
 			
+
+			console.log('test');
 			if (Game.players[id] == undefined) {
 				let player = new Player();
 				
@@ -187,18 +192,17 @@ class Net {
 			}
 		}
 		
-		/*for (var key in Game.players) {
+		for (var key in Game.players) {
 		    if (Game.players.hasOwnProperty(key)) {      
 		    	
 		    	// Hack
 		    	let id = parseInt(key);
 		    	
 		    	if (!handled.includes(id)) {
-		    		console.log(id);
-		    		//Game.players[id].del();
+		    		Game.players[id].del();
 		    	}
 		    }
-		}*/
+		}
 	}
 
 	handleMsg(event) {
