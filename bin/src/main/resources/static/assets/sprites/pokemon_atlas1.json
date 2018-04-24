@@ -1,0 +1,180 @@
+{"frames": [
+
+{
+	"filename": "basic-menu-bg",
+	"frame": {"x":1,"y":1,"w":553,"h":375},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":553,"h":375},
+	"sourceSize": {"w":553,"h":375}
+},
+{
+	"filename": "blue-button-primary/0",
+	"frame": {"x":193,"y":378,"w":190,"h":45},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":190,"h":45},
+	"sourceSize": {"w":190,"h":45}
+},
+{
+	"filename": "blue-button-primary/1",
+	"frame": {"x":1,"y":378,"w":190,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":190,"h":49},
+	"sourceSize": {"w":190,"h":49}
+},
+{
+	"filename": "grey-panel",
+	"frame": {"x":556,"y":1,"w":500,"h":500},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":500,"h":500},
+	"sourceSize": {"w":500,"h":500}
+},
+{
+	"filename": "logo",
+	"frame": {"x":1058,"y":1,"w":484,"h":179},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":2,"w":484,"h":179},
+	"sourceSize": {"w":500,"h":184}
+},
+{
+	"filename": "lucas/0",
+	"frame": {"x":385,"y":407,"w":19,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":6,"w":19,"h":25},
+	"sourceSize": {"w":32,"h":32}
+},
+{
+	"filename": "lucas/1",
+	"frame": {"x":385,"y":378,"w":19,"h":27},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":3,"w":19,"h":27},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/2",
+	"frame": {"x":385,"y":407,"w":19,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":4,"w":19,"h":25},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/3",
+	"frame": {"x":406,"y":378,"w":19,"h":27},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":3,"w":19,"h":27},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/4",
+	"frame": {"x":490,"y":405,"w":19,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":4,"w":19,"h":25},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/5",
+	"frame": {"x":427,"y":378,"w":19,"h":27},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":3,"w":19,"h":27},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/6",
+	"frame": {"x":490,"y":405,"w":19,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":4,"w":19,"h":25},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/7",
+	"frame": {"x":448,"y":378,"w":19,"h":27},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":3,"w":19,"h":27},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/8",
+	"frame": {"x":406,"y":407,"w":19,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":4,"w":19,"h":25},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/9",
+	"frame": {"x":469,"y":406,"w":19,"h":26},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":3,"w":19,"h":26},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/10",
+	"frame": {"x":406,"y":407,"w":19,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":4,"w":19,"h":25},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/11",
+	"frame": {"x":427,"y":407,"w":19,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":4,"w":19,"h":25},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/12",
+	"frame": {"x":448,"y":407,"w":19,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":4,"w":19,"h":25},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/13",
+	"frame": {"x":469,"y":378,"w":19,"h":26},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":3,"w":19,"h":26},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/14",
+	"frame": {"x":448,"y":407,"w":19,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":4,"w":19,"h":25},
+	"sourceSize": {"w":32,"h":33}
+},
+{
+	"filename": "lucas/15",
+	"frame": {"x":490,"y":378,"w":19,"h":25},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":4,"w":19,"h":25},
+	"sourceSize": {"w":32,"h":33}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "pokemon_atlas1.png",
+	"format": "RGBA8888",
+	"size": {"w":1543,"h":502},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:a736b7917fe6a6d046dfe8b87976efbe:f379745a2023d16ea192ef599cf3bbf2:a034dff3d1bd53c83e2952a7853a6ab8$"
+}
+}

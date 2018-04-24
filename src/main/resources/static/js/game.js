@@ -1,6 +1,6 @@
 
 var Game = {
-
+	players: {}
 }
 
 Game.init = function() {
@@ -8,14 +8,15 @@ Game.init = function() {
 	//Game.easystar = new EasyStar.js();
 	Game.cursors = game.input.keyboard.createCursorKeys();
 	
-	Game.players = {};
 };
 
 Game.update = function() {
 
 	// We're in a different chunk.
-	if (net.getCurrentChunkId() != Game.chunkId) {
-		this.loadCurrentChunk();
+	let chunkId = net.getCurrentChunkId();
+	if (chunkId != Game.chunkId) {
+		this.loadCurrentChunk(true);
+		Game.chunkId = chunkId;
 		return;
 	}
 
@@ -42,7 +43,7 @@ Game.preload = function() {
 
 
 Game.create = function() {
-	this.loadCurrentChunk();
+	this.loadCurrentChunk(true);
 };
 
 Game.drawLayers = function() {
@@ -66,8 +67,9 @@ Game.drawLayers = function() {
 	//Game.objMap = new SparseMap();
 	//Game.objMap.add(20, 29, 'Ayy Lmao');
 
+
+	Game.doors = new SparseMap();
 	if (Game.chunkId == 1) {
-		Game.doors = new SparseMap();
 
 		Game.doors.add(20, 29, {
 			chunk: 2,
@@ -132,12 +134,32 @@ Game.getMapElement = function(x, y, map) {
 	return map.getFirst(coords.x, coords.y);
 };
 
-Game.loadCurrentChunk = function() {
+Game.clearPlayers = function() {
+	console.log('Clear');
+	for (var key in Game.players) {
+	    if (Game.players.hasOwnProperty(key)) {      
+	    	
+	    	// Hack
+	    	let id = parseInt(key);
+	    	let player = Game.players[id]
+	    	
+	    	if (player != undefined) {
+	    		player.del();
+	    	}
+	    	
 
-	if (Game.map != undefined) {
+    		Game.players[id] = undefined;
+	    }
+	}
+}
+
+Game.loadCurrentChunk = function(clear) {
+	
+	if (Game.map != undefined && clear) {
 		for(idx in Game.layerNames) {
 			Game.map.gameLayers[Game.layerNames[idx]].destroy();
 		}
+		
 
 		Game.map.destroy();
 		game.world.removeAll();
@@ -147,6 +169,7 @@ Game.loadCurrentChunk = function() {
 
 	net.getChunk(function(chunk) {
 
+	//	Game.clearPlayers();
 		
 		console.log(chunk)
 		Game.chunkId = chunk.id;
@@ -169,6 +192,8 @@ Game.loadCurrentChunk = function() {
 		Game.player.initSprite();
 		Game.player.setVisible();
 		Game.player.setCameraFocus(Game.camera);
+		
+		Game.clearPlayers();
 	});
 };
 

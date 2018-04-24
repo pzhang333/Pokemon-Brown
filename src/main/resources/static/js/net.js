@@ -3,7 +3,8 @@ const MESSAGE_TYPE = {
 	CONNECT: 0,
 	INITIALIZE_PACKET: 1,
 	GAME_PACKET: 2,
-	PLAYER_REQUEST_PATH: 3
+	PLAYER_REQUEST_PATH: 3,
+	TELEPORT_PACKET: 4
 };
 
 function waitForSocketConnection(socket, callback) {
@@ -29,8 +30,11 @@ class Net {
 
 	constructor() {
 
+		this.host = '10.38.49.136';
+		this.port = 4567;
+		
 		this.cfg = {
-			url: 'ws://10.38.49.136:4567/game',
+			url: 'ws://' + this.host + ':' + this.port.toString() + '/game',
 		};
 		
 		this.chunkBaseURL = "/assets/maps/chunk_";
@@ -77,6 +81,9 @@ class Net {
 		this.socket = new WebSocket(this.cfg.url);
 		this.socket.onmessage = this.handleMsg.bind(this);
 		this.socket.onerror = this.handleErr.bind(this);
+		this.socket.onclose = function() {
+			game.state.start('Home');
+		};
 		
 		console.log('Auth(' + this.id + ', ' + this.token + ')');
 		
@@ -113,11 +120,21 @@ class Net {
 		let loc = msg.payload.location;
 		Game.player.setPos(loc.col, loc.row);
 		
+		Game.chunkId = loc.chunkId;
+		
 		net.chunkId = loc.chunkId;
 	}
 	
+	sendTeleport(loc) {
+		this.sendPacket(MESSAGE_TYPE.TELEPORT_PACKET, {
+			row: loc.y,
+			col: loc.x,
+			chunk: loc.chunk
+		});
+	}
+	
 	gamePacketHandler(msg) {
-		console.log('Got game packet');
+	//	console.log('Got game packet');
 		
 		//msg = generateFakeGamePacket();
 		
@@ -125,20 +142,27 @@ class Net {
 			return;
 		}
 		
+		let handled = [];
+		
 		let playerUpdates = msg.payload.users;
 		for(let i = 0; i < playerUpdates.length; i++) {
+			
 			let update = playerUpdates[i];
+			
+			handled.push(update.id);
 			
 			//let loc = update.location;
 			let loc = update.location;
 			let id = update.id;
 
 			
-			console.log(id + " : " + net.id)
+		//	console.log(id + " : " + net.id)
 			if (id == net.id) {
+				//console.log('skip: ' + id);
 				continue;
 			}
 			
+			//console.log(Game.players[id])
 			if (Game.players[id] == undefined) {
 				let player = new Player();
 				
@@ -148,6 +172,8 @@ class Net {
 				player.id = id;
 				
 				Game.players[id] = player;
+
+				console.log(Game.players[id]);
 			}
 			
 			let player = Game.players[id];
@@ -166,18 +192,30 @@ class Net {
 				}, true);
 			}
 		}
+		
+		for (var key in Game.players) {
+		    if (Game.players.hasOwnProperty(key)) {      
+		    	
+		    	// Hack
+		    	let id = parseInt(key);
+		    	
+		    	if (!handled.includes(id)) {
+		    		let toDel = Game.players[id];
+		    		
+		    		if (toDel != undefined) {
+		    			toDel.del();
+		    		}
+		    		
+		    		Game.players[id] = undefined;
+		    	}
+		    }
+		}
 	}
 
-	pathApprovalHandler(msg) {
-		console.log("path approved");
-		let path = msg.payload.path;
-		// TODO: do something with this path
-	}
-	
 	handleMsg(event) {
 
-		console.log('test!');
-		console.log(event);
+//		console.log('test!');
+	//	console.log(event);
 		
 		const data = JSON.parse(event.data);
 		

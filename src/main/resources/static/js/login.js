@@ -1,10 +1,9 @@
-let loginURL = 'http://10.38.49.136:4567/login';
-let registerURL = 'http://10.38.49.136:4567/register'	
-
 /**
  * 
  */
 function register(username, email, password, species, nickname, success, fail) {
+
+	let registerURL = 'http://' + net.host + ':' + net.port.toString() + '/register';
 	
 	error = false;
 	
@@ -71,6 +70,9 @@ function register(username, email, password, species, nickname, success, fail) {
 }
 
 function login(username, password, success, fail) {
+	
+	let loginURL = 'http://' + net.host + ':' + net.port.toString() + '/login';
+	
 	error = false;
 	
 	if (username == undefined) {
