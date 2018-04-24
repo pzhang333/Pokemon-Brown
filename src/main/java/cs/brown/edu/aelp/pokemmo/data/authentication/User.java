@@ -5,7 +5,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
+import cs.brown.edu.aelp.pokemmo.map.Bush;
+import cs.brown.edu.aelp.pokemmo.map.Entity;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
@@ -29,6 +32,7 @@ public class User extends Trainer implements SQLBatchSavable {
 
   private boolean changed = false;
 
+  private Map<Location, Bush> expectedEncounters = new HashMap<>();
   private Path currentPath;
   private Location location;
   private int currency = 0;
@@ -60,17 +64,36 @@ public class User extends Trainer implements SQLBatchSavable {
       loc.getChunk().addUser(this);
     }
     this.location = loc;
+
+    if (this.getPath() != null) {
+      for (Entity e : this.getPath().getExpectedEncounters()) {
+        if (e.getLocation() == this.location) {
+          this.interact(e);
+        }
+      }
+    }
+
     this.setChanged(true);
   }
 
   public Location getLocation() {
     if (this.currentPath != null) {
-      this.location = this.currentPath.getCurrentStep();
+      this.setLocation(this.currentPath.getCurrentStep());
       if (this.location.equals(this.currentPath.getEnd())) {
         this.currentPath = null;
       }
     }
     return this.location;
+  }
+
+  public void interact(Entity e) {
+    if (e instanceof Bush) {
+      Bush b = (Bush) e;
+      Pokemon p = b.triggerEntry(this);
+      if (p != null) {
+        PacketSender.sendEncounterPacket(this, p);
+      }
+    }
   }
 
   public void setCurrency(int c) {

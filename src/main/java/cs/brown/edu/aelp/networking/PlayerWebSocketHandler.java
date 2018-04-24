@@ -25,11 +25,11 @@ public class PlayerWebSocketHandler {
   private static final Gson GSON = new Gson();
 
   public static enum MESSAGE_TYPE {
-    CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, PLAYER_TELEPORT, UPDATE_USER, CLIENT_PLAYER_UPDATE, PATH_REQUEST_RESPONSE
+    CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, PLAYER_TELEPORT, ENCOUNTERED_POKEMON, UPDATE_USER, CLIENT_PLAYER_UPDATE, PATH_REQUEST_RESPONSE
   }
 
   public static enum OP_CODES {
-    ENTERED_CHUNK, LEFT_CHUNK
+    ENTERED_CHUNK, LEFT_CHUNK, ENTERED_BATTLE, LEFT_BATTLE
   }
 
   private static final MESSAGE_TYPE[] MESSAGE_TYPES = MESSAGE_TYPE.values();
@@ -121,7 +121,7 @@ public class PlayerWebSocketHandler {
             tile.get("col").getAsInt());
         locs.add(loc);
       }
-      u.setPath(new Path(locs));
+      u.setPath(new Path(locs, locs.get(0).getChunk().getEntities(u)));
       break;
     case PLAYER_TELEPORT:
       id = payload.get("id").getAsInt();
@@ -152,6 +152,7 @@ public class PlayerWebSocketHandler {
           OP_CODES.ENTERED_CHUNK);
       PacketSender.queueOpForChunk(enteredChunkOp, c.getId());
       u.setLocation(new Location(c, row, col));
+      PacketSender.sendInitializationPacket(u);
       break;
     default:
       // something went wrong, we got an unknown message type

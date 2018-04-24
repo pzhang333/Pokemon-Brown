@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class JsonFile {
@@ -55,6 +57,19 @@ public class JsonFile {
   public Double getDouble(String... keys) {
     Object o = this.getObject(keys);
     return o == null ? null : (double) o;
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<JsonFile> getObjectArray(String... keys) {
+    Object o = this.getObject(keys);
+    if (o == null) {
+      return null;
+    }
+    List<JsonFile> results = new ArrayList<>();
+    for (Map<String, Object> ele : (List<Map<String, Object>>) o) {
+      results.add(new JsonFile(ele));
+    }
+    return results;
   }
 
   @SuppressWarnings("unchecked")
