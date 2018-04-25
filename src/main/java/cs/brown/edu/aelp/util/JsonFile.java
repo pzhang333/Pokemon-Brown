@@ -59,7 +59,13 @@ public class JsonFile {
   }
 
   @SuppressWarnings("unchecked")
-  public List<JsonFile> getObjectArray(String... keys) {
+  public <T> List<T> getList(String... keys) {
+    Object o = this.getObject(keys);
+    return o == null ? null : (List<T>) o;
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<JsonFile> getJsonList(String... keys) {
     Object o = this.getObject(keys);
     if (o == null) {
       return null;
