@@ -37,8 +37,7 @@ public class JsonFile {
           jsonObj = (Map<String, Object>) jsonObj.get(key);
         }
       } else {
-        throw new IllegalArgumentException(
-            "Key sequence not found in JSON file.");
+        return null;
       }
     }
     return null;

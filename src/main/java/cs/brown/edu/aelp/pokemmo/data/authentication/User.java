@@ -13,6 +13,7 @@ import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import cs.brown.edu.aelp.pokemon.Inventory;
 import cs.brown.edu.aelp.pokemon.Main;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
@@ -32,7 +33,7 @@ public class User extends Trainer implements SQLBatchSavable {
 
   private boolean changed = false;
 
-  private Map<Location, Bush> expectedEncounters = new HashMap<>();
+  private Inventory inventory;
   private Path currentPath;
   private Location location;
   private int currency = 0;
@@ -46,6 +47,11 @@ public class User extends Trainer implements SQLBatchSavable {
     this.username = username;
     this.email = email;
     this.sessionToken = sessionToken;
+    this.inventory = new Inventory(this);
+  }
+
+  public Inventory getInventory() {
+    return this.inventory;
   }
 
   public void setState(int i) {

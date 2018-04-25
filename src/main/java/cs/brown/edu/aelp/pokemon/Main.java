@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
+import cs.brown.edu.aelp.networking.Trade;
 import cs.brown.edu.aelp.pokemmo.data.DataSource;
 import cs.brown.edu.aelp.pokemmo.data.DataSource.SaveException;
 import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
@@ -50,6 +51,7 @@ public final class Main {
       GsonBuilder b = new GsonBuilder();
       b.registerTypeAdapter(User.class, new User.UserAdapter());
       b.registerTypeAdapter(Location.class, new Location.LocationAdapter());
+      b.registerTypeAdapter(Trade.class, new Trade.TradeAdapter());
       return b.create();
     }
   };

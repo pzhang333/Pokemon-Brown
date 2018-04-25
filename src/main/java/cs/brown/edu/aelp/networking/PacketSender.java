@@ -5,7 +5,6 @@ import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
-import cs.brown.edu.aelp.pokemmo.map.Entity;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemon.Main;
 import java.util.ArrayList;
@@ -82,14 +81,6 @@ public final class PacketSender {
       }
     }
     values.add("players", Main.GSON().toJsonTree(otherPlayerInfo));
-    List<JsonObject> entities = new ArrayList<>();
-    for (Entity e : u.getLocation().getChunk().getEntities(u)) {
-      JsonObject entity = new JsonObject();
-      entity.addProperty("type", e.getType().ordinal());
-      entity.add("location", Main.GSON().toJsonTree(e.getLocation()));
-      entities.add(entity);
-    }
-    values.add("entities", Main.GSON().toJsonTree(entities));
     message.add("payload", values);
     System.out.println("Sending Initialization Packet:");
     System.out.println(Main.GSON().toJson(message));
@@ -107,6 +98,13 @@ public final class PacketSender {
     // TODO: Write an adapter to serialize Pokemon properly
     queueOpForChunk(buildPlayerOpMessage(u, OP_CODES.ENTERED_BATTLE),
         u.getLocation().getChunk().getId());
+  }
+
+  public static void sendTradePacket(User u, Trade t) {
+    JsonObject packet = new JsonObject();
+    packet.addProperty("type", MESSAGE_TYPE.TRADE_UPDATE.ordinal());
+    packet.add("payload", Main.GSON().toJsonTree(t));
+    sendPacket(u, packet);
   }
 
   private static void sendPacket(User u, JsonObject message) {
