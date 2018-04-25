@@ -25,7 +25,7 @@ public class PlayerWebSocketHandler {
   private static final Gson GSON = new Gson();
 
   public static enum MESSAGE_TYPE {
-    CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, PLAYER_TELEPORT, ENCOUNTERED_POKEMON, UPDATE_USER, CLIENT_PLAYER_UPDATE, PATH_REQUEST_RESPONSE
+    CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, PLAYER_TELEPORT, ENCOUNTERED_POKEMON, TRADE_UPDATE, UPDATE_USER, CLIENT_PLAYER_UPDATE, PATH_REQUEST_RESPONSE
   }
 
   public static enum OP_CODES {
@@ -71,36 +71,6 @@ public class PlayerWebSocketHandler {
         // their credentials were bad or something went wrong
         System.out.println(e1.getMessage());
         session.close();
-      }
-      break;
-
-    case CLIENT_PLAYER_UPDATE:
-      // we have received an update from the client
-
-      String playerJson = payload.get("player").toString();
-      // NetworkUser networkUser = GSON.fromJson(playerJson, NetworkUser.class);
-
-      // TODO: confirm session matches with user session
-      int uid = payload.get("id").getAsInt();
-      User userToUpdate = UserManager.getUserById(uid);
-
-      // verifying that the session matches the user session
-      if (userToUpdate.getSession().equals(session)) {
-        // userToUpdate.updateFromNetworkUser(networkUser);
-      } else {
-        System.out.println("ERROR: Requesting user id does not match session.");
-      }
-
-      // updating our player object in our map of sessions to players
-      // sessionToPlayer.put(session, player);
-
-      // retrieving opcode value
-      String opcodeString = received.getAsJsonObject("payload").get("op")
-          .toString();
-      int opcode = Integer.parseInt(opcodeString);
-
-      if (opcode == 1) {
-        // player switched tiles, requires some initialization information
       }
       break;
     case PLAYER_REQUEST_PATH:
