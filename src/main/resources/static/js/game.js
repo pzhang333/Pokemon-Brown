@@ -73,14 +73,26 @@ Game.drawLayers = function() {
 
 		Game.doors.add(20, 29, {
 			chunk: 2,
-			x: 1,
-			y: 1
+			x: 0,
+			y: 4
 		});
 
 		Game.doors.add(14, 29, {
 			chunk: 2,
-			x: 5,
+			x: 0,
 			y: 5
+		});
+	} else if (Game.chunkId == 2) {
+		Game.doors.add(0, 4, {
+			chunk: 1,
+			x: 20,
+			y: 30
+		});
+
+		Game.doors.add(0, 5, {
+			chunk: 1,
+			x: 19,
+			y: 30
 		});
 	}
 };
