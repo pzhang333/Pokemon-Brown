@@ -13,8 +13,19 @@ Home.preload = function() {
 
 Home.create = function() {
 
-	Home.displayLogo();
-	Home.displayLogin();
+	if (!!Cookies.get('token') && !!Cookies.get('id')) {
+		let token = Cookies.get('token');
+		let id = Cookies.get('id');
+		
+		Cookies.remove('token');
+		Cookies.remove('id');
+		
+		net.connect(parseInt(id), token);
+		game.state.start('Game');
+	} else {
+		Home.displayLogo();
+		Home.displayLogin();
+	}
 };
 
 Home.displayLogo = function(xScale, yScale) {

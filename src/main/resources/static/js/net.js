@@ -30,7 +30,7 @@ class Net {
 
 	constructor() {
 
-		this.host = '10.38.49.136';
+		this.host = 'localhost';
 		this.port = 4567;
 		
 		this.cfg = {
@@ -80,7 +80,11 @@ class Net {
 		
 		this.socket = new WebSocket(this.cfg.url);
 		this.socket.onmessage = this.handleMsg.bind(this);
-		this.socket.onerror = this.handleErr.bind(this);
+		
+		this.socket.onerror = function() {
+			game.state.start('Home');
+		};
+		
 		this.socket.onclose = function() {
 			game.state.start('Home');
 		};
@@ -115,12 +119,16 @@ class Net {
 	}
 	
 	initPacketHandler(msg) {
+
+		Cookies.set("id", net.id);
+		Cookies.set("token", net.token);
+		
 		Game.player.id = this.id;
 		
 		let loc = msg.payload.location;
 		Game.player.setPos(loc.col, loc.row);
 		
-		Game.chunkId = loc.chunkId;
+	//	Game.chunkId = loc.chunkId;
 		
 		net.chunkId = loc.chunkId;
 	}
@@ -224,10 +232,6 @@ class Net {
 		} else {
 			console.log('Unknown message type!', data.type);
 		}
-	}
-	
-	handleErr(err) {
-		alert('Connection Error! Please refresh.');
 	}
 
 	sendClientPlayerUpdate(networkPlayer, op){

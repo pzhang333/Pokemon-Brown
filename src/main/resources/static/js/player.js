@@ -56,7 +56,7 @@ class Player {
 		/* Load the sprite */
 		this.sprite = game.add.sprite(this.x * 16, this.y * 16, 'atlas1', this.animations['idle']);
 
-		this.sprite.anchor.set(.25, .75);
+		this.sprite.anchor.set(.25, .5);
 		this.sprite.visible = false;
 
 		/* Add all animations to the sprie. */
@@ -211,7 +211,7 @@ class Player {
 	 * dir 		- 'left', 'right', 'up', or 'down'.
 	 */
 	step(dir) {
-		if (debounce(this, 'lastStep', 250)) {
+		if (debounce(this, 'lastStep', 50)) {
 			return;
 		}
 
@@ -236,10 +236,11 @@ class Player {
 			/* Have an extended delay so that single presses of arrow keys
 			 * simply change the direction.
 			 */
-			this.lastStep = performance.now() + 100;
-			return;
+			//this.lastStep = performance.now() + 100;
+			//return;
 		}
 
+		
 		/* Map direction to a new (x,y) */
 		if (dir == 'left') {
 			x -= 1;
@@ -251,13 +252,22 @@ class Player {
 			y += 1;
 		}
 
+		
+		
 		//console.log(Math.trunc(y / 16) + ' : ' + Math.trunc(x / 16))
-		console.log(Game.collisionMatrix);
 		if (getFromMatrix(Game.collisionMatrix, x, y, 0) != -1) {
 			this.idle(true);
 			return;
 		}
 
+
+		net.sendPacket(MESSAGE_TYPE.PLAYER_REQUEST_PATH, {
+			path: [{
+				row: y,
+				col: x
+			}]
+		});
+		
 		//console.log(dir);
 
 		/* Tween duration */
@@ -274,7 +284,7 @@ class Player {
 
 		/* Setup the tween update callback */
 		tween.onUpdateCallback(function() {
-			if (debounce(this, 'lastMovementUpdate', Phaser.Timer.SECOND * (duration / 2))) {
+			if (debounce(this, 'lastMovementUpdate', Phaser.Timer.SECOND * (duration / 4))) {
 				return;
 			}
 			this.playAnim(this.getAnim('walk', dir));
@@ -387,7 +397,7 @@ class Player {
 	finishMovement(x, y) {
 
 		// Only teleport
-		let door = Game.doors.getFirst(x, y - 1);
+		let door = Game.doors.getFirst(x, y);
 		if (door != null) {
 
 			if (Game.player == this) {
