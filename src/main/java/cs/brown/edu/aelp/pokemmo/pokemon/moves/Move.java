@@ -12,7 +12,7 @@ public class Move {
    * require Java implemented Handlers.
    */
   public enum MoveComplexity {
-    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO
+    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO, ERROR
   }
 
   /**
@@ -25,11 +25,9 @@ public class Move {
   public static class Builder {
     private int id;
 
-    private Integer number;
+    private Integer accuracy;
 
-    private Double accuracy;
-
-    private Double basePower;
+    private Integer basePower;
 
     private MoveCategory category;
 
@@ -47,25 +45,16 @@ public class Move {
 
     private MoveComplexity complexity;
 
-    public Builder() {
-    }
-
-    public Builder ofId(int id) {
+    public Builder(int id) {
       this.id = id;
-      return this;
     }
 
-    public Builder withNumber(Integer number) {
-      this.number = number;
-      return this;
-    }
-
-    public Builder withAccuracy(Double accuracy) {
+    public Builder withAccuracy(Integer accuracy) {
       this.accuracy = accuracy;
       return this;
     }
 
-    public Builder withPower(Double basePower) {
+    public Builder withPower(Integer basePower) {
       this.basePower = basePower;
       return this;
     }
@@ -112,7 +101,6 @@ public class Move {
 
     public Move build() {
       Move move = new Move(this.id);
-      move.number = this.number;
       move.accuracy = this.accuracy;
       move.basePower = this.basePower;
       move.category = this.category;
@@ -131,11 +119,9 @@ public class Move {
 
   private int id;
 
-  private Integer number;
+  private Integer accuracy;
 
-  private Double accuracy;
-
-  private Double basePower;
+  private Integer basePower;
 
   private MoveCategory category;
 
@@ -159,24 +145,17 @@ public class Move {
   }
 
   /**
-   * @return the number
-   */
-  public Integer getNumber() {
-    return number;
-  }
-
-  /**
    * @return the accuracy
    */
 
-  public Double getAccuracy() {
+  public Integer getAccuracy() {
     return accuracy;
   }
 
   /**
    * @return the basePower
    */
-  public Double getBasePower() {
+  public Integer getBasePower() {
     return basePower;
   }
 
