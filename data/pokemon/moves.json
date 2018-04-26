@@ -1,0 +1,14 @@
+{
+    "tackle": {
+		"num": 33,
+		"accuracy": 100,
+		"basePower": 40,
+		"category": "Physical",
+		"desc": "No additional effect.",
+		"shortDesc": "No additional effect.",
+		"name": "tackle",
+		"pp": 35,
+        "type": "Normal",
+        "complexity": "Basic"
+	}
+}
