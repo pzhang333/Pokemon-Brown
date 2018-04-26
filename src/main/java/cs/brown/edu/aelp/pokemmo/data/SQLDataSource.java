@@ -1,14 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
-import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.map.Chunk;
-import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
-import cs.brown.edu.aelp.pokemon.Main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,6 +18,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
+import cs.brown.edu.aelp.pokemon.Main;
 
 public class SQLDataSource implements DataSource {
 
@@ -117,7 +118,7 @@ public class SQLDataSource implements DataSource {
           b.withNickName(rs.getString("nickname"))
               .withGender(rs.getInt("gender")).withExp(rs.getInt("experience"))
               .asStored(rs.getBoolean("stored"))
-              .withHp(rs.getInt("cur_health"));
+              .withCurrHp(rs.getInt("cur_health"));
 
           // TODO: ADD CORRECT TYPE
           b.withType(PokeTypes.NORMAL);
@@ -136,9 +137,10 @@ public class SQLDataSource implements DataSource {
     Chunk c = Main.getWorld().getChunk(rs.getInt("chunk"));
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
-    /*for (Pokemon pokemon : this.loadPokemonForUser(user.getId())) {
-      user.addPokemonToTeam(pokemon);
-    }*/
+    /*
+     * for (Pokemon pokemon : this.loadPokemonForUser(user.getId())) {
+     * user.addPokemonToTeam(pokemon); }
+     */
     return user;
   }
 

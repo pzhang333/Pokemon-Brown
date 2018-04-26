@@ -138,6 +138,7 @@ public final class Main {
           .newSingleThreadScheduledExecutor();
 
       Runnable save = new Runnable() {
+        @Override
         public void run() {
           Collection<User> users = UserManager.getAllUsers();
           Collection<Pokemon> pokemon = new ArrayList<>();
@@ -165,17 +166,26 @@ public final class Main {
 
     runSparkServer((int) options.valueOf("port"));
 
-    // temporary game loop
-    long sleepTime = 100;
-    while (true) {
-      PacketSender.sendGamePackets();
-      try {
-        Thread.sleep(sleepTime);
-      } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+    // sending our packet
+
+    int PACKET_SENDING_PERIOD = 100; // milliseconds
+
+    ScheduledExecutorService packetTimer = Executors
+        .newSingleThreadScheduledExecutor();
+
+    Runnable sendPacket = new Runnable() {
+      @Override
+      public void run() {
+        try {
+          PacketSender.sendGamePackets();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
       }
-    }
+    };
+
+    packetTimer.scheduleAtFixedRate(sendPacket, PACKET_SENDING_PERIOD,
+        PACKET_SENDING_PERIOD, TimeUnit.MILLISECONDS);
   }
 
   private void runSparkServer(int port) {
