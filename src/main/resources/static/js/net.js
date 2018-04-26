@@ -6,7 +6,11 @@ const MESSAGE_TYPE = {
 	PLAYER_REQUEST_PATH: 3,
 	TELEPORT_PACKET: 4,
 	WILD_ENCOUNTER: 5,
-	TRADE: 6
+	TRADE: 6,
+	START_BATTLE: 7,
+    END_BATTLE: 8,
+    BATTLE_TURN_UPDATE: 9,
+    CLIENT_BATTLE_UPDATE: 10
 };
 
 function waitForSocketConnection(socket, callback) {

@@ -1,14 +1,41 @@
 {
-    "tackle": {
-		"num": 33,
+	"22": {
+		"id": 22,
+		"name": "Vine Whip",
 		"accuracy": 100,
-		"basePower": 40,
-		"category": "Physical",
+		"basePower": 45,
 		"desc": "No additional effect.",
 		"shortDesc": "No additional effect.",
-		"name": "tackle",
+		"pp": 25,
+		"priority": 0,
+		"type": "Grass",
+		"complexity": "Basic",
+		"category": "Physical"
+	},
+    "33": {
+		"id": 33,
+		"name": "Tackle",
+		"accuracy": 100,
+		"basePower": 40,
+		"desc": "No additional effect.",
+		"shortDesc": "No additional effect.",
 		"pp": 35,
+		"priority": 0,
         "type": "Normal",
-        "complexity": "Basic"
+		"complexity": "Basic",
+		"category": "Physical"
+	},
+	"45": {
+		"id": 45,
+		"name": "Growl",
+		"accuracy": 100,
+		"basePower": 0,
+		"desc": "Lowers the target's Attack by 1 stage.",
+		"shortDesc": "Lowers the foe(s) Attack by 1.",
+		"pp": 40,
+		"priority": 0,
+		"type": "Normal",
+		"complexity": "Status",
+		"category": "None"
 	}
 }

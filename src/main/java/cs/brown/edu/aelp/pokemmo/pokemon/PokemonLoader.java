@@ -10,6 +10,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
+
 public final class PokemonLoader {
   private static final String FILEPATH = "data/pokemon/pokemon.json";
 
@@ -24,6 +27,7 @@ public final class PokemonLoader {
       JsonObject pokemon = jsonObject.getAsJsonObject(species);
       JsonObject baseStats = pokemon.getAsJsonObject("baseStats");
       JsonArray types = pokemon.getAsJsonArray("types");
+      JsonArray moves = pokemon.getAsJsonArray("moves");
 
       Integer hp = baseStats.getAsJsonObject("hp").getAsInt();
       Integer attack = baseStats.getAsJsonObject("atk").getAsInt();
@@ -36,6 +40,11 @@ public final class PokemonLoader {
 
       for (JsonElement type : types) {
         typesList.add(stringToType(type.getAsString()));
+      }
+
+      List<Move> moveList = new ArrayList<>();
+      for (JsonElement move : moves) {
+        moveList.add(MoveLoader.getMoveById(move.getAsInt()));
       }
 
       int gender = -1;
@@ -53,7 +62,7 @@ public final class PokemonLoader {
       return target;
 
     } catch (FileNotFoundException e) {
-      // Should not occur since path is hardcoded in
+      // Should not occur since path is hard-coded in
       e.printStackTrace();
     }
     return null;
