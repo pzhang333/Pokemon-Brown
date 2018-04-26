@@ -38,7 +38,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   public static class Builder {
     // Stats that determine move damage and other battle information
     private int currHp;
-    private int maxHp;
+    private int baseHp;
     private int atk;
     private int def;
     private int specAtk;
@@ -80,13 +80,13 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       return this;
     }
 
-    public Builder withHp(int hp) {
-      this.currHp = hp;
+    public Builder withCurrHp(int currHp) {
+      this.currHp = currHp;
       return this;
     }
 
-    public Builder withMaxHp(int hp) {
-      this.maxHp = hp;
+    public Builder withBaseHp(int baseHp){
+      this.baseHp = baseHp;
       return this;
     }
 
@@ -156,12 +156,18 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       pokemon.exp = this.exp;
       pokemon.lvl = calcLevel(this.exp);
 
-      pokemon.baseHealth = hpScale(this.maxHp, pokemon.lvl);
+      pokemon.baseHp = this.baseHp;
 
-      if (this.currHp == 0) {
-        pokemon.health = pokemon.baseHealth;
-      } else {
-        pokemon.health = this.currHp;
+      int scaledHp = hpScale(this.baseHp, pokemon.lvl);
+
+      pokemon.hp = scaledHp;
+
+      if (this.currHp <= 0) {
+        pokemon.currHp = pokemon.hp;
+      } else if (this.currHp > scaledHp) {
+        pokemon.currHp = pokemon.hp;
+      } else{
+        pokemon.currHp = this.currHp;
       }
 
       pokemon.attack = this.atk;
@@ -195,9 +201,11 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   private Trainer owner;
 
-  private Integer baseHealth;
+  private Integer baseHp;
 
-  private Integer health;
+  private Integer hp;
+
+  private Integer currHp;
 
   private Integer attackStage;
 
@@ -242,12 +250,16 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     resetStatStages();
   }
 
-  public Integer getBaseHealth() {
-    return baseHealth;
+  public Integer getBaseHp() {
+    return baseHp;
   }
 
-  public Integer getHealth() {
-    return health;
+  public Integer getMaxHp() {
+    return hp;
+  }
+
+  public Integer getCurrHp() {
+    return currHp;
   }
 
   public Integer getAttack() {
@@ -291,17 +303,17 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   }
 
   public boolean isKnockedOut() {
-    return health == 0;
+    return currHp == 0;
   }
 
   public void setHealth(int health) {
     if (health < 0) {
-      health = 0;
-    } else if (health > baseHealth) {
-      health = baseHealth;
+      currHp = 0;
+    } else if (health > hp) {
+      currHp = hp;
     }
 
-    this.health = health;
+    this.currHp = health;
     this.setChanged(true);
   }
 
@@ -340,10 +352,16 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     return this.gender;
   }
 
-  // TODO: Better evolution system
-  public void evolve(String evolvedSpecies) {
-    this.species = evolvedSpecies;
-    this.setChanged(true);
+  public void evolve() {
+    String evolvedSpecies = PokemonLoader.getEvolutionName(this.species);
+    Pokemon tempPokemon = PokemonLoader.load(evolvedSpecies);
+    this.species = tempPokemon.getSpecies();
+    this.hp = tempPokemon.getBaseHp();
+    this.attack = tempPokemon.getAttack();
+    this.defense = tempPokemon.getDefense();
+    this.specialAttack = tempPokemon.getSpecialAttack();
+    this.specialDefense = tempPokemon.getSpecialDefense();
+    this.speed = tempPokemon.getSpeed();
   }
 
   public Double getEffectiveAttack() {
@@ -460,7 +478,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   // TODO: Fix toString
   @Override
   public String toString() {
-    return "Pokemon [id=" + this.getId() + ", health=" + health + ", type="
+    return "Pokemon [id=" + this.getId() + ", health=" + currHp + ", type="
         + typeList.get(0) + ", moves=" + moves + ", effectSlot=" + effectSlot
         + "]";
   }
@@ -485,7 +503,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     p.setInt(3, this.getGender());
     p.setInt(4, this.getExp());
     p.setBoolean(5, this.isStored());
-    p.setInt(6, this.getHealth());
+    p.setInt(6, this.getCurrHp());
     p.setString(7, this.getSpecies());
     if (this.moves.size() > 0) {
       Move m1 = this.moves.get(0);
@@ -524,5 +542,4 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   public List<String> getIdentifyingColumns() {
     return Lists.newArrayList("id");
   }
-
 }

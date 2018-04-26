@@ -1,0 +1,16 @@
+{
+    "bulbasaur": {
+        "num": 1,
+        "species": "bulbasaur",
+        "types": ["Grass", "Poison"],
+        "baseStats": {"hp": 45, "atk": 49, "def": 49, "spa": 65, "spd": 65, "spe": 45},
+        "evo": "ivysaur"
+    },
+    "ivysaur": {
+        "num": 2,
+        "species": "ivysaur",
+        "types": ["Grass", "Poison"],
+        "baseStats": {"hp": 60, "atk": 62, "def": 63, "spa": 80, "spd": 80, "spe": 60},
+        "evo": "venusaur"
+    }
+}

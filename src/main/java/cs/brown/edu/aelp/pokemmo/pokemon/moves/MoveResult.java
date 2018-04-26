@@ -55,6 +55,9 @@ public class MoveResult {
       case BASIC:
         basicEval();
         break;
+      case OHKO:
+        ohkoEval();
+        break;
       case STATUS:
         break;
       case DMG_STATUS:
@@ -65,8 +68,6 @@ public class MoveResult {
         break;
       case WEATHER:
         break;
-      case OHKO:
-        break;
       case COMPLEX:
         complexHandler.eval();
         break;
@@ -74,14 +75,23 @@ public class MoveResult {
   }
 
   public boolean accuracyCheck() {
-    double effAccuracy = move.getAccuracy()
+    double effAccuracy = move.getAccuracy() * .01
         * (atkPokemon.getEffectiveAcc()
         / defPokemon.getEffectiveEva());
 
     // TODO: Remove print line
     System.out.println("Effective Accuracy: " + effAccuracy);
 
-    return (Math.random() <= effAccuracy);
+    return Math.random() <= effAccuracy;
+  }
+
+  public boolean ohkoAccCheck(){
+    if (atkPokemon.getLevel() < defPokemon.getLevel()) {
+      return false;
+    } else{
+      double effAccuracy = .01 * (atkPokemon.getLevel() - defPokemon.getLevel() + 30);
+      return Math.random() <= effAccuracy;
+    }
   }
 
   public void basicEval(){
@@ -101,6 +111,16 @@ public class MoveResult {
       outcome = MoveOutcome.HIT;
     }
     else{
+      damage = 0;
+      outcome = MoveOutcome.MISS;
+    }
+  }
+
+  public void ohkoEval(){
+    if (ohkoAccCheck()){
+      damage = 99999999;
+      outcome = MoveOutcome.HIT;
+    } else {
       damage = 0;
       outcome = MoveOutcome.MISS;
     }
