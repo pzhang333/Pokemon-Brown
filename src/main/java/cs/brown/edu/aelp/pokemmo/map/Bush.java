@@ -29,8 +29,9 @@ public class Bush extends Entity {
     if (r.nextDouble() >= chance) {
       return null;
     }
-    // TODO: return a real random Pokemon here
-    return null;
+    // TODO: Return real Pokemon
+    Pokemon.Builder b = new Pokemon.Builder(-1);
+    return b.build();
   }
 
   @Override

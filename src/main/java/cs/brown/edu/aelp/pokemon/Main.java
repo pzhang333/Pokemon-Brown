@@ -3,6 +3,7 @@ package cs.brown.edu.aelp.pokemon;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
 import cs.brown.edu.aelp.networking.Trade;
 import cs.brown.edu.aelp.pokemmo.data.DataSource;
@@ -52,6 +53,7 @@ public final class Main {
       b.registerTypeAdapter(User.class, new User.UserAdapter());
       b.registerTypeAdapter(Location.class, new Location.LocationAdapter());
       b.registerTypeAdapter(Trade.class, new Trade.TradeAdapter());
+      b.registerTypeAdapter(Pokemon.class, new Pokemon.PokemonAdapter());
       return b.create();
     }
   };
@@ -166,7 +168,7 @@ public final class Main {
     // temporary game loop
     long sleepTime = 100;
     while (true) {
-      PlayerWebSocketHandler.sendGamePackets();
+      PacketSender.sendGamePackets();
       try {
         Thread.sleep(sleepTime);
       } catch (InterruptedException e) {

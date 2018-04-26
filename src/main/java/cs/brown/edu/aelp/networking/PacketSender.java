@@ -102,7 +102,7 @@ public final class PacketSender {
 
   public static void sendTradePacket(User u, Trade t) {
     JsonObject packet = new JsonObject();
-    packet.addProperty("type", MESSAGE_TYPE.TRADE_UPDATE.ordinal());
+    packet.addProperty("type", MESSAGE_TYPE.TRADE.ordinal());
     packet.add("payload", Main.GSON().toJsonTree(t));
     sendPacket(u, packet);
   }

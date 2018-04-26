@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import cs.brown.edu.aelp.networking.Trade.TRADE_STATUS;
 import cs.brown.edu.aelp.pokemmo.data.DataSource.AuthException;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
@@ -12,7 +13,11 @@ import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemon.Main;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -25,14 +30,25 @@ public class PlayerWebSocketHandler {
   private static final Gson GSON = new Gson();
 
   public static enum MESSAGE_TYPE {
-    CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, PLAYER_TELEPORT, ENCOUNTERED_POKEMON, TRADE_UPDATE, UPDATE_USER, CLIENT_PLAYER_UPDATE, PATH_REQUEST_RESPONSE
+    CONNECT,
+    INITIALIZE,
+    GAME_PACKET,
+    PLAYER_REQUEST_PATH,
+    PLAYER_TELEPORT,
+    ENCOUNTERED_POKEMON,
+    TRADE
   }
 
   public static enum OP_CODES {
-    ENTERED_CHUNK, LEFT_CHUNK, ENTERED_BATTLE, LEFT_BATTLE
+    ENTERED_CHUNK,
+    LEFT_CHUNK,
+    ENTERED_BATTLE,
+    LEFT_BATTLE
   }
 
   private static final MESSAGE_TYPE[] MESSAGE_TYPES = MESSAGE_TYPE.values();
+
+  private static Map<Integer, Trade> trades = new HashMap<>();
 
   @OnWebSocketConnect
   public void onConnect(Session session) throws Exception {
@@ -52,77 +68,19 @@ public class PlayerWebSocketHandler {
     // this message will be a JSON object (in string form)
     JsonObject received = GSON.fromJson(message, JsonObject.class);
     JsonObject payload = received.getAsJsonObject("payload");
-    int id;
-    User u;
-    Chunk c;
 
     switch (MESSAGE_TYPES[received.get("type").getAsInt()]) {
     case CONNECT:
-      // authenticate this session
-      id = payload.get("id").getAsInt();
-      String token = payload.get("token").getAsString();
-      try {
-        u = UserManager.authenticate(id, token);
-        u.setSession(session);
-        System.out.println("Authenticated socket by packet: " + message);
-        PacketSender.sendInitializationPacket(u);
-        // TODO: Inform all other users of their connection?
-      } catch (AuthException e1) {
-        // their credentials were bad or something went wrong
-        System.out.println(e1.getMessage());
-        session.close();
-      }
+      handleConnect(session, payload);
       break;
     case PLAYER_REQUEST_PATH:
-      // TODO: Actually verify the path, maybe?...
-      id = payload.get("id").getAsInt();
-      u = UserManager.getUserById(id);
-      if (u == null || u.getSession() != session) {
-        session.close();
-        break;
-      }
-      JsonArray path = received.getAsJsonObject("payload")
-          .getAsJsonArray("path");
-      c = u.getLocation().getChunk();
-      List<Location> locs = new ArrayList<>();
-      for (JsonElement o : path) {
-        JsonObject tile = (JsonObject) o;
-        Location loc = new Location(c, tile.get("row").getAsInt(),
-            tile.get("col").getAsInt());
-        locs.add(loc);
-      }
-      u.setPath(new Path(locs, locs.get(0).getChunk().getEntities(u)));
+      handlePath(session, payload);
       break;
     case PLAYER_TELEPORT:
-      id = payload.get("id").getAsInt();
-      u = UserManager.getUserById(id);
-      if (u == null || u.getSession() != session) {
-        session.close();
-        break;
-      }
-      int row = payload.get("row").getAsInt();
-      int col = payload.get("col").getAsInt();
-      c = Main.getWorld().getChunk(payload.get("chunk").getAsInt());
-      Chunk old_c = u.getLocation().getChunk();
-      if (c == null) {
-        System.out.printf(
-            "WARNING: Player %d tried to teleport to non-existent chunk.%n",
-            u.getId());
-        session.close();
-      }
-      if (c == old_c) {
-        System.out.printf(
-            "WARNING: Player %d tried to teleport to same chunk.%n", u.getId());
-        session.close();
-      }
-      JsonObject leftChunkOp = PacketSender.buildPlayerOpMessage(u,
-          OP_CODES.LEFT_CHUNK);
-      PacketSender.queueOpForChunk(leftChunkOp, old_c.getId());
-      JsonObject enteredChunkOp = PacketSender.buildPlayerOpMessage(u,
-          OP_CODES.ENTERED_CHUNK);
-      PacketSender.queueOpForChunk(enteredChunkOp, c.getId());
-      u.setLocation(new Location(c, row, col));
-      PacketSender.sendInitializationPacket(u);
+      handleTeleport(session, payload);
+      break;
+    case TRADE:
+      handleTrade(session, payload);
       break;
     default:
       // something went wrong, we got an unknown message type
@@ -130,9 +88,135 @@ public class PlayerWebSocketHandler {
 
   }
 
-  // sends the game packets to all open sessions
-  public static void sendGamePackets() {
-    PacketSender.sendGamePackets();
+  private static void handleConnect(Session session, JsonObject payload) {
+    // authenticate this session
+    int id = payload.get("id").getAsInt();
+    String token = payload.get("token").getAsString();
+    try {
+      User u = UserManager.authenticate(id, token);
+      u.setSession(session);
+      System.out.println("Authenticated socket by packet: " + payload);
+      PacketSender.sendInitializationPacket(u);
+      // TODO: Inform all other users of their connection?
+    } catch (AuthException e1) {
+      // their credentials were bad or something went wrong
+      System.out.println(e1.getMessage());
+      session.close();
+    }
+  }
+
+  private static void handlePath(Session session, JsonObject payload) {
+    // TODO: Actually verify the path, maybe?...
+    int id = payload.get("id").getAsInt();
+    User u = UserManager.getUserById(id);
+    if (u == null || u.getSession() != session) {
+      session.close();
+      return;
+    }
+    JsonArray path = payload.getAsJsonArray("path");
+    Chunk c = u.getLocation().getChunk();
+    List<Location> locs = new ArrayList<>();
+    for (JsonElement o : path) {
+      JsonObject tile = (JsonObject) o;
+      Location loc = new Location(c, tile.get("row").getAsInt(),
+          tile.get("col").getAsInt());
+      locs.add(loc);
+    }
+    u.setPath(new Path(locs, locs.get(0).getChunk().getEntities(u)));
+  }
+
+  private static void handleTeleport(Session session, JsonObject payload) {
+    int id = payload.get("id").getAsInt();
+    User u = UserManager.getUserById(id);
+    if (u == null || u.getSession() != session) {
+      session.close();
+      return;
+    }
+    int row = payload.get("row").getAsInt();
+    int col = payload.get("col").getAsInt();
+    Chunk c = Main.getWorld().getChunk(payload.get("chunk").getAsInt());
+    Chunk old_c = u.getLocation().getChunk();
+    if (c == null) {
+      System.out.printf(
+          "WARNING: Player %d tried to teleport to non-existent chunk.%n",
+          u.getId());
+      session.close();
+    }
+    if (c == old_c) {
+      System.out.printf("WARNING: Player %d tried to teleport to same chunk.%n",
+          u.getId());
+      session.close();
+    }
+    JsonObject leftChunkOp = PacketSender.buildPlayerOpMessage(u,
+        OP_CODES.LEFT_CHUNK);
+    PacketSender.queueOpForChunk(leftChunkOp, old_c.getId());
+    JsonObject enteredChunkOp = PacketSender.buildPlayerOpMessage(u,
+        OP_CODES.ENTERED_CHUNK);
+    PacketSender.queueOpForChunk(enteredChunkOp, c.getId());
+    u.setLocation(new Location(c, row, col));
+    PacketSender.sendInitializationPacket(u);
+  }
+
+  private static void handleTrade(Session session, JsonObject payload) {
+    int me_id = payload.get("me_id").getAsInt();
+    int other_id = payload.get("other_id").getAsInt();
+    boolean isUser1 = payload.get("starter").getAsBoolean();
+    User me = UserManager.getUserById(me_id);
+    User other = UserManager.getUserById(other_id);
+    if (me == null || me.getSession() != session) {
+      session.close();
+      return;
+    }
+    if (other == null || !other.isConnected()) {
+      Trade t = trades.remove(me_id);
+      if (t == null) {
+        // dummy trade just to say CANCELED
+        t = new Trade(me, me);
+      }
+      t.setStatus(TRADE_STATUS.CANCELED);
+      PacketSender.sendTradePacket(me, t);
+      return;
+    }
+    Trade t = trades.get(me_id);
+    if (trades.containsKey(other_id) && !trades.get(other_id).involves(me)) {
+      // other is busy, tell me with dummy trade
+      t = new Trade(me, other);
+      t.setStatus(TRADE_STATUS.BUSY);
+      PacketSender.sendTradePacket(me, t);
+      return;
+    }
+
+    if (t == null) {
+      t = new Trade(me, other);
+    }
+    boolean me_accepted = payload.get("me_accepted").getAsBoolean();
+    int me_curr = payload.get("me_currency").getAsInt();
+    Map<Integer, Integer> me_items = new HashMap<>();
+    JsonObject items = payload.get("me_items").getAsJsonObject();
+    for (String key : items.keySet()) {
+      int item_id = Integer.parseInt(key);
+      me_items.put(item_id, items.get(key).getAsInt());
+    }
+    Set<Integer> me_pokemon = new HashSet<>();
+    JsonArray pokemon = payload.get("me_pokemon").getAsJsonArray();
+    for (JsonElement o : pokemon) {
+      me_pokemon.add(o.getAsInt());
+    }
+    if (!t.setCurrency(me_curr, isUser1) || !t.setItems(me_items, isUser1)
+        || !t.setPokemon(me_pokemon, isUser1)) {
+      t.setStatus(TRADE_STATUS.CANCELED);
+      session.close();
+      System.out.println(
+          "WARNING: User %d tried to trade items, pokemon, or currency that they don't have.");
+    } else {
+      trades.put(other_id, t);
+      trades.put(me_id, t);
+    }
+    if (me_accepted && t.isSameTrade(payload, isUser1)) {
+      t.setAccepted(isUser1);
+    }
+    PacketSender.sendTradePacket(me, t);
+    PacketSender.sendTradePacket(other, t);
   }
 
 }

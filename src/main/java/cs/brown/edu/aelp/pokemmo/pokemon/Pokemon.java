@@ -2,12 +2,17 @@ package cs.brown.edu.aelp.pokemmo.pokemon;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.util.Identifiable;
+import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -523,6 +528,23 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   @Override
   public List<String> getIdentifyingColumns() {
     return Lists.newArrayList("id");
+  }
+
+  public static class PokemonAdapter implements JsonSerializer<Pokemon> {
+
+    @Override
+    public JsonElement serialize(Pokemon src, Type typeOfSrc,
+        JsonSerializationContext ctx) {
+      JsonObject o = new JsonObject();
+      o.addProperty("id", src.getId());
+      o.addProperty("gender", src.getGender());
+      o.addProperty("nickname", src.getNickname());
+      o.addProperty("species", src.getSpecies());
+      o.addProperty("stored", src.isStored());
+      o.addProperty("level", src.getLevel());
+      return o;
+    }
+
   }
 
 }

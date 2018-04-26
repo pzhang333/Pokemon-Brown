@@ -58,16 +58,13 @@ public class World {
     // 2804 in layer "Bush" = Bush
     List<JsonFile> layers = jFile.getJsonList("layers");
     for (int i = 0; i < layers.size(); i++) {
-      List<Integer> tiles = layers.get(i).getList("data");
+      List<Double> tiles = layers.get(i).getList("data");
       String n = layers.get(i).getString("name");
-      System.out.println(n);
       for (int j = 0; j < tiles.size(); j++) {
         int row = j / chunk.getWidth();
         int col = j % chunk.getWidth();
-        if (n.equals("Bush")) {
-          System.out.println(tiles.get(j));
-        }
         if (n.equals("Bush") && tiles.get(j) == BUSH_ID) {
+          System.out.println(tiles.get(j));
           chunk.addEntity(new Bush(new Location(chunk, row, col)));
           System.out.printf("Placing bush at: (%d, %d) in chunk %d%n", row, col,
               chunk.getId());
@@ -75,6 +72,7 @@ public class World {
       }
     }
     return chunk;
+
   }
 
   public void loadChunks(String path) {
