@@ -377,9 +377,9 @@ class Player {
 			this.setPos(x, y);
 
 			// Temporary hack...
-			if (chunk != Game.chunkId) {
+			/*if (chunk != Game.chunkId) {
 				net.chunkId = chunk;
-			}
+			}*/
 
 			Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
 				Game.camera.resetFX();

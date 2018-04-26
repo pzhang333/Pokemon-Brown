@@ -25,6 +25,10 @@ Battle.create = function() {
 	this.stage.width = game.width;
 	this.stage.height = game.height;
 	
+	this.frontPatch = game.add.sprite(game.world.centerX * (17 / 12), game.world.centerY / 2, 'atlas2', 'scenery/patch');
+	this.frontPatch.anchor.setTo(0.5, 0.5);
+	this.frontPatch.scale.set(2, 2);
+	this.frontPatch.visible = true;
 	
 	this.frontPokemonSprite = game.add.sprite(game.world.centerX * (5 / 12), game.world.centerY * (5 / 6), 'atlas2', 'front/pikachu');
 	this.frontPokemonSprite.anchor.setTo(0.5, 0.5);

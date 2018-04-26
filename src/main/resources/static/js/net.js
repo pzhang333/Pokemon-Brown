@@ -105,6 +105,7 @@ class Net {
 		
 		let id = this.chunkId;
 
+		console.log(id);
 		$.getJSON(this.chunkBaseURL + id.toString() + ".json", function(data) {
 			cb(new Chunk(id, data));
 		});
@@ -125,9 +126,15 @@ class Net {
 	
 	teleportHandler(msg) {
 
-		let loc = payload.location;
+		console.log(msg);
+		console.log(msg.payload);
+		let loc = msg.payload.location;
 		
-		Game.player.showTeleport(loc.row, loc.col, payload.chunk_file);
+		net.chunkId = loc.chunk_location;
+		
+		Game.chunkId = false;
+		
+		Game.player.showTeleport(loc.row, loc.col, loc.chunk_location);
 	}
 	
 	
@@ -141,17 +148,9 @@ class Net {
 		let loc = msg.payload.location;
 		Game.player.setPos(loc.col, loc.row);
 		
-	//	Game.chunkId = loc.chunkId;
+		Game.chunkId = false;
 		
-		net.chunkId = loc.chunkId;
-	}
-	
-	sendTeleport(loc) {
-		this.sendPacket(MESSAGE_TYPE.TELEPORT_PACKET, {
-			row: loc.y,
-			col: loc.x,
-			chunk: loc.chunk
-		});
+		net.chunkId = loc.chunk_file;
 	}
 	
 	gamePacketHandler(msg) {
