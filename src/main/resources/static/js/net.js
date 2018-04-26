@@ -4,7 +4,9 @@ const MESSAGE_TYPE = {
 	INITIALIZE_PACKET: 1,
 	GAME_PACKET: 2,
 	PLAYER_REQUEST_PATH: 3,
-	TELEPORT_PACKET: 4
+	TELEPORT_PACKET: 4,
+	WILD_ENCOUNTER: 5,
+	TRADE: 6
 };
 
 function waitForSocketConnection(socket, callback) {
@@ -30,14 +32,15 @@ class Net {
 
 	constructor() {
 
-		this.host = 'localhost';
+		this.host = '10.38.49.136';
+		//this.host = 'localhost';
 		this.port = 4567;
 		
 		this.cfg = {
 			url: 'ws://' + this.host + ':' + this.port.toString() + '/game',
 		};
 		
-		this.chunkBaseURL = "/assets/maps/chunk_";
+		this.chunkBaseURL = "/assets/maps/";
 
 		// TODO: maybe use somekind of queue?
 		
@@ -48,6 +51,8 @@ class Net {
 		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
 		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler;
+		this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
+		this.handlers[MESSAGE_TYPE.TELEPORT_PACKET] = this.teleportHandler;
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
 	}
@@ -117,6 +122,14 @@ class Net {
 		
 		//Game.player.id = msg.payload.id;
 	}
+	
+	teleportHandler(msg) {
+
+		let loc = payload.location;
+		
+		Game.player.showTeleport(loc.row, loc.col, payload.chunk_file);
+	}
+	
 	
 	initPacketHandler(msg) {
 
@@ -220,6 +233,33 @@ class Net {
 		}
 	}
 
+	wildEncounterPacketHandler(msg) {
+		
+		if (game.state.current != "Game") {
+			return;
+		}
+		
+		let payload = msg.payload;
+		console.log(msg);
+		
+		let loc = payload.location;
+		
+		if (Game.player.tweenRunning()) {
+			Game.player.tween.stop(true);
+			Game.player.idle();
+		}
+		Game.player.setPos(loc.col, loc.row);
+		
+		let pokemon = payload.pokemon;
+		
+		let battleId = -1;
+		Battle.startBattle({
+			battleId: battleId
+		});
+		
+		//alert('Encountered wild pokemon with id: ' + pokemon.id);
+	}
+	
 	handleMsg(event) {
 
 //		console.log('test!');

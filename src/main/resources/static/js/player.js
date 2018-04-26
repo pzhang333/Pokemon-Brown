@@ -366,13 +366,7 @@ class Player {
 		Game.easystar.calculate();
 	}
 
-	teleport(x, y, chunk) {
-
-		net.sendTeleport({
-			x: x,
-			y: y,
-			chunk: chunk
-		});
+	showTeleport(x, y, chunk) {
 		
 		Game.camera.fade('#000000', 500);
 		Game.camera.onFadeComplete.add(function() {
@@ -397,11 +391,11 @@ class Player {
 	finishMovement(x, y) {
 
 		// Only teleport
-		let door = Game.doors.getFirst(x, y);
+		/*let door = Game.doors.getFirst(x, y);
 		if (door != null) {
 
 			if (Game.player == this) {
-				this.teleport(door.x, door.y, door.chunk);
+			//	this.teleport(door.x, door.y, door.chunk);
 			} else {
 				//alert('Other player teleported');
 				
@@ -409,7 +403,7 @@ class Player {
 				Game.players[this.id] = undefined;
 				return;
 			}
-		}
+		}*/
 
 		this.idle();
 	}
