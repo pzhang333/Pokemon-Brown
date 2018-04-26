@@ -53,7 +53,7 @@ public final class PokemonLoader {
       return target;
 
     } catch (FileNotFoundException e) {
-      // Should not occur since path is hardcoded in
+      // Should not occur since path is hard-coded in
       e.printStackTrace();
     }
     return null;
