@@ -168,7 +168,7 @@ public class PvPBattle extends Battle {
       Pokemon defendingPokemon = result.getDefendingPokemon();
 
       defendingPokemon
-          .setHealth(defendingPokemon.getCurrHp() - result.getDamage());
+          .setHealth(defendingPokemon.getHealth() - result.getDamage());
 
       if (defendingPokemon.isKnockedOut()) {
         System.out.println("K.O.!");
