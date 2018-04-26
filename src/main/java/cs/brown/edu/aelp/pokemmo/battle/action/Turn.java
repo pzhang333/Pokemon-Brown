@@ -11,7 +11,7 @@ public abstract class Turn {
   private final Trainer trainer;
 
   private final Action action;
-
+  
   public Turn(Trainer trainer, Action action) {
     this.trainer = trainer;
     this.action = action;

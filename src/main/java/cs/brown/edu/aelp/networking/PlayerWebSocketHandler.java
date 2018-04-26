@@ -11,6 +11,7 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemon.Main;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +37,11 @@ public class PlayerWebSocketHandler {
     PLAYER_REQUEST_PATH,
     PLAYER_TELEPORT,
     ENCOUNTERED_POKEMON,
-    TRADE
+    TRADE,
+    START_BATTLE,
+    END_BATTLE,
+    BATTLE_TURN_UPDATE,
+    CLIENT_BATTLE_UPDATE
   }
 
   public static enum OP_CODES {
@@ -45,8 +50,18 @@ public class PlayerWebSocketHandler {
     ENTERED_BATTLE,
     LEFT_BATTLE
   }
-
+  
+  // used for battle moves
+  
+  public static enum ACTION_TYPE {
+    RUN, 
+    SWITCH, 
+    USE_ITEM, 
+    FIGHT  
+  }
+  
   private static final MESSAGE_TYPE[] MESSAGE_TYPES = MESSAGE_TYPE.values();
+  private static final ACTION_TYPE[] ACTION_TYPES = ACTION_TYPE.values();
 
   private static Map<Integer, Trade> trades = new HashMap<>();
 
@@ -81,6 +96,9 @@ public class PlayerWebSocketHandler {
       break;
     case TRADE:
       handleTrade(session, payload);
+      break;
+    case CLIENT_BATTLE_UPDATE:
+      handleClientPlayerUpdate(session, payload);
       break;
     default:
       // something went wrong, we got an unknown message type
@@ -218,5 +236,26 @@ public class PlayerWebSocketHandler {
     PacketSender.sendTradePacket(me, t);
     PacketSender.sendTradePacket(other, t);
   }
+  
+  private static void handleClientPlayerUpdate(Session session, JsonObject payload) {
+    
+    int turnId = payload.get("turn_id").getAsInt();
 
+    switch (ACTION_TYPES[payload.get("action").getAsInt()]) {
+    case RUN:
+      // TODO: run
+      break;
+    case SWITCH:
+      // TODO: switch
+      break;
+    case USE_ITEM:
+      // TODO: use item
+      break;
+    case FIGHT:
+      // TODO: fight
+      break;
+    default:
+      System.out.println("ERROR: Invalid packet sent to battle handler.");
+    }
+  }
 }
