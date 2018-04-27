@@ -3,6 +3,8 @@ package cs.brown.edu.aelp.pokemon;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import cs.brown.edu.aelp.commands.CommandHandler;
+import cs.brown.edu.aelp.commands.TeleportCommand;
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
 import cs.brown.edu.aelp.networking.Trade;
@@ -54,6 +56,7 @@ public final class Main {
       b.registerTypeAdapter(Location.class, new Location.LocationAdapter());
       b.registerTypeAdapter(Trade.class, new Trade.TradeAdapter());
       b.registerTypeAdapter(Pokemon.class, new Pokemon.PokemonAdapter());
+      b.registerTypeAdapter(Inventory.class, new Inventory.InventoryAdapter());
       return b.create();
     }
   };
@@ -186,6 +189,12 @@ public final class Main {
 
     packetTimer.scheduleAtFixedRate(sendPacket, PACKET_SENDING_PERIOD,
         PACKET_SENDING_PERIOD, TimeUnit.MILLISECONDS);
+
+    CommandHandler ch = new CommandHandler();
+    TeleportCommand tc = new TeleportCommand();
+    ch.registerCommand(tc);
+    ch.start();
+
   }
 
   private void runSparkServer(int port) {

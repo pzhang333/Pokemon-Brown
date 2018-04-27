@@ -77,7 +77,7 @@ public class Location {
       JsonObject o = new JsonObject();
       o.addProperty("row", src.getRow());
       o.addProperty("col", src.getCol());
-      o.addProperty("chunkId", src.getChunk().getId());
+      o.addProperty("chunk_file", src.getChunk().getFilename());
       return o;
     }
 

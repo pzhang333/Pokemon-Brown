@@ -64,7 +64,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     private boolean stored;
     private Trainer owner;
 
-    private Status status;
+    private Status status = Status.NONE;
 
     public Builder(Integer id) {
       this.id = id;
@@ -242,7 +242,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   private List<PokeTypes> typeList;
 
-  private Status status;
+  private Status status = Status.NONE;
 
   private List<Move> moves;
 
@@ -327,7 +327,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     this.setChanged(true);
   }
 
-  public boolean isStored() {
+  public Boolean isStored() {
     return this.stored;
   }
 
@@ -353,7 +353,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     return this.nickname;
   }
 
-  public int getGender() {
+  public Integer getGender() {
     return this.gender;
   }
 
@@ -531,6 +531,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       p.setInt(15, m4.getPp());
     }
     p.setInt(16, this.getId());
+    p.addBatch();
   }
 
   @Override
@@ -555,6 +556,8 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
         JsonSerializationContext ctx) {
       JsonObject o = new JsonObject();
       o.addProperty("id", src.getId());
+      o.addProperty("hp", src.getCurrHp());
+      o.addProperty("status", src.getStatus().ordinal());
       o.addProperty("gender", src.getGender());
       o.addProperty("nickname", src.getNickname());
       o.addProperty("species", src.getSpecies());

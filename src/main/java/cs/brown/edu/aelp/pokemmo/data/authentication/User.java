@@ -6,11 +6,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import cs.brown.edu.aelp.networking.PacketSender;
+import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Bush;
 import cs.brown.edu.aelp.pokemmo.map.Entity;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
+import cs.brown.edu.aelp.pokemmo.map.Portal;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Inventory;
@@ -39,6 +41,7 @@ public class User extends Trainer implements SQLBatchSavable {
   private int currency = 0;
   private int state;
   private int orientation;
+  private int elo = 100;
 
   private final Map<Integer, Pokemon> pokemon = new HashMap<>();
 
@@ -62,6 +65,14 @@ public class User extends Trainer implements SQLBatchSavable {
     return this.state;
   }
 
+  public void setElo(int elo) {
+    this.elo = elo;
+  }
+
+  public int getElo() {
+    return this.elo;
+  }
+
   public void setLocation(Location loc) {
     if (this.location == null || this.location.getChunk() != loc.getChunk()) {
       if (this.location != null) {
@@ -73,10 +84,15 @@ public class User extends Trainer implements SQLBatchSavable {
 
     if (this.getPath() != null) {
       for (Entity e : this.getPath().getExpectedEncounters()) {
-        if (e.getLocation() == this.location) {
+        if (e.getLocation().equals(this.location)) {
           this.interact(e);
         }
       }
+    }
+
+    if (this.currentPath != null
+        && this.location.equals(this.currentPath.getEnd())) {
+      this.currentPath = null;
     }
 
     this.setChanged(true);
@@ -85,9 +101,6 @@ public class User extends Trainer implements SQLBatchSavable {
   public Location getLocation() {
     if (this.currentPath != null) {
       this.setLocation(this.currentPath.getCurrentStep());
-      if (this.location.equals(this.currentPath.getEnd())) {
-        this.currentPath = null;
-      }
     }
     return this.location;
   }
@@ -97,8 +110,23 @@ public class User extends Trainer implements SQLBatchSavable {
       Bush b = (Bush) e;
       Pokemon p = b.triggerEntry(this);
       if (p != null) {
+        System.out.printf("User %d found a pokemon in the bushes.%n",
+            this.getId());
         PacketSender.sendEncounterPacket(this, p);
       }
+    } else if (e instanceof Portal) {
+      Portal p = (Portal) e;
+      this.setPath(null);
+      this.setLocation(p.getGoTo());
+      PacketSender.sendInitializationPacket(this);
+      JsonObject leftChunkOp = PacketSender.buildPlayerOpMessage(this,
+          OP_CODES.LEFT_CHUNK);
+      PacketSender.queueOpForChunk(leftChunkOp,
+          p.getLocation().getChunk().getId());
+      JsonObject enteredChunkOp = PacketSender.buildPlayerOpMessage(this,
+          OP_CODES.ENTERED_CHUNK);
+      PacketSender.queueOpForChunk(enteredChunkOp,
+          p.getGoTo().getChunk().getId());
     }
   }
 
@@ -146,7 +174,9 @@ public class User extends Trainer implements SQLBatchSavable {
 
   public void setPath(Path p) {
     this.currentPath = p;
-    this.setLocation(p.getStart());
+    if (p != null) {
+      this.setLocation(p.getStart());
+    }
   }
 
   public Path getPath() {
@@ -172,6 +202,17 @@ public class User extends Trainer implements SQLBatchSavable {
     return this.pokemon.values();
   }
 
+  public int updateElo(boolean won, int otherElo) {
+    int K = 32;
+    int s = won ? 1 : 0;
+    double r1 = Math.pow(10, (this.elo / 400));
+    double r2 = Math.pow(10, (otherElo / 400));
+    double e1 = r1 / (r1 + r2);
+    r1 = r1 + (K * (s - e1));
+    this.setElo((int) r1);
+    return (int) r1;
+  }
+
   @Override
   public List<String> getUpdatableColumns() {
     return Lists.newArrayList("chunk", "row", "col", "currency",
@@ -187,6 +228,7 @@ public class User extends Trainer implements SQLBatchSavable {
     p.setInt(4, this.getCurrency());
     p.setString(5, this.getToken());
     p.setInt(6, this.getId());
+    p.addBatch();
   }
 
   @Override
@@ -219,6 +261,8 @@ public class User extends Trainer implements SQLBatchSavable {
       o.addProperty("state", src.getState());
       o.addProperty("orientation", src.getOrientation());
       o.add("location", Main.GSON().toJsonTree(src.getLocation()));
+      o.add("items", Main.GSON().toJsonTree(src.getInventory()));
+      o.addProperty("elo", src.getElo());
       if (src.getPath() != null) {
         o.add("destination", Main.GSON().toJsonTree(src.getPath().getEnd()));
       }

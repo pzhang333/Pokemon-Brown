@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class World {
 
   private static final int BUSH_ID = 2804;
-  private static final String DEFAULT_CHUNK_PATH = "src/main/resources/static/assets/maps";
+  public static final String DEFAULT_CHUNK_PATH = "src/main/resources/static/assets/maps";
 
   private Location spawn;
   private Map<Integer, Chunk> chunks = new ConcurrentHashMap<>();
@@ -53,7 +53,7 @@ public class World {
     JsonFile jFile = new JsonFile(path);
 
     Chunk chunk = new Chunk(id, jFile.getInt("width"), jFile.getInt("height"),
-        false);
+        false, "chunk_" + id);
 
     // 2804 in layer "Bush" = Bush
     List<JsonFile> layers = jFile.getJsonList("layers");
@@ -64,15 +64,28 @@ public class World {
         int row = j / chunk.getWidth();
         int col = j % chunk.getWidth();
         if (n.equals("Bush") && tiles.get(j) == BUSH_ID) {
-          System.out.println(tiles.get(j));
           chunk.addEntity(new Bush(new Location(chunk, row, col)));
-          System.out.printf("Placing bush at: (%d, %d) in chunk %d%n", row, col,
-              chunk.getId());
         }
       }
     }
+
     return chunk;
 
+  }
+
+  public void loadPortals(String path) throws IOException {
+    JsonFile f = new JsonFile(path + "/portals.json");
+    List<JsonFile> portals = f.getJsonList("portals");
+    for (JsonFile p : portals) {
+      JsonFile start = p.getMap("location");
+      JsonFile end = p.getMap("goto");
+      Location loc = new Location(this.getChunk(start.getInt("chunkId")),
+          start.getInt("row"), start.getInt("col"));
+      Location goTo = new Location(this.getChunk(end.getInt("chunkId")),
+          end.getInt("row"), end.getInt("col"));
+      Portal portal = new Portal(loc, goTo);
+      loc.getChunk().addEntity(portal);
+    }
   }
 
   public void loadChunks(String path) {
@@ -111,6 +124,11 @@ public class World {
         }
 
       }
+    }
+    try {
+      loadPortals(path);
+    } catch (IOException e) {
+      System.err.println("ERROR: Failed to load portals.");
     }
 
   }

@@ -16,18 +16,27 @@ public class Chunk extends Identifiable {
 
   private final int height;
 
+  private static int NEXT_DYNAMIC_ID = 0;
+
   private final boolean[][] grass;
   private List<Entity> entities = new ArrayList<>();
   private Set<User> usersHere = new HashSet<>();
+  private final String fileName;
 
   private final boolean instanced;
 
-  public Chunk(int id, int width, int height, boolean instanced) {
+  public Chunk(int id, int width, int height, boolean instanced,
+      String fileName) {
     super(id);
     this.width = width;
     this.height = height;
     this.instanced = instanced;
     this.grass = new boolean[this.width][this.height];
+    this.fileName = fileName;
+  }
+
+  public String getFilename() {
+    return this.fileName;
   }
 
   public boolean isGrass(int row, int col) {
@@ -79,8 +88,6 @@ public class Chunk extends Identifiable {
       assert this.instanced;
     }
     this.entities.add(e);
-    System.out.printf("Placed entity at (%d, %d)%n", e.getLocation().getRow(),
-        e.getLocation().getCol());
   }
 
   public void removeEntity(Entity e) {
@@ -98,6 +105,11 @@ public class Chunk extends Identifiable {
   public Collection<User> getUsers() {
     return Collections.unmodifiableSet(this.usersHere.stream()
         .filter(User::isConnected).collect(Collectors.toSet()));
+  }
+
+  public static int getNextDynamicId() {
+    NEXT_DYNAMIC_ID--;
+    return NEXT_DYNAMIC_ID;
   }
 
 }
