@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class Bush extends Entity {
 
-  private final static double chance = 0.10;
+  private final static double chance = 0.50;
   private final static long cooldown = 30 * 1000;
   private final static Random r = new Random();
   Map<User, Long> cooldowns = new HashMap<>();
@@ -26,17 +26,14 @@ public class Bush extends Entity {
       }
     }
     cooldowns.put(u, System.currentTimeMillis() + cooldown);
-    if (r.nextDouble() >= chance) {
+    double d = r.nextDouble();
+    if (d >= chance) {
       return null;
     }
     // TODO: Return real Pokemon
     Pokemon.Builder b = new Pokemon.Builder(-1);
+    u.setPath(null);
     return b.build();
-  }
-
-  @Override
-  public ENTITY_TYPE getType() {
-    return ENTITY_TYPE.BUSH;
   }
 
 }

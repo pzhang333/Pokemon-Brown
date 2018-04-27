@@ -48,9 +48,6 @@ class Net {
 
 		// TODO: maybe use somekind of queue?
 		
-		// Temporary hack...
-		this.chunkId = 1;
-
 		this.handlers = {}
 		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
@@ -108,7 +105,11 @@ class Net {
 	getChunk(cb) {
 		
 		let id = this.chunkId;
-
+		
+		if (id == undefined) {
+			return false;
+		}
+		
 		$.getJSON(this.chunkBaseURL + id.toString() + ".json", function(data) {
 			cb(new Chunk(id, data));
 		});
@@ -129,13 +130,18 @@ class Net {
 	
 	teleportHandler(msg) {
 
-		let loc = payload.location;
+		return;
+		console.log(msg);
+		console.log(msg.payload);
+		let loc = msg.payload.location;
 		
-		Game.player.showTeleport(loc.row, loc.col, payload.chunk_file);
+		Game.player.showTeleport(loc.col, loc.row, loc.chunk_file);
 	}
 	
 	
 	initPacketHandler(msg) {
+		
+		console.log(msg);
 
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
@@ -143,19 +149,11 @@ class Net {
 		Game.player.id = this.id;
 		
 		let loc = msg.payload.location;
-		Game.player.setPos(loc.col, loc.row);
 		
-	//	Game.chunkId = loc.chunkId;
-		
-		net.chunkId = loc.chunkId;
-	}
-	
-	sendTeleport(loc) {
-		this.sendPacket(MESSAGE_TYPE.TELEPORT_PACKET, {
-			row: loc.y,
-			col: loc.x,
-			chunk: loc.chunk
+		Game.player.showTeleport(loc.col, loc.row, loc.chunk_file, function() {
+			net.chunkId = loc.chunk_file;
 		});
+		
 	}
 	
 	gamePacketHandler(msg) {

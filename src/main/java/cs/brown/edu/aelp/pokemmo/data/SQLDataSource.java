@@ -1,5 +1,15 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
+import cs.brown.edu.aelp.pokemmo.data.Leaderboards.EloUser;
+import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokemonLoader;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
+import cs.brown.edu.aelp.pokemon.Main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,16 +28,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.map.Chunk;
-import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokemonLoader;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
-import cs.brown.edu.aelp.pokemon.Main;
 
 public class SQLDataSource implements DataSource {
 
@@ -276,7 +276,6 @@ public class SQLDataSource implements DataSource {
       try (PreparedStatement p = this.getPStatementForClass(toSave.get(0))) {
         for (E obj : toSave) {
           obj.bindValues(p);
-          p.addBatch();
         }
         conn.setAutoCommit(false);
         int i = IntStream.of(p.executeBatch()).sum();
@@ -363,6 +362,24 @@ public class SQLDataSource implements DataSource {
     } catch (SQLException e) {
       e.printStackTrace();
       return null;
+    }
+  }
+
+  @Override
+  public void loadLeaderboards() throws LoadException {
+    try (PreparedStatement p = this
+        .prepStatementFromFile("src/main/resources/sql/get_top_50_elos.sql")) {
+      try (ResultSet rs = p.executeQuery()) {
+        while (rs.next()) {
+          EloUser eu = new EloUser(rs.getInt("id"), rs.getString("username"),
+              rs.getInt("elo"));
+          Leaderboards.tryInsertTop50(eu);
+        }
+      }
+    } catch (SQLException | IOException e) {
+      e.printStackTrace();
+      throw new LoadException(
+          "Something went wrong while loading top 50 elos.");
     }
   }
 }

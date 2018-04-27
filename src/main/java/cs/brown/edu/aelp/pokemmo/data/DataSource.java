@@ -67,6 +67,11 @@ public interface DataSource {
       throws SaveException;
 
   /**
+   * Attempts to load the top 50 elos into the leaderboards.
+   */
+  public void loadLeaderboards() throws LoadException;
+
+  /**
    * Type of Exception thrown when something goes wrong during authentication.
    * Message should be appropriate for user-facing display.
    *
@@ -96,6 +101,23 @@ public interface DataSource {
     }
 
     public SaveException(String message) {
+      super(message);
+    }
+
+  }
+
+  class LoadException extends Exception {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 118911357495970128L;
+
+    public LoadException() {
+      super("ERROR: Something went wrong while loading from the databases.");
+    }
+
+    public LoadException(String message) {
       super(message);
     }
 

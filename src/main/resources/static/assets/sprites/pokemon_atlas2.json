@@ -2,20 +2,29 @@
 
 "back/pikachu":
 {
-	"frame": {"x":75,"y":1,"w":50,"h":52},
+	"frame": {"x":221,"y":1,"w":41,"h":46},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":23,"y":22,"w":50,"h":52},
-	"sourceSize": {"w":96,"h":96},
+	"spriteSourceSize": {"x":4,"y":0,"w":41,"h":46},
+	"sourceSize": {"w":50,"h":46},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "front/pikachu":
 {
-	"frame": {"x":1,"y":1,"w":72,"h":70},
+	"frame": {"x":182,"y":1,"w":37,"h":49},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":12,"y":11,"w":72,"h":70},
+	"spriteSourceSize": {"x":25,"y":21,"w":37,"h":49},
 	"sourceSize": {"w":96,"h":96},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"scenery/patch":
+{
+	"frame": {"x":1,"y":1,"w":179,"h":58},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":0,"w":179,"h":58},
+	"sourceSize": {"w":185,"h":60},
 	"pivot": {"x":0.5,"y":0.5}
 }},
 "meta": {
@@ -23,8 +32,8 @@
 	"version": "1.0",
 	"image": "pokemon_atlas2.png",
 	"format": "RGBA8888",
-	"size": {"w":126,"h":72},
+	"size": {"w":263,"h":60},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:12647a53468018e32d8921a8b88dfc69:7ec2e3d23d25556eef3cc64c84d0536f:6acf176516b3165fd7878e2c2b4147d1$"
+	"smartupdate": "$TexturePacker:SmartUpdate:0d0e5d7f402ee37610d693daf8737704:14a6c45287bef2f6d8056e77a0fc4698:6acf176516b3165fd7878e2c2b4147d1$"
 }
 }

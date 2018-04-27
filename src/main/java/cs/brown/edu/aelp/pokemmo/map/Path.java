@@ -12,7 +12,7 @@ public class Path {
    */
 
   private final long start_time = System.currentTimeMillis();
-  private final int step_time = 200; // milliseconds
+  private final int step_time = 240; // milliseconds
   private final List<Location> steps;
   private final Location start;
   private final Location end;

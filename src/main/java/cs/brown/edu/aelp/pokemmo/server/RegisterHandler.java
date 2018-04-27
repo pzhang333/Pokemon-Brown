@@ -63,7 +63,8 @@ public class RegisterHandler implements Route {
     }
 
     // TODO: put real starter species here
-    if (!(species.equals("charizard") || species.equals("pikachu"))) {
+    if (!(species.equals("bulbasaur") || species.equals("squirtle")
+        || species.equals("charizard") || species.equals("pikachu"))) {
       throw new AuthException("Invalid species selected.");
     }
 

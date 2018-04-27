@@ -11,8 +11,6 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-import cs.brown.edu.aelp.pokemon.Main;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +33,6 @@ public class PlayerWebSocketHandler {
     INITIALIZE,
     GAME_PACKET,
     PLAYER_REQUEST_PATH,
-    PLAYER_TELEPORT,
     ENCOUNTERED_POKEMON,
     TRADE,
     START_BATTLE,
@@ -50,16 +47,16 @@ public class PlayerWebSocketHandler {
     ENTERED_BATTLE,
     LEFT_BATTLE
   }
-  
+
   // used for battle moves
-  
+
   public static enum ACTION_TYPE {
-    RUN, 
-    SWITCH, 
-    USE_ITEM, 
-    FIGHT  
+    RUN,
+    SWITCH,
+    USE_ITEM,
+    FIGHT
   }
-  
+
   private static final MESSAGE_TYPE[] MESSAGE_TYPES = MESSAGE_TYPE.values();
   private static final ACTION_TYPE[] ACTION_TYPES = ACTION_TYPE.values();
 
@@ -90,9 +87,6 @@ public class PlayerWebSocketHandler {
       break;
     case PLAYER_REQUEST_PATH:
       handlePath(session, payload);
-      break;
-    case PLAYER_TELEPORT:
-      handleTeleport(session, payload);
       break;
     case TRADE:
       handleTrade(session, payload);
@@ -141,38 +135,6 @@ public class PlayerWebSocketHandler {
       locs.add(loc);
     }
     u.setPath(new Path(locs, locs.get(0).getChunk().getEntities(u)));
-  }
-
-  private static void handleTeleport(Session session, JsonObject payload) {
-    int id = payload.get("id").getAsInt();
-    User u = UserManager.getUserById(id);
-    if (u == null || u.getSession() != session) {
-      session.close();
-      return;
-    }
-    int row = payload.get("row").getAsInt();
-    int col = payload.get("col").getAsInt();
-    Chunk c = Main.getWorld().getChunk(payload.get("chunk").getAsInt());
-    Chunk old_c = u.getLocation().getChunk();
-    if (c == null) {
-      System.out.printf(
-          "WARNING: Player %d tried to teleport to non-existent chunk.%n",
-          u.getId());
-      session.close();
-    }
-    if (c == old_c) {
-      System.out.printf("WARNING: Player %d tried to teleport to same chunk.%n",
-          u.getId());
-      session.close();
-    }
-    JsonObject leftChunkOp = PacketSender.buildPlayerOpMessage(u,
-        OP_CODES.LEFT_CHUNK);
-    PacketSender.queueOpForChunk(leftChunkOp, old_c.getId());
-    JsonObject enteredChunkOp = PacketSender.buildPlayerOpMessage(u,
-        OP_CODES.ENTERED_CHUNK);
-    PacketSender.queueOpForChunk(enteredChunkOp, c.getId());
-    u.setLocation(new Location(c, row, col));
-    PacketSender.sendInitializationPacket(u);
   }
 
   private static void handleTrade(Session session, JsonObject payload) {
@@ -236,9 +198,10 @@ public class PlayerWebSocketHandler {
     PacketSender.sendTradePacket(me, t);
     PacketSender.sendTradePacket(other, t);
   }
-  
-  private static void handleClientPlayerUpdate(Session session, JsonObject payload) {
-    
+
+  private static void handleClientPlayerUpdate(Session session,
+      JsonObject payload) {
+
     int turnId = payload.get("turn_id").getAsInt();
 
     switch (ACTION_TYPES[payload.get("action").getAsInt()]) {

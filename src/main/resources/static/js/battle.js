@@ -25,8 +25,20 @@ Battle.create = function() {
 	this.stage.width = game.width;
 	this.stage.height = game.height;
 	
+	this.backPatch = game.add.sprite(game.world.centerX * (5 / 12), game.world.centerY * (4 / 6), 'atlas2', 'scenery/patch');
+	this.backPatch.anchor.setTo(0.5, 0.5);
+	this.backPatch.scale.set(1.75, 1.75);
+	this.backPatch.visible = true;
 	
-	this.frontPokemonSprite = game.add.sprite(game.world.centerX * (5 / 12), game.world.centerY * (5 / 6), 'atlas2', 'front/pikachu');
+	this.frontPatch = game.add.sprite(game.world.centerX * (17 / 12), game.world.centerY / 2, 'atlas2', 'scenery/patch');
+	this.frontPatch.anchor.setTo(0.5, 0.5);
+	this.frontPatch.scale.set(1.75, 1.75);
+	this.frontPatch.visible = true;
+	
+	
+	
+	
+	this.frontPokemonSprite = game.add.sprite(game.world.centerX * (4.5 / 12), game.world.centerY * (4.5 / 6), 'atlas2', 'front/pikachu');
 	this.frontPokemonSprite.anchor.setTo(0.5, 0.5);
 	this.frontPokemonSprite.scale.set(2, 2);
 	this.frontPokemonSprite.visible = true;

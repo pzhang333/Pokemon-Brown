@@ -2,10 +2,6 @@ package cs.brown.edu.aelp.pokemmo.map;
 
 public abstract class Entity {
 
-  public enum ENTITY_TYPE {
-    BUSH
-  }
-
   private Location loc;
 
   // This class should be the superclass of anything that goes dynamically on
@@ -27,7 +23,5 @@ public abstract class Entity {
     }
     this.loc = loc;
   }
-
-  public abstract ENTITY_TYPE getType();
 
 }

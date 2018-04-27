@@ -153,11 +153,10 @@ Game.loadCurrentChunk = function(clear) {
 	let self = this;
 
 	net.getChunk(function(chunk) {
-
-	//	Game.clearPlayers();
 		
-		console.log(chunk)
-		Game.chunkId = chunk.id;
+		if (chunk == false) {
+			return;
+		}
 
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
 
