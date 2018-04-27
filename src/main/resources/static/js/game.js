@@ -7,7 +7,6 @@ Game.init = function() {
 	
 	//Game.easystar = new EasyStar.js();
 	Game.cursors = game.input.keyboard.createCursorKeys();
-	
 };
 
 Game.update = function() {
@@ -39,6 +38,11 @@ Game.preload = function() {
 	game.stage.disableVisibilityChange = true;
 	game.load.image('tileset', 'assets/tilesets/tileset.png');
 	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
+
+	// loading hud images
+    game.load.image('backpack', 'assets/HUD/backpack.png');
+    game.load.image('trophy', 'assets/HUD/trophy.png');
+    game.load.image('coin', 'assets/HUD/coin.png');
 };
 
 
@@ -63,7 +67,7 @@ Game.drawLayers = function() {
 
 	Game.map.gameLayers['Base'].inputEnabled = true;
 	Game.map.gameLayers['Base'].events.onInputUp.add(Game.handleMapClick, this);
-
+	self.drawHud();
 };
 
 Game.handleMapClick = function(layer, pointer) {
@@ -178,3 +182,19 @@ Game.loadCurrentChunk = function(clear) {
 	});
 };
 
+function drawHud() {
+	// backpack icon
+	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/6.5, Game.map.heightInPixels-Game.map.heightInPixels/2, "trophy");
+    backpackIcon.inputEnabled = true;
+    backpackIcon.fixedToCamera = true;
+
+    // trophy icon
+   	let trophyIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/4, Game.map.heightInPixels-Game.map.heightInPixels/2, "backpack");
+    trophyIcon.inputEnabled = true;
+    trophyIcon.fixedToCamera = true;
+
+    // coin icon
+    let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/2.85, Game.map.heightInPixels-Game.map.heightInPixels/2, "coin");
+    coinIcon.inputEnabled = true;
+    coinIcon.fixedToCamera = true;
+}
