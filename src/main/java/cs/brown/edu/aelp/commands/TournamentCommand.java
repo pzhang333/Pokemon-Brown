@@ -12,7 +12,7 @@ import java.util.List;
 public class TournamentCommand extends Command {
 
   public TournamentCommand() {
-    super("tournament", Arrays.asList(),
+    super("tournament", Arrays.asList(Arrays.asList()),
         "Start a new tournament or end the current one", false, false);
   }
 

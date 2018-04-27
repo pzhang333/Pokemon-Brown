@@ -37,7 +37,11 @@ public class Tournament {
     this.portal = p;
   }
 
-  public void joinUser(User u) {
+  public Portal getPortal() {
+    return this.portal;
+  }
+
+  public void addUser(User u) {
     assert this.users.size() < this.size;
     u.setCurrency(u.getCurrency() - this.cost);
     this.pool += this.cost;

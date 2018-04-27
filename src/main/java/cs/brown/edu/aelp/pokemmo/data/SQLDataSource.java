@@ -143,6 +143,7 @@ public class SQLDataSource implements DataSource {
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
     /*for (Pokemon pokemon : this.loadPokemonForUser(user)) {
+      user.addPokemon(pokemon);
       user.addPokemonToTeam(pokemon);
     }*/
     return user;

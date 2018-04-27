@@ -61,8 +61,10 @@ public class World {
 
     JsonFile jFile = new JsonFile(path);
 
+    String fname = file.getName();
+
     Chunk chunk = new Chunk(id, jFile.getInt("width"), jFile.getInt("height"),
-        "chunk_" + id);
+        fname.substring(0, fname.lastIndexOf(".")));
 
     // 2804 in layer "Bush" = Bush
     List<JsonFile> layers = jFile.getJsonList("layers");

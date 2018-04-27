@@ -33,6 +33,8 @@ public class TeleportCommand extends Command {
         System.out.println("ERROR: Unknown chunk id.");
       }
       u.teleportTo(new Location(c, row, col));
+      System.out.printf("Teleported %s to (%d, %d) in chunk %d%n",
+          u.getUsername(), row, col, c.getId());
     } catch (NumberFormatException e) {
       System.out
           .println("ERROR: All inputs must be integers. See 'teleport help'.");

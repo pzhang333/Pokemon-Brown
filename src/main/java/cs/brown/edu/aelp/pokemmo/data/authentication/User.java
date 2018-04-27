@@ -14,6 +14,7 @@ import cs.brown.edu.aelp.pokemmo.map.Entity;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemmo.map.Portal;
+import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Inventory;
@@ -117,6 +118,15 @@ public class User extends Trainer implements SQLBatchSavable {
       }
     } else if (e instanceof Portal) {
       Portal p = (Portal) e;
+      World w = Main.getWorld();
+      if (w.getTournament() != null
+          && w.getTournament().getPortal().equals(p)) {
+        if (!w.getTournament().canJoin(this)) {
+          return;
+        } else {
+          w.getTournament().addUser(this);
+        }
+      }
       this.teleportTo(p.getGoTo());
     }
   }
