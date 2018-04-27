@@ -9,6 +9,7 @@ import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Bush;
+import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Entity;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
@@ -116,18 +117,21 @@ public class User extends Trainer implements SQLBatchSavable {
       }
     } else if (e instanceof Portal) {
       Portal p = (Portal) e;
-      this.setPath(null);
-      this.setLocation(p.getGoTo());
-      PacketSender.sendInitializationPacket(this);
-      JsonObject leftChunkOp = PacketSender.buildPlayerOpMessage(this,
-          OP_CODES.LEFT_CHUNK);
-      PacketSender.queueOpForChunk(leftChunkOp,
-          p.getLocation().getChunk().getId());
-      JsonObject enteredChunkOp = PacketSender.buildPlayerOpMessage(this,
-          OP_CODES.ENTERED_CHUNK);
-      PacketSender.queueOpForChunk(enteredChunkOp,
-          p.getGoTo().getChunk().getId());
+      this.teleportTo(p.getGoTo());
     }
+  }
+
+  public void teleportTo(Location l) {
+    this.setPath(null);
+    Chunk old = this.getLocation().getChunk();
+    this.setLocation(l);
+    PacketSender.sendInitializationPacket(this);
+    JsonObject leftChunkOp = PacketSender.buildPlayerOpMessage(this,
+        OP_CODES.LEFT_CHUNK);
+    PacketSender.queueOpForChunk(leftChunkOp, old.getId());
+    JsonObject enteredChunkOp = PacketSender.buildPlayerOpMessage(this,
+        OP_CODES.ENTERED_CHUNK);
+    PacketSender.queueOpForChunk(enteredChunkOp, l.getChunk().getId());
   }
 
   public void setCurrency(int c) {
@@ -213,6 +217,13 @@ public class User extends Trainer implements SQLBatchSavable {
     return (int) r1;
   }
 
+  public void validateLocation() {
+    if (this.getLocation().getChunk() == null
+        || this.getLocation().getChunk().getId() < 0) {
+      this.setLocation(new Location(Main.getWorld().getChunk(1), 5, 5));
+    }
+  }
+
   @Override
   public List<String> getUpdatableColumns() {
     return Lists.newArrayList("chunk", "row", "col", "currency",
@@ -222,9 +233,17 @@ public class User extends Trainer implements SQLBatchSavable {
   @Override
   public void bindValues(PreparedStatement p) throws SQLException {
     Location l = this.getLocation();
-    p.setInt(1, l.getChunk().getId());
-    p.setInt(2, l.getRow());
-    p.setInt(3, l.getCol());
+    if (l.getChunk().getId() < 0) {
+      // we never want to save people into a dynamic chunk that may not exist in
+      // the future
+      p.setInt(1, 1);
+      p.setInt(2, 1);
+      p.setInt(3, 1);
+    } else {
+      p.setInt(1, l.getChunk().getId());
+      p.setInt(2, l.getRow());
+      p.setInt(3, l.getCol());
+    }
     p.setInt(4, this.getCurrency());
     p.setString(5, this.getToken());
     p.setInt(6, this.getId());

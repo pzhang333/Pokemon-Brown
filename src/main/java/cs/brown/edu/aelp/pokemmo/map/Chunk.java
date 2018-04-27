@@ -23,14 +23,10 @@ public class Chunk extends Identifiable {
   private Set<User> usersHere = new HashSet<>();
   private final String fileName;
 
-  private final boolean instanced;
-
-  public Chunk(int id, int width, int height, boolean instanced,
-      String fileName) {
+  public Chunk(int id, int width, int height, String fileName) {
     super(id);
     this.width = width;
     this.height = height;
-    this.instanced = instanced;
     this.grass = new boolean[this.width][this.height];
     this.fileName = fileName;
   }
@@ -55,38 +51,16 @@ public class Chunk extends Identifiable {
     return this.height;
   }
 
-  public boolean isInstanced() {
-    return this.instanced;
-  }
-
   public List<Entity> getEntities() {
     return this.getEntities(null);
   }
 
   public List<Entity> getEntities(User u) {
-    if (this.instanced) {
-      List<Entity> results = new ArrayList<>();
-      for (Entity e : this.entities) {
-        if (e instanceof InstancedEntity) {
-          InstancedEntity ie = (InstancedEntity) e;
-          if (u != null && ie.getUser().equals(u)) {
-            results.add(ie);
-          }
-        } else {
-          results.add(e);
-        }
-      }
-      return results;
-    } else {
-      return new ArrayList<>(this.entities);
-    }
+    return new ArrayList<>(this.entities);
   }
 
   public void addEntity(Entity e) {
     assert e.getLocation().getChunk() == this;
-    if (e instanceof InstancedEntity) {
-      assert this.instanced;
-    }
     this.entities.add(e);
   }
 

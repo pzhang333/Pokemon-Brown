@@ -36,18 +36,18 @@ class Net {
 
 	constructor() {
 
-		this.host = '10.38.49.136';
-		//this.host = 'localhost';
+		//this.host = '10.38.49.136';
+		this.host = 'localhost';
 		this.port = 4567;
-		
+
 		this.cfg = {
 			url: 'ws://' + this.host + ':' + this.port.toString() + '/game',
 		};
-		
+
 		this.chunkBaseURL = "/assets/maps/";
 
 		// TODO: maybe use somekind of queue?
-		
+
 		this.handlers = {}
 		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
@@ -57,20 +57,20 @@ class Net {
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
 	}
-	
+
 	sendPacket(type, payload) {
 		if (this.socket.readyState == this.socket.CLOSED) {
 			throw "Socket closed...";
 		}
-		
+
 		waitForSocketConnection(this.socket, function(socket) {
 			socket.send(net.packet(type, payload));
 		}.bind(this));
 	}
-	
+
 	packet(type, payload) {
 		payload.id = net.id;
-		
+
 		return JSON.stringify({
 			type: type,
 			payload: payload
@@ -78,44 +78,44 @@ class Net {
 	}
 
 	connect(id, token) {
-		
+
 		console.log(id);
 		net.id = id;
 		Game.player.id = id;
 		net.token = token;
-		
+
 		this.socket = new WebSocket(this.cfg.url);
 		this.socket.onmessage = this.handleMsg.bind(this);
-		
+
 		this.socket.onerror = function() {
 			game.state.start('Home');
 		};
-		
+
 		this.socket.onclose = function() {
 			game.state.start('Home');
 		};
-		
+
 		console.log('Auth(' + this.id + ', ' + this.token + ')');
-		
+
 		this.sendPacket(MESSAGE_TYPE.CONNECT, {
 			token: token
 		});
 	}
-	
+
 	getChunk(cb) {
-		
+
 		let id = this.chunkId;
-		
+
 		if (id == undefined) {
 			return false;
 		}
-		
+
 		$.getJSON(this.chunkBaseURL + id.toString() + ".json", function(data) {
 			cb(new Chunk(id, data));
 		});
-		
+
 	}
-	
+
 	getCurrentChunkId() {
 		// Hack
 		return this.chunkId;
@@ -124,89 +124,89 @@ class Net {
 	// Pretend this is a login packet... or something idk...
 	connectHandler(msg) {
 		console.log('Got connect packet', msg);
-		
+
 		//Game.player.id = msg.payload.id;
 	}
-	
+
 	teleportHandler(msg) {
 
 		return;
 		console.log(msg);
 		console.log(msg.payload);
 		let loc = msg.payload.location;
-		
+
 		Game.player.showTeleport(loc.col, loc.row, loc.chunk_file);
 	}
-	
-	
+
+
 	initPacketHandler(msg) {
-		
+
 		console.log(msg);
 
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
-		
+
 		Game.player.id = this.id;
-		
+
 		let loc = msg.payload.location;
-		
+
 		Game.player.showTeleport(loc.col, loc.row, loc.chunk_file, function() {
 			net.chunkId = loc.chunk_file;
 		});
-		
+
 	}
-	
+
 	gamePacketHandler(msg) {
 	//	console.log('Got game packet');
-		
+
 		//msg = generateFakeGamePacket();
-		
+
 		if (game.state.current != "Game") {
 			return;
 		}
-		
+
 		let handled = [];
-		
+
 		let playerUpdates = msg.payload.users;
 		for(let i = 0; i < playerUpdates.length; i++) {
-			
+
 			let update = playerUpdates[i];
-			
+
 			handled.push(update.id);
-			
+
 			//let loc = update.location;
 			let loc = update.location;
 			let id = update.id;
 
-			
+
 		//	console.log(id + " : " + net.id)
 			if (id == net.id) {
 				//console.log('skip: ' + id);
 				continue;
 			}
-			
+
 			//console.log(Game.players[id])
 			if (Game.players[id] == undefined) {
 				let player = new Player();
-				
+
 				player.setPos(loc.col, loc.row);
 				player.initSprite();
 				player.setVisible(true);
 				player.id = id;
-				
+
 				Game.players[id] = player;
 
 				console.log(Game.players[id]);
 			}
-			
+
 			let player = Game.players[id];
-			
+
 			let dest = update.destination;
-			
+
 			if (dest == undefined) {
 				continue;
 			}
-			
+
 			//console.log(player);
 			if (player != undefined) {
 				player.prepareMovement({
@@ -215,20 +215,20 @@ class Net {
 				}, true);
 			}
 		}
-		
+
 		for (var key in Game.players) {
-		    if (Game.players.hasOwnProperty(key)) {      
-		    	
+		    if (Game.players.hasOwnProperty(key)) {
+
 		    	// Hack
 		    	let id = parseInt(key);
-		    	
+
 		    	if (!handled.includes(id)) {
 		    		let toDel = Game.players[id];
-		    		
+
 		    		if (toDel != undefined) {
 		    			toDel.del();
 		    		}
-		    		
+
 		    		Game.players[id] = undefined;
 		    	}
 		    }
@@ -236,39 +236,39 @@ class Net {
 	}
 
 	wildEncounterPacketHandler(msg) {
-		
+
 		if (game.state.current != "Game") {
 			return;
 		}
-		
+
 		let payload = msg.payload;
 		console.log(msg);
-		
+
 		let loc = payload.location;
-		
+
 		if (Game.player.tweenRunning()) {
 			Game.player.tween.stop(true);
 			Game.player.idle();
 		}
 		Game.player.setPos(loc.col, loc.row);
-		
+
 		let pokemon = payload.pokemon;
-		
+
 		let battleId = -1;
 		Battle.startBattle({
 			battleId: battleId
 		});
-		
+
 		//alert('Encountered wild pokemon with id: ' + pokemon.id);
 	}
-	
+
 	handleMsg(event) {
 
 //		console.log('test!');
 	//	console.log(event);
-		
+
 		const data = JSON.parse(event.data);
-		
+
 		if (data.type in this.handlers) {
 			this.handlers[data.type](data);
 		} else {
@@ -285,7 +285,7 @@ class Net {
 	requestMovePath(path) {
   		// sends a message with an updated player object
   		let messageObject = new RequestPathMessage(path);
-  		socket.send(JSON.parse(messageObject));	
+  		socket.send(JSON.parse(messageObject));
   	}
 }
 

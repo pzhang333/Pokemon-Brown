@@ -4,7 +4,6 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.map.Portal;
 import cs.brown.edu.aelp.pokemon.Main;
 import java.util.Arrays;
 import java.util.List;
@@ -33,11 +32,7 @@ public class TeleportCommand extends Command {
       if (c == null) {
         System.out.println("ERROR: Unknown chunk id.");
       }
-      // do this with a dummy portal... :-)
-      Location to = new Location(c, row, col);
-      Location from = u.getLocation();
-      Portal p = new Portal(from, to);
-      u.interact(p);
+      u.teleportTo(new Location(c, row, col));
     } catch (NumberFormatException e) {
       System.out
           .println("ERROR: All inputs must be integers. See 'teleport help'.");
