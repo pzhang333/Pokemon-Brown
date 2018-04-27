@@ -369,6 +369,7 @@ class Player {
 	showTeleport(x, y, chunk, cb) {
 		
 		if (Game.camera == undefined) {
+			Game.player.setPos(x, y);
 			cb();
 			return;
 		}

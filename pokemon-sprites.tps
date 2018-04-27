@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.6.3</string>
         <key>fileName</key>
-        <string>C:/Users/mcdas/cs0320/final-project/pokemon-sprites.tps</string>
+        <string>C:/Users/Ethan/cs0320/final-project/pokemon-sprites.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -28,7 +28,7 @@
             </struct>
         </array>
         <key>allowRotation</key>
-        <true/>
+        <false/>
         <key>shapeDebug</key>
         <false/>
         <key>dpi</key>
@@ -153,7 +153,7 @@
         <key>autoAliasEnabled</key>
         <false/>
         <key>trimSpriteNames</key>
-        <false/>
+        <true/>
         <key>prependSmartFolderName</key>
         <true/>
         <key>autodetectAnimations</key>
@@ -171,7 +171,7 @@
             <key>trimMargin</key>
             <uint>1</uint>
             <key>trimMode</key>
-            <enum type="SpriteSettings::TrimMode">Trim</enum>
+            <enum type="SpriteSettings::TrimMode">None</enum>
             <key>tracerTolerance</key>
             <int>200</int>
             <key>heuristicMask</key>
@@ -183,25 +183,23 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">src/main/resources/static/assets/pokemon/back/pikachu.png</key>
-            <key type="filename">src/main/resources/static/assets/pokemon/front/pikachu.png</key>
+            <key type="filename">src/main/resources/static/assets/pokemon/scenery/patch.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>24,24,48,48</rect>
+                <rect>46,15,93,30</rect>
                 <key>scale9Paddings</key>
-                <rect>24,24,48,48</rect>
+                <rect>46,15,93,30</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
         </map>
         <key>fileList</key>
         <array>
-            <filename>src/main/resources/static/assets/pokemon/back</filename>
-            <filename>src/main/resources/static/assets/pokemon/front</filename>
+            <filename>src/main/resources/static/assets/pokemon/scenery</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

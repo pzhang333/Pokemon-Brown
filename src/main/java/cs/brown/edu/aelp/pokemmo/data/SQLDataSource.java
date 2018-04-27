@@ -142,9 +142,9 @@ public class SQLDataSource implements DataSource {
     Chunk c = Main.getWorld().getChunk(rs.getInt("chunk"));
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
-    for (Pokemon pokemon : this.loadPokemonForUser(user)) {
+    /*(for (Pokemon pokemon : this.loadPokemonForUser(user)) {
       user.addPokemonToTeam(pokemon);
-    }
+    }*/
     return user;
   }
 

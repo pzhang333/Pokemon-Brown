@@ -1,16 +1,14 @@
-
 const MESSAGE_TYPE = {
 	CONNECT: 0,
 	INITIALIZE_PACKET: 1,
 	GAME_PACKET: 2,
 	PLAYER_REQUEST_PATH: 3,
-	TELEPORT_PACKET: 4,
-	WILD_ENCOUNTER: 5,
-	TRADE: 6,
-	START_BATTLE: 7,
-    END_BATTLE: 8,
-    BATTLE_TURN_UPDATE: 9,
-    CLIENT_BATTLE_UPDATE: 10
+	WILD_ENCOUNTER: 4,
+	TRADE: 5,
+	START_BATTLE: 6,
+    END_BATTLE: 7,
+    BATTLE_TURN_UPDATE: 8,
+    CLIENT_BATTLE_UPDATE: 9
 };
 
 function waitForSocketConnection(socket, callback) {
@@ -36,8 +34,8 @@ class Net {
 
 	constructor() {
 
-		this.host = '10.38.49.136';
-		//this.host = 'localhost';
+		//this.host = '10.38.49.136';
+		this.host = 'localhost';
 		this.port = 4567;
 		
 		this.cfg = {
