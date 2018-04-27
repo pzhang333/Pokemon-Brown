@@ -366,21 +366,20 @@ class Player {
 		Game.easystar.calculate();
 	}
 
-	showTeleport(x, y, chunk) {
+	showTeleport(x, y, chunk, cb) {
+		
+		if (Game.camera == undefined) {
+			cb();
+			return;
+		}
 		
 		Game.camera.fade('#000000', 500);
+		
 		Game.camera.onFadeComplete.add(function() {
-
-			if (chunk == undefined) {
-				chunk = this.chunk;
-			}
-			this.setPos(x, y);
-
-			// Temporary hack...
-			/*if (chunk != Game.chunkId) {
-				net.chunkId = chunk;
-			}*/
-
+			
+			Game.player.setPos(x, y);
+			cb();
+			
 			Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
 				Game.camera.resetFX();
 			}, this);

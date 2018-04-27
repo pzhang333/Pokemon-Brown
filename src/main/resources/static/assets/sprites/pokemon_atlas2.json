@@ -2,26 +2,26 @@
 
 "back/pikachu":
 {
-	"frame": {"x":61,"y":1,"w":50,"h":52},
+	"frame": {"x":221,"y":1,"w":41,"h":46},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":23,"y":22,"w":50,"h":52},
-	"sourceSize": {"w":96,"h":96},
+	"spriteSourceSize": {"x":4,"y":0,"w":41,"h":46},
+	"sourceSize": {"w":50,"h":46},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "front/pikachu":
 {
-	"frame": {"x":1,"y":182,"w":72,"h":70},
+	"frame": {"x":182,"y":1,"w":37,"h":49},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":12,"y":11,"w":72,"h":70},
+	"spriteSourceSize": {"x":25,"y":21,"w":37,"h":49},
 	"sourceSize": {"w":96,"h":96},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "scenery/patch":
 {
 	"frame": {"x":1,"y":1,"w":179,"h":58},
-	"rotated": true,
+	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":3,"y":0,"w":179,"h":58},
 	"sourceSize": {"w":185,"h":60},
@@ -32,8 +32,8 @@
 	"version": "1.0",
 	"image": "pokemon_atlas2.png",
 	"format": "RGBA8888",
-	"size": {"w":112,"h":253},
+	"size": {"w":263,"h":60},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:7c5f625702ed40e79fd7607be6c7bdd0:2a910bf69cbae031899371500f424ddc:6acf176516b3165fd7878e2c2b4147d1$"
+	"smartupdate": "$TexturePacker:SmartUpdate:0d0e5d7f402ee37610d693daf8737704:14a6c45287bef2f6d8056e77a0fc4698:6acf176516b3165fd7878e2c2b4147d1$"
 }
 }
