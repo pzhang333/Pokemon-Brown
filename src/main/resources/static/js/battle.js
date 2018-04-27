@@ -1,67 +1,69 @@
-/**
- * Append a prefix to every element in an array.
- */
-function appendPrefix(prefix, arr) {
-	let newArr = [];
+var Battle = {
+	id: -1,
+	inBattle: false	
+};
 
-	for(let i = 0; i < arr.length; i++) {
-		newArr.push(prefix + arr[i].toString());
-	}
 
-	return newArr;
+Battle.init = function() {
+	game.scale.pageAlignHorizontally = true;
+};
+
+Battle.update = function() {
+
+};
+
+Battle.preload = function() {
+	game.stage.disableVisibilityChange = true;
+	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
+	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
+};
+
+
+Battle.create = function() {
+	this.stage = game.add.sprite(game.width / 2, game.height / 2, 'atlas1', 'bg-meadow');
+	this.stage.anchor.setTo(.5, .5);
+	this.stage.width = game.width;
+	this.stage.height = game.height;
+	
+	this.backPatch = game.add.sprite(game.world.centerX * (5 / 12), game.world.centerY * (4 / 6), 'atlas2', 'scenery/patch');
+	this.backPatch.anchor.setTo(0.5, 0.5);
+	this.backPatch.scale.set(1.75, 1.75);
+	this.backPatch.visible = true;
+	
+	this.frontPatch = game.add.sprite(game.world.centerX * (17 / 12), game.world.centerY / 2, 'atlas2', 'scenery/patch');
+	this.frontPatch.anchor.setTo(0.5, 0.5);
+	this.frontPatch.scale.set(1.75, 1.75);
+	this.frontPatch.visible = true;
+	
+	
+	
+	
+	this.frontPokemonSprite = game.add.sprite(game.world.centerX * (4.5 / 12), game.world.centerY * (4.5 / 6), 'atlas2', 'front/pikachu');
+	this.frontPokemonSprite.anchor.setTo(0.5, 0.5);
+	this.frontPokemonSprite.scale.set(2, 2);
+	this.frontPokemonSprite.visible = true;
+	
+	this.backPokemonSprite = game.add.sprite(game.world.centerX * (17 / 12), game.world.centerY / 2, 'atlas2', 'back/pikachu');
+	this.backPokemonSprite.anchor.setTo(0.5, 0.5);
+	this.backPokemonSprite.scale.set(2, 2);
+	this.backPokemonSprite.visible = true;
+	
+	this.stage.visible = true;
+};
+
+Battle.drawDefaultMenu = function() {
+	
+	
 }
 
-/**
- * Get a list of integers from [start, end).
- */
-function range(start, end, suffix) {
-	if (suffix == undefined) {
-		suffix = [];
-	}
-	return (new Array(end - start).fill().map((d, i) => i + start)).concat(suffix);
+Battle.start = function() {
+	
 }
 
-/**
- * Get a value from a map, if the value if undefined, return
- * the specified default value.
- */
-function mapGet(map, key, def) {
-	let val = map[key];
-	if (val == undefined) {
-		return def;
-	}
+Battle.startBattle = function(packet) {
+	
+	this.inBattle = true;
+	this.id = packet.battleId;
 
-	return val;
-}
-
-function debounce(container, varName, time) {
-
-	if (container[varName] == undefined) {
-		container[varName] = 0;
-	}
-
-	if (performance.now() - container[varName] < time) {
-		return true;
-	}
-
-	container[varName] = performance.now();
-	return false;
-}
-
-function getFromMatrix(matrix, x, y, def) {
-	if (matrix == undefined) {
-		return def;
-	}
-
-	let row = matrix[y];
-	if (row == undefined) {
-		return def;
-	}
-
-	let value = row[x];
-	if (value == undefined) {
-		return def;
-	}
-
-	return value;
+	game.state.start('Battle');
 }

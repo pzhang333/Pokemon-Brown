@@ -1,0 +1,39 @@
+{"frames": {
+
+"back/pikachu":
+{
+	"frame": {"x":221,"y":1,"w":41,"h":46},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":0,"w":41,"h":46},
+	"sourceSize": {"w":50,"h":46},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front/pikachu":
+{
+	"frame": {"x":182,"y":1,"w":37,"h":49},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":25,"y":21,"w":37,"h":49},
+	"sourceSize": {"w":96,"h":96},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"scenery/patch":
+{
+	"frame": {"x":1,"y":1,"w":179,"h":58},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":0,"w":179,"h":58},
+	"sourceSize": {"w":185,"h":60},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "pokemon_atlas2.png",
+	"format": "RGBA8888",
+	"size": {"w":263,"h":60},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:0d0e5d7f402ee37610d693daf8737704:14a6c45287bef2f6d8056e77a0fc4698:6acf176516b3165fd7878e2c2b4147d1$"
+}
+}

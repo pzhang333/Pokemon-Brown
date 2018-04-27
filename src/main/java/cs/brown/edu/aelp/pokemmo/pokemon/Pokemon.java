@@ -1,22 +1,24 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.util.Identifiable;
-import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 // TODO: We probably need a status column in our pokemon DB
 
@@ -120,13 +122,18 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       return this;
     }
 
-    public Builder withType(PokeTypes type) {
-      this.typeList.add(type);
+    public Builder withTypes(List<PokeTypes> typeList) {
+      this.typeList.addAll(typeList);
       return this;
     }
 
     public Builder withMove(Move move) {
       this.moves.add(move);
+      return this;
+    }
+
+    public Builder withMoves(List<Move> moveList) {
+      this.moves.addAll(moveList);
       return this;
     }
 
@@ -359,7 +366,9 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   public void evolve() {
     String evolvedSpecies = PokemonLoader.getEvolutionName(this.species);
-    Pokemon tempPokemon = PokemonLoader.load(evolvedSpecies);
+    // We don't care about the level of the Pokemon
+    Pokemon tempPokemon = PokemonLoader.load(evolvedSpecies, 0);
+
     this.species = tempPokemon.getSpecies();
     this.hp = tempPokemon.getBaseHp();
     this.attack = tempPokemon.getAttack();

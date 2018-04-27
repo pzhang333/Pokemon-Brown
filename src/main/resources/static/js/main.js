@@ -8,5 +8,5 @@ Game.player = new Player();
 
 game.state.add('Home', Home);
 game.state.add('Game', Game);
-//game.state.add('Battle', Game);
+game.state.add('Battle', Battle);
 game.state.start('Home');

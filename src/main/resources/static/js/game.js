@@ -64,37 +64,6 @@ Game.drawLayers = function() {
 	Game.map.gameLayers['Base'].inputEnabled = true;
 	Game.map.gameLayers['Base'].events.onInputUp.add(Game.handleMapClick, this);
 
-	//Game.objMap = new SparseMap();
-	//Game.objMap.add(20, 29, 'Ayy Lmao');
-
-
-	Game.doors = new SparseMap();
-	if (Game.chunkId == 1) {
-
-		Game.doors.add(20, 29, {
-			chunk: 2,
-			x: 0,
-			y: 4
-		});
-
-		Game.doors.add(14, 29, {
-			chunk: 2,
-			x: 0,
-			y: 5
-		});
-	} else if (Game.chunkId == 2) {
-		Game.doors.add(0, 4, {
-			chunk: 1,
-			x: 20,
-			y: 30
-		});
-
-		Game.doors.add(0, 5, {
-			chunk: 1,
-			x: 19,
-			y: 30
-		});
-	}
 };
 
 Game.handleMapClick = function(layer, pointer) {
@@ -165,16 +134,6 @@ Game.clearPlayers = function() {
 	}
 }
 
-Game.startBattle = function() {
-	
-	if (Game.battle != undefined) {
-		Game.battle.del();
-	}
-	
-	Game.battle = new Battle();
-	
-}
-
 Game.loadCurrentChunk = function(clear) {
 	
 	if (Game.map != undefined && clear) {
@@ -190,11 +149,10 @@ Game.loadCurrentChunk = function(clear) {
 	let self = this;
 
 	net.getChunk(function(chunk) {
-
-	//	Game.clearPlayers();
 		
-		console.log(chunk)
-		Game.chunkId = chunk.id;
+		if (chunk == false) {
+			return;
+		}
 
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
 

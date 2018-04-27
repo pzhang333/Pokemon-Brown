@@ -1,7 +1,6 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
-import java.util.EnumSet;
 
 /**
  * Pokemon Move class.
@@ -13,38 +12,22 @@ public class Move {
    * require Java implemented Handlers.
    */
   public enum MoveComplexity {
-    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO
+    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO, ERROR
   }
 
   /**
    * Move Category.
    */
   public enum MoveCategory {
-    PHYSICAL, SPECIAL
-  }
-
-  /**
-   * Move Target.
-   */
-  public enum MoveTarget {
-    NORMAL, MULTI
-  }
-
-  /**
-   * MoveFlags.
-   */
-  public enum MoveFlag {
-    MIRROR
+    PHYSICAL, SPECIAL, NONE
   }
 
   public static class Builder {
     private int id;
 
-    private Integer number;
+    private Integer accuracy;
 
-    private Double accuracy;
-
-    private Double basePower;
+    private Integer basePower;
 
     private MoveCategory category;
 
@@ -58,33 +41,20 @@ public class Move {
 
     private Integer priority;
 
-    private MoveTarget target;
-
     private PokeTypes type;
-
-    private EnumSet<MoveFlag> flags;
 
     private MoveComplexity complexity;
 
-    public Builder() {
-    }
-
-    public Builder ofId(int id) {
+    public Builder(int id) {
       this.id = id;
-      return this;
     }
 
-    public Builder withNumber(Integer number) {
-      this.number = number;
-      return this;
-    }
-
-    public Builder withAccuracy(Double accuracy) {
+    public Builder withAccuracy(Integer accuracy) {
       this.accuracy = accuracy;
       return this;
     }
 
-    public Builder withPower(Double basePower) {
+    public Builder withPower(Integer basePower) {
       this.basePower = basePower;
       return this;
     }
@@ -119,18 +89,8 @@ public class Move {
       return this;
     }
 
-    public Builder withTarget(MoveTarget target) {
-      this.target = target;
-      return this;
-    }
-
     public Builder ofType(PokeTypes type) {
       this.type = type;
-      return this;
-    }
-
-    public Builder withFlags(EnumSet<MoveFlag> flags) {
-      this.flags = flags;
       return this;
     }
 
@@ -141,7 +101,6 @@ public class Move {
 
     public Move build() {
       Move move = new Move(this.id);
-      move.number = this.number;
       move.accuracy = this.accuracy;
       move.basePower = this.basePower;
       move.category = this.category;
@@ -150,9 +109,7 @@ public class Move {
       move.name = this.name;
       move.pp = this.pp;
       move.priority = this.priority;
-      move.target = this.target;
       move.type = this.type;
-      move.flags = this.flags;
       move.complexity = this.complexity;
 
       return move;
@@ -162,11 +119,9 @@ public class Move {
 
   private int id;
 
-  private Integer number;
+  private Integer accuracy;
 
-  private Double accuracy;
-
-  private Double basePower;
+  private Integer basePower;
 
   private MoveCategory category;
 
@@ -180,11 +135,7 @@ public class Move {
 
   private Integer priority;
 
-  private MoveTarget target;
-
   private PokeTypes type;
-
-  private EnumSet<MoveFlag> flags;
 
   private MoveComplexity complexity;
 
@@ -194,78 +145,17 @@ public class Move {
   }
 
   /**
-   * Construct a Move object. This should be done dynamically.
-   *
-   * @param id
-   *          The move's id.
-   * @param number
-   *          The move's number.
-   * @param accuracy
-   *          The move's base accuracy.
-   * @param basePower
-   *          The move's base power.
-   * @param category
-   *          The move's category.
-   * @param description
-   *          The move's description.
-   * @param shortDescription
-   *          The move's short description.
-   * @param name
-   *          The move's name.
-   * @param pp
-   *          The move's base PP.
-   * @param priority
-   *          The move's priority.
-   * @param target
-   *          The move's target (NORMAL usually, can sometimes be all on battle
-   *          field).
-   * @param type
-   *          The move's type.
-   * @param flags
-   *          The move's flag set.
-   * @param complexity
-   *          Whether or not this move expects a Java Handler.
-   */
-
-  public Move(int id, Integer number, Double accuracy, Double basePower,
-      MoveCategory category, String description, String shortDescription,
-      String name, Integer pp, Integer priority, MoveTarget target,
-      PokeTypes type, EnumSet<MoveFlag> flags, MoveComplexity complexity) {
-    this.id = id;
-    this.number = number;
-    this.accuracy = accuracy;
-    this.basePower = basePower;
-    this.category = category;
-    this.description = description;
-    this.shortDescription = shortDescription;
-    this.name = name;
-    this.pp = pp;
-    this.priority = priority;
-    this.target = target;
-    this.type = type;
-    this.flags = flags;
-    this.complexity = complexity;
-  }
-
-  /**
-   * @return the number
-   */
-  public Integer getNumber() {
-    return number;
-  }
-
-  /**
    * @return the accuracy
    */
 
-  public Double getAccuracy() {
+  public Integer getAccuracy() {
     return accuracy;
   }
 
   /**
    * @return the basePower
    */
-  public Double getBasePower() {
+  public Integer getBasePower() {
     return basePower;
   }
 
@@ -312,24 +202,10 @@ public class Move {
   }
 
   /**
-   * @return the target
-   */
-  public MoveTarget getTarget() {
-    return target;
-  }
-
-  /**
    * @return the type
    */
   public PokeTypes getType() {
     return type;
-  }
-
-  /**
-   * @return the flags
-   */
-  public EnumSet<MoveFlag> getFlags() {
-    return flags;
   }
 
   /**

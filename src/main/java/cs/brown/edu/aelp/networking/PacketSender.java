@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemon.Main;
@@ -105,6 +106,97 @@ public final class PacketSender {
     packet.addProperty("type", MESSAGE_TYPE.TRADE.ordinal());
     packet.add("payload", Main.GSON().toJsonTree(t));
     sendPacket(u, packet);
+  }
+  
+  public static void sendInitiateBattlePacket(int battleId, Pokemon a, Pokemon b, 
+      int battleType, String backgroundName) {
+    
+      JsonObject message = new JsonObject();
+      
+      // set the type
+      message.addProperty("type", MESSAGE_TYPE.START_BATTLE.ordinal());
+      
+      // configure the payload
+      JsonObject payload = new JsonObject();
+      payload.add("pokemon_a", Main.GSON().toJsonTree(a));
+      payload.add("pokemon_b", Main.GSON().toJsonTree(b));
+      payload.addProperty("battle_id", battleId);
+      payload.addProperty("battle_type", battleType);
+      payload.addProperty("backgroud_name", backgroundName);
+      
+      // adding the payload to the message
+      message.add("payload", payload);
+
+      if (User.class.isInstance(a.getOwner())) {
+        User usr = (User) a.getOwner();
+        sendPacket(usr, message);
+      }
+      
+      if (User.class.isInstance(b.getOwner())) {
+        User usr = (User) b.getOwner();
+        sendPacket(usr, message);
+       }
+  }
+  
+  public static void sendEndBattlePacket(int battleId, int winnerId,
+      int loserId, int winnerCurrencyWon, int loserCurrencyLost) {
+    
+      JsonObject message = new JsonObject();
+      
+      // set the type
+      message.addProperty("type", MESSAGE_TYPE.END_BATTLE.ordinal());
+      
+      // configure the payload
+      JsonObject payload = new JsonObject();
+      payload.addProperty("winner_id", winnerId);
+      payload.addProperty("loser_id", loserId);
+      payload.addProperty("battle_id", battleId);
+      payload.addProperty("winner_currency_won", winnerCurrencyWon);
+      payload.addProperty("loser_currency_lost", loserCurrencyLost);
+      
+      // adding the payload to the message
+      message.add("payload", payload);
+
+      if (winnerId != -1) {
+        User usr = UserManager.getUserById(winnerId);
+        sendPacket(usr, message);
+      }
+      
+      if (loserId != -1) {
+        User usr = UserManager.getUserById(loserId);
+        sendPacket(usr, message);
+       }
+  }
+  
+  public static void sendBattleTurnPacket(int battleId, String eventDescription, 
+      Pokemon a, Pokemon b, int gameStateA, int gameStateB) {
+    
+      JsonObject message = new JsonObject();
+      
+      // set the type
+      message.addProperty("type", MESSAGE_TYPE.BATTLE_TURN_UPDATE.ordinal());
+      
+      // configure the payload
+      JsonObject payload = new JsonObject();
+      payload.add("pokemon_a", Main.GSON().toJsonTree(a));
+      payload.add("pokemon_b", Main.GSON().toJsonTree(b));
+      payload.addProperty("battle_id", battleId);
+      payload.addProperty("event_description", eventDescription);
+      payload.addProperty("game_state_a", gameStateA);
+      payload.addProperty("game_state_b", gameStateB);
+      
+      // adding the payload to the message
+      message.add("payload", payload);
+
+      if (User.class.isInstance(a.getOwner())) {
+        User usr = (User) a.getOwner();
+        sendPacket(usr, message);
+      }
+      
+      if (User.class.isInstance(b.getOwner())) {
+        User usr = (User) b.getOwner();
+        sendPacket(usr, message);
+       }
   }
 
   private static void sendPacket(User u, JsonObject message) {

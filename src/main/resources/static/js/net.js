@@ -4,7 +4,13 @@ const MESSAGE_TYPE = {
 	INITIALIZE_PACKET: 1,
 	GAME_PACKET: 2,
 	PLAYER_REQUEST_PATH: 3,
-	TELEPORT_PACKET: 4
+	TELEPORT_PACKET: 4,
+	WILD_ENCOUNTER: 5,
+	TRADE: 6,
+	START_BATTLE: 7,
+    END_BATTLE: 8,
+    BATTLE_TURN_UPDATE: 9,
+    CLIENT_BATTLE_UPDATE: 10
 };
 
 function waitForSocketConnection(socket, callback) {
@@ -30,24 +36,24 @@ class Net {
 
 	constructor() {
 
-		this.host = 'localhost';
+		this.host = '10.38.49.136';
+		//this.host = 'localhost';
 		this.port = 4567;
 		
 		this.cfg = {
 			url: 'ws://' + this.host + ':' + this.port.toString() + '/game',
 		};
 		
-		this.chunkBaseURL = "/assets/maps/chunk_";
+		this.chunkBaseURL = "/assets/maps/";
 
 		// TODO: maybe use somekind of queue?
 		
-		// Temporary hack...
-		this.chunkId = 1;
-
 		this.handlers = {}
 		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
 		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler;
+		this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
+		this.handlers[MESSAGE_TYPE.TELEPORT_PACKET] = this.teleportHandler;
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
 	}
@@ -99,7 +105,11 @@ class Net {
 	getChunk(cb) {
 		
 		let id = this.chunkId;
-
+		
+		if (id == undefined) {
+			return false;
+		}
+		
 		$.getJSON(this.chunkBaseURL + id.toString() + ".json", function(data) {
 			cb(new Chunk(id, data));
 		});
@@ -118,7 +128,20 @@ class Net {
 		//Game.player.id = msg.payload.id;
 	}
 	
+	teleportHandler(msg) {
+
+		return;
+		console.log(msg);
+		console.log(msg.payload);
+		let loc = msg.payload.location;
+		
+		Game.player.showTeleport(loc.col, loc.row, loc.chunk_file);
+	}
+	
+	
 	initPacketHandler(msg) {
+		
+		console.log(msg);
 
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
@@ -126,19 +149,11 @@ class Net {
 		Game.player.id = this.id;
 		
 		let loc = msg.payload.location;
-		Game.player.setPos(loc.col, loc.row);
 		
-	//	Game.chunkId = loc.chunkId;
-		
-		net.chunkId = loc.chunkId;
-	}
-	
-	sendTeleport(loc) {
-		this.sendPacket(MESSAGE_TYPE.TELEPORT_PACKET, {
-			row: loc.y,
-			col: loc.x,
-			chunk: loc.chunk
+		Game.player.showTeleport(loc.col, loc.row, loc.chunk_file, function() {
+			net.chunkId = loc.chunk_file;
 		});
+		
 	}
 	
 	gamePacketHandler(msg) {
@@ -220,6 +235,33 @@ class Net {
 		}
 	}
 
+	wildEncounterPacketHandler(msg) {
+		
+		if (game.state.current != "Game") {
+			return;
+		}
+		
+		let payload = msg.payload;
+		console.log(msg);
+		
+		let loc = payload.location;
+		
+		if (Game.player.tweenRunning()) {
+			Game.player.tween.stop(true);
+			Game.player.idle();
+		}
+		Game.player.setPos(loc.col, loc.row);
+		
+		let pokemon = payload.pokemon;
+		
+		let battleId = -1;
+		Battle.startBattle({
+			battleId: battleId
+		});
+		
+		//alert('Encountered wild pokemon with id: ' + pokemon.id);
+	}
+	
 	handleMsg(event) {
 
 //		console.log('test!');
