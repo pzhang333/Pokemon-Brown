@@ -43,6 +43,7 @@ local.properties
 .buildpath
 .project
 .target
+.checkstyle
 .recommenders/
 
 ############

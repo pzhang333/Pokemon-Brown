@@ -1,0 +1,588 @@
+{"frames": {
+
+"front-pikachu/00":
+{
+	"frame": {"x":1,"y":1,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/01":
+{
+	"frame": {"x":46,"y":1,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/02":
+{
+	"frame": {"x":91,"y":1,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/03":
+{
+	"frame": {"x":136,"y":1,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/04":
+{
+	"frame": {"x":181,"y":1,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/05":
+{
+	"frame": {"x":1,"y":52,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/06":
+{
+	"frame": {"x":46,"y":52,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/07":
+{
+	"frame": {"x":91,"y":52,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/08":
+{
+	"frame": {"x":136,"y":52,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/09":
+{
+	"frame": {"x":181,"y":52,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/10":
+{
+	"frame": {"x":1,"y":103,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/11":
+{
+	"frame": {"x":46,"y":103,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/12":
+{
+	"frame": {"x":91,"y":103,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/13":
+{
+	"frame": {"x":136,"y":103,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/14":
+{
+	"frame": {"x":181,"y":103,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/15":
+{
+	"frame": {"x":1,"y":154,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/16":
+{
+	"frame": {"x":46,"y":154,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/17":
+{
+	"frame": {"x":91,"y":154,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/18":
+{
+	"frame": {"x":136,"y":154,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/19":
+{
+	"frame": {"x":181,"y":154,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/20":
+{
+	"frame": {"x":1,"y":205,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/21":
+{
+	"frame": {"x":46,"y":205,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/22":
+{
+	"frame": {"x":91,"y":205,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/23":
+{
+	"frame": {"x":136,"y":205,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/24":
+{
+	"frame": {"x":181,"y":205,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/25":
+{
+	"frame": {"x":1,"y":256,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/26":
+{
+	"frame": {"x":46,"y":256,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/27":
+{
+	"frame": {"x":91,"y":256,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/28":
+{
+	"frame": {"x":136,"y":256,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/29":
+{
+	"frame": {"x":181,"y":256,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/30":
+{
+	"frame": {"x":1,"y":307,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/31":
+{
+	"frame": {"x":46,"y":307,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/32":
+{
+	"frame": {"x":91,"y":307,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/33":
+{
+	"frame": {"x":136,"y":307,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/34":
+{
+	"frame": {"x":181,"y":307,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/35":
+{
+	"frame": {"x":1,"y":358,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/36":
+{
+	"frame": {"x":46,"y":358,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/37":
+{
+	"frame": {"x":91,"y":358,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/38":
+{
+	"frame": {"x":136,"y":358,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/39":
+{
+	"frame": {"x":181,"y":358,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/40":
+{
+	"frame": {"x":1,"y":409,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/41":
+{
+	"frame": {"x":46,"y":409,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/42":
+{
+	"frame": {"x":91,"y":409,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/43":
+{
+	"frame": {"x":136,"y":409,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/44":
+{
+	"frame": {"x":181,"y":409,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/45":
+{
+	"frame": {"x":1,"y":460,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/46":
+{
+	"frame": {"x":46,"y":460,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/47":
+{
+	"frame": {"x":91,"y":460,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/48":
+{
+	"frame": {"x":136,"y":460,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/49":
+{
+	"frame": {"x":181,"y":460,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/50":
+{
+	"frame": {"x":1,"y":511,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/51":
+{
+	"frame": {"x":46,"y":511,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/52":
+{
+	"frame": {"x":91,"y":511,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/53":
+{
+	"frame": {"x":136,"y":511,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/54":
+{
+	"frame": {"x":181,"y":511,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/55":
+{
+	"frame": {"x":1,"y":562,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/56":
+{
+	"frame": {"x":46,"y":562,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/57":
+{
+	"frame": {"x":91,"y":562,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/58":
+{
+	"frame": {"x":136,"y":562,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/59":
+{
+	"frame": {"x":181,"y":562,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/60":
+{
+	"frame": {"x":1,"y":613,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/61":
+{
+	"frame": {"x":46,"y":613,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"front-pikachu/62":
+{
+	"frame": {"x":91,"y":613,"w":43,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":49},
+	"sourceSize": {"w":43,"h":49},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"scenery/patch":
+{
+	"frame": {"x":1,"y":664,"w":185,"h":60},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":185,"h":60},
+	"sourceSize": {"w":185,"h":60},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "pokemon_atlas2.png",
+	"format": "RGBA8888",
+	"size": {"w":225,"h":725},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:b3fb72aa3b442ebc5dd889b935979575:c52af2c340462864a40194556409590d:6acf176516b3165fd7878e2c2b4147d1$"
+}
+}

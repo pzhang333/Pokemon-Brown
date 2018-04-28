@@ -66,12 +66,16 @@ public class MoveResult {
         break;
       case DEBUFF:
         break;
+      case RECOIL:
+        break;
       case WEATHER:
         break;
       case COMPLEX:
         complexHandler.eval();
         break;
-      }
+      default:
+        break;
+    }
   }
 
   public boolean accuracyCheck() {
