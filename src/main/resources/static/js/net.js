@@ -11,6 +11,14 @@ const MESSAGE_TYPE = {
     CLIENT_BATTLE_UPDATE: 9
 };
 
+const OP_CODES = {
+	PLAYER_ENTERED_CHUNK: 0,
+	PLAYER_LEFT_CHUNK: 1,
+	PLAYER_ENTERED_BATTTLE: 2,
+	PLAYER_LEFT_BATTLE: 3,
+	CHAT_RECEIVED: 4
+};
+
 function waitForSocketConnection(socket, callback) {
     setTimeout(
         function () {
@@ -34,7 +42,7 @@ class Net {
 
 	constructor() {
 
-		//this.host = '10.38.49.136';
+		//this.host = '10.38.37.243';
 		this.host = 'localhost';
 		this.port = 4567;
 
@@ -146,12 +154,37 @@ class Net {
 
 		Game.player.id = this.id;
 
+
 		let loc = msg.payload.location;
+		
+		net.chunkId = loc.chunk_file;
+		
+		/*Game.player.showTeleport(loc.col, loc.row, loc.chunk_file, function() {
+			
+			
+		});*/
+		
 
-		Game.player.showTeleport(loc.col, loc.row, loc.chunk_file, function() {
-			net.chunkId = loc.chunk_file;
-		});
-
+		Game.player.setPos(loc.col, loc.row);
+		
+		let players = msg.payload.players;
+		for(let i = 0; i < players.length; i++) {
+			
+			let player = players[i];
+			
+			if (player.id == net.id) {
+				Game.player.username = player.username;
+				continue;
+			}
+			
+			let newPlayer = new Player();
+			newPlayer.id = player.id;
+			newPlayer.username = player.username;
+			
+			Game.players[player.id] = newPlayer;
+			
+		}
+		
 	}
 
 	gamePacketHandler(msg) {
@@ -159,10 +192,49 @@ class Net {
 
 		//msg = generateFakeGamePacket();
 
+	//	console.log(msg.payload);
 		if (game.state.current != "Game") {
 			return;
 		}
 
+		let ops = msg.payload.ops;
+		if (ops != undefined) {
+			
+			for(let i = 0; i < ops.length; i++) {
+				let op = ops[i];
+				
+				let code = op.code;
+				let id = op.id;
+				
+				console.log(op);
+				
+				if (code == OP_CODES.PLAYER_ENTERED_CHUNK) {
+					
+					if (op.id == net.id) {
+						//Game.player.username = op.username;
+						continue;
+					}
+					
+					let player = new Player();
+					
+					//player.initSprite();
+					//player.setVisible(true);
+					player.id = op.id;
+					player.username = op.username;
+					
+					if (Game.players[op.id] != undefined) {
+						Game.players[op.id].del();
+					}
+					
+					Game.players[op.id] = player;
+					
+				} else {
+					console.log('Unhandled op code: ' + code);
+				}
+			}
+			
+		}
+		
 		let handled = [];
 
 		let playerUpdates = msg.payload.users;
@@ -183,18 +255,17 @@ class Net {
 				continue;
 			}
 
-			//console.log(Game.players[id])
 			if (Game.players[id] == undefined) {
-				let player = new Player();
-
-				player.setPos(loc.col, loc.row);
+				continue;
+			}
+			
+			if (Game.players[id].sprite == undefined || Game.players[id].sprite.alive == false) {
+				let player = Game.players[id];
 				player.initSprite();
 				player.setVisible(true);
-				player.id = id;
-
-				Game.players[id] = player;
-
-				console.log(Game.players[id]);
+				player.setPos(loc.col, loc.row);
+				/*console.log('ayyy');*/
+				//continue;
 			}
 
 			let player = Game.players[id];

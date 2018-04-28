@@ -1,14 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
-import cs.brown.edu.aelp.pokemmo.data.Leaderboards.EloUser;
-import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.map.Chunk;
-import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokemonLoader;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemon.Main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,6 +18,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import cs.brown.edu.aelp.pokemmo.data.Leaderboards.EloUser;
+import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokemonLoader;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemon.Main;
 
 public class SQLDataSource implements DataSource {
 
@@ -119,9 +120,11 @@ public class SQLDataSource implements DataSource {
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
 
-    for (Pokemon pokemon : this.loadPokemonForUser(user)) {
-      user.addPokemonToTeam(pokemon);
-    }
+    /*
+     * for (Pokemon pokemon : this.loadPokemonForUser(user)) {
+     * user.addPokemonToTeam(pokemon); }
+     */
+
     return user;
   }
 

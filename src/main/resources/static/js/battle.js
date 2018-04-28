@@ -1,7 +1,10 @@
 class Pokemon {
 	
-	constructor() {
-		this.species = "pikachu";
+	constructor(species) {
+		if (species == undefined) {
+			species = "pikachu";
+		}
+		this.species = species;
 	}
 	
 }
@@ -45,8 +48,8 @@ Battle.create = function() {
 	this.frontPatch.scale.set(1.5, 1.5);
 	this.frontPatch.visible = true;
 	
-	let p1 = new Pokemon();
-	let p2 = new Pokemon();
+	let p1 = new Pokemon("pikachu");
+	let p2 = new Pokemon("chandelure");
 	
 	this.drawDefaultMenu();
 	this.drawPokemon(p1, p2);
@@ -68,7 +71,7 @@ Battle.drawBackground = function(key) {
 	this.backPokemonSprite = game.add.sprite(game.width * (3 / 4), game.height * (6.25 / 12), key);
 	
 	this.backPokemonSprite.animations.add('idle');
-	this.backPokemonSprite.animations.play('idle', 24, true);
+	this.backPokemonSprite.animations.play('idle', 40, true);
 	
 	this.backPokemonSprite.anchor.setTo(0.5, 1);
 	this.backPokemonSprite.scale.set(.75, .75);
@@ -79,7 +82,7 @@ Battle.drawForeground = function(key) {
 	this.frontPokemonSprite = game.add.sprite(game.width * (3.5 / 12), game.height * (9 / 12), key);
 	
 	this.frontPokemonSprite.animations.add('idle');
-	this.frontPokemonSprite.animations.play('idle', 24, true);
+	this.frontPokemonSprite.animations.play('idle', 40, true);
 	
 	this.frontPokemonSprite.anchor.setTo(0.5, 1);
 	this.frontPokemonSprite.scale.set(.75, .75);

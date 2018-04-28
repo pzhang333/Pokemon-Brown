@@ -22,6 +22,10 @@ class Player {
 	 * Initialize the sprite
 	 */
 	initSprite() {
+		
+		if (this.sprite != undefined) {
+			this.sprite.kill();
+		}
 
 		/* Player animations */
 		this.animations = {
@@ -409,8 +413,9 @@ class Player {
 	}
 	
 	del() {
-		this.sprite.destroy();
-		Game.players[this.id] = undefined;
+		
+		this.sprite.kill();
+		//Game.players[this.id] = undefined;
 		return;
 	}
 

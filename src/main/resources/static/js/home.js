@@ -1,5 +1,7 @@
 var Home = {
-	maxNameLength : 20 // max length of the name of the player
+	starterPokemon: [
+		'bulbasaur', 'charmander', 'squirtle'
+	]
 };
 
 Home.init = function() {
@@ -9,6 +11,16 @@ Home.init = function() {
 
 Home.preload = function() {
 	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json'); // PNJ, HUD, marker, achievements ...
+
+	for(let i = 0; i < Home.starterPokemon.length; i++) {
+		let starterPokemon = Home.starterPokemon[i];
+		
+		game.load.atlasJSONHash(starterPokemon, '/assets/sprites/pokemon/front-' + starterPokemon + '.png', '/assets/sprites/pokemon/front-' + starterPokemon + '.json');
+
+	}
+	
+	game.stage.disableVisibilityChange = true;
+	game.load.start();
 };
 
 Home.create = function() {
@@ -136,6 +148,26 @@ Home.createPasswordField = function() {
 	return inputField;
 }
 
+Home.selectPokemon = function(idx) {
+	
+	if (Home.graphics != undefined) {
+		Home.graphics.destroy();
+	}
+	
+	Home.graphics = game.add.graphics(0, 0);
+	Home.graphics.lineStyle(2, 0x1EA7E1, 1);
+	
+
+	let x = (Home.scroll.width / 5) + 30 + (idx * Home.scroll.width / 5) - 14;
+	
+	let y = Home.nicknameField.y + 55;
+	
+	Home.graphics.drawRect(x, y, 70, 70);
+	Home.scroll.addChild(Home.graphics);
+	
+	Home.selectedPokemon = Home.starterPokemon[idx];
+}
+
 Home.displayRegister = function() {
 	if (Home.scroll != undefined) {
 		Home.scroll.destroy();
@@ -164,12 +196,12 @@ Home.displayRegister = function() {
 	// (Home.scroll.width / 2) - (Home.inputField.width / 2);
 	Home.userField = Home.createUsernameField();
 	Home.userField.x = (Home.scroll.width / 2) - (Home.userField.width / 2) - Home.userField.inputOptions.padding;
-	Home.userField.y -= 80;
+	Home.userField.y -= 90;
 	Home.scroll.addChild(Home.userField);
 	
 	Home.emailField = Home.createUsernameField("Email");
 	Home.emailField.x = (Home.scroll.width / 2) - (Home.userField.width / 2) - Home.userField.inputOptions.padding;
-	Home.emailField.y -= 25;
+	Home.emailField.y = Home.userField.y + Home.userField.height + 15;
 	Home.scroll.addChild(Home.emailField);
 
 	Home.passwordField = Home.createPasswordField();
@@ -187,7 +219,7 @@ Home.displayRegister = function() {
 		let username = Home.userField.value;
 		let email = Home.emailField.value;
 		let password = Home.passwordField.value;
-		let species = 'pikachu';
+		let species = Home.selectedPokemon;
 		let nickname = Home.nicknameField.value;
 		
 		Home.statusText.visible = false;
@@ -216,18 +248,50 @@ Home.displayRegister = function() {
 	let toLoginCb = function(ctx) {
 		Home.displayLogin();
 	}.bind(this);
+	// Draw Starter Pokemon
+	for(let i = 0; i < Home.starterPokemon.length; i++) {
+		let pokemon = Home.starterPokemon[i];
 	
-
+		let x = (Home.scroll.width / 5) + 30 + (i * Home.scroll.width / 5);
+		
+		let offset = [40, 32, 32];
+		
+		let pokeSprite = game.add.sprite(x, Home.nicknameField.y + offset[i], pokemon);
+		pokeSprite.animations.add('idle');
+		pokeSprite.animations.play('idle', 25, true);
+		pokeSprite.anchor.setTo(0, 0);
+		pokeSprite.scale.setTo(.5, .5);
+		
+		
+		pokeSprite.y += pokeSprite.height / 2;
+		
+		pokeSprite.inputEnabled = true;
+		pokeSprite.events.onInputDown.add(function() {
+			Home.selectPokemon(i);
+		}, this);
+		
+		Home.scroll.addChild(pokeSprite);
+		
+		
+	}
+	
+	Home.selectPokemon(0);
+	
+	
+	
+	
 	Home.loginButton = game.add.button(Home.nicknameField.x + (Home.nicknameField.width / 2) + Home.nicknameField.inputOptions.padding ,
 		Home.nicknameField.y + Home.nicknameField.height + 25, 'atlas1', loginButtonCb, this, 'blue-button-primary/0', 'blue-button-primary/0', 'blue-button-primary/1');
 
 
 	Home.loginButton.anchor.set(0.5, 0);
 	Home.loginButton.scale.setTo(Home.nicknameField.width / Home.loginButton.width, 1);
+	Home.loginButton.y += 70;
 	Home.scroll.addChild(Home.loginButton);
 
 	Home.loginButtonText = game.add.text(Home.loginButton.x, Home.loginButton.y + (Home.loginButton.height / 2) + 3, "Register", stdTextStyle);
 	Home.loginButtonText.anchor.set(0.5, 0.5);
+	//Home.loginButtonText.y += 80;
 	Home.scroll.addChild(Home.loginButtonText);
 	
 	
@@ -237,10 +301,12 @@ Home.displayRegister = function() {
 
 	Home.toRegisterButton.anchor.set(0.5, 0);
 	Home.toRegisterButton.scale.setTo(Home.nicknameField.width / Home.toRegisterButton.width, 1);
+	//Home.toRegisterButton.y += 100;
 	Home.scroll.addChild(Home.toRegisterButton);
 
 	Home.toRegisterButtonText = game.add.text(Home.toRegisterButton.x, Home.toRegisterButton.y + (Home.toRegisterButton.height / 2) + 3, "Back to Login", stdTextStyle);
 	Home.toRegisterButtonText.anchor.set(0.5, 0.5);
+	//Home.toRegisterButtonText.y += 100;
 	Home.scroll.addChild(Home.toRegisterButtonText);
 }
 

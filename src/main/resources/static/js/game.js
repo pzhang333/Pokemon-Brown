@@ -5,6 +5,7 @@ var Game = {
 
 Game.init = function() {
 	
+	Game.ready = false;
 	//Game.easystar = new EasyStar.js();
 	Game.cursors = game.input.keyboard.createCursorKeys();
 };
@@ -32,6 +33,7 @@ Game.update = function() {
 	} else if (this.cursors.down.isDown) {
 		this.player.step('down', (this.cursors.down.shiftKey) ? 2 : 1);
 	}
+	
 };
 
 Game.preload = function() {
@@ -133,7 +135,7 @@ Game.clearPlayers = function() {
 	    	}
 	    	
 
-    		Game.players[id] = undefined;
+    		//Game.players[id] = undefined;
 	    }
 	}
 }
@@ -152,8 +154,10 @@ Game.loadCurrentChunk = function(clear) {
 
 	let self = this;
 
+	//Game.clearPlayers();
+	
 	net.getChunk(function(chunk) {
-		
+		Game.clearPlayers();
 		if (chunk == false) {
 			return;
 		}
@@ -176,8 +180,8 @@ Game.loadCurrentChunk = function(clear) {
 		Game.player.initSprite();
 		Game.player.setVisible();
 		Game.player.setCameraFocus(Game.camera);
-		
 		Game.clearPlayers();
+		
 	});
 };
 
