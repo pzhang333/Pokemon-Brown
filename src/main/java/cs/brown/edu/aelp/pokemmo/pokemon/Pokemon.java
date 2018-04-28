@@ -522,22 +522,22 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     if (this.moves.size() > 0) {
       Move m1 = this.moves.get(0);
       p.setInt(8, m1.getId());
-      p.setInt(12, m1.getPp());
+      p.setInt(12, m1.getPP());
     }
     if (this.moves.size() > 1) {
       Move m2 = this.moves.get(1);
       p.setInt(9, m2.getId());
-      p.setInt(13, m2.getPp());
+      p.setInt(13, m2.getPP());
     }
     if (this.moves.size() > 2) {
       Move m3 = this.moves.get(2);
       p.setInt(10, m3.getId());
-      p.setInt(14, m3.getPp());
+      p.setInt(14, m3.getPP());
     }
     if (this.moves.size() > 3) {
       Move m4 = this.moves.get(3);
       p.setInt(11, m4.getId());
-      p.setInt(15, m4.getPp());
+      p.setInt(15, m4.getPP());
     }
     p.setInt(16, this.getId());
     p.addBatch();

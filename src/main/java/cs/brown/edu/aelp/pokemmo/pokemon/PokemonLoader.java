@@ -84,42 +84,42 @@ public final class PokemonLoader {
 
   public static PokeTypes stringToType(String type) {
     switch (type) {
-    case "Normal":
-      return PokeTypes.NORMAL;
-    case "Fire":
-      return PokeTypes.FIRE;
-    case "Water":
-      return PokeTypes.WATER;
-    case "Electric":
-      return PokeTypes.ELECTRIC;
-    case "Grass":
-      return PokeTypes.GRASS;
-    case "Ice":
-      return PokeTypes.ICE;
-    case "Fighting":
-      return PokeTypes.FIGHTING;
-    case "Poison":
-      return PokeTypes.POISON;
-    case "Ground":
-      return PokeTypes.GROUND;
-    case "Flying":
-      return PokeTypes.FLYING;
-    case "Psychic":
-      return PokeTypes.PSYCHIC;
-    case "Bug":
-      return PokeTypes.BUG;
-    case "Rock":
-      return PokeTypes.ROCK;
-    case "Ghost":
-      return PokeTypes.GHOST;
-    case "Dragon":
-      return PokeTypes.DRAGON;
-    case "Dark":
-      return PokeTypes.DARK;
-    case "Steel":
-      return PokeTypes.STEEL;
-    default:
-      return PokeTypes.NORMAL;
+      case "Normal":
+        return PokeTypes.NORMAL;
+      case "Fire":
+        return PokeTypes.FIRE;
+      case "Water":
+        return PokeTypes.WATER;
+      case "Electric":
+        return PokeTypes.ELECTRIC;
+      case "Grass":
+        return PokeTypes.GRASS;
+      case "Ice":
+        return PokeTypes.ICE;
+      case "Fighting":
+        return PokeTypes.FIGHTING;
+      case "Poison":
+        return PokeTypes.POISON;
+      case "Ground":
+        return PokeTypes.GROUND;
+      case "Flying":
+        return PokeTypes.FLYING;
+      case "Psychic":
+        return PokeTypes.PSYCHIC;
+      case "Bug":
+        return PokeTypes.BUG;
+      case "Rock":
+        return PokeTypes.ROCK;
+      case "Ghost":
+        return PokeTypes.GHOST;
+      case "Dragon":
+        return PokeTypes.DRAGON;
+      case "Dark":
+        return PokeTypes.DARK;
+      case "Steel":
+        return PokeTypes.STEEL;
+      default:
+        return PokeTypes.NORMAL;
     }
   }
 

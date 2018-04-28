@@ -25,6 +25,21 @@
 		"complexity": "Basic",
 		"category": "Physical"
 	},
+	"36": {
+		"id": 36,
+		"name": "Take Down",
+		"accuracy": 85,
+		"basePower": 90,
+		"desc": "If the target lost HP, the user takes recoil damage equal to 1/4 the HP lost by the target, rounded half up, but not less than 1 HP.",
+		"shortDesc": "Has 1/4 recoil.",
+		"pp": 20,
+		"priority": 0,
+		"type": "Normal",
+		"complexity": "Recoil",
+		"category": "Physical",
+
+		"recoil": 0.25
+	},
 	"45": {
 		"id": 45,
 		"name": "Growl",
@@ -35,7 +50,25 @@
 		"pp": 40,
 		"priority": 0,
 		"type": "Normal",
+		"complexity": "Debuff",
+		"category": "None",
+		
+		"stat": "atk",
+		"stages": 1
+	},
+	"77": {
+		"id": 77,
+		"name": "Poison Powder",
+		"accuracy": 75,
+		"basePower": 0,
+		"desc": "Poisons the target.",
+		"shortDesc": "Poisons the target.",
+		"pp": 35,
+		"priority": 0,
+		"type": "Poison",
 		"complexity": "Status",
-		"category": "None"
+		"category": "None",
+
+		"status": "Poison"
 	}
 }

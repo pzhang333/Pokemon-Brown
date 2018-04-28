@@ -1,7 +1,7 @@
 {
     "bulbasaur": {
         "num": 1,
-        "species": "bulbasaur",
+        "species": "Bulbasaur",
         "types": ["Grass", "Poison"],
         "baseStats": {"hp": 45, "atk": 49, "def": 49, "spa": 65, "spd": 65, "spe": 45},
         "moves": [22, 33, 45],
@@ -9,9 +9,42 @@
     },
     "ivysaur": {
         "num": 2,
-        "species": "ivysaur",
+        "species": "Ivysaur",
         "types": ["Grass", "Poison"],
         "baseStats": {"hp": 60, "atk": 62, "def": 63, "spa": 80, "spd": 80, "spe": 60},
+        "moves": [22, 36, 77],
         "evo": "venusaur"
-    }
+    },
+    "venusaur": {
+		"num": 3,
+		"species": "Venusaur",
+		"types": ["Grass", "Poison"],
+        "baseStats": {"hp": 80, "atk": 82, "def": 83, "spa": 100, "spd": 100, "spe": 80},
+        "moves": [],
+        "evo": ""
+    },
+    "pichu": {
+		"num": 172,
+		"species": "Pichu",
+		"types": ["Electric"],
+        "baseStats": {"hp": 20, "atk": 40, "def": 15, "spa": 35, "spd": 35, "spe": 60},
+        "moves": [],
+		"evo": "pikachu"
+	},
+    "pikachu": {
+		"num": 25,
+		"species": "Pikachu",
+		"types": ["Electric"],
+        "baseStats": {"hp": 35, "atk": 55, "def": 40, "spa": 50, "spd": 50, "spe": 90},
+        "moves": [],
+		"evo": "raichu"
+    },
+    "raichu": {
+		"num": 26,
+		"species": "Raichu",
+		"types": ["Electric"],
+        "baseStats": {"hp": 60, "atk": 90, "def": 55, "spa": 90, "spd": 80, "spe": 110},
+        "moves": [],
+        "evo": ""
+	}
 }

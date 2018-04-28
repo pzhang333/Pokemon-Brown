@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokemonLoader;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.MoveCategory;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.MoveComplexity;
@@ -35,22 +34,17 @@ public final class MoveLoader {
       Integer priority = move.get("priority").getAsInt();
       PokeTypes type = PokemonLoader
           .stringToType(move.get("type").getAsString());
-      MoveComplexity complexity = stringToMoveComplexity(move.get("complexity").getAsString());
-      MoveCategory category = stringToMoveCategory(move.get("category").getAsString());
-      
-      Move pokemonMove = new Move.Builder(id)
-          .withAccuracy(accuracy)
-          .withPower(basePower)
-          .withDescription(description)
-          .withShortDescription(shortDesc)
-          .withName(name)
-          .withPP(pp)
-          .withPriority(priority)
-          .ofType(type)
-          .withComplexity(complexity)
-          .ofCategory(category)
-          .build();
-      
+      MoveComplexity complexity = stringToMoveComplexity(
+          move.get("complexity").getAsString());
+      MoveCategory category = stringToMoveCategory(
+          move.get("category").getAsString());
+
+      Move pokemonMove = new Move.Builder(id).withAccuracy(accuracy)
+          .withPower(basePower).withDescription(description)
+          .withShortDescription(shortDesc).withName(name).withPP(pp)
+          .withPriority(priority).ofType(type).withComplexity(complexity)
+          .ofCategory(category).build();
+
       return pokemonMove;
     } catch (FileNotFoundException e) {
       // Should not occur since path is hard-coded in
@@ -69,21 +63,27 @@ public final class MoveLoader {
         return MoveCategory.NONE;
     }
   }
-  
+
   public static MoveComplexity stringToMoveComplexity(String moveComplexity) {
     switch (moveComplexity) {
       case ("Basic"):
         return MoveComplexity.BASIC;
-      case("Buff"):
+      case ("Buff"):
         return MoveComplexity.BUFF;
       case ("Debuff"):
         return MoveComplexity.DEBUFF;
+      case ("Status"):
+        return MoveComplexity.STATUS;
       case ("Dmg_Status"):
         return MoveComplexity.DMG_STATUS;
       case ("Weather"):
         return MoveComplexity.WEATHER;
       case ("Ohko"):
         return MoveComplexity.OHKO;
+      case ("Recoil"):
+        return MoveComplexity.RECOIL;
+      case ("Complex"):
+        return MoveComplexity.COMPLEX;
       default:
         return MoveComplexity.ERROR;
     }

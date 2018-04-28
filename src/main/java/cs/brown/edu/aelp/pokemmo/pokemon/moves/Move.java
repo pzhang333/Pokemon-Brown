@@ -1,6 +1,7 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
+import cs.brown.edu.aelp.pokemmo.pokemon.Status;
 
 /**
  * Pokemon Move class.
@@ -12,7 +13,7 @@ public class Move {
    * require Java implemented Handlers.
    */
   public enum MoveComplexity {
-    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO, ERROR
+    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO, RECOIL, ERROR
   }
 
   /**
@@ -39,11 +40,25 @@ public class Move {
 
     private Integer pp;
 
+    private Integer currPP;
+
     private Integer priority;
 
     private PokeTypes type;
 
     private MoveComplexity complexity;
+
+    private String stat;
+
+    private Integer stages;
+
+    private Status status;
+
+    private Double statusChance;
+
+    private Weather weather;
+
+    private Double recoil;
 
     public Builder(int id) {
       this.id = id;
@@ -84,6 +99,11 @@ public class Move {
       return this;
     }
 
+    public Builder withCurrPP(Integer currPP) {
+      this.currPP = currPP;
+      return this;
+    }
+
     public Builder withPriority(Integer priority) {
       this.priority = priority;
       return this;
@@ -99,6 +119,36 @@ public class Move {
       return this;
     }
 
+    public Builder affectsStat(String stat) {
+      this.stat = stat;
+      return this;
+    }
+
+    public Builder withStages(Integer stages) {
+      this.stages = stages;
+      return this;
+    }
+
+    public Builder afflictsStatus(Status status) {
+      this.status = status;
+      return this;
+    }
+
+    public Builder withStatusChance(Double statusChance) {
+      this.statusChance = statusChance;
+      return this;
+    }
+
+    public Builder createsWeather(Weather weather) {
+      this.weather = weather;
+      return this;
+    }
+
+    private Builder withRecoil(Double recoil) {
+      this.recoil = recoil;
+      return this;
+    }
+
     public Move build() {
       Move move = new Move(this.id);
       move.accuracy = this.accuracy;
@@ -108,9 +158,17 @@ public class Move {
       move.shortDescription = this.shortDescription;
       move.name = this.name;
       move.pp = this.pp;
+      move.currPP = this.currPP;
       move.priority = this.priority;
       move.type = this.type;
       move.complexity = this.complexity;
+
+      move.stat = this.stat;
+      move.stages = this.stages;
+      move.status = this.status;
+      move.statusChance = this.statusChance;
+      move.weather = this.weather;
+      move.recoil = this.recoil;
 
       return move;
     }
@@ -133,11 +191,25 @@ public class Move {
 
   private Integer pp;
 
+  private Integer currPP;
+
   private Integer priority;
 
   private PokeTypes type;
 
   private MoveComplexity complexity;
+
+  private String stat;
+
+  private Integer stages;
+
+  private Status status;
+
+  private Double statusChance;
+
+  private Weather weather;
+
+  private Double recoil;
 
   // We want to construct moves only using the builder
   private Move(int id) {
@@ -190,8 +262,12 @@ public class Move {
   /**
    * @return the pp
    */
-  public Integer getPp() {
+  public Integer getPP() {
     return pp;
+  }
+
+  public Integer getCurrPP() {
+    return currPP;
   }
 
   /**
@@ -213,6 +289,26 @@ public class Move {
    */
   public MoveComplexity getComplexity() {
     return complexity;
+  }
+
+  public String getStat() {
+    return stat;
+  }
+
+  private Integer getStages() {
+    return stages;
+  }
+
+  private Double statusChance() {
+    return statusChance;
+  }
+
+  private Weather getWeather() {
+    return weather;
+  }
+
+  private Double withRecoil() {
+    return recoil;
   }
 
   public void setPP(int pp) {
