@@ -14,6 +14,7 @@ import cs.brown.edu.aelp.pokemmo.map.Entity;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemmo.map.Portal;
+import cs.brown.edu.aelp.pokemmo.map.Tournament;
 import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
@@ -119,12 +120,17 @@ public class User extends Trainer implements SQLBatchSavable {
     } else if (e instanceof Portal) {
       Portal p = (Portal) e;
       World w = Main.getWorld();
-      if (w.getTournament() != null
-          && w.getTournament().getPortal().equals(p)) {
-        if (!w.getTournament().canJoin(this)) {
-          return;
-        } else {
-          w.getTournament().addUser(this);
+      if (w.getTournament() != null) {
+        Tournament t = w.getTournament();
+        if (t.getEntrance().equals(p)) {
+          if (!t.canJoin(this)) {
+            this.sendMessage(t.whyCantJoin(this));
+            return;
+          } else {
+            t.addUser(this);
+          }
+        } else if (t.getExit().equals(p)) {
+          t.removeUser(this);
         }
       }
       this.teleportTo(p.getGoTo());
@@ -138,10 +144,14 @@ public class User extends Trainer implements SQLBatchSavable {
     PacketSender.sendInitializationPacket(this);
     JsonObject leftChunkOp = PacketSender.buildPlayerOpMessage(this,
         OP_CODES.LEFT_CHUNK);
-    PacketSender.queueOpForChunk(leftChunkOp, old.getId());
+    PacketSender.queueOpForChunk(leftChunkOp, old);
     JsonObject enteredChunkOp = PacketSender.buildPlayerOpMessage(this,
         OP_CODES.ENTERED_CHUNK);
-    PacketSender.queueOpForChunk(enteredChunkOp, l.getChunk().getId());
+    PacketSender.queueOpForChunk(enteredChunkOp, l.getChunk());
+  }
+
+  public void sendMessage(String s) {
+    PacketSender.sendServerMessagePacket(this, s);
   }
 
   public void setCurrency(int c) {

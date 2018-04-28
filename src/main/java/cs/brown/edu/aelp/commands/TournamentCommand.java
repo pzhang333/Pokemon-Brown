@@ -1,7 +1,6 @@
 package cs.brown.edu.aelp.commands;
 
 import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.map.Portal;
 import cs.brown.edu.aelp.pokemmo.map.Tournament;
 import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemon.Main;
@@ -28,10 +27,7 @@ public class TournamentCommand extends Command {
       System.out.println("Tournament forcefully ended.");
     } else {
       try {
-        Tournament t = new Tournament(4, 100, exit);
-        Portal p = new Portal(entrance, new Location(t.getChunk(), 1, 1));
-        entrance.getChunk().addEntity(p);
-        t.setPortal(p);
+        Tournament t = new Tournament(4, 100, entrance, exit);
         w.setTournament(t);
         System.out.println(
             "Tournament started. 4 players, 100 coin buy-in, portal at (5,0) in chunk 1.");

@@ -55,6 +55,10 @@ public class World {
     loadChunks(DEFAULT_CHUNK_PATH);
   }
 
+  public void removeChunk(Chunk c) {
+    this.chunks.remove(c.getId());
+  }
+
   public Chunk loadChunk(Integer id, File file) throws IOException {
 
     String path = file.getAbsolutePath();

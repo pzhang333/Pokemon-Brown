@@ -15,30 +15,40 @@ public class Tournament {
   private static final String PATH = World.DEFAULT_CHUNK_PATH
       + "/tournament.json";
 
-  private final int size;
+  private int size;
   private final Chunk chunk;
   private final List<User> users = new ArrayList<>();
   private boolean locked = false;
   private final int cost;
   private int pool = 0;
   private Map<User, User> bracket = new HashMap<>();
-  private Portal portal;
-  private final Location exit;
+  private Map<Integer, User> seeds = new HashMap<>();
+  private Portal entrance;
+  private Portal exit;
+  private int round = 1;
 
-  public Tournament(int size, int cost, Location exit) throws IOException {
+  public Tournament(int size, int cost, Location entrance, Location exit)
+      throws IOException {
+    assert size == 4 || size == 8 || size == 16 || size == 32;
     this.size = size;
     this.cost = cost;
-    this.exit = exit;
     this.chunk = Main.getWorld().loadChunk(Chunk.getNextDynamicId(),
         new File(PATH));
+    // TODO: align these with the actual chunk
+    Portal p = new Portal(entrance, new Location(this.chunk, 2, 2));
+    Portal p1 = new Portal(new Location(this.chunk, 4, 0), exit);
+    entrance.getChunk().addEntity(p);
+    this.chunk.addEntity(p1);
+    this.entrance = p;
+    this.exit = p1;
   }
 
-  public void setPortal(Portal p) {
-    this.portal = p;
+  public Portal getExit() {
+    return this.exit;
   }
 
-  public Portal getPortal() {
-    return this.portal;
+  public Portal getEntrance() {
+    return this.entrance;
   }
 
   public void addUser(User u) {
@@ -50,7 +60,10 @@ public class Tournament {
 
   public void removeUser(User u) {
     this.users.remove(u);
-    u.teleportTo(this.exit);
+    if (!this.locked) {
+      this.pool -= this.cost;
+      u.setCurrency(u.getCurrency() + this.cost);
+    }
   }
 
   public Chunk getChunk() {
@@ -62,45 +75,101 @@ public class Tournament {
         && u.getCurrency() >= this.cost;
   }
 
+  public String whyCantJoin(User u) {
+    if (this.locked) {
+      return "The tournament has already started.";
+    } else if (u.getCurrency() < this.cost) {
+      return String.format(
+          "You need at least %d coins to enter the tournament.", this.cost);
+    }
+    return "You cannot join the tournament right now.";
+  }
+
+  public void queueNextRound(int delay) {
+    for (User u : this.users) {
+      if (this.bracket.get(u) != null) {
+        User opp = this.bracket.get(u);
+        u.sendMessage(String.format(
+            "Round %d will begin in %d seconds. Your opponent is %s with an elo of %d.",
+            this.round, delay, opp.getUsername(), opp.getElo()));
+      } else {
+        u.sendMessage(String.format(
+            "Round %d will begin in %d seconds, but your opponent already forfeited. "
+                + "The next round will begin when all battles are complete.",
+            this.round, delay));
+      }
+    }
+    // TODO: Start a delayed task that will put people into battles
+  }
+
+  public void setupBracket() {
+    if (this.seeds.isEmpty()) {
+      for (int i = 0; i < this.users.size(); i++) {
+        this.seeds.put(i + 1, this.users.get(i));
+      }
+    } else {
+      for (int i = 1; i <= this.size / 2; i++) {
+        if (!this.seeds.containsKey(i)) {
+          break;
+        }
+        User u = this.seeds.get(i);
+        if (this.bracket.get(u) != null
+            && this.users.contains(this.bracket.get(u))) {
+          u = this.bracket.get(u);
+        }
+        this.seeds.put(i, u);
+      }
+    }
+    this.size /= 2;
+    this.bracket.clear();
+    for (int seed : this.seeds.keySet()) {
+      int toPlay = this.size + 1 - seed;
+      if (this.seeds.containsKey(toPlay)) {
+        this.bracket.put(this.seeds.get(seed), this.seeds.get(toPlay));
+      } else {
+        this.bracket.put(this.seeds.get(seed), null);
+      }
+    }
+  }
+
   public void start() {
     this.locked = true;
     this.users.sort(new EloComparator());
-    int byes = (int) Math.pow(2,
-        Math.ceil(Math.log(this.users.size()) / Math.log(2)));
-    int i = 0;
-    for (User u : this.users) {
-      if (byes > 0) {
-        this.bracket.put(u, null);
-        byes--;
-      } else {
-        User u1 = this.users.get(i);
-        User u2 = this.users.get(this.users.size() - 1 - i + byes);
-        this.bracket.put(u1, u2);
-      }
-      i++;
-    }
-    // TODO: Put people into battles
+    this.setupBracket();
+    this.queueNextRound(30);
   }
 
   public void logBattleResult(User winner, User loser) {
-    this.bracket.remove(winner);
-    this.bracket.remove(loser);
     this.removeUser(loser);
     if (this.users.size() == 1) {
       winner.setCurrency(winner.getCurrency() + this.pool);
-      this.removeUser(winner);
+      winner.sendMessage(String.format(
+          "Congratulations! You won the tournament and earned the pool of %d coins.",
+          this.pool));
+      this.end();
       return;
     }
-    if (this.bracket.isEmpty()) {
-      // TODO: Start the next round
+    boolean done = true;
+    for (User u : this.users) {
+      if (this.bracket.containsKey(u)
+          && this.users.contains(this.bracket.get(u))) {
+        done = false;
+      }
+    }
+    if (done) {
+      this.setupBracket();
+      this.round++;
+      this.queueNextRound(60);
     }
   }
 
   public void end() {
     for (User u : this.users) {
       this.removeUser(u);
+      u.teleportTo(this.exit.getGoTo());
     }
-    this.portal.getLocation().getChunk().removeEntity(this.portal);
+    this.entrance.remove();
+    Main.getWorld().removeChunk(this.chunk);
   }
 
   private static class EloComparator implements Comparator<User> {

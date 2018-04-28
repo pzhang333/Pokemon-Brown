@@ -35,6 +35,8 @@ public class PlayerWebSocketHandler {
     PLAYER_REQUEST_PATH,
     ENCOUNTERED_POKEMON,
     TRADE,
+    CHAT,
+    SERVER_MESSAGE,
     START_BATTLE,
     END_BATTLE,
     BATTLE_TURN_UPDATE,
@@ -45,7 +47,8 @@ public class PlayerWebSocketHandler {
     ENTERED_CHUNK,
     LEFT_CHUNK,
     ENTERED_BATTLE,
-    LEFT_BATTLE
+    LEFT_BATTLE,
+    CHAT
   }
 
   // used for battle moves
@@ -93,6 +96,9 @@ public class PlayerWebSocketHandler {
       break;
     case CLIENT_BATTLE_UPDATE:
       handleClientPlayerUpdate(session, payload);
+      break;
+    case CHAT:
+      handleChat(session, payload);
       break;
     default:
       // something went wrong, we got an unknown message type
@@ -220,5 +226,18 @@ public class PlayerWebSocketHandler {
     default:
       System.out.println("ERROR: Invalid packet sent to battle handler.");
     }
+  }
+
+  private static void handleChat(Session session, JsonObject payload) {
+    int id = payload.get("id").getAsInt();
+    User u = UserManager.getUserById(id);
+    if (u == null || u.getSession() != session) {
+      session.close();
+      return;
+    }
+    String msg = payload.get("message").getAsString();
+    JsonObject chat = PacketSender.buildPlayerOpMessage(u, OP_CODES.CHAT);
+    chat.addProperty("message", msg);
+    PacketSender.queueOpForChunk(chat, u.getLocation().getChunk());
   }
 }

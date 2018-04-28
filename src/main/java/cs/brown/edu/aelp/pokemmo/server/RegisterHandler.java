@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import cs.brown.edu.aelp.pokemmo.data.DataSource;
 import cs.brown.edu.aelp.pokemmo.data.DataSource.AuthException;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemon.Main;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,9 +29,9 @@ public class RegisterHandler implements Route {
       validateInput(user, pass, email, species, nickname);
       DataSource data = Main.getDataSource();
       User u = data.registerUser(user, email, pass);
-      Pokemon p = data.addPokemonToUser(u, species, nickname);
+      /*Pokemon p = data.addPokemonToUser(u, species, nickname);
       u.addPokemon(p);
-      u.addPokemonToTeam(p);
+      u.addPokemonToTeam(p);*/
       vars.put("success", true);
       vars.put("token", u.getToken());
       vars.put("id", u.getId());
@@ -62,9 +61,8 @@ public class RegisterHandler implements Route {
       throw new AuthException("Email must be of a valid format.");
     }
 
-    // TODO: put real starter species here
     if (!(species.equals("bulbasaur") || species.equals("squirtle")
-        || species.equals("charizard") || species.equals("pikachu"))) {
+        || species.equals("charmander"))) {
       throw new AuthException("Invalid species selected.");
     }
 

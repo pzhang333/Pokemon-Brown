@@ -24,4 +24,8 @@ public abstract class Entity {
     this.loc = loc;
   }
 
+  public void remove() {
+    this.getLocation().getChunk().removeEntity(this);
+  }
+
 }
