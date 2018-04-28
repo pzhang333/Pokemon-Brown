@@ -16,6 +16,7 @@ public class World {
 
   private Location spawn;
   private Map<Integer, Chunk> chunks = new ConcurrentHashMap<>();
+  private Tournament tourney;
 
   private String prefix = "chunk_";
   private String suffix = ".json";
@@ -27,6 +28,14 @@ public class World {
   public Chunk getChunk(int id) {
     assert chunks.containsKey(id);
     return chunks.get(id);
+  }
+
+  public Tournament getTournament() {
+    return this.tourney;
+  }
+
+  public void setTournament(Tournament t) {
+    this.tourney = t;
   }
 
   public void setSpawn(Location loc) {
@@ -52,8 +61,10 @@ public class World {
 
     JsonFile jFile = new JsonFile(path);
 
+    String fname = file.getName();
+
     Chunk chunk = new Chunk(id, jFile.getInt("width"), jFile.getInt("height"),
-        false, "chunk_" + id);
+        fname.substring(0, fname.lastIndexOf(".")));
 
     // 2804 in layer "Bush" = Bush
     List<JsonFile> layers = jFile.getJsonList("layers");
@@ -69,6 +80,7 @@ public class World {
       }
     }
 
+    this.addChunk(chunk);
     return chunk;
 
   }
@@ -110,11 +122,9 @@ public class World {
 
             Integer chunkId = Integer.parseInt(chunkName);
 
-            Chunk chunk = loadChunk(chunkId, file);
+            loadChunk(chunkId, file);
             System.out.printf("Loaded %s%d from `%s`\n", prefix, chunkId,
                 file.getAbsolutePath());
-
-            addChunk(chunk);
 
           } catch (NumberFormatException ex) {
             System.err.printf("Warning: invalid chunk id `%s`\n", chunkName);

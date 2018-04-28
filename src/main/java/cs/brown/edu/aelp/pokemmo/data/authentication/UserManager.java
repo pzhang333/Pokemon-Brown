@@ -35,6 +35,7 @@ public final class UserManager {
       // We want to use their data from memory, but now they've got a new token.
       User memUser = users.get(user.getId());
       memUser.setToken(user.getToken());
+      memUser.validateLocation();
       return memUser;
     } else {
       users.put(user.getId(), user);
@@ -56,6 +57,7 @@ public final class UserManager {
   public static User authenticate(int id, String token) throws AuthException {
     if (users.containsKey(id)) {
       if (users.get(id).getToken().equals(token)) {
+        users.get(id).validateLocation();
         return users.get(id);
       } else {
         throw new AuthException("Invalid token.");
@@ -88,11 +90,12 @@ public final class UserManager {
   public static Collection<User> getAllUsers() {
     return Collections.unmodifiableCollection(users.values());
   }
-  
+
   /**
    * Gets a user by an id.
+   * 
    * @param id
-   *      Id of user we are getting.
+   *          Id of user we are getting.
    * @return The user that corresponds to the id.
    */
   public static User getUserById(int id) {

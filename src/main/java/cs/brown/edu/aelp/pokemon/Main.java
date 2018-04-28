@@ -3,8 +3,10 @@ package cs.brown.edu.aelp.pokemon;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import cs.brown.edu.aelp.commands.CoinsCommand;
 import cs.brown.edu.aelp.commands.CommandHandler;
 import cs.brown.edu.aelp.commands.TeleportCommand;
+import cs.brown.edu.aelp.commands.TournamentCommand;
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
 import cs.brown.edu.aelp.networking.Trade;
@@ -192,7 +194,11 @@ public final class Main {
 
     CommandHandler ch = new CommandHandler();
     TeleportCommand tc = new TeleportCommand();
+    TournamentCommand tnc = new TournamentCommand();
+    CoinsCommand cc = new CoinsCommand();
     ch.registerCommand(tc);
+    ch.registerCommand(tnc);
+    ch.registerCommand(cc);
     ch.start();
 
   }

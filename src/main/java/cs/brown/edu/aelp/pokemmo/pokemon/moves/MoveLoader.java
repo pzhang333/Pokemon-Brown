@@ -27,12 +27,12 @@ public final class MoveLoader {
       JsonObject jsonObject = jsonElement.getAsJsonObject();
       JsonObject move = jsonObject.getAsJsonObject(Integer.toString(id));
       Integer accuracy = move.get("accuracy").getAsInt();
-      Integer basePower = move.get("baserPower").getAsInt();
+      Integer basePower = move.get("basePower").getAsInt();
       String description = move.get("desc").getAsString();
       String shortDesc = move.get("shortDesc").getAsString();
       String name = move.get("name").getAsString();
       Integer pp = move.get("pp").getAsInt();
-      Integer priority = move.get("priorty").getAsInt();
+      Integer priority = move.get("priority").getAsInt();
       PokeTypes type = PokemonLoader
           .stringToType(move.get("type").getAsString());
       MoveComplexity complexity = stringToMoveComplexity(move.get("complexity").getAsString());
