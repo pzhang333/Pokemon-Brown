@@ -38,7 +38,38 @@
 		"complexity": "Recoil",
 		"category": "Physical",
 
-		"recoil": 0.25
+		"recoil": [25, 100]
+	},
+	"38": {
+		"id": 38,
+		"name": "Double-Edge",
+		"accuracy": 100,
+		"basePower": 120,
+		"desc": "If the target lost HP, the user takes recoil damage equal to 33% the HP lost by the target, rounded half up, but not less than 1 HP.",
+		"shortDesc": "Has 33% recoil.",
+		"pp": 15,
+		"priority": 0,
+		"type": "Normal",
+		"complexity": "Recoil",
+		"category": "Physical",
+
+		"recoil": [33, 100]
+	},
+	"39": {
+		"id": 39,
+		"name": "Tail Whip",
+		"accuracy": 100,
+		"basePower": 0,
+		"desc": "Lowers the target's Defense by 1 stage.",
+		"shortDesc": "Lowers the foe(s) Defense by 1.",
+		"pp": 30,
+		"priority": 0,
+		"type": "Normal",
+		"complexity": "Debuff",
+		"category": "None",
+
+		"stat": "def",
+		"stages": 1
 	},
 	"45": {
 		"id": 45,
@@ -69,6 +100,36 @@
 		"complexity": "Status",
 		"category": "None",
 
-		"status": "Poison"
+		"status": "Poison",
+		"chance": [100, 100]
+	},
+	"84": {
+		"id": 84,
+		"name": "Thunder Shock",
+		"accuracy": 100,
+		"basePower": 40,
+		"desc": "Has a 10% chance to paralyze the target.",
+		"shortDesc": "10% chance to paralyze the target.",
+		"pp": 30,
+		"priority": 0,
+		"type": "Electric",
+		"complexity": "Dmg_Status",
+		"category": "Special",
+
+		"status": "Paralyze",
+		"chance": [10, 100]
+	},
+	"572": {
+		"id": 572,
+		"name": "Petal Blizzard",
+		"accuracy": 100,
+		"basePower": 90,
+		"desc": "No additional effect.",
+		"shortDesc": "No additional effect. Hits adjacent Pokemon.",
+		"pp": 15,
+		"priority": 0,
+		"type": "Grass",
+		"complexity": "Basic",
+		"category": "Physical"
 	}
 }

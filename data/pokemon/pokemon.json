@@ -12,7 +12,7 @@
         "species": "Ivysaur",
         "types": ["Grass", "Poison"],
         "baseStats": {"hp": 60, "atk": 62, "def": 63, "spa": 80, "spd": 80, "spe": 60},
-        "moves": [22, 36, 77],
+        "moves": [22, 33, 36, 77],
         "evo": "venusaur"
     },
     "venusaur": {
@@ -20,7 +20,7 @@
 		"species": "Venusaur",
 		"types": ["Grass", "Poison"],
         "baseStats": {"hp": 80, "atk": 82, "def": 83, "spa": 100, "spd": 100, "spe": 80},
-        "moves": [],
+        "moves": [33, 38,  77, 572],
         "evo": ""
     },
     "pichu": {
@@ -28,7 +28,7 @@
 		"species": "Pichu",
 		"types": ["Electric"],
         "baseStats": {"hp": 20, "atk": 40, "def": 15, "spa": 35, "spd": 35, "spe": 60},
-        "moves": [],
+        "moves": [39, 84],
 		"evo": "pikachu"
 	},
     "pikachu": {

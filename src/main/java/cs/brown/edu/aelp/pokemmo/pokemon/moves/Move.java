@@ -144,7 +144,7 @@ public class Move {
       return this;
     }
 
-    private Builder withRecoil(Double recoil) {
+    public Builder withRecoil(Double recoil) {
       this.recoil = recoil;
       return this;
     }
