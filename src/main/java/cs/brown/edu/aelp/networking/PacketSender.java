@@ -3,6 +3,8 @@ package cs.brown.edu.aelp.networking;
 import com.google.gson.JsonObject;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
+import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
+import cs.brown.edu.aelp.pokemmo.battle.impl.WildBattle;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
@@ -104,6 +106,10 @@ public final class PacketSender {
         u.getLocation().getChunk());
   }
 
+  public static void sendEncounterPacket2(User u) {
+    WildBattle b = BattleManager.getInstance().createWildBattle(u);
+    //sendInitiateBattlePacket()
+  }
   
   public static void sendTradePacket(User u, Trade t) {
     JsonObject packet = new JsonObject();
