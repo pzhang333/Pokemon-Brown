@@ -262,6 +262,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     resetStatStages();
   }
 
+  public void setOwner(Trainer t) {
+    this.owner = t;
+  }
+
   public Integer getBaseHp() {
     return baseHp;
   }

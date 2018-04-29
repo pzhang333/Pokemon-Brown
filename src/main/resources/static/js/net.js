@@ -58,8 +58,9 @@ class Net {
 		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
 		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler;
-		this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
+		//this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
 		this.handlers[MESSAGE_TYPE.TELEPORT_PACKET] = this.teleportHandler;
+		this.handlers[MESSAGE_TYPE.START_BATTLE] = this.startBattleHandler;
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
 	}
@@ -292,7 +293,7 @@ class Net {
 		}
 	}
 
-	wildEncounterPacketHandler(msg) {
+	startBattleHandler(msg) {
 
 		if (game.state.current != "Game") {
 			return;

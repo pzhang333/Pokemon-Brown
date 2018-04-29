@@ -1,10 +1,18 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.eclipse.jetty.websocket.api.Session;
+
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
@@ -20,14 +28,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Inventory;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.eclipse.jetty.websocket.api.Session;
 
 public class User extends Trainer implements SQLBatchSavable {
 
@@ -45,8 +45,6 @@ public class User extends Trainer implements SQLBatchSavable {
   private int state;
   private int orientation;
   private int elo = 100;
-
-  private final Map<Integer, Pokemon> pokemon = new HashMap<>();
 
   public User(int id, String username, String email, String sessionToken) {
     super(id);
@@ -175,15 +173,6 @@ public class User extends Trainer implements SQLBatchSavable {
     return this.sessionToken;
   }
 
-  public void addPokemon(Pokemon p) {
-    this.pokemon.put(p.getId(), p);
-  }
-
-  public Pokemon getPokemonById(int id) {
-    assert this.pokemon.containsKey(id);
-    return this.pokemon.get(id);
-  }
-
   public int getOrientation() {
     return orientation;
   }
@@ -222,8 +211,8 @@ public class User extends Trainer implements SQLBatchSavable {
     return this.session;
   }
 
-  public Collection<Pokemon> getAllPokemon() {
-    return this.pokemon.values();
+  public List<Pokemon> getAllPokemon() {
+    return getTeam();
   }
 
   public int updateElo(boolean won, int otherElo) {

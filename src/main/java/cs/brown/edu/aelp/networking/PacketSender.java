@@ -1,6 +1,14 @@
 package cs.brown.edu.aelp.networking;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.jetty.websocket.api.WebSocketException;
+
 import com.google.gson.JsonObject;
+
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
@@ -10,11 +18,6 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import org.eclipse.jetty.websocket.api.WebSocketException;
 
 public final class PacketSender {
 
@@ -94,25 +97,24 @@ public final class PacketSender {
   }
 
   /*
-  public static void sendEncounterPacket(User u, Pokemon p) {
-    JsonObject message = new JsonObject();
-    message.addProperty("type", MESSAGE_TYPE.ENCOUNTERED_POKEMON.ordinal());
-    JsonObject payload = new JsonObject();
-    payload.add("location", Main.GSON().toJsonTree(u.getLocation()));
-    payload.add("pokemon", Main.GSON().toJsonTree(p));
-    message.add("payload", payload);
-    sendPacket(u, message);
-    // TODO: Write an adapter to serialize Pokemon properly
-    queueOpForChunk(buildPlayerOpMessage(u, OP_CODES.ENTERED_BATTLE),
-        u.getLocation().getChunk());
-  } */
+   * public static void sendEncounterPacket(User u, Pokemon p) { JsonObject
+   * message = new JsonObject(); message.addProperty("type",
+   * MESSAGE_TYPE.ENCOUNTERED_POKEMON.ordinal()); JsonObject payload = new
+   * JsonObject(); payload.add("location",
+   * Main.GSON().toJsonTree(u.getLocation())); payload.add("pokemon",
+   * Main.GSON().toJsonTree(p)); message.add("payload", payload); sendPacket(u,
+   * message); // TODO: Write an adapter to serialize Pokemon properly
+   * queueOpForChunk(buildPlayerOpMessage(u, OP_CODES.ENTERED_BATTLE),
+   * u.getLocation().getChunk()); }
+   */
 
   public static void sendEncounterPacket(User u) {
     WildBattle b = BattleManager.getInstance().createWildBattle(u);
-    sendInitiateBattlePacket(b.getBattleId(), u.getActivePokemon(), 
+
+    sendInitiateBattlePacket(b.getBattleId(), u.getActivePokemon(),
         b.getWildPokemon(), b.getBattleType().ordinal(), "bg-meadow");
   }
-  
+
   public static void sendTradePacket(User u, Trade t) {
     JsonObject packet = new JsonObject();
     packet.addProperty("type", MESSAGE_TYPE.TRADE.ordinal());

@@ -120,10 +120,16 @@ public class SQLDataSource implements DataSource {
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
 
+    System.out.println(
+        "User: " + user.getUsername() + " : " + this.loadPokemonForUser(user));
     /*
      * for (Pokemon pokemon : this.loadPokemonForUser(user)) {
      * user.addPokemonToTeam(pokemon); }
      */
+
+    Pokemon pokemon = PokemonLoader.load("bulbasaur", Pokemon.calcXpByLevel(5));
+    pokemon.setOwner(user);
+    user.addPokemonToTeam(pokemon);
 
     return user;
   }
