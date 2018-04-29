@@ -35,12 +35,12 @@ public class PlayerWebSocketHandler {
     PLAYER_REQUEST_PATH,
     ENCOUNTERED_POKEMON,
     TRADE,
-    CHAT,
-    SERVER_MESSAGE,
     START_BATTLE,
     END_BATTLE,
     BATTLE_TURN_UPDATE,
-    CLIENT_BATTLE_UPDATE
+    CLIENT_BATTLE_UPDATE,
+    CHAT,
+    SERVER_MESSAGE
   }
 
   public static enum OP_CODES {
