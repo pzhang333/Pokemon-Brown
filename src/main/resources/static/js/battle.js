@@ -18,6 +18,9 @@ var Battle = {
 	backBaseURL: "/assets/pokemon/back/"
 };
 
+Battle.shutdown = function() {
+	game.world.removeAll();
+}
 
 Battle.init = function() {
 	game.scale.pageAlignHorizontally = true;
@@ -53,7 +56,7 @@ Battle.showKO = function(pokemon) {
 	
 	tween.to({
 		x: pokemon.sprite.x,
-		y: pokemon.sprite.y + 100,
+		y: pokemon.sprite.y + 150,
 		alpha: 0
 	}, Phaser.Timer.SECOND * .5);
 	
@@ -82,7 +85,7 @@ Battle.applyDamage = function(pokemon, damage) {
 	}
 }
 
-// Battle.showAttackPair({defendingId: 1, attack: 'basic', damage: 25}, {defendingId: 2, attack: 'basic', damage: 25}, .75);
+// Battle.showAttackPair({defendingId: 1, attack: 'basic', damage: 75}, {defendingId: 2, attack: 'basic', damage: 250}, 1);
 
 Battle.showAttackPair = function(first, second, delay) {
 	
@@ -159,10 +162,26 @@ Battle.preload = function() {
 	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
 	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
 	game.load.atlasJSONHash('attacks', 'assets/pokemon/attacks.png', 'assets/pokemon/attacks.json');
+	
+	game.load.audio('battle', ['assets/audio/battle.mp3']);
+	
 };
 
+Battle.endBattle = function() {
+	Battle.music.destroy();
+	
+	//Game.players = {};
+	//game.state.start('Game');
+	
+	// HACK VERY BAD!
+	location.reload();
+}
 
 Battle.create = function() {
+	//return;
+	Battle.music = game.add.audio('battle');
+	Battle.music.loopFull(.1);
+	
 	
 	this.stage = game.add.sprite(game.width / 2, game.height / 2, 'atlas1', 'bg-meadow');
 	this.stage.anchor.setTo(.5, .5);
@@ -289,12 +308,4 @@ Battle.drawDefaultMenu = function() {
 
 Battle.start = function() {
 	
-}
-
-Battle.startBattle = function(packet) {
-	
-	this.inBattle = true;
-	this.id = packet.battleId;
-
-	game.state.start('Battle');
 }

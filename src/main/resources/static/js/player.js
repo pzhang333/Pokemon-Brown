@@ -164,7 +164,7 @@ class Player {
 	 */
 	playAnim(animName, opts) {
 
-		if (this.sprite == undefined) {
+		if (this.sprite == undefined || this.sprite.alive == false) {
 			this.initSprite();
 		}
 		
@@ -413,6 +413,10 @@ class Player {
 	}
 	
 	del() {
+		
+		if (this.sprite == undefined) {
+			return;
+		}
 		
 		this.sprite.kill();
 		//Game.players[this.id] = undefined;

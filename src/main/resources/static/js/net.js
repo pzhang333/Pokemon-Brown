@@ -324,10 +324,9 @@ class Net {
 		let pokemon = payload.pokemon;
 
 		let battleId = -1;
-		Battle.startBattle({
-			battleId: battleId
-		});
+		Battle.battleId = battleId;
 
+		game.state.start('Battle');
 		//alert('Encountered wild pokemon with id: ' + pokemon.id);
 	}
 
