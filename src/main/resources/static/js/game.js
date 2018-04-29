@@ -8,6 +8,7 @@ Game.init = function() {
 	Game.ready = false;
 	//Game.easystar = new EasyStar.js();
 	Game.cursors = game.input.keyboard.createCursorKeys();
+	
 };
 
 Game.update = function() {

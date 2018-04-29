@@ -11,6 +11,7 @@
 	<body style='background-color: grey'>
 		<div id='game'></div>
 		<!-- <script src="/socket.io/socket.io.js"></script> -->
+		<script src="/js/lib/healthMeter.js"></script>
 		<script src="/js/battle.js"></script>
 		<script src="/js/login.js"></script>
 		<script src="/js/sparseMap.js"></script>
