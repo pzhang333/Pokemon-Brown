@@ -205,6 +205,11 @@ Game.loadCurrentChunk = function(clear) {
 };
 
 function drawHud() {
+	// hud grey bar
+	//floor = new Phaser.Rectangle(0, 550, Game.map.widthInPixels, Game.map.heightInPixels);
+    //game.debug.geom(floor,'#0fffff');
+
+
 	// backpack icon
 	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/6.5, Game.map.heightInPixels-Game.map.heightInPixels/2, "trophy");
     backpackIcon.inputEnabled = true;
