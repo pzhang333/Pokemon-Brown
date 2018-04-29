@@ -136,12 +136,15 @@ public final class PacketSender {
     payload.addProperty("battle_type", battleType);
     payload.addProperty("backgroud_name", backgroundName);
 
-    // adding the payload to the message
-    message.add("payload", payload);
-
+    System.out.println(a);
+    System.out.println(b);
     if (a.getOwner() != null) {
       User usr = (User) a.getOwner();
+      payload.add("location", Main.GSON().toJsonTree(usr.getLocation()));
+      // adding the payload to the message
+      message.add("payload", payload);
       sendPacket(usr, message);
+      
       queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.ENTERED_BATTLE),
           usr.getLocation().getChunk());
     }
@@ -149,6 +152,7 @@ public final class PacketSender {
     if (b.getOwner() != null) {
       User usr = (User) b.getOwner();
       sendPacket(usr, message);
+      payload.add("location", Main.GSON().toJsonTree(usr.getLocation()));
       queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.ENTERED_BATTLE),
           usr.getLocation().getChunk());
     }

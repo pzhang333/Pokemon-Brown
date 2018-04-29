@@ -206,8 +206,8 @@ Game.loadCurrentChunk = function(clear) {
 
 function drawHud() {
 	// hud grey bar
-	//floor = new Phaser.Rectangle(0, Game.map.heightInPixels-0.5*Game.map.heightInPixels, Game.map.widthInPixels, Game.map.heightInPixels/15);
-    //game.debug.geom(floor,'#0fffff');
+	//floor = new Phaser.Rectangle(0, Game.map.heightInPixels-0.5*Game.map.heightInPixels, Game.map.widthInPixels, Game.map.heightInPixels/11);
+    //game.debug.geom(floor,'#A9A9A9');
 
 
 	// backpack icon
@@ -224,4 +224,6 @@ function drawHud() {
     let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/2.85, Game.map.heightInPixels-Game.map.heightInPixels/2, "coin");
     coinIcon.inputEnabled = true;
     coinIcon.fixedToCamera = true;
+
+    game.world.bringToTop(backpackIcon);
 }
