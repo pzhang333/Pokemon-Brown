@@ -93,6 +93,7 @@ public final class PacketSender {
     sendPacket(u, message);
   }
 
+  /*
   public static void sendEncounterPacket(User u, Pokemon p) {
     JsonObject message = new JsonObject();
     message.addProperty("type", MESSAGE_TYPE.ENCOUNTERED_POKEMON.ordinal());
@@ -104,11 +105,12 @@ public final class PacketSender {
     // TODO: Write an adapter to serialize Pokemon properly
     queueOpForChunk(buildPlayerOpMessage(u, OP_CODES.ENTERED_BATTLE),
         u.getLocation().getChunk());
-  }
+  } */
 
-  public static void sendEncounterPacket2(User u) {
+  public static void sendEncounterPacket(User u) {
     WildBattle b = BattleManager.getInstance().createWildBattle(u);
-    //sendInitiateBattlePacket()
+    sendInitiateBattlePacket(b.getBattleId(), u.getActivePokemon(), 
+        b.getWildPokemon(), b.getBattleType().ordinal(), "bg-meadow");
   }
   
   public static void sendTradePacket(User u, Trade t) {
