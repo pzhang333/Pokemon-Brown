@@ -6,6 +6,7 @@ import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
 public class Wish extends Move {
@@ -56,9 +57,10 @@ public class Wish extends Move {
     MoveResult mr = new MoveResult(evt.getAttackingPokemon(),
         evt.getDefendingPokemon(), this, evt.getBattle().getArena());
 
-    System.out.println("WISH!");
     evt.getAttackingTrainer().getEffectSlot()
         .register(new WishEffect(evt.getAttackingTrainer(), 1));
+
+    mr.setOutcome(MoveOutcome.NON_ATTACK_SUCCESS);
 
     return mr;
   }

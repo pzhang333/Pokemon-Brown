@@ -13,7 +13,7 @@ public class MoveResult {
   private Pokemon defPokemon;
   private Arena arena;
   private Move move;
-  private MoveOutcome outcome = MoveOutcome.NO_EFFECT;
+  private MoveOutcome outcome = null;
   private Integer damage = 0;
 
   private static final double NO_EFFECT = 0;
@@ -40,6 +40,11 @@ public class MoveResult {
   public void evaluate() {
     // TODO: Add checking for negative status effects
 
+    if (outcome != null) {
+      return;
+    }
+
+    outcome = MoveOutcome.NO_EFFECT;
     switch (move.getComplexity()) {
     case BASIC:
       basicEval();
@@ -177,6 +182,10 @@ public class MoveResult {
       base *= typeModifier(type);
     }
     return base;
+  }
+
+  public void setOutcome(MoveOutcome outcome) {
+    this.outcome = outcome;
   }
 
   public Double typeModifier(PokeTypes targetType) {
