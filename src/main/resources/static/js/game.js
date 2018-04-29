@@ -139,7 +139,6 @@ Game.getMapElement = function(x, y, map) {
 };
 
 Game.clearPlayers = function() {
-	console.log('Clear');
 	for (var key in Game.players) {
 	    if (Game.players.hasOwnProperty(key)) {      
 	    	

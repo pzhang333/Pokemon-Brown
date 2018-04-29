@@ -1,8 +1,19 @@
 var Home = {
 	starterPokemon: [
 		'bulbasaur', 'charmander', 'squirtle'
+	],
+	inputFields: [
+		
 	]
 };
+
+Home.update = function() {
+	
+	for(let i = 0; i < Home.inputFields.length; i++) {
+		Home.inputFields[i].update();
+	}
+	
+}
 
 Home.init = function() {
 	game.scale.pageAlignHorizontally = true;
@@ -171,6 +182,9 @@ Home.selectPokemon = function(idx) {
 }
 
 Home.displayRegister = function() {
+	
+	Home.inputFields = [];
+	
 	if (Home.scroll != undefined) {
 		Home.scroll.destroy();
 	}
@@ -310,6 +324,10 @@ Home.displayRegister = function() {
 	Home.toRegisterButtonText.anchor.set(0.5, 0.5);
 	//Home.toRegisterButtonText.y += 100;
 	Home.scroll.addChild(Home.toRegisterButtonText);
+	
+	Home.userField.startFocus();
+	
+	Home.inputFields = [Home.userField, Home.passwordField, Home.emailField, Home.nickField];
 }
 
 Home.displayLogin = function() {
@@ -408,4 +426,7 @@ Home.displayLogin = function() {
 	Home.toRegisterButtonText = game.add.text(Home.toRegisterButton.x, Home.toRegisterButton.y + (Home.toRegisterButton.height / 2) + 3, "Register", stdTextStyle);
 	Home.toRegisterButtonText.anchor.set(0.5, 0.5);
 	Home.scroll.addChild(Home.toRegisterButtonText);
+	
+	Home.userField.startFocus();
+	Home.inputFields = [Home.userField, Home.passwordField];
 }
