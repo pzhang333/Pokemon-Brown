@@ -19,20 +19,70 @@ var Battle = {
 
 Battle.init = function() {
 	game.scale.pageAlignHorizontally = true;
+	
+	Battle.attackAnims = {
+		'basic': getAnimArr('basic', range(0, 8, range(0, 4)))
+	};
+	
+	Battle.offsets = {
+		'basic': {
+			x: 0,
+			y: -40,
+			xAnchor: .5,
+			yAnchor: .5,
+			xScale: .75,
+			yScale: .75
+		}
+	}
 };
 
-Battle.update = function() {
 
+Battle.showAttack = function(pokeSprite, name) {
+	
+	if (name == undefined) {
+		name = 'basic';
+	}
+
+	//this.attack.visible = true;
+	//this.attack.animations.play(name, 3, true);
+	
+	if (this.attack != undefined) {
+		this.attack.kill();
+	}
+
+	let offsets = Battle.offsets[name];
+	
+	this.attack = game.add.sprite(
+			pokeSprite.x + offsets.x,
+			pokeSprite.y + offsets.y, 'attacks');
+	
+	this.attack.anchor.setTo(.5, .5);
+	this.attack.scale.setTo(offsets.xScale, offsets.yScale);
+	
+	for(name in Battle.attackAnims) {
+		console.log(name);
+		this.attack.animations.add(name, Battle.attackAnims[name]);
+	}
+	
+	this.attack.animations.play(name, 15, false);
+	this.attack.animations.currentAnim.onComplete.add(function () {
+		Battle.attack.kill();
+	}, this);
+} 
+
+Battle.update = function() {
 };
 
 Battle.preload = function() {
 	game.stage.disableVisibilityChange = true;
 	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
 	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
+	game.load.atlasJSONHash('attacks', 'assets/pokemon/attacks.png', 'assets/pokemon/attacks.json');
 };
 
 
 Battle.create = function() {
+	
 	this.stage = game.add.sprite(game.width / 2, game.height / 2, 'atlas1', 'bg-meadow');
 	this.stage.anchor.setTo(.5, .5);
 	this.stage.width = game.width;
@@ -48,11 +98,11 @@ Battle.create = function() {
 	this.frontPatch.scale.set(1.5, 1.5);
 	this.frontPatch.visible = true;
 	
-	let p1 = new Pokemon("pikachu");
-	let p2 = new Pokemon("chandelure");
+	Battle.p1 = new Pokemon("pikachu");
+	Battle.p2 = new Pokemon("chandelure");
 	
 	this.drawDefaultMenu();
-	this.drawPokemon(p1, p2);
+	this.drawPokemon(Battle.p1, Battle.p2);
 	
 	/*this.frontPokemonSprite = game.add.sprite(game.world.centerX * (4.5 / 12), game.world.centerY * (4.5 / 6), 'atlas2', 'front/pikachu');
 	this.frontPokemonSprite.anchor.setTo(0.5, 0.5);
@@ -63,6 +113,7 @@ Battle.create = function() {
 	this.backPokemonSprite.anchor.setTo(0.5, 0.5);
 	this.backPokemonSprite.scale.set(2, 2);
 	this.backPokemonSprite.visible = true;*/
+	
 	
 	this.stage.visible = true;
 };
