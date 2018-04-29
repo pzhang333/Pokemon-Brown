@@ -59,7 +59,9 @@ Home.displayLogo = function(xScale, yScale) {
 	logo.y = 0;
 
 	logo.hideTween = game.add.tween(logo);
-    logo.hideTween.to({alpha: 0}, Phaser.Timer.SECOND * 0.2);
+    logo.hideTween.to({
+    	alpha: 0
+    }, Phaser.Timer.SECOND * 0.2);
 	Home.logo = logo;
 }
 

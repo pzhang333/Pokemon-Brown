@@ -48,6 +48,40 @@ Battle.getSpriteById = function(id) {
 	return (id == Battle.frontPokemon.id) ? Battle.frontPokemon.sprite : Battle.backPokemon.sprite;
 }
 
+Battle.showKO = function(pokemon) {
+	let tween = game.add.tween(pokemon.sprite);
+	
+	tween.to({
+		x: pokemon.sprite.x,
+		y: pokemon.sprite.y + 100,
+		alpha: 0
+	}, Phaser.Timer.SECOND * .5);
+	
+	tween.onComplete.add(function () {
+		pokemon.healthbar.backBar.destroy();
+		pokemon.healthbar.healthBar.kill();
+		pokemon.sprite.kill();
+	});
+	
+	tween.start();
+}
+
+Battle.applyDamage = function(pokemon, damage) {
+	if (damage >= pokemon.health) {
+		pokemon.health = 0;
+		
+		if (Battle.attack.animations.currentAnim.isPlaying) {
+			Battle.attack.animations.currentAnim.onComplete.addOnce(function() {
+				Battle.showKO(pokemon);
+			});
+		} else {
+			Battle.showKO(pokemon);
+		}
+	} else {
+		pokemon.health -= damage;
+	}
+}
+
 // Battle.showAttackPair({defendingId: 1, attack: 'basic', damage: 25}, {defendingId: 2, attack: 'basic', damage: 25}, .75);
 
 Battle.showAttackPair = function(first, second, delay) {
@@ -60,7 +94,7 @@ Battle.showAttackPair = function(first, second, delay) {
 	
 	let offsetsFirst = Battle.offsets[first.attack];
 	Game.time.events.add(Phaser.Timer.SECOND * offsetsFirst.time, function() {
-		defFirst.health -= first.damage;
+		Battle.applyDamage(defFirst, first.damage);
 	});
 	
 	Battle.showAttack(defFirst.sprite, first.attack, function() {
@@ -71,7 +105,7 @@ Battle.showAttackPair = function(first, second, delay) {
 				
 				let offsetsSecond = Battle.offsets[second.attack];
 				Game.time.events.add(Phaser.Timer.SECOND * offsetsSecond.time, function() {
-					defSecond.health -= second.damage;
+					Battle.applyDamage(defSecond, second.damage);
 				});
 				
 				Battle.showAttack(defSecond.sprite, second.attack);
@@ -166,6 +200,11 @@ Battle.create = function() {
 };
 
 Battle.drawBackground = function(key) {
+	
+	if (this.backPokemon.sprite != undefined) {
+		this.backPokemon.sprite.kill();
+	}
+	
 	this.backPokemon.sprite = game.add.sprite(game.width * (3 / 4), game.height * (6.25 / 12), key);
 	
 	this.backPokemon.sprite.animations.add('idle');
@@ -185,7 +224,7 @@ Battle.drawHealthBox = function(pokemon) {
 	
 	pokemon.healthbar = this.game.add.plugin(Phaser.Plugin.HealthMeter)
 	pokemon.healthbar.bar(pokemon, {
-		x: pokemon.sprite.x - (pokemon.sprite.width / 2),
+		x: pokemon.sprite.x - (125 / 2),
 		y: (pokemon.sprite.y - (pokemon.sprite.height) - 30),
 		width: 125,
 		height: 8
@@ -193,6 +232,11 @@ Battle.drawHealthBox = function(pokemon) {
 }
 
 Battle.drawForeground = function(key) {
+	
+	if (this.frontPokemon.sprite != undefined) {
+		this.frontPokemon.sprite.kill();
+	}
+	
 	this.frontPokemon.sprite = game.add.sprite(game.width * (3.5 / 12), game.height * (9 / 12), key);
 	
 	this.frontPokemon.sprite.animations.add('idle');

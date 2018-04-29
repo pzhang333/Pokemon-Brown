@@ -132,10 +132,12 @@ Phaser.Plugin.HealthMeter.prototype.updateBar = function() {
         bmd.ctx.rect(0, 0, this.options.width, this.options.height);
         bmd.ctx.fillStyle = this.options.background;
         bmd.ctx.fill();
+        this.bmd = bmd;
 
         var backBar = this.game.add.sprite(this.options.x, this.options.y, bmd);
         backBar.alpha = this.options.alpha;
         backBar.fixedToCamera = true;
+        this.backBar = backBar;
 
         bmd = this.game.add.bitmapData(this.options.width, this.options.height);
         bmd.ctx.beginPath();
