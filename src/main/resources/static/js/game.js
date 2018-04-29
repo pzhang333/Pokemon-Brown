@@ -206,7 +206,7 @@ Game.loadCurrentChunk = function(clear) {
 
 function drawHud() {
 	// hud grey bar
-	//floor = new Phaser.Rectangle(0, Game.map.heightInPixels-0.5*Game.map.heightInPixels, Game.map.widthInPixels, Game.map.heightInPixels/25);
+	//floor = new Phaser.Rectangle(0, Game.map.heightInPixels-0.5*Game.map.heightInPixels, Game.map.widthInPixels, Game.map.heightInPixels/15);
     //game.debug.geom(floor,'#0fffff');
 
 

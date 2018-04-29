@@ -139,14 +139,14 @@ public final class PacketSender {
     // adding the payload to the message
     message.add("payload", payload);
 
-    if (User.class.isInstance(a.getOwner())) {
+    if (a.getOwner() != null) {
       User usr = (User) a.getOwner();
       sendPacket(usr, message);
       queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.ENTERED_BATTLE),
           usr.getLocation().getChunk());
     }
 
-    if (User.class.isInstance(b.getOwner())) {
+    if (b.getOwner() != null) {
       User usr = (User) b.getOwner();
       sendPacket(usr, message);
       queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.ENTERED_BATTLE),
