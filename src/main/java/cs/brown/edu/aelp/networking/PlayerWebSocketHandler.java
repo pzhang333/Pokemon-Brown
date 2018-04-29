@@ -95,7 +95,7 @@ public class PlayerWebSocketHandler {
       handleTrade(session, payload);
       break;
     case CLIENT_BATTLE_UPDATE:
-      handleClientPlayerUpdate(session, payload);
+      handleClientBattleUpdate(session, payload);
       break;
     case CHAT:
       handleChat(session, payload);
@@ -205,7 +205,7 @@ public class PlayerWebSocketHandler {
     PacketSender.sendTradePacket(other, t);
   }
 
-  private static void handleClientPlayerUpdate(Session session,
+  private static void handleClientBattleUpdate(Session session,
       JsonObject payload) {
 
     int turnId = payload.get("turn_id").getAsInt();
