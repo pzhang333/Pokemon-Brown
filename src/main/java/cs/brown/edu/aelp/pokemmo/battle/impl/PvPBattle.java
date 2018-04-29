@@ -30,8 +30,8 @@ public class PvPBattle extends Battle {
 
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
 
-  public PvPBattle(Arena arena, Trainer a, Trainer b) {
-    super(arena);
+  public PvPBattle(Integer id, Arena arena, Trainer a, Trainer b) {
+    super(id, arena);
     this.a = a;
     this.b = b;
 

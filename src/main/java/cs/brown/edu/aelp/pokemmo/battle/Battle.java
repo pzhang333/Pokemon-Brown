@@ -5,9 +5,12 @@ import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
 
 public class Battle {
 
-  private Arena arena;
+  private final Arena arena;
 
-  public Battle(Arena arena) {
+  private final Integer id;
+
+  public Battle(Integer id, Arena arena) {
+    this.id = id;
     this.arena = arena;
   }
 
