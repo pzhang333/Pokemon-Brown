@@ -15,4 +15,12 @@ public class WildBattle extends Battle {
     this.wild = wild;
   }
 
+  public Pokemon getWildPokemon() {
+    return wild;
+  }
+
+  @Override
+  public BattleType getBattleType() {
+    return BattleType.WILD_BATTLE;
+  }
 }
