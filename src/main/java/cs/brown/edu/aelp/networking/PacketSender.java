@@ -104,6 +104,7 @@ public final class PacketSender {
         u.getLocation().getChunk());
   }
 
+  
   public static void sendTradePacket(User u, Trade t) {
     JsonObject packet = new JsonObject();
     packet.addProperty("type", MESSAGE_TYPE.TRADE.ordinal());
@@ -133,11 +134,15 @@ public final class PacketSender {
     if (User.class.isInstance(a.getOwner())) {
       User usr = (User) a.getOwner();
       sendPacket(usr, message);
+      queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.ENTERED_BATTLE),
+          usr.getLocation().getChunk());
     }
 
     if (User.class.isInstance(b.getOwner())) {
       User usr = (User) b.getOwner();
       sendPacket(usr, message);
+      queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.ENTERED_BATTLE),
+          usr.getLocation().getChunk());
     }
   }
 
@@ -163,11 +168,15 @@ public final class PacketSender {
     if (winnerId != -1) {
       User usr = UserManager.getUserById(winnerId);
       sendPacket(usr, message);
+      queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.LEFT_BATTLE),
+          usr.getLocation().getChunk());
     }
 
     if (loserId != -1) {
       User usr = UserManager.getUserById(loserId);
       sendPacket(usr, message);
+      queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.LEFT_BATTLE),
+          usr.getLocation().getChunk());
     }
   }
 
