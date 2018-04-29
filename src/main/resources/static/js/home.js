@@ -10,7 +10,11 @@ var Home = {
 Home.update = function() {
 	
 	for(let i = 0; i < Home.inputFields.length; i++) {
-		Home.inputFields[i].update();
+		let field = Home.inputFields[i];
+		
+		if (field != undefined) {
+			field.update();
+		}
 	}
 	
 }
@@ -325,9 +329,9 @@ Home.displayRegister = function() {
 	//Home.toRegisterButtonText.y += 100;
 	Home.scroll.addChild(Home.toRegisterButtonText);
 	
-	Home.userField.startFocus();
+	//Home.userField.startFocus();
 	
-	Home.inputFields = [Home.userField, Home.passwordField, Home.emailField, Home.nickField];
+	Home.inputFields = [Home.userField, Home.passwordField, Home.emailField, Home.nicknameField];
 }
 
 Home.displayLogin = function() {
@@ -427,6 +431,6 @@ Home.displayLogin = function() {
 	Home.toRegisterButtonText.anchor.set(0.5, 0.5);
 	Home.scroll.addChild(Home.toRegisterButtonText);
 	
-	Home.userField.startFocus();
+	//Home.userField.startFocus();
 	Home.inputFields = [Home.userField, Home.passwordField];
 }
