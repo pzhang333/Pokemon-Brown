@@ -18,9 +18,6 @@ var Battle = {
 	backBaseURL: "/assets/pokemon/back/"
 };
 
-Battle.shutdown = function() {
-	game.world.removeAll();
-}
 
 Battle.init = function() {
 	game.scale.pageAlignHorizontally = true;
@@ -171,10 +168,10 @@ Battle.endBattle = function() {
 	Battle.music.destroy();
 	
 	//Game.players = {};
-	//game.state.start('Game');
+	game.state.start('Game');
 	
 	// HACK VERY BAD!
-	location.reload();
+	//location.reload();
 }
 
 Battle.create = function() {

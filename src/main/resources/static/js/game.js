@@ -14,6 +14,7 @@ Game.shutdown = function() {
 	game.world.removeAll();
 	Game.chunkId = false;
 	Game.player.sprite = undefined;
+	Game.ready = false;
 }
 
 Game.update = function() {
@@ -22,6 +23,7 @@ Game.update = function() {
 	let chunkId = net.getCurrentChunkId();
 	if (chunkId != Game.chunkId) {
 		this.loadCurrentChunk(true);
+		//Game.chunkId = net.chunkId;
 		return;
 	}
 
@@ -46,6 +48,12 @@ Game.preload = function() {
 	game.load.image('tileset', 'assets/tilesets/tileset.png');
 	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
 
+	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
+	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
+	game.load.atlasJSONHash('attacks', 'assets/pokemon/attacks.png', 'assets/pokemon/attacks.json');
+	
+	game.load.audio('battle', ['assets/audio/battle.mp3']);
+	
 	// loading hud images
     game.load.image('backpack', 'assets/HUD/backpack.png');
     game.load.image('trophy', 'assets/HUD/trophy.png');
@@ -55,6 +63,9 @@ Game.preload = function() {
 
 Game.create = function() {
 	this.loadCurrentChunk(true);
+	
+	Game.ready = true;
+	game.camera.roundPx = true;
 };
 
 Game.drawLayers = function() {
@@ -162,7 +173,7 @@ Game.loadCurrentChunk = function(clear) {
 
 	let self = this;
 
-	//Game.clearPlayers();
+	Game.clearPlayers();
 	
 	net.getChunk(function(chunk) {
 		Game.clearPlayers();
@@ -189,7 +200,6 @@ Game.loadCurrentChunk = function(clear) {
 		
 		Game.cursors = game.input.keyboard.createCursorKeys();
 		
-
 		Game.chunkId = net.chunkId;
 		
 	});

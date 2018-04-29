@@ -134,17 +134,6 @@ class Net {
 		//Game.player.id = msg.payload.id;
 	}
 
-	teleportHandler(msg) {
-
-		return;
-		console.log(msg);
-		console.log(msg.payload);
-		let loc = msg.payload.location;
-
-		Game.player.showTeleport(loc.col, loc.row, loc.chunk_file);
-	}
-
-
 	initPacketHandler(msg) {
 
 		console.log(msg);
@@ -152,18 +141,17 @@ class Net {
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
 
-		Game.player.id = this.id;
+		Game.player.id = net.id;
 
 
 		let loc = msg.payload.location;
 		
+		if (Game.ready) {
+			Game.player.showTeleport(loc.col, loc.row, loc.chunk_file, function() {
+				net.chunkId = loc.chunk_file;
+			});
+		}
 		net.chunkId = loc.chunk_file;
-		
-		/*Game.player.showTeleport(loc.col, loc.row, loc.chunk_file, function() {
-			
-			
-		});*/
-		
 
 		Game.player.setPos(loc.col, loc.row);
 		
@@ -316,7 +304,7 @@ class Net {
 		let loc = payload.location;
 
 		if (Game.player.tweenRunning()) {
-			Game.player.tween.stop(true);
+			Game.player.tween.stop(false);
 			Game.player.idle();
 		}
 		Game.player.setPos(loc.col, loc.row);
@@ -325,7 +313,6 @@ class Net {
 
 		let battleId = -1;
 		Battle.battleId = battleId;
-
 		game.state.start('Battle');
 		//alert('Encountered wild pokemon with id: ' + pokemon.id);
 	}
