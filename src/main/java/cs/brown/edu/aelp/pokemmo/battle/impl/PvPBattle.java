@@ -245,4 +245,9 @@ public class PvPBattle extends Battle {
     }
     return a;
   }
+
+  @Override
+  public BattleType getBattleType() {
+    return BattleType.PVP_BATTLE;
+  }
 }
