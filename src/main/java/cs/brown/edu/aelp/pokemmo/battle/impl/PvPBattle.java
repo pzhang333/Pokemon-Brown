@@ -150,9 +150,12 @@ public class PvPBattle extends Battle {
     atkTrainer.getActivePokemon().getEffectSlot().handle(atkEvent);
 
     // TODO: ADD IN MOVE_RESULT
-    MoveResult result = new MoveResult(atkEvent.getAttackingPokemon(),
-        atkEvent.getDefendingPokemon(), turn.getMove(), getArena());
+    // MoveResult result = new MoveResult(atkEvent.getAttackingPokemon(),
+    // atkEvent.getDefendingPokemon(), turn.getMove(), getArena());
+
+    MoveResult result = turn.getMove().getMoveResult(atkEvent);
     result.evaluate();
+
     // Todo: defending events
     // System.out.println(result);
 

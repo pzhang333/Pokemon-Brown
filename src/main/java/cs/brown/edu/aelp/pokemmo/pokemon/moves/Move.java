@@ -1,5 +1,6 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
+import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
 import cs.brown.edu.aelp.pokemmo.pokemon.Status;
 
@@ -13,7 +14,8 @@ public class Move {
    * require Java implemented Handlers.
    */
   public enum MoveComplexity {
-    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO, RECOIL, ERROR
+    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO, RECOIL,
+    ERROR
   }
 
   /**
@@ -175,6 +177,28 @@ public class Move {
 
   }
 
+  protected Move(Move m) {
+    this.id = m.id;
+    this.accuracy = m.accuracy;
+    this.basePower = m.basePower;
+    this.category = m.category;
+    this.description = m.description;
+    this.shortDescription = m.shortDescription;
+    this.name = m.name;
+    this.pp = m.pp;
+    this.currPP = m.currPP;
+    this.priority = m.priority;
+    this.type = m.type;
+    this.complexity = m.complexity;
+
+    this.stat = m.stat;
+    this.stages = m.stages;
+    this.status = m.status;
+    this.statusChance = m.statusChance;
+    this.weather = m.weather;
+    this.recoil = m.recoil;
+  }
+
   private int id;
 
   private Integer accuracy;
@@ -212,7 +236,7 @@ public class Move {
   private Double recoil;
 
   // We want to construct moves only using the builder
-  private Move(int id) {
+  protected Move(int id) {
     this.id = id;
   }
 
@@ -317,6 +341,11 @@ public class Move {
 
   public int getId() {
     return this.id;
+  }
+
+  public MoveResult getMoveResult(AttackEvent atkEvent) {
+    return new MoveResult(atkEvent.getAttackingPokemon(),
+        atkEvent.getDefendingPokemon(), this, atkEvent.getBattle().getArena());
   }
 
   /*

@@ -119,6 +119,19 @@
 		"status": "Paralyze",
 		"chance": [10, 100]
 	},
+	"273": {
+		"id": 273,
+		"name": "Wish",
+		"accuracy": 100,
+		"basePower": 40,
+		"desc": "Has a 10% chance to paralyze the target.",
+		"shortDesc": "10% chance to paralyze the target.",
+		"pp": 30,
+		"priority": 0,
+		"type": "Electric",
+		"complexity": "",
+		"category": ""
+	},
 	"572": {
 		"id": 572,
 		"name": "Petal Blizzard",

@@ -51,6 +51,8 @@ Battle.getSpriteById = function(id) {
 Battle.showKO = function(pokemon) {
 	let tween = game.add.tween(pokemon.sprite);
 	
+	console.log(pokemon.id);
+	
 	tween.to({
 		x: pokemon.sprite.x,
 		y: pokemon.sprite.y + 150,
