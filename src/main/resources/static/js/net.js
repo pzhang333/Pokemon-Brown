@@ -310,10 +310,7 @@ class Net {
 		}
 		Game.player.setPos(loc.col, loc.row);
 
-		let pokemon = payload.pokemon;
-
-		let battleId = -1;
-		Battle.battleId = battleId;
+		Battle.setup(payload);
 		game.state.start('Battle');
 		//alert('Encountered wild pokemon with id: ' + pokemon.id);
 	}

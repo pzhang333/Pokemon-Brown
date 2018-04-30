@@ -12,8 +12,6 @@ class Pokemon {
 }
 
 var Battle = {
-	id: -1,
-	inBattle: false,
 	frontBaseURL: "/assets/pokemon/front/",
 	backBaseURL: "/assets/pokemon/back/"
 };
@@ -61,7 +59,7 @@ Battle.showKO = function(pokemon) {
 	
 	tween.onComplete.add(function () {
 		pokemon.healthbar.backBar.destroy();
-		pokemon.healthbar.healthBar.kill();
+		pokemon.healthbar.healthBar.destroy();
 		pokemon.sprite.kill();
 	});
 	
@@ -114,6 +112,83 @@ Battle.showAttackPair = function(first, second, delay) {
 			}
 		}, this);
 	});
+}
+
+// Battle.doSwitch(Battle.backPokemon, new Pokemon(123, 'chandelure'));
+Battle.doSwitch = function(pOut, pIn, cb) {
+	
+	let delay = .75;
+	
+	let fore = (pOut.id == Battle.frontPokemon.id) ? pIn : undefined;
+	let bg = (pOut.id == Battle.backPokemon.id) ? pIn : undefined;
+	
+	Battle.switchOut(pOut, function() {
+		Game.time.events.add(Phaser.Timer.SECOND * delay, function() {
+			Battle.drawPokemon(fore, bg);
+		});
+	});
+}
+
+Battle.switchIn = function(pokemon, cb) {
+	
+	let tween = game.add.tween(pokemon.sprite);
+	
+	pokemon.sprite.alpha = 0;
+	
+	let w = pokemon.sprite.width;
+	let h = pokemon.sprite.height;
+	
+	pokemon.sprite.width = 0;
+	pokemon.sprite.height = 0;
+	
+	pokemon.sprite.visible = true;
+	
+	tween.to({
+		x: pokemon.sprite.x,
+		y: pokemon.sprite.y,
+		width: w,
+		height: h,
+		alpha: 1
+	}, Phaser.Timer.SECOND * .5);
+	
+	tween.onComplete.add(function() {
+		Battle.drawHealthBox(pokemon);
+		pokemon.sprite.animations.add('idle');
+		pokemon.sprite.animations.play('idle', 40, true);	
+		
+		if (cb != undefined) {
+			cb();
+		}
+	});
+	
+	tween.start();
+	
+}
+
+Battle.switchOut = function(pokemon, cb) {
+	
+	let tween = game.add.tween(pokemon.sprite);
+	
+	tween.to({
+		x: pokemon.sprite.x,
+		y: pokemon.sprite.y,
+		alpha: 0,
+		width: 0,
+		height: 0
+	}, Phaser.Timer.SECOND * .5);
+	
+	tween.onComplete.add(function () {
+		pokemon.healthbar.backBar.destroy();
+		pokemon.healthbar.healthBar.kill();
+		pokemon.sprite.kill();
+		
+		if (cb != undefined) {
+			cb();
+		}
+	});
+	
+	tween.start();
+	
 }
 
 Battle.showAttack = function(pokeSprite, name, cb) {
@@ -179,10 +254,9 @@ Battle.endBattle = function() {
 Battle.create = function() {
 	//return;
 	Battle.music = game.add.audio('battle');
-	Battle.music.loopFull(.1);
+	//Battle.music.loopFull(.1);
 	
-	
-	this.stage = game.add.sprite(game.width / 2, game.height / 2, 'atlas1', 'bg-meadow');
+	this.stage = game.add.sprite(game.width / 2, game.height / 2, 'atlas1', Battle.initPacket.background_name);
 	this.stage.anchor.setTo(.5, .5);
 	this.stage.width = game.width;
 	this.stage.height = game.height;
@@ -197,22 +271,15 @@ Battle.create = function() {
 	this.frontPatch.scale.set(1.5, 1.5);
 	this.frontPatch.visible = true;
 	
-	Battle.frontPokemon = new Pokemon(1, "pikachu");
-	Battle.backPokemon = new Pokemon(2, "chandelure");
+	let pokemon_a = Battle.initPacket.pokemon_a;
+	let pokemon_b = Battle.initPacket.pokemon_b;
+	
+	// Todo: update
+	Battle.frontPokemon = new Pokemon(1, pokemon_a.species);
+	Battle.backPokemon = new Pokemon(2, pokemon_b.species);
 	
 	this.drawDefaultMenu();
 	this.drawPokemon(Battle.frontPokemon, Battle.backPokemon);
-	
-	/*this.frontPokemonSprite = game.add.sprite(game.world.centerX * (4.5 / 12), game.world.centerY * (4.5 / 6), 'atlas2', 'front/pikachu');
-	this.frontPokemonSprite.anchor.setTo(0.5, 0.5);
-	this.frontPokemonSprite.scale.set(2, 2);
-	this.frontPokemonSprite.visible = true;
-	
-	this.backPokemonSprite = game.add.sprite(game.world.centerX * (17 / 12), game.world.centerY / 2, 'atlas2', 'back/pikachu');
-	this.backPokemonSprite.anchor.setTo(0.5, 0.5);
-	this.backPokemonSprite.scale.set(2, 2);
-	this.backPokemonSprite.visible = true;*/
-	
 	
 	this.stage.visible = true;
 };
@@ -224,16 +291,13 @@ Battle.drawBackground = function(key) {
 	}
 	
 	this.backPokemon.sprite = game.add.sprite(game.width * (3 / 4), game.height * (6.25 / 12), key);
-	
-	this.backPokemon.sprite.animations.add('idle');
-	this.backPokemon.sprite.animations.play('idle', 40, true);
-	
+	this.backPokemon.sprite.visible = false;
 	this.backPokemon.sprite.anchor.setTo(0.5, 1);
 	this.backPokemon.sprite.scale.set(.75, .75);
 	
-	Battle.drawHealthBox(this.backPokemon);
 	
-	this.backPokemon.sprite.visible = true;
+	Battle.switchIn(this.backPokemon);
+	
 }
 
 Battle.drawHealthBox = function(pokemon) {
@@ -256,36 +320,40 @@ Battle.drawForeground = function(key) {
 	}
 	
 	this.frontPokemon.sprite = game.add.sprite(game.width * (3.5 / 12), game.height * (9 / 12), key);
-	
-	this.frontPokemon.sprite.animations.add('idle');
-	this.frontPokemon.sprite.animations.play('idle', 40, true);
-	
+	this.frontPokemon.sprite.visible = false;
 	this.frontPokemon.sprite.anchor.setTo(0.5, 1);
 	this.frontPokemon.sprite.scale.set(.75, .75);
 	
-	Battle.drawHealthBox(this.frontPokemon);
 	
-	this.frontPokemon.sprite.visible = true;
+	Battle.switchIn(Battle.frontPokemon);
 }
 
 Battle.drawPokemon = function(fore, bg) {
 	
-	if (this.frontPokemonSprite != undefined) {
+	if (fore != undefined && this.frontPokemonSprite != undefined) {
 		this.frontPokemonSprite.destroy();	
 	}
 	
-	if (this.backPokemonSprite != undefined) {
+	if (bg != undefined && this.backPokemonSprite != undefined) {
 		this.backPokemonSprite.destroy();	
 	}
 	
 	//this.drawFront(front.species);
-	//this.drawFront(front.species);
+	//this.drawFront(front.species)
 	
-	let frontKey = 'front-' + bg.species;
-	let backKey = 'back-' + fore.species;
+	let frontKey = false;
+	let backKey = false;
 	
-	game.load.atlasJSONHash(backKey, '/assets/sprites/pokemon/' + backKey + '.png', '/assets/sprites/pokemon/' + backKey + '.json');
-	game.load.atlasJSONHash(frontKey, '/assets/sprites/pokemon/' + frontKey + '.png', '/assets/sprites/pokemon/' + frontKey + '.json');
+	if (fore != undefined) {
+		backKey = 'back-' + fore.species;
+		game.load.atlasJSONHash(backKey, '/assets/sprites/pokemon/' + backKey + '.png', '/assets/sprites/pokemon/' + backKey + '.json');
+	}
+	
+	if (bg != undefined) {
+		frontKey = 'front-' + bg.species;
+		game.load.atlasJSONHash(frontKey, '/assets/sprites/pokemon/' + frontKey + '.png', '/assets/sprites/pokemon/' + frontKey + '.json');
+	}
+	
 	game.load.start();
 	
 	game.load.onFileComplete.add(function(progress, cacheKey, success, totalLoaded, totalFiles) {
@@ -305,6 +373,16 @@ Battle.drawDefaultMenu = function() {
 	
 }
 
-Battle.start = function() {
+Battle.setup = function(initPacket) {
+	
+	Battle.battleId = initPacket.battle_id;
+	Battle.battleType = initPacket.battle_type;
+	
+	// Hack:
+	if (initPacket.backgroud_name != undefined) {
+		initPacket.background_name = initPacket.backgroud_name;
+	}
+	
+	Battle.initPacket = initPacket;
 	
 }
