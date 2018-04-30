@@ -1,8 +1,13 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
 import cs.brown.edu.aelp.pokemmo.pokemon.Status;
+import java.lang.reflect.Type;
 
 /**
  * Pokemon Move class.
@@ -14,7 +19,15 @@ public class Move {
    * require Java implemented Handlers.
    */
   public enum MoveComplexity {
-    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO, RECOIL,
+    BASIC,
+    BUFF,
+    DEBUFF,
+    COMPLEX,
+    STATUS,
+    DMG_STATUS,
+    WEATHER,
+    OHKO,
+    RECOIL,
     ERROR
   }
 
@@ -22,7 +35,9 @@ public class Move {
    * Move Category.
    */
   public enum MoveCategory {
-    PHYSICAL, SPECIAL, NONE
+    PHYSICAL,
+    SPECIAL,
+    NONE
   }
 
   public static class Builder {
@@ -235,6 +250,8 @@ public class Move {
 
   private Double recoil;
 
+  private int cost = 1;
+
   // We want to construct moves only using the builder
   protected Move(int id) {
     this.id = id;
@@ -336,11 +353,15 @@ public class Move {
   }
 
   public void setPP(int pp) {
-    this.pp = pp;
+    this.currPP = pp;
   }
 
   public int getId() {
     return this.id;
+  }
+
+  public int getCost() {
+    return this.cost;
   }
 
   public MoveResult getMoveResult(AttackEvent atkEvent) {
@@ -378,6 +399,25 @@ public class Move {
     if (id != other.id)
       return false;
     return true;
+  }
+
+  public static class MoveAdapter implements JsonSerializer<Move> {
+
+    @Override
+    public JsonElement serialize(Move src, Type typeOfSrc,
+        JsonSerializationContext ctx) {
+      JsonObject o = new JsonObject();
+      o.addProperty("max_pp", src.getPP());
+      o.addProperty("pp", src.getCurrPP());
+      o.addProperty("name", src.getName());
+      o.addProperty("id", src.getId());
+      o.addProperty("cost", src.getCost());
+      o.addProperty("desc", src.getShortDescription());
+      o.addProperty("type", src.getType().toString());
+      o.addProperty("category", src.getCategory().toString());
+      return o;
+    }
+
   }
 
 }
