@@ -206,27 +206,25 @@ Game.loadCurrentChunk = function(clear) {
 
 function drawHud() {
 	// hud grey bar
-	//floor = new Phaser.Rectangle(0, Game.map.heightInPixels-0.5*Game.map.heightInPixels, Game.map.widthInPixels, Game.map.heightInPixels/11);
-    //game.debug.geom(floor,'#A9A9A9');
-	/* completionSprite = game.add.graphics( 0, 0 );
-	completionSprite.beginFill(0xFFFF00, 1);
-	completionSprite.bounds = new PIXI.Rectangle(0, 0, 200, 200);
-	completionSprite.drawRect(0, 0, 200, 200);
-	completionSprite.boundsPadding = 0; */
+	completionSprite = game.add.graphics(0, 0);
+	completionSprite.beginFill(0x3d3d3d, 1);
+	completionSprite.drawRect(Game.map.widthInPixels/1.5, Game.map.heightInPixels-0.51*Game.map.heightInPixels, Game.map.widthInPixels, Game.map.heightInPixels/10.4);
+	completionSprite.boundsPadding = 0;
+    completionSprite.fixedToCamera = true;
 
 
 	// backpack icon
-	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/6.5, Game.map.heightInPixels-Game.map.heightInPixels/2, "trophy");
+	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/7, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "trophy");
     backpackIcon.inputEnabled = true;
     backpackIcon.fixedToCamera = true;
 
     // trophy icon
-   	let trophyIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/4, Game.map.heightInPixels-Game.map.heightInPixels/2, "backpack");
+   	let trophyIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/4.60, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");
     trophyIcon.inputEnabled = true;
     trophyIcon.fixedToCamera = true;
 
     // coin icon
-    let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/2.85, Game.map.heightInPixels-Game.map.heightInPixels/2, "coin");
+    let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3.45, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "coin");
     coinIcon.inputEnabled = true;
     coinIcon.fixedToCamera = true;
 
