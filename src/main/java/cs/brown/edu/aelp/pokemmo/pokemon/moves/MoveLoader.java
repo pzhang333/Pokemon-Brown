@@ -56,6 +56,7 @@ public final class MoveLoader {
           .withShortDescription(shortDesc)
           .withName(name)
           .withPP(pp)
+          .withCurrPP(pp)
           .withPriority(priority)
           .ofCategory(category)
           .ofCategory(category)
