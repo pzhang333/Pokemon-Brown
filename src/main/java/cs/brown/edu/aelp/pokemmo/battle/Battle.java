@@ -2,25 +2,41 @@ package cs.brown.edu.aelp.pokemmo.battle;
 
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import cs.brown.edu.aelp.util.Identifiable;
 
-public abstract class Battle {
-
-  private final Arena arena;
-
-  private final Integer id;
-
-  public Battle(Integer id, Arena arena) {
-    this.id = id;
-    this.arena = arena;
-  }
+public abstract class Battle extends Identifiable {
 
   public enum BattleState {
-    SETUP, WAITING, READY, DONE
+    SETUP,
+    WAITING,
+    READY,
+    DONE
   };
 
   public enum BattleType {
-    WILD_BATTLE, PVP_BATTLE
+    WILD_BATTLE,
+    PVP_BATTLE
   };
+
+  private final Arena arena;
+  private final Trainer trainer1;
+  private final Trainer trainer2;
+
+  public Battle(int id, Arena arena, Trainer t1, Trainer t2) {
+    super(id);
+    this.arena = arena;
+    this.trainer1 = t1;
+    this.trainer2 = t2;
+  }
+
+  public Trainer getTrainer1() {
+    return this.trainer1;
+  }
+
+  public Trainer getTrainer2() {
+    return this.trainer2;
+  }
 
   private BattleState battleState = BattleState.SETUP;
 
@@ -31,10 +47,6 @@ public abstract class Battle {
    */
   public BattleState getBattleState() {
     return battleState;
-  }
-
-  public Integer getBattleId() {
-    return id;
   }
 
   /**
