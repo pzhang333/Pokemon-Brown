@@ -113,12 +113,10 @@ public class PlayerWebSocketHandler {
     try {
       User u = UserManager.authenticate(id, token);
       u.setSession(session);
-      System.out.println("Authenticated socket by packet: " + payload);
       PacketSender.sendInitializationPacket(u);
       // TODO: Inform all other users of their connection?
     } catch (AuthException e1) {
       // their credentials were bad or something went wrong
-      System.out.println(e1.getMessage());
       session.close();
     }
   }

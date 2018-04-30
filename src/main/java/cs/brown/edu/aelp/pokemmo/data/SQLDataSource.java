@@ -1,5 +1,14 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
+import cs.brown.edu.aelp.pokemmo.data.Leaderboards.EloUser;
+import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokemonLoader;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemon.Main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,16 +27,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import cs.brown.edu.aelp.pokemmo.data.Leaderboards.EloUser;
-import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.map.Chunk;
-import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
-import cs.brown.edu.aelp.pokemmo.pokemon.PokemonLoader;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemon.Main;
 
 public class SQLDataSource implements DataSource {
 
@@ -61,7 +60,6 @@ public class SQLDataSource implements DataSource {
       this.conn = DriverManager.getConnection(this.connString, this.user,
           this.pass);
     }
-    this.conn.setAutoCommit(true);
     return this.conn;
   }
 
@@ -94,7 +92,7 @@ public class SQLDataSource implements DataSource {
               rs.getInt("experience"), rs.getInt("id"));
           List<Move> moves = poke.getMoves();
           for (int i = 0; i < moves.size(); i++) {
-            int pp = rs.getInt("pp_" + i);
+            int pp = rs.getInt("pp_" + (i + 1));
             if (!rs.wasNull()) {
               moves.get(i).setPP(pp);
             }
@@ -105,6 +103,7 @@ public class SQLDataSource implements DataSource {
           }
           poke.setStored(rs.getBoolean("stored"));
           poke.changeNickname(rs.getString("nickname"));
+          poke.setOwner(user);
           pokemon.add(poke);
         }
         return pokemon;
@@ -120,12 +119,9 @@ public class SQLDataSource implements DataSource {
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
 
-    System.out.println(
-        "User: " + user.getUsername() + " : " + this.loadPokemonForUser(user));
-    /*
-     * for (Pokemon pokemon : this.loadPokemonForUser(user)) {
-     * user.addPokemonToTeam(pokemon); }
-     */
+    for (Pokemon pokemon : this.loadPokemonForUser(user)) {
+      user.addPokemonToTeam(pokemon);
+    }
 
     Pokemon pokemon = PokemonLoader.load("bulbasaur", Pokemon.calcXpByLevel(5));
     pokemon.setOwner(user);
@@ -180,8 +176,8 @@ public class SQLDataSource implements DataSource {
   }
 
   @Override
-  public User registerUser(String username, String email, String password)
-      throws AuthException {
+  public User registerUser(String username, String email, String password,
+      String species, String nickname) throws AuthException {
     // first check if the username is taken
     try {
       try (PreparedStatement p = this.prepStatementFromFile(
@@ -208,6 +204,8 @@ public class SQLDataSource implements DataSource {
       // if neither failed, we can hope we are good to insert
       // race conditions are possible, but worst case scenario we fail
       // generically
+      this.getConn().setAutoCommit(false);
+      User u;
       try (PreparedStatement p = this
           .prepStatementFromFile("src/main/resources/sql/register_user.sql")) {
         byte[] salt = Password.generateSalt();
@@ -228,16 +226,52 @@ public class SQLDataSource implements DataSource {
 
         try (ResultSet rs = p.executeQuery()) {
           if (rs.next()) {
-            return new User(rs.getInt("id"), username, email, token);
+            u = new User(rs.getInt("id"), username, email, token);
           } else {
+            conn.rollback();
             throw new AuthException();
           }
         }
       }
-    } catch (IOException | SQLException | NoSuchAlgorithmException
-        | InvalidKeySpecException e) {
+      try (PreparedStatement p = this
+          .prepStatementFromFile("src/main/resources/sql/insert_pokemon.sql")) {
+        p.setInt(1, u.getId());
+        p.setString(2, nickname);
+        p.setString(3, species);
+        p.setInt(4, Pokemon.calcXpByLevel(5));
+        try (ResultSet rs = p.executeQuery()) {
+          if (rs.next()) {
+            Pokemon poke = PokemonLoader.load(species, Pokemon.calcXpByLevel(5),
+                rs.getInt("id"));
+            poke.setOwner(u);
+            poke.setStored(rs.getBoolean("stored"));
+            u.addPokemonToTeam(poke);
+            conn.commit();
+            return u;
+          } else {
+            conn.rollback();
+            throw new AuthException();
+          }
+        }
+      }
+    } catch (Exception e) {
+      if (e instanceof AuthException) {
+        throw (AuthException) e;
+      }
+      try {
+        conn.rollback();
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+      }
       e.printStackTrace();
       throw new AuthException();
+    } finally {
+      try {
+        conn.setAutoCommit(true);
+      } catch (SQLException e) {
+        e.printStackTrace();
+        throw new AuthException();
+      }
     }
   }
 
@@ -268,7 +302,7 @@ public class SQLDataSource implements DataSource {
         conn.commit();
         return i;
       }
-    } catch (SQLException e) {
+    } catch (Exception e) {
       try {
         System.out.println("CRITICAL: Batch save failed:");
         e.printStackTrace();
@@ -278,6 +312,13 @@ public class SQLDataSource implements DataSource {
         e1.printStackTrace();
       }
       throw new SaveException();
+    } finally {
+      try {
+        conn.setAutoCommit(true);
+      } catch (SQLException e) {
+        e.printStackTrace();
+        throw new SaveException();
+      }
     }
   }
 
@@ -303,31 +344,6 @@ public class SQLDataSource implements DataSource {
     byte[] token = new byte[8];
     new SecureRandom().nextBytes(token);
     return Base64.getEncoder().encodeToString(token);
-  }
-
-  @Override
-  public Pokemon addPokemonToUser(User u, String species, String nickname)
-      throws SaveException {
-    try (PreparedStatement p = this
-        .prepStatementFromFile("src/main/resources/sql/insert_pokemon.sql")) {
-      p.setInt(1, u.getId());
-      p.setString(2, nickname);
-      p.setString(3, species);
-      p.setInt(4, Pokemon.calcXpByLevel(5));
-      try (ResultSet rs = p.executeQuery()) {
-        if (rs.next()) {
-          Pokemon poke = PokemonLoader.load(species, Pokemon.calcXpByLevel(5),
-              rs.getInt("id"));
-          poke.setStored(rs.getBoolean("stored"));
-          return poke;
-        } else {
-          throw new SaveException();
-        }
-      }
-    } catch (SQLException | IOException e) {
-      e.printStackTrace();
-      throw new SaveException();
-    }
   }
 
   private PreparedStatement getPStatementForClass(SQLBatchSavable object) {

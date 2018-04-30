@@ -1,17 +1,15 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class PokemonLoader {
   private static final String FILEPATH = "data/pokemon/pokemon.json";
@@ -34,7 +32,6 @@ public final class PokemonLoader {
       JsonArray moves = pokemon.getAsJsonArray("moves");
 
       Integer hp = baseStats.getAsJsonPrimitive("hp").getAsInt();
-      System.out.println(hp);
       Integer attack = baseStats.getAsJsonPrimitive("atk").getAsInt();
       Integer defense = baseStats.getAsJsonPrimitive("def").getAsInt();
       Integer spAtk = baseStats.getAsJsonPrimitive("spa").getAsInt();
@@ -63,7 +60,8 @@ public final class PokemonLoader {
       Pokemon target = new Pokemon.Builder(id).ofSpecies(species)
           .withNickName(species).withBaseHp(hp).withAtk(attack).withDef(defense)
           .withSpecAtk(spAtk).withSpecDef(spDef).withSpd(speed)
-          .withTypes(typesList).withGender(gender).withExp(exp).build();
+          .withTypes(typesList).withGender(gender).withExp(exp)
+          .withMoves(moveList).build();
       return target;
 
     } catch (FileNotFoundException e) {

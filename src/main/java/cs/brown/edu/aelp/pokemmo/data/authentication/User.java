@@ -111,8 +111,6 @@ public class User extends Trainer implements SQLBatchSavable {
         System.out.printf("User %d found a pokemon in the bushes.%n",
             this.getId());
         PacketSender.sendEncounterPacket(this);
-        this.setPath(null);
-        this.setLocation(e.getLocation());
       }
     } else if (e instanceof Portal) {
       Portal p = (Portal) e;

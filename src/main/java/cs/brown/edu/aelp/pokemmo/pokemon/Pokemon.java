@@ -1,24 +1,22 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
-import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.util.Identifiable;
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 // TODO: We probably need a status column in our pokemon DB
 
@@ -196,6 +194,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       pokemon.species = this.species;
       pokemon.gender = this.gender;
       pokemon.stored = this.stored;
+      pokemon.moves = this.moves;
 
       pokemon.owner = this.owner;
 
@@ -509,8 +508,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   @Override
   public List<String> getUpdatableColumns() {
     return Lists.newArrayList("user_id", "nickname", "gender", "experience",
-        "stored", "cur_health", "species", "move_1", "move_2", "move_3",
-        "move_4", "pp_1", "pp_2", "pp_3", "pp_4");
+        "stored", "cur_health", "species", "pp_1", "pp_2", "pp_3", "pp_4");
   }
 
   @Override
@@ -528,27 +526,26 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     p.setBoolean(5, this.isStored());
     p.setInt(6, this.getCurrHp());
     p.setString(7, this.getSpecies());
+    for (int i = 8; i < 12; i++) {
+      p.setInt(i, 0);
+    }
     if (this.moves.size() > 0) {
       Move m1 = this.moves.get(0);
-      p.setInt(8, m1.getId());
-      p.setInt(12, m1.getPP());
+      p.setInt(8, m1.getPP());
     }
     if (this.moves.size() > 1) {
       Move m2 = this.moves.get(1);
-      p.setInt(9, m2.getId());
-      p.setInt(13, m2.getPP());
+      p.setInt(9, m2.getPP());
     }
     if (this.moves.size() > 2) {
       Move m3 = this.moves.get(2);
-      p.setInt(10, m3.getId());
-      p.setInt(14, m3.getPP());
+      p.setInt(10, m3.getPP());
     }
     if (this.moves.size() > 3) {
       Move m4 = this.moves.get(3);
-      p.setInt(11, m4.getId());
-      p.setInt(15, m4.getPP());
+      p.setInt(11, m4.getPP());
     }
-    p.setInt(16, this.getId());
+    p.setInt(12, this.getId());
     p.addBatch();
   }
 
@@ -574,6 +571,11 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
         JsonSerializationContext ctx) {
       JsonObject o = new JsonObject();
       o.addProperty("id", src.getId());
+      if (src.getOwner() == null) {
+        o.addProperty("owner_id", -1);
+      } else {
+        o.addProperty("owner_id", src.getOwner().getId());
+      }
       o.addProperty("hp", src.getCurrHp());
       o.addProperty("status", src.getStatus().ordinal());
       o.addProperty("gender", src.getGender());
