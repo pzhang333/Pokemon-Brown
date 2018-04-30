@@ -11,6 +11,13 @@ const MESSAGE_TYPE = {
     CLIENT_BATTLE_UPDATE: 9
 };
 
+const BATTLE_ACTION = {
+	RUN: 0,
+	SWITCH: 1,
+	USE_ITEM: 2,
+	FIGHT: 3
+};
+
 const OP_CODES = {
 	PLAYER_ENTERED_CHUNK: 0,
 	PLAYER_LEFT_CHUNK: 1,
@@ -65,6 +72,14 @@ class Net {
 
 	}
 
+	sendBattlePacket(action, payload) {
+		
+		payload.action = action;
+		payload.turn_id = -1;
+		
+		this.sendPacket(MESSAGE_TYPE.CLIENT_BATTLE_UPDATE, payload);
+	}
+	
 	sendPacket(type, payload) {
 		if (this.socket.readyState == this.socket.CLOSED) {
 			throw "Socket closed...";

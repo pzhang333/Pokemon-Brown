@@ -1,12 +1,17 @@
 class Pokemon {
 	
-	constructor(id, species) {
+	constructor(id, species, moves) {
 		this.id = id;
 		
 		if (species == undefined) {
 			species = "pikachu";
 		}
 		this.species = species;
+		
+		if (moves == undefined) {
+			moves = [];
+		}
+		this.moves = moves;
 	}
 	
 }
@@ -287,7 +292,7 @@ Battle.create = function() {
 	let pokemon_b = Battle.initPacket.pokemon_b;
 	
 	// Todo: update
-	Battle.frontPokemon = new Pokemon(1, pokemon_a.species);
+	Battle.frontPokemon = new Pokemon(1, pokemon_a.species, pokemon_a.moves);
 	Battle.backPokemon = new Pokemon(2, pokemon_b.species);
 	
 	this.drawDefaultMenu();
@@ -321,7 +326,7 @@ Battle.drawHealthBox = function(pokemon) {
 		x: pokemon.sprite.x - (125 / 2),
 		y: (pokemon.sprite.y - (pokemon.sprite.height) - 30),
 		width: 125,
-		height: 8
+		height: 6
 	});
 }
 
@@ -409,6 +414,45 @@ Battle.clearMenu = function() {
 	}
 }
 
+Battle.clearMoves = function() {
+	
+	if (Battle.moveButtons == undefined) {
+		return;
+	}
+	
+	for(let i = 0; i < Battle.moveButtons.length; i++) {
+		Battle.moveButtons[i].destroy();
+	}
+	
+	Battle.moveButtons = [];
+}
+
+Battle.showMoves = function() {
+	
+	Battle.clearMoves();
+	
+	Battle.moveButtons = [];
+	
+	let buttonWidth = Battle.panel.width / 4.1;
+	
+	for(let i = 0; i < this.frontPokemon.moves.length; i++) {
+		let move = this.frontPokemon.moves[i];
+
+		let yI = Math.floor(i / 2);
+		let xI = i % 2;
+		
+		let moveButton = new SlickUI.Element.Button(xI * (buttonWidth + 4), (yI * 50), buttonWidth, 48);
+		Battle.panel.add(moveButton);
+		moveButton.add(new SlickUI.Element.Text(0, 0, move.name)).center();
+		
+		Battle.moveButtons.push(moveButton);
+	}
+	
+	if (Battle.moveButtons.length == 0) {
+		// Add struggle
+	}
+}
+
 Battle.drawDefaultMenu = async function() {
 	Battle.clearMenu();
 	
@@ -416,28 +460,38 @@ Battle.drawDefaultMenu = async function() {
 	Battle.slickUI.add(Battle.panel);
 	
 	let buttonOffsetX = Battle.panel.width / 2;
-	let buttonWidth = Battle.panel.width / 3.99;
+	let buttonWidth = Battle.panel.width / 4.1;
 	
 	// Fight button
-	let fightButton = new SlickUI.Element.Button(buttonOffsetX, 0, buttonWidth, 48);
+	let fightButton = new SlickUI.Element.Button(buttonOffsetX + 4, 0, buttonWidth, 48);
 	Battle.panel.add(fightButton);
 	fightButton.add(new SlickUI.Element.Text(0, 0, "Fight")).center();
 	await fightButton.events;
 	fightButton.events.onInputUp.add(function() {
-		console.log('Fight!');
+
+		if (Battle.moveButtons == undefined || Battle.moveButtons.length == 0) {
+			Battle.showMoves();
+		} else {
+			Battle.clearMoves();
+		}
+		
 	});
 	
-	let switchButton = new SlickUI.Element.Button(buttonOffsetX, 50, buttonWidth, 48);
+	let switchButton = new SlickUI.Element.Button(buttonOffsetX + 4, 50, buttonWidth, 48);
 	Battle.panel.add(switchButton);
 	switchButton.add(new SlickUI.Element.Text(0, 0, "Switch")).center(); 
 	
-	let itemButton = new SlickUI.Element.Button(buttonOffsetX + buttonWidth + 4, 0, buttonWidth, 48);
+	let itemButton = new SlickUI.Element.Button(buttonOffsetX + 4 + buttonWidth + 4, 0, buttonWidth, 48);
 	Battle.panel.add(itemButton);
 	itemButton.add(new SlickUI.Element.Text(0, 0, "Item")).center(); 
 	
-	let forefitButton = new SlickUI.Element.Button(buttonOffsetX + buttonWidth + 4, 50, buttonWidth, 48);
+	let forefitButton = new SlickUI.Element.Button(buttonOffsetX + 4 + buttonWidth + 4, 50, buttonWidth, 48);
 	Battle.panel.add(forefitButton);
 	forefitButton.add(new SlickUI.Element.Text(0, 0, "Forefit")).center();
+	await forefitButton.events;
+	forefitButton.events.onInputUp.add(function() {
+		net.sendBattlePacket(BATTLE_ACTION.RUN, {});
+	});
 	
 	if (Battle.menuSeparator != undefined) {
 		Battle.menuSeparator.kill();
@@ -446,8 +500,8 @@ Battle.drawDefaultMenu = async function() {
 	Battle.menuSeparator = game.add.graphics(0, 0);
 	
 	Battle.menuSeparator.lineStyle(2, 0x999999);
-	Battle.menuSeparator.moveTo(buttonOffsetX, game.height - (108));
-	Battle.menuSeparator.lineTo(buttonOffsetX, game.height - 16);
+	Battle.menuSeparator.moveTo(buttonOffsetX + 12, game.height - (108));
+	Battle.menuSeparator.lineTo(buttonOffsetX + 12, game.height - 16);
 	
 }
 
