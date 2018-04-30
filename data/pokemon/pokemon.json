@@ -5,7 +5,10 @@
         "types": ["Grass", "Poison"],
         "baseStats": {"hp": 45, "atk": 49, "def": 49, "spa": 65, "spd": 65, "spe": 45},
         "moves": [22, 33, 45],
-        "evo": "ivysaur"
+        "evo": "ivysaur",
+        "xOffset": 0,
+        "yOffset": 0,
+        "fps": 40
     },
     "ivysaur": {
         "num": 2,
@@ -13,7 +16,10 @@
         "types": ["Grass", "Poison"],
         "baseStats": {"hp": 60, "atk": 62, "def": 63, "spa": 80, "spd": 80, "spe": 60},
         "moves": [22, 33, 36, 77],
-        "evo": "venusaur"
+        "evo": "venusaur",
+        "xOffset": 0,
+        "yOffset": 0,
+        "fps": 40
     },
     "venusaur": {
 		"num": 3,
@@ -21,7 +27,10 @@
 		"types": ["Grass", "Poison"],
         "baseStats": {"hp": 80, "atk": 82, "def": 83, "spa": 100, "spd": 100, "spe": 80},
         "moves": [33, 38, 77, 572],
-        "evo": ""
+        "evo": "",
+        "xOffset": 0,
+        "yOffset": 0,
+        "fps": 40
     },
     "pichu": {
 		"num": 172,
@@ -29,7 +38,10 @@
 		"types": ["Electric"],
         "baseStats": {"hp": 20, "atk": 40, "def": 15, "spa": 35, "spd": 35, "spe": 60},
         "moves": [39, 84],
-		"evo": "pikachu"
+		"evo": "pikachu",
+        "xOffset": 0,
+        "yOffset": 0,
+        "fps": 40
 	},
     "pikachu": {
 		"num": 25,
@@ -37,7 +49,10 @@
 		"types": ["Electric"],
         "baseStats": {"hp": 35, "atk": 55, "def": 40, "spa": 50, "spd": 50, "spe": 90},
         "moves": [],
-		"evo": "raichu"
+		"evo": "raichu",
+        "xOffset": 0,
+        "yOffset": 0,
+        "fps": 40
     },
     "raichu": {
 		"num": 26,
@@ -45,6 +60,9 @@
 		"types": ["Electric"],
         "baseStats": {"hp": 60, "atk": 90, "def": 55, "spa": 90, "spd": 80, "spe": 110},
         "moves": [],
-        "evo": ""
+        "evo": "",
+        "xOffset": 0,
+        "yOffset": 0,
+        "fps": 40
 	}
 }

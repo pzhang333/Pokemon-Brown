@@ -1,11 +1,18 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
@@ -13,11 +20,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
 import cs.brown.edu.aelp.util.Identifiable;
-import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 // TODO: We probably need a status column in our pokemon DB
 
@@ -64,6 +66,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     private Integer gender;
     private boolean stored;
     private Trainer owner;
+
+    private Integer xOffset;
+    private Integer yOffset;
+    private Integer fps;
 
     private Status status = Status.NONE;
 
@@ -156,6 +162,21 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       return this;
     }
 
+    public Builder withXOffset(Integer xOffset) {
+      this.xOffset = xOffset;
+      return this;
+    }
+
+    public Builder withYOffset(Integer yOffset) {
+      this.yOffset = yOffset;
+      return this;
+    }
+
+    public Builder withFPS(Integer fps) {
+      this.fps = fps;
+      return this;
+    }
+
     /**
      * Builds the Pokemon class and returns the built Pokemon class.
      *
@@ -198,6 +219,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       pokemon.moves = this.moves;
 
       pokemon.owner = this.owner;
+
+      pokemon.xOffset = this.xOffset;
+      pokemon.yOffset = this.yOffset;
+      pokemon.fps = this.fps;
 
       return pokemon;
     }
@@ -246,6 +271,12 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   private Integer exp;
 
   private Integer lvl;
+
+  private Integer xOffset;
+
+  private Integer yOffset;
+
+  private Integer fps;
 
   private List<PokeTypes> typeList;
 
@@ -367,6 +398,18 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   public Integer getGender() {
     return this.gender;
+  }
+
+  public Integer getXOffset() {
+    return xOffset;
+  }
+
+  public Integer getYOffset() {
+    return yOffset;
+  }
+
+  public Integer getFPS() {
+    return fps;
   }
 
   public void evolve() {

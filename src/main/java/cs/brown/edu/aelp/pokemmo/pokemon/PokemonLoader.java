@@ -1,15 +1,17 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
 
 public final class PokemonLoader {
   private static final String FILEPATH = "data/pokemon/pokemon.json";
@@ -38,6 +40,10 @@ public final class PokemonLoader {
       Integer spDef = baseStats.getAsJsonPrimitive("spd").getAsInt();
       Integer speed = baseStats.getAsJsonPrimitive("spe").getAsInt();
 
+      Integer xOffset = pokemon.get("xOffset").getAsInt();
+      Integer yOffset = pokemon.get("yOffset").getAsInt();
+      Integer fps = pokemon.get("fps").getAsInt();
+
       List<PokeTypes> typesList = new ArrayList<>();
 
       for (JsonElement type : types) {
@@ -61,7 +67,8 @@ public final class PokemonLoader {
           .withNickName(species).withBaseHp(hp).withAtk(attack).withDef(defense)
           .withSpecAtk(spAtk).withSpecDef(spDef).withSpd(speed)
           .withTypes(typesList).withGender(gender).withExp(exp)
-          .withMoves(moveList).build();
+          .withMoves(moveList).withXOffset(xOffset).withYOffset(yOffset)
+          .withFPS(fps).build();
       return target;
 
     } catch (FileNotFoundException e) {
@@ -87,42 +94,42 @@ public final class PokemonLoader {
 
   public static PokeTypes stringToType(String type) {
     switch (type) {
-    case "Normal":
-      return PokeTypes.NORMAL;
-    case "Fire":
-      return PokeTypes.FIRE;
-    case "Water":
-      return PokeTypes.WATER;
-    case "Electric":
-      return PokeTypes.ELECTRIC;
-    case "Grass":
-      return PokeTypes.GRASS;
-    case "Ice":
-      return PokeTypes.ICE;
-    case "Fighting":
-      return PokeTypes.FIGHTING;
-    case "Poison":
-      return PokeTypes.POISON;
-    case "Ground":
-      return PokeTypes.GROUND;
-    case "Flying":
-      return PokeTypes.FLYING;
-    case "Psychic":
-      return PokeTypes.PSYCHIC;
-    case "Bug":
-      return PokeTypes.BUG;
-    case "Rock":
-      return PokeTypes.ROCK;
-    case "Ghost":
-      return PokeTypes.GHOST;
-    case "Dragon":
-      return PokeTypes.DRAGON;
-    case "Dark":
-      return PokeTypes.DARK;
-    case "Steel":
-      return PokeTypes.STEEL;
-    default:
-      return PokeTypes.NORMAL;
+      case "Normal":
+        return PokeTypes.NORMAL;
+      case "Fire":
+        return PokeTypes.FIRE;
+      case "Water":
+        return PokeTypes.WATER;
+      case "Electric":
+        return PokeTypes.ELECTRIC;
+      case "Grass":
+        return PokeTypes.GRASS;
+      case "Ice":
+        return PokeTypes.ICE;
+      case "Fighting":
+        return PokeTypes.FIGHTING;
+      case "Poison":
+        return PokeTypes.POISON;
+      case "Ground":
+        return PokeTypes.GROUND;
+      case "Flying":
+        return PokeTypes.FLYING;
+      case "Psychic":
+        return PokeTypes.PSYCHIC;
+      case "Bug":
+        return PokeTypes.BUG;
+      case "Rock":
+        return PokeTypes.ROCK;
+      case "Ghost":
+        return PokeTypes.GHOST;
+      case "Dragon":
+        return PokeTypes.DRAGON;
+      case "Dark":
+        return PokeTypes.DARK;
+      case "Steel":
+        return PokeTypes.STEEL;
+      default:
+        return PokeTypes.NORMAL;
     }
   }
 
