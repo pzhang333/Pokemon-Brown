@@ -269,8 +269,6 @@ Battle.create = function() {
 	this.frontPatch.scale.set(1.5, 1.5);
 	this.frontPatch.visible = true;
 	
-	Battle.message = "Battle!";
-	
 	let pokemon_a = Battle.initPacket.pokemon_a;
 	let pokemon_b = Battle.initPacket.pokemon_b;
 	
@@ -312,7 +310,7 @@ Battle.create = function() {
 	this.drawDefaultMenu();
 	this.drawPokemon(Battle.frontPokemon, Battle.backPokemon);
 	
-	this.drawMessage();
+	this.drawMessage("Battle!");
 	
 	this.stage.visible = true;
 };
@@ -418,16 +416,24 @@ Battle.drawPokemon = function(fore, bg) {
 	
 }
 
-Battle.drawMessage = function() {
+Battle.drawMessage = function(text) {
 	
 	Battle.clearMessageText();
 	
+	if (text == undefined) {
+		text = "";
+	}
+	
 	if (Battle.messageText == undefined) {
-		Battle.messageText = new SlickUI.Element.Text(8, 8, Battle.message);
+		
+		Battle.messageText = new SlickUI.Element.Text(8, 8, text);
 		Battle.messageText.size = 12;
 		
 		Battle.panel.add(Battle.messageText);
+	} else {
+		Battle.messageText.value = text;
 	}
+	
 	Battle.messageText.visible = true;
 }
 
@@ -484,8 +490,6 @@ Battle.clearMessageText = function() {
 	if (Battle.messageText != undefined) {
 		Battle.messageText.visible = false;
 	}
-	
-	Battle.messageText = undefined;
 }
 
 Battle.showTeam = async function() {
