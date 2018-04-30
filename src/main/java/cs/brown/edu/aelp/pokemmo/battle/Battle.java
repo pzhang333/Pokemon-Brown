@@ -13,11 +13,6 @@ public abstract class Battle extends Identifiable {
     DONE
   };
 
-  public enum BattleType {
-    WILD_BATTLE,
-    PVP_BATTLE
-  };
-
   private final Arena arena;
 
   public Battle(int id, Arena arena) {
@@ -26,8 +21,6 @@ public abstract class Battle extends Identifiable {
   }
 
   private BattleState battleState = BattleState.SETUP;
-
-  public abstract BattleType getBattleType();
 
   /**
    * @return the battleState
