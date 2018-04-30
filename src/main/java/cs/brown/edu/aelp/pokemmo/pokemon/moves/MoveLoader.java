@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
 import cs.brown.edu.aelp.pokemmo.pokemon.Status;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.Builder;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.MoveCategory;
@@ -45,12 +46,14 @@ public final class MoveLoader {
       for (JsonElement flag : flagArray) {
         flags.add(Move.Flags.valueOf(flag.getAsString()));
       }
+      PokeTypes type = PokeTypes.valueOf(move.get("type").getAsString());
 
       Builder builder = new Move.Builder(id);
       builder.withAccuracy(accuracy).withPower(basePower)
           .withDescription(description).withShortDescription(shortDesc)
           .withName(name).withPP(pp).withCurrPP(pp).withPriority(priority)
-          .ofCategory(category).withFlags(flags);
+          .ofCategory(category).ofCategory(category).ofType(type)
+          .withFlags(flags);
 
       if (flags.contains(Move.Flags.RECOIL)) {
         Double recoil = getDecimal(move.getAsJsonArray("recoil"));
