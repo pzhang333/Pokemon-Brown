@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
 import cs.brown.edu.aelp.pokemmo.pokemon.Status;
+import java.lang.reflect.Type;
 
 /**
  * Pokemon Move class.
@@ -21,7 +22,9 @@ public class Move {
    * Move Category.
    */
   public enum MoveCategory {
-    PHYSICAL, SPECIAL, NONE
+    PHYSICAL,
+    SPECIAL,
+    NONE
   }
 
   public static class Builder {
@@ -249,6 +252,8 @@ public class Move {
 
   private Double recoil;
 
+  private int cost = 1;
+
   /**
    * @return the accuracy
    */
@@ -319,10 +324,6 @@ public class Move {
     return type;
   }
 
-  public void setPP(int pp) {
-    this.pp = pp;
-  }
-
   public int getId() {
     return this.id;
   }
@@ -338,9 +339,17 @@ public class Move {
   public Integer getStages() {
     return stages;
   }
+  
+  public void setPP(int pp) {
+    this.currPP = pp;
+  }
 
   public Double getStatChance() {
     return statChance;
+  }
+
+  public int getCost() {
+    return this.cost;
   }
 
   public MoveResult getMoveResult(AttackEvent atkEvent) {
@@ -378,5 +387,23 @@ public class Move {
     if (id != other.id)
       return false;
     return true;
+  }
+
+  public static class MoveAdapter implements JsonSerializer<Move> {
+
+    @Override
+    public JsonElement serialize(Move src, Type typeOfSrc,
+        JsonSerializationContext ctx) {
+      JsonObject o = new JsonObject();
+      o.addProperty("max_pp", src.getPP());
+      o.addProperty("pp", src.getCurrPP());
+      o.addProperty("name", src.getName());
+      o.addProperty("id", src.getId());
+      o.addProperty("cost", src.getCost());
+      o.addProperty("desc", src.getShortDescription());
+      o.addProperty("type", src.getType().toString());
+      o.addProperty("category", src.getCategory().toString());
+      return o;
+    }
   }
 }

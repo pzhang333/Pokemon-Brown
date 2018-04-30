@@ -33,6 +33,7 @@ public class Bush extends Entity {
     // TODO: Return real Pokemon
     Pokemon.Builder b = new Pokemon.Builder(-1);
     u.setPath(null);
+    u.setLocation(this.getLocation());
     return b.build();
   }
 

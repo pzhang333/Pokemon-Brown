@@ -11,10 +11,6 @@ function appendPrefix(prefix, arr) {
 	return newArr;
 }
 
-function ucfirst(str) {
-	return str[0].toUpperCase() + str.substr(1);
-}
-
 /**
  * Get a list of integers from [start, end).
  */

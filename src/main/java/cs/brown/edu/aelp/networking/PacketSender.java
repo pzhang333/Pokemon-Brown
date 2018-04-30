@@ -1,14 +1,6 @@
 package cs.brown.edu.aelp.networking;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.eclipse.jetty.websocket.api.WebSocketException;
-
 import com.google.gson.JsonObject;
-
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
@@ -18,6 +10,11 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemon.Main;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.eclipse.jetty.websocket.api.WebSocketException;
 
 public final class PacketSender {
 
@@ -37,14 +34,11 @@ public final class PacketSender {
       // add any additional op codes
       if (chunkOps.containsKey(c.getId())) {
         payload.add("ops", Main.GSON().toJsonTree(chunkOps.get(c.getId())));
-        System.out.println(payload);
         chunkOps.remove(c.getId());
       }
       message.add("payload", payload);
       // send to each user that has an open session
       for (User u : c.getUsers()) {
-        // System.out.printf("Sending to: %d%n", u.getId());
-        // System.out.println(message);
         sendPacket(u, message);
       }
     }
@@ -89,8 +83,6 @@ public final class PacketSender {
     }
     values.add("players", Main.GSON().toJsonTree(otherPlayerInfo));
     message.add("payload", values);
-    System.out.println("Sending Initialization Packet:");
-    System.out.println(Main.GSON().toJson(message));
     queueOpForChunk(buildPlayerOpMessage(u, OP_CODES.ENTERED_CHUNK),
         u.getLocation().getChunk());
     sendPacket(u, message);
@@ -132,17 +124,11 @@ public final class PacketSender {
 
     // configure the payload
     JsonObject payload = new JsonObject();
-    JsonObject pokemonA = new JsonObject();
-    pokemonA.addProperty("owner_id", a.getOwner().getId());
-    pokemonA.add("pokemon", Main.GSON().toJsonTree(a));
-    payload.add("pokemon_a", pokemonA);
-    JsonObject pokemonB = new JsonObject();
-    pokemonB.addProperty("owner_id", a.getOwner().getId());
-    pokemonA.add("pokemon", Main.GSON().toJsonTree(b));
-    payload.add("pokemon_b", pokemonB);
+    payload.add("pokemon_a", Main.GSON().toJsonTree(a));
+    payload.add("pokemon_b", Main.GSON().toJsonTree(b));
     payload.addProperty("battle_id", battleId);
     payload.addProperty("battle_type", battleType);
-    payload.addProperty("backgroud_name", backgroundName);
+    payload.addProperty("background_name", backgroundName);
 
     if (a.getOwner() != null) {
       User usr = (User) a.getOwner();
@@ -150,7 +136,7 @@ public final class PacketSender {
       // adding the payload to the message
       message.add("payload", payload);
       sendPacket(usr, message);
-      
+
       queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.ENTERED_BATTLE),
           usr.getLocation().getChunk());
     }

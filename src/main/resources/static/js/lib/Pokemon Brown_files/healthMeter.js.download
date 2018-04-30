@@ -62,11 +62,6 @@ Phaser.Plugin.HealthMeter.prototype.text = function(char) {
     this._draw();
 };
 
-Phaser.Plugin.HealthMeter.prototype.destroy = function() {
-	this.backBar.destroy();
-	this.healthBar.destroy();
-}
-
 Phaser.Plugin.HealthMeter.prototype.icons = function(char) {
     /*
     Can pass an options array to override default options.

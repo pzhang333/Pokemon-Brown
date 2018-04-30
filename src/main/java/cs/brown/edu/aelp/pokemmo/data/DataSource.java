@@ -1,7 +1,6 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 
 public interface DataSource {
 
@@ -46,25 +45,8 @@ public interface DataSource {
    *          the potential user's password
    * @return
    */
-  public User registerUser(String username, String email, String password)
-      throws AuthException;
-
-  /**
-   * Attempts to create a new Pokemon in the database, with given species and
-   * nickname, and belonging to the given User.
-   *
-   * @param u
-   *          the User that owns this Pokemon
-   * @param species
-   *          the species of this Pokemon
-   * @param nickname
-   *          the nickname of this Pokemon
-   * @return a Pokemon
-   * @throws SaveException
-   *           if something goes wrong
-   */
-  public Pokemon addPokemonToUser(User u, String species, String nickname)
-      throws SaveException;
+  public User registerUser(String username, String email, String password,
+      String species, String nickname) throws AuthException;
 
   /**
    * Attempts to load the top 50 elos into the leaderboards.
