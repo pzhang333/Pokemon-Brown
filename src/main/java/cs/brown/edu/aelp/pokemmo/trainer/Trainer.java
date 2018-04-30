@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cs.brown.edu.aelp.pokemmo.battle.Battle;
+import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.util.Identifiable;
@@ -16,6 +18,8 @@ public class Trainer extends Identifiable {
   private Pokemon activePokemon = null;
 
   private EffectSlot effectSlot = new EffectSlot();
+
+  private Battle currentBattle = null;
 
   public Trainer(Integer id) {
     super(id);
@@ -62,4 +66,18 @@ public class Trainer extends Identifiable {
 
     pokemonMap.put(p.getId(), p);
   }
+
+  public boolean isInBattle() {
+    return (currentBattle != null)
+        && !(currentBattle.getBattleState().equals(BattleState.DONE));
+  }
+
+  public Battle getCurrentBattle() {
+    return currentBattle;
+  }
+
+  public void setCurrentBattle(Battle currentBattle) {
+    this.currentBattle = currentBattle;
+  }
+
 }

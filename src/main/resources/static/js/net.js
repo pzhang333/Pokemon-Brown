@@ -327,8 +327,8 @@ class Net {
 		if (Game.player.tweenRunning()) {
 			Game.player.tween.stop(false);
 			Game.player.idle();
+			Game.player.setPos(loc.col, loc.row);
 		}
-		Game.player.setPos(loc.col, loc.row);
 
 		Battle.setup(payload);
 		game.state.start('Battle');

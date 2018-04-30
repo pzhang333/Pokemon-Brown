@@ -1,13 +1,14 @@
 package cs.brown.edu.aelp.pokemmo.battle;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import cs.brown.edu.aelp.pokemmo.battle.impl.PvPBattle;
 import cs.brown.edu.aelp.pokemmo.battle.impl.WildBattle;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokemonLoader;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class BattleManager {
 
@@ -37,6 +38,8 @@ public class BattleManager {
     WildBattle battle = new WildBattle(id, new Arena(), u, getWildPokemon(u));
 
     battleMap.put(id, battle);
+
+    u.setCurrentBattle(battle);
 
     return battle;
   }
