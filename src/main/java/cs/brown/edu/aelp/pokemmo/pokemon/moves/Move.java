@@ -1,13 +1,16 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
 import cs.brown.edu.aelp.pokemmo.pokemon.Status;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Pokemon Move class.
@@ -15,7 +18,13 @@ import java.lang.reflect.Type;
 public class Move {
 
   public enum Flags {
-    DAMAGE, OHKO, RECOIL, STATUS, SELF, ENEMY, COMPLEX
+    DAMAGE,
+    OHKO,
+    RECOIL,
+    STATUS,
+    SELF,
+    ENEMY,
+    COMPLEX
   }
 
   /**
@@ -339,7 +348,7 @@ public class Move {
   public Integer getStages() {
     return stages;
   }
-  
+
   public void setPP(int pp) {
     this.currPP = pp;
   }
