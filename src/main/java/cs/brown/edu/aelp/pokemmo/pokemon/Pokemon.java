@@ -11,6 +11,7 @@ import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import cs.brown.edu.aelp.pokemon.Main;
 import cs.brown.edu.aelp.util.Identifiable;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
@@ -583,6 +584,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       o.addProperty("species", src.getSpecies());
       o.addProperty("stored", src.isStored());
       o.addProperty("level", src.getLevel());
+      o.add("moves", Main.GSON().toJsonTree(src.getMoves()));
       return o;
     }
 

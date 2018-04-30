@@ -18,6 +18,7 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.server.LoginHandler;
 import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
 import cs.brown.edu.aelp.util.JsonFile;
@@ -59,6 +60,7 @@ public final class Main {
       b.registerTypeAdapter(Trade.class, new Trade.TradeAdapter());
       b.registerTypeAdapter(Pokemon.class, new Pokemon.PokemonAdapter());
       b.registerTypeAdapter(Inventory.class, new Inventory.InventoryAdapter());
+      b.registerTypeAdapter(Move.class, new Move.MoveAdapter());
       return b.create();
     }
   };

@@ -211,6 +211,7 @@ public class PlayerWebSocketHandler {
     switch (ACTION_TYPES[payload.get("action").getAsInt()]) {
     case RUN:
       // TODO: run
+      System.out.println("User ran away");
       break;
     case SWITCH:
       // TODO: switch
