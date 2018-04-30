@@ -1,10 +1,9 @@
 package cs.brown.edu.aelp.pokemmo.server;
 
 import com.google.gson.Gson;
-import cs.brown.edu.aelp.pokemmo.data.DataSource;
 import cs.brown.edu.aelp.pokemmo.data.DataSource.AuthException;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemon.Main;
+import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import java.util.HashMap;
 import java.util.Map;
 import spark.QueryParamsMap;
@@ -27,11 +26,7 @@ public class RegisterHandler implements Route {
     Map<String, Object> vars = new HashMap<>();
     try {
       validateInput(user, pass, email, species, nickname);
-      DataSource data = Main.getDataSource();
-      User u = data.registerUser(user, email, pass);
-      /*Pokemon p = data.addPokemonToUser(u, species, nickname);
-      u.addPokemon(p);
-      u.addPokemonToTeam(p);*/
+      User u = UserManager.register(user, email, pass, species, nickname);
       vars.put("success", true);
       vars.put("token", u.getToken());
       vars.put("id", u.getId());
