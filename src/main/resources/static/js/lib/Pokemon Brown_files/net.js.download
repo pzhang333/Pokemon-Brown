@@ -262,11 +262,6 @@ class Net {
 			let dest = update.destination;
 
 			if (dest == undefined) {
-				
-				if (!player.tweenRunning()) {
-					player.setPos(loc.col, loc.row);
-				}
-				
 				continue;
 			}
 

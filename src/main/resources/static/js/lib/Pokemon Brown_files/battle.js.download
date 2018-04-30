@@ -278,7 +278,7 @@ Battle.create = function() {
 	this.backPatch.scale.set(1.25, 1.25);
 	this.backPatch.visible = true;
 	
-	this.frontPatch = game.add.sprite(game.width * (3.5 / 12), game.height * (8.5 / 12), 'atlas2', 'scenery/patch');
+	this.frontPatch = game.add.sprite(game.width * (3.5 / 12), game.height * (8.75 / 12), 'atlas2', 'scenery/patch');
 	this.frontPatch.anchor.setTo(0.5, 0.5);
 	this.frontPatch.scale.set(1.5, 1.5);
 	this.frontPatch.visible = true;
@@ -331,7 +331,7 @@ Battle.drawForeground = function(key) {
 		this.frontPokemon.sprite.kill();
 	}
 	
-	this.frontPokemon.sprite = game.add.sprite(game.width * (3.5 / 12), game.height * (8.5 / 12), key);
+	this.frontPokemon.sprite = game.add.sprite(game.width * (3.5 / 12), game.height * (8.75 / 12), key);
 	this.frontPokemon.sprite.visible = false;
 	this.frontPokemon.sprite.anchor.setTo(0.5, 1);
 	this.frontPokemon.sprite.scale.set(.75, .75);
@@ -367,8 +367,8 @@ Battle.drawPokemon = function(fore, bg) {
 	if (fore != undefined) {
 		backKey = 'back-' + fore.species;
 		
-		if (game.cache.checkImageKey(backKey)) {
-			this.drawForeground(backKey);
+		if (game.cache.checkJSONKey(backKey)) {
+			this.drawBackground(backKey);
 		} else {
 			game.load.atlasJSONHash(backKey, '/assets/sprites/pokemon/' + backKey + '.png', '/assets/sprites/pokemon/' + backKey + '.json');
 		}
@@ -377,13 +377,15 @@ Battle.drawPokemon = function(fore, bg) {
 	if (bg != undefined) {
 		frontKey = 'front-' + bg.species;
 		
-		if (game.cache.checkImageKey(frontKey)) {
+		if (game.cache.checkJSONKey(frontKey)) {
 			this.drawBackground(frontKey);
 		} else {
 			game.load.atlasJSONHash(frontKey, '/assets/sprites/pokemon/' + frontKey + '.png', '/assets/sprites/pokemon/' + frontKey + '.json');
 		}
 	}
-
+	
+	console.log('keys: ' + backKey + ', ' + frontKey);
+	
 	game.load.start();
 	
 	game.load.onFileComplete.add(function(progress, cacheKey, success, totalLoaded, totalFiles) {
@@ -398,19 +400,11 @@ Battle.drawPokemon = function(fore, bg) {
 	
 }
 
-Battle.clearMenu = function() {
+Battle.drawDefaultMenu = function() {
 	
 	if (Battle.panel != undefined) {
 		Battle.panel.destroy();
 	}
-	
-	if (Battle.menuSeparator != undefined) {
-		Battle.menuSeparator.kill();
-	}
-}
-
-Battle.drawDefaultMenu = async function() {
-	Battle.clearMenu();
 	
 	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
 	Battle.slickUI.add(Battle.panel);
@@ -420,12 +414,9 @@ Battle.drawDefaultMenu = async function() {
 	
 	// Fight button
 	let fightButton = new SlickUI.Element.Button(buttonOffsetX, 0, buttonWidth, 48);
+	console.log(fightButton)
 	Battle.panel.add(fightButton);
 	fightButton.add(new SlickUI.Element.Text(0, 0, "Fight")).center();
-	await fightButton.events;
-	fightButton.events.onInputUp.add(function() {
-		console.log('Fight!');
-	});
 	
 	let switchButton = new SlickUI.Element.Button(buttonOffsetX, 50, buttonWidth, 48);
 	Battle.panel.add(switchButton);
@@ -437,18 +428,7 @@ Battle.drawDefaultMenu = async function() {
 	
 	let forefitButton = new SlickUI.Element.Button(buttonOffsetX + buttonWidth + 4, 50, buttonWidth, 48);
 	Battle.panel.add(forefitButton);
-	forefitButton.add(new SlickUI.Element.Text(0, 0, "Forefit")).center();
-	
-	if (Battle.menuSeparator != undefined) {
-		Battle.menuSeparator.kill();
-	}
-	
-	Battle.menuSeparator = game.add.graphics(0, 0);
-	
-	Battle.menuSeparator.lineStyle(2, 0x999999);
-	Battle.menuSeparator.moveTo(buttonOffsetX, game.height - (108));
-	Battle.menuSeparator.lineTo(buttonOffsetX, game.height - 16);
-	
+	forefitButton.add(new SlickUI.Element.Text(0, 0, "Forefit")).center(); 
 }
 
 Battle.setup = function(initPacket) {
