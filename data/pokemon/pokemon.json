@@ -20,7 +20,7 @@
 		"species": "Venusaur",
 		"types": ["Grass", "Poison"],
         "baseStats": {"hp": 80, "atk": 82, "def": 83, "spa": 100, "spd": 100, "spe": 80},
-        "moves": [33, 38,  77, 572],
+        "moves": [33, 38, 77, 572],
         "evo": ""
     },
     "pichu": {
