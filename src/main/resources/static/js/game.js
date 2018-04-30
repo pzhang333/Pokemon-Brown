@@ -208,6 +208,11 @@ function drawHud() {
 	// hud grey bar
 	//floor = new Phaser.Rectangle(0, Game.map.heightInPixels-0.5*Game.map.heightInPixels, Game.map.widthInPixels, Game.map.heightInPixels/11);
     //game.debug.geom(floor,'#A9A9A9');
+	/* completionSprite = game.add.graphics( 0, 0 );
+	completionSprite.beginFill(0xFFFF00, 1);
+	completionSprite.bounds = new PIXI.Rectangle(0, 0, 200, 200);
+	completionSprite.drawRect(0, 0, 200, 200);
+	completionSprite.boundsPadding = 0; */
 
 
 	// backpack icon
