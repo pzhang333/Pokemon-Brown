@@ -132,14 +132,18 @@ public final class PacketSender {
 
     // configure the payload
     JsonObject payload = new JsonObject();
-    payload.add("pokemon_a", Main.GSON().toJsonTree(a));
-    payload.add("pokemon_b", Main.GSON().toJsonTree(b));
+    JsonObject pokemonA = new JsonObject();
+    pokemonA.addProperty("owner_id", a.getOwner().getId());
+    pokemonA.add("pokemon", Main.GSON().toJsonTree(a));
+    payload.add("pokemon_a", pokemonA);
+    JsonObject pokemonB = new JsonObject();
+    pokemonB.addProperty("owner_id", a.getOwner().getId());
+    pokemonA.add("pokemon", Main.GSON().toJsonTree(b));
+    payload.add("pokemon_b", pokemonB);
     payload.addProperty("battle_id", battleId);
     payload.addProperty("battle_type", battleType);
     payload.addProperty("backgroud_name", backgroundName);
 
-    System.out.println(a);
-    System.out.println(b);
     if (a.getOwner() != null) {
       User usr = (User) a.getOwner();
       payload.add("location", Main.GSON().toJsonTree(usr.getLocation()));
