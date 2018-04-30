@@ -3,6 +3,7 @@ package cs.brown.edu.aelp.networking;
 import com.google.gson.JsonObject;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
+import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.battle.impl.WildBattle;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
@@ -103,8 +104,8 @@ public final class PacketSender {
   public static void sendEncounterPacket(User u) {
     WildBattle b = BattleManager.getInstance().createWildBattle(u);
 
-    sendInitiateBattlePacket(b.getBattleId(), u.getActivePokemon(),
-        b.getWildPokemon(), b.getBattleType().ordinal(), "bg-meadow");
+    // sendInitiateBattlePacket(b.getBattleId(), u.getActivePokemon(),
+    // b.getWildPokemon(), b.getBattleType().ordinal(), "bg-meadow");
   }
 
   public static void sendTradePacket(User u, Trade t) {
@@ -112,6 +113,10 @@ public final class PacketSender {
     packet.addProperty("type", MESSAGE_TYPE.TRADE.ordinal());
     packet.add("payload", Main.GSON().toJsonTree(t));
     sendPacket(u, packet);
+  }
+
+  public static void sendStartBattlePacket(Battle b) {
+    // b.get
   }
 
   public static void sendInitiateBattlePacket(int battleId, Pokemon a,
