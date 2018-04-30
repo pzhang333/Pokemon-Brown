@@ -114,6 +114,7 @@ public class PlayerWebSocketHandler {
       User u = UserManager.authenticate(id, token);
       u.setSession(session);
       PacketSender.sendInitializationPacket(u);
+      System.out.println(u.getUsername() + " connected.");
       // TODO: Inform all other users of their connection?
     } catch (AuthException e1) {
       // their credentials were bad or something went wrong

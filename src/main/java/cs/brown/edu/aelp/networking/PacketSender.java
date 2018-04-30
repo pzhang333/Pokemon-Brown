@@ -101,6 +101,7 @@ public final class PacketSender {
     payload.addProperty("battle_id", b.getId());
     payload.addProperty("pvp", pvp);
     payload.addProperty("background_name", bg);
+    payload.add("location", Main.GSON().toJsonTree(u.getLocation()));
     packet.add("payload", payload);
     return packet;
   }

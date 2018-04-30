@@ -72,7 +72,7 @@ public final class UserManager {
   public static User register(String username, String password, String email,
       String species, String nickname) throws AuthException {
     DataSource data = Main.getDataSource();
-    User u = data.registerUser(username, email, password, species, nickname);
+    User u = data.registerUser(username, password, email, species, nickname);
     users.put(u.getId(), u);
     return u;
   }

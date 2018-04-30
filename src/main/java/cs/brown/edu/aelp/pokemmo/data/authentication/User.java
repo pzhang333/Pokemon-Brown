@@ -106,10 +106,10 @@ public class User extends Trainer implements SQLBatchSavable {
   public void interact(Entity e) {
     if (e instanceof Bush) {
       Bush b = (Bush) e;
-      Pokemon p = b.triggerEntry(this);
-      if (p != null) {
-        System.out.printf("User %d found a pokemon in the bushes.%n",
-            this.getId());
+      boolean found = b.triggerEntry(this);
+      if (found) {
+        System.out.printf("%s found a pokemon in the bushes.%n",
+            this.getUsername());
         PacketSender.sendEncounterPacket(this);
       }
     } else if (e instanceof Portal) {
