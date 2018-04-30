@@ -64,5 +64,16 @@
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
+    },
+    "arceus": {
+		"num": 493,
+		"species": "Arceus",
+		"types": ["Normal"],
+        "baseStats": {"hp": 120, "atk": 120, "def": 120, "spa": 120, "spd": 120, "spe": 120},
+        "moves": [33],
+        "evo": "",
+        "xOffset": 0,
+        "yOffset": 0,
+        "fps": 40
 	}
 }
