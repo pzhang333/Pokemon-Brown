@@ -227,6 +227,7 @@ public class SQLDataSource implements DataSource {
         try (ResultSet rs = p.executeQuery()) {
           if (rs.next()) {
             u = new User(rs.getInt("id"), username, email, token);
+            u.setLocation(Main.getWorld().getSpawn());
           } else {
             conn.rollback();
             throw new AuthException();

@@ -102,9 +102,18 @@ public final class PacketSender {
 
   public static void sendEncounterPacket(User u) {
     WildBattle b = BattleManager.getInstance().createWildBattle(u);
-
-    sendInitiateBattlePacket(b.getBattleId(), u.getActivePokemon(),
-        b.getWildPokemon(), b.getBattleType().ordinal(), "bg-meadow");
+    JsonObject packet = new JsonObject();
+    packet.addProperty("type", MESSAGE_TYPE.START_BATTLE.ordinal());
+    JsonObject payload = new JsonObject();
+    payload.add("pokemon_a",
+        Main.GSON().toJsonTree(b.getUser().getActivePokemon()));
+    payload.add("pokemon_team", Main.GSON().toJsonTree(b.getUser().getTeam()));
+    payload.add("pokemon_b", Main.GSON().toJsonTree(b.getWildPokemon()));
+    payload.addProperty("battle_id", b.getId());
+    payload.addProperty("pvp", Main.GSON().toJson(false));
+    payload.addProperty("background_name", "bg-meadow");
+    packet.add("payload", payload);
+    sendPacket(b.getUser(), packet);
   }
 
   public static void sendTradePacket(User u, Trade t) {
@@ -112,42 +121,6 @@ public final class PacketSender {
     packet.addProperty("type", MESSAGE_TYPE.TRADE.ordinal());
     packet.add("payload", Main.GSON().toJsonTree(t));
     sendPacket(u, packet);
-  }
-
-  public static void sendInitiateBattlePacket(int battleId, Pokemon a,
-      Pokemon b, int battleType, String backgroundName) {
-
-    JsonObject message = new JsonObject();
-
-    // set the type
-    message.addProperty("type", MESSAGE_TYPE.START_BATTLE.ordinal());
-
-    // configure the payload
-    JsonObject payload = new JsonObject();
-    payload.add("pokemon_a", Main.GSON().toJsonTree(a));
-    payload.add("pokemon_b", Main.GSON().toJsonTree(b));
-    payload.addProperty("battle_id", battleId);
-    payload.addProperty("battle_type", battleType);
-    payload.addProperty("background_name", backgroundName);
-
-    if (a.getOwner() != null) {
-      User usr = (User) a.getOwner();
-      payload.add("location", Main.GSON().toJsonTree(usr.getLocation()));
-      // adding the payload to the message
-      message.add("payload", payload);
-      sendPacket(usr, message);
-
-      queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.ENTERED_BATTLE),
-          usr.getLocation().getChunk());
-    }
-
-    if (b.getOwner() != null) {
-      User usr = (User) b.getOwner();
-      sendPacket(usr, message);
-      payload.add("location", Main.GSON().toJsonTree(usr.getLocation()));
-      queueOpForChunk(buildPlayerOpMessage(usr, OP_CODES.ENTERED_BATTLE),
-          usr.getLocation().getChunk());
-    }
   }
 
   public static void sendEndBattlePacket(int battleId, int winnerId,
