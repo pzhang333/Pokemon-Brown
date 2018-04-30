@@ -116,7 +116,7 @@ public final class PacketSender {
   }
 
   public static void sendStartBattlePacket(Battle b) {
-    b.get
+    // b.get
   }
 
   public static void sendInitiateBattlePacket(int battleId, Pokemon a,

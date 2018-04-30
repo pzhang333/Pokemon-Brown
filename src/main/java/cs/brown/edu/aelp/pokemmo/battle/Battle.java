@@ -2,7 +2,6 @@ package cs.brown.edu.aelp.pokemmo.battle;
 
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
-import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.util.Identifiable;
 
 public abstract class Battle extends Identifiable {
@@ -20,22 +19,10 @@ public abstract class Battle extends Identifiable {
   };
 
   private final Arena arena;
-  private final Trainer trainer1;
-  private final Trainer trainer2;
 
-  public Battle(int id, Arena arena, Trainer t1, Trainer t2) {
+  public Battle(int id, Arena arena) {
     super(id);
     this.arena = arena;
-    this.trainer1 = t1;
-    this.trainer2 = t2;
-  }
-
-  public Trainer getTrainer1() {
-    return this.trainer1;
-  }
-
-  public Trainer getTrainer2() {
-    return this.trainer2;
   }
 
   private BattleState battleState = BattleState.SETUP;

@@ -11,7 +11,6 @@ public class WildBattle extends Battle {
 
   public WildBattle(Integer id, Arena arena, Trainer trainer, Pokemon wild) {
     super(id, arena);
-
     this.wild = wild;
   }
 
