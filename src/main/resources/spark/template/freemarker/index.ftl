@@ -6,6 +6,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 		<script src="/js/lib/phaser.min.js"></script>
 		<script src="/js/lib/easystar.min.js"></script>
+		<script src="/js/lib/slick-ui.min.js"></script>
 		<script src="/js/lib/phaser-input.min.js"></script>
 	</head>
 	<body style='background-color: grey'>

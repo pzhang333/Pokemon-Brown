@@ -179,7 +179,7 @@ Battle.switchOut = function(pokemon, cb) {
 	
 	tween.onComplete.add(function () {
 		pokemon.healthbar.backBar.destroy();
-		pokemon.healthbar.healthBar.kill();
+		pokemon.healthbar.healthBar.destroy();
 		pokemon.sprite.kill();
 		
 		if (cb != undefined) {
@@ -237,6 +237,9 @@ Battle.preload = function() {
 	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
 	game.load.atlasJSONHash('attacks', 'assets/pokemon/attacks.png', 'assets/pokemon/attacks.json');
 	
+	Battle.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
+	Battle.slickUI.load('ui/kenney/kenney.json');
+	
 	game.load.audio('battle', ['assets/audio/battle.mp3']);
 	
 };
@@ -266,7 +269,7 @@ Battle.create = function() {
 	this.backPatch.scale.set(1.25, 1.25);
 	this.backPatch.visible = true;
 	
-	this.frontPatch = game.add.sprite(game.width * (3.5 / 12), game.height * (9 / 12), 'atlas2', 'scenery/patch');
+	this.frontPatch = game.add.sprite(game.width * (3.5 / 12), game.height * (8.75 / 12), 'atlas2', 'scenery/patch');
 	this.frontPatch.anchor.setTo(0.5, 0.5);
 	this.frontPatch.scale.set(1.5, 1.5);
 	this.frontPatch.visible = true;
@@ -319,7 +322,7 @@ Battle.drawForeground = function(key) {
 		this.frontPokemon.sprite.kill();
 	}
 	
-	this.frontPokemon.sprite = game.add.sprite(game.width * (3.5 / 12), game.height * (9 / 12), key);
+	this.frontPokemon.sprite = game.add.sprite(game.width * (3.5 / 12), game.height * (8.75 / 12), key);
 	this.frontPokemon.sprite.visible = false;
 	this.frontPokemon.sprite.anchor.setTo(0.5, 1);
 	this.frontPokemon.sprite.scale.set(.75, .75);
@@ -370,7 +373,32 @@ Battle.drawPokemon = function(fore, bg) {
 
 Battle.drawDefaultMenu = function() {
 	
+	if (Battle.panel != undefined) {
+		Battle.panel.destroy();
+	}
 	
+	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
+	Battle.slickUI.add(Battle.panel);
+	
+	let buttonOffsetX = Battle.panel.width / 2;
+	let buttonWidth = Battle.panel.width / 3.99;
+	
+	// Fight button
+	let fightButton = new SlickUI.Element.Button(buttonOffsetX, 0, buttonWidth, 48);
+	Battle.panel.add(fightButton);
+	fightButton.add(new SlickUI.Element.Text(0, 0, "Fight")).center();
+	
+	let switchButton = new SlickUI.Element.Button(buttonOffsetX, 50, buttonWidth, 48);
+	Battle.panel.add(switchButton);
+	switchButton.add(new SlickUI.Element.Text(0, 0, "Switch")).center(); 
+	
+	let itemButton = new SlickUI.Element.Button(buttonOffsetX + buttonWidth + 4, 0, buttonWidth, 48);
+	Battle.panel.add(itemButton);
+	itemButton.add(new SlickUI.Element.Text(0, 0, "Item")).center(); 
+	
+	let forefitButton = new SlickUI.Element.Button(buttonOffsetX + buttonWidth + 4, 50, buttonWidth, 48);
+	Battle.panel.add(forefitButton);
+	forefitButton.add(new SlickUI.Element.Text(0, 0, "Forefit")).center(); 
 }
 
 Battle.setup = function(initPacket) {
