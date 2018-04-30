@@ -11,6 +11,14 @@ const MESSAGE_TYPE = {
     CLIENT_BATTLE_UPDATE: 9
 };
 
+const OP_CODES = {
+	PLAYER_ENTERED_CHUNK: 0,
+	PLAYER_LEFT_CHUNK: 1,
+	PLAYER_ENTERED_BATTTLE: 2,
+	PLAYER_LEFT_BATTLE: 3,
+	CHAT_RECEIVED: 4
+};
+
 function waitForSocketConnection(socket, callback) {
     setTimeout(
         function () {
@@ -34,7 +42,7 @@ class Net {
 
 	constructor() {
 
-		//this.host = '10.38.49.136';
+		//this.host = '10.38.37.243';
 		this.host = 'localhost';
 		this.port = 4567;
 
@@ -50,8 +58,9 @@ class Net {
 		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
 		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler;
-		this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
+		//this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
 		this.handlers[MESSAGE_TYPE.TELEPORT_PACKET] = this.teleportHandler;
+		this.handlers[MESSAGE_TYPE.START_BATTLE] = this.startBattleHandler;
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
 	}
@@ -126,17 +135,6 @@ class Net {
 		//Game.player.id = msg.payload.id;
 	}
 
-	teleportHandler(msg) {
-
-		return;
-		console.log(msg);
-		console.log(msg.payload);
-		let loc = msg.payload.location;
-
-		Game.player.showTeleport(loc.col, loc.row, loc.chunk_file);
-	}
-
-
 	initPacketHandler(msg) {
 
 		console.log(msg);
@@ -144,14 +142,38 @@ class Net {
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
 
-		Game.player.id = this.id;
+		Game.player.id = net.id;
+
 
 		let loc = msg.payload.location;
+		
+		if (Game.ready) {
+			Game.player.showTeleport(loc.col, loc.row, loc.chunk_file, function() {
+				net.chunkId = loc.chunk_file;
+			});
+		}
+		net.chunkId = loc.chunk_file;
 
-		Game.player.showTeleport(loc.col, loc.row, loc.chunk_file, function() {
-			net.chunkId = loc.chunk_file;
-		});
-
+		Game.player.setPos(loc.col, loc.row);
+		
+		let players = msg.payload.players;
+		for(let i = 0; i < players.length; i++) {
+			
+			let player = players[i];
+			
+			if (player.id == net.id) {
+				Game.player.username = player.username;
+				continue;
+			}
+			
+			let newPlayer = new Player();
+			newPlayer.id = player.id;
+			newPlayer.username = player.username;
+			
+			Game.players[player.id] = newPlayer;
+			
+		}
+		
 	}
 
 	gamePacketHandler(msg) {
@@ -159,10 +181,49 @@ class Net {
 
 		//msg = generateFakeGamePacket();
 
+	//	console.log(msg.payload);
 		if (game.state.current != "Game") {
 			return;
 		}
 
+		let ops = msg.payload.ops;
+		if (ops != undefined) {
+			
+			for(let i = 0; i < ops.length; i++) {
+				let op = ops[i];
+				
+				let code = op.code;
+				let id = op.id;
+				
+				console.log(op);
+				
+				if (code == OP_CODES.PLAYER_ENTERED_CHUNK) {
+					
+					if (op.id == net.id) {
+						//Game.player.username = op.username;
+						continue;
+					}
+					
+					let player = new Player();
+					
+					//player.initSprite();
+					//player.setVisible(true);
+					player.id = op.id;
+					player.username = op.username;
+					
+					if (Game.players[op.id] != undefined) {
+						Game.players[op.id].del();
+					}
+					
+					Game.players[op.id] = player;
+					
+				} else {
+					console.log('Unhandled op code: ' + code);
+				}
+			}
+			
+		}
+		
 		let handled = [];
 
 		let playerUpdates = msg.payload.users;
@@ -183,18 +244,17 @@ class Net {
 				continue;
 			}
 
-			//console.log(Game.players[id])
 			if (Game.players[id] == undefined) {
-				let player = new Player();
-
-				player.setPos(loc.col, loc.row);
+				continue;
+			}
+			
+			if (Game.players[id].sprite == undefined || Game.players[id].sprite.alive == false) {
+				let player = Game.players[id];
 				player.initSprite();
 				player.setVisible(true);
-				player.id = id;
-
-				Game.players[id] = player;
-
-				console.log(Game.players[id]);
+				player.setPos(loc.col, loc.row);
+				/*console.log('ayyy');*/
+				//continue;
 			}
 
 			let player = Game.players[id];
@@ -233,7 +293,7 @@ class Net {
 		}
 	}
 
-	wildEncounterPacketHandler(msg) {
+	startBattleHandler(msg) {
 
 		if (game.state.current != "Game") {
 			return;
@@ -245,18 +305,13 @@ class Net {
 		let loc = payload.location;
 
 		if (Game.player.tweenRunning()) {
-			Game.player.tween.stop(true);
+			Game.player.tween.stop(false);
 			Game.player.idle();
 		}
 		Game.player.setPos(loc.col, loc.row);
 
-		let pokemon = payload.pokemon;
-
-		let battleId = -1;
-		Battle.startBattle({
-			battleId: battleId
-		});
-
+		Battle.setup(payload);
+		game.state.start('Battle');
 		//alert('Encountered wild pokemon with id: ' + pokemon.id);
 	}
 

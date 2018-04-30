@@ -2,6 +2,8 @@ package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -19,10 +21,14 @@ public final class MoveLoader {
 
   private static final String FILEPATH = "data/pokemon/moves.json";
 
-  private MoveLoader() {
+  private static final Map<Integer, Move> overrides = new HashMap<>();
+
+  public static void addOverride(Move m) {
+    overrides.put(m.getId(), m);
   }
 
   public static Move getMoveById(Integer id) {
+
     try {
       JsonElement jsonElement = new JsonParser()
           .parse(new FileReader(FILEPATH));
@@ -71,7 +77,17 @@ public final class MoveLoader {
         builder.withStatusChance(numerator / denominator);
       }
 
-      return builder.build();
+      Move m = builder.build();
+      if (overrides.containsKey(id)) {
+        try {
+          return overrides.get(id).getClass().getConstructor(Move.class)
+              .newInstance(m);
+        } catch (Exception e) {
+          return m;
+        }
+      }
+
+      return m;
     } catch (FileNotFoundException e) {
       // Should not occur since path is hard-coded in
       e.printStackTrace();
@@ -81,37 +97,37 @@ public final class MoveLoader {
 
   public static MoveCategory stringToMoveCategory(String moveCatergory) {
     switch (moveCatergory) {
-      case ("Physical"):
-        return MoveCategory.PHYSICAL;
-      case ("Special"):
-        return MoveCategory.SPECIAL;
-      default:
-        return MoveCategory.NONE;
+    case ("Physical"):
+      return MoveCategory.PHYSICAL;
+    case ("Special"):
+      return MoveCategory.SPECIAL;
+    default:
+      return MoveCategory.NONE;
     }
   }
 
   public static MoveComplexity stringToMoveComplexity(String moveComplexity) {
     switch (moveComplexity) {
-      case ("Basic"):
-        return MoveComplexity.BASIC;
-      case ("Buff"):
-        return MoveComplexity.BUFF;
-      case ("Debuff"):
-        return MoveComplexity.DEBUFF;
-      case ("Status"):
-        return MoveComplexity.STATUS;
-      case ("Dmg_Status"):
-        return MoveComplexity.DMG_STATUS;
-      case ("Weather"):
-        return MoveComplexity.WEATHER;
-      case ("Ohko"):
-        return MoveComplexity.OHKO;
-      case ("Recoil"):
-        return MoveComplexity.RECOIL;
-      case ("Complex"):
-        return MoveComplexity.COMPLEX;
-      default:
-        return MoveComplexity.ERROR;
+    case ("Basic"):
+      return MoveComplexity.BASIC;
+    case ("Buff"):
+      return MoveComplexity.BUFF;
+    case ("Debuff"):
+      return MoveComplexity.DEBUFF;
+    case ("Status"):
+      return MoveComplexity.STATUS;
+    case ("Dmg_Status"):
+      return MoveComplexity.DMG_STATUS;
+    case ("Weather"):
+      return MoveComplexity.WEATHER;
+    case ("Ohko"):
+      return MoveComplexity.OHKO;
+    case ("Recoil"):
+      return MoveComplexity.RECOIL;
+    case ("Complex"):
+      return MoveComplexity.COMPLEX;
+    default:
+      return MoveComplexity.ERROR;
     }
   }
 }

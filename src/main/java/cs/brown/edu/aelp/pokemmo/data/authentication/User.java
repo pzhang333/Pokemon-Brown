@@ -23,10 +23,7 @@ import cs.brown.edu.aelp.pokemon.Main;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.eclipse.jetty.websocket.api.Session;
 
 public class User extends Trainer implements SQLBatchSavable {
@@ -45,8 +42,6 @@ public class User extends Trainer implements SQLBatchSavable {
   private int state;
   private int orientation;
   private int elo = 100;
-
-  private final Map<Integer, Pokemon> pokemon = new HashMap<>();
 
   public User(int id, String username, String email, String sessionToken) {
     super(id);
@@ -115,7 +110,7 @@ public class User extends Trainer implements SQLBatchSavable {
       if (p != null) {
         System.out.printf("User %d found a pokemon in the bushes.%n",
             this.getId());
-        PacketSender.sendEncounterPacket(this, p);
+        PacketSender.sendEncounterPacket(this);
         this.setPath(null);
         this.setLocation(e.getLocation());
       }
@@ -177,15 +172,6 @@ public class User extends Trainer implements SQLBatchSavable {
     return this.sessionToken;
   }
 
-  public void addPokemon(Pokemon p) {
-    this.pokemon.put(p.getId(), p);
-  }
-
-  public Pokemon getPokemonById(int id) {
-    assert this.pokemon.containsKey(id);
-    return this.pokemon.get(id);
-  }
-
   public int getOrientation() {
     return orientation;
   }
@@ -224,8 +210,8 @@ public class User extends Trainer implements SQLBatchSavable {
     return this.session;
   }
 
-  public Collection<Pokemon> getAllPokemon() {
-    return this.pokemon.values();
+  public List<Pokemon> getAllPokemon() {
+    return getTeam();
   }
 
   public int updateElo(boolean won, int otherElo) {

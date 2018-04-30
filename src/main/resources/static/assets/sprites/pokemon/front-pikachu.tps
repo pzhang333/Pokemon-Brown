@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.6.3</string>
         <key>fileName</key>
-        <string>C:/Users/Ethan/cs0320/final-project/src/main/resources/static/assets/sprites/pokemon/front-pikachu.tps</string>
+        <string>C:/Users/mcdas/cs0320/final-project/src/main/resources/static/assets/sprites/pokemon/front-pikachu.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -76,7 +76,7 @@
         <key>jpgQuality</key>
         <uint>80</uint>
         <key>pngOptimizationLevel</key>
-        <uint>1</uint>
+        <uint>0</uint>
         <key>webpQualityLevel</key>
         <uint>101</uint>
         <key>textureSubPath</key>
@@ -134,7 +134,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename></filename>
+                <filename>front-pikachu.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -161,7 +161,7 @@
         <key>globalSpriteSettings</key>
         <struct type="SpriteSettings">
             <key>scale</key>
-            <double>1</double>
+            <double>2</double>
             <key>scaleMode</key>
             <enum type="ScaleMode">Smooth</enum>
             <key>extrude</key>
@@ -182,9 +182,57 @@
             <false/>
         </struct>
         <key>individualSpriteSettings</key>
-        <map type="IndividualSpriteSettingsMap"/>
+        <map type="IndividualSpriteSettingsMap">
+            <key type="filename">raw/front/pikachu/00.png</key>
+            <key type="filename">raw/front/pikachu/01.png</key>
+            <key type="filename">raw/front/pikachu/02.png</key>
+            <key type="filename">raw/front/pikachu/03.png</key>
+            <key type="filename">raw/front/pikachu/04.png</key>
+            <key type="filename">raw/front/pikachu/05.png</key>
+            <key type="filename">raw/front/pikachu/06.png</key>
+            <key type="filename">raw/front/pikachu/07.png</key>
+            <key type="filename">raw/front/pikachu/08.png</key>
+            <key type="filename">raw/front/pikachu/09.png</key>
+            <key type="filename">raw/front/pikachu/10.png</key>
+            <key type="filename">raw/front/pikachu/11.png</key>
+            <key type="filename">raw/front/pikachu/12.png</key>
+            <key type="filename">raw/front/pikachu/13.png</key>
+            <key type="filename">raw/front/pikachu/14.png</key>
+            <key type="filename">raw/front/pikachu/15.png</key>
+            <key type="filename">raw/front/pikachu/16.png</key>
+            <key type="filename">raw/front/pikachu/17.png</key>
+            <key type="filename">raw/front/pikachu/18.png</key>
+            <key type="filename">raw/front/pikachu/19.png</key>
+            <key type="filename">raw/front/pikachu/20.png</key>
+            <key type="filename">raw/front/pikachu/21.png</key>
+            <key type="filename">raw/front/pikachu/22.png</key>
+            <key type="filename">raw/front/pikachu/23.png</key>
+            <key type="filename">raw/front/pikachu/24.png</key>
+            <key type="filename">raw/front/pikachu/25.png</key>
+            <key type="filename">raw/front/pikachu/26.png</key>
+            <key type="filename">raw/front/pikachu/27.png</key>
+            <key type="filename">raw/front/pikachu/28.png</key>
+            <key type="filename">raw/front/pikachu/29.png</key>
+            <key type="filename">raw/front/pikachu/30.png</key>
+            <key type="filename">raw/front/pikachu/31.png</key>
+            <key type="filename">raw/front/pikachu/32.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>15,15,30,30</rect>
+                <key>scale9Paddings</key>
+                <rect>15,15,30,30</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+        </map>
         <key>fileList</key>
-        <array/>
+        <array>
+            <filename>raw/front/pikachu</filename>
+        </array>
         <key>ignoreFileList</key>
         <array/>
         <key>replaceList</key>

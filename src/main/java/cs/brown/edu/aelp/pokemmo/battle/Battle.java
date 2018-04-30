@@ -3,11 +3,14 @@ package cs.brown.edu.aelp.pokemmo.battle;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
 
-public class Battle {
+public abstract class Battle {
 
-  private Arena arena;
+  private final Arena arena;
 
-  public Battle(Arena arena) {
+  private final Integer id;
+
+  public Battle(Integer id, Arena arena) {
+    this.id = id;
     this.arena = arena;
   }
 
@@ -15,13 +18,23 @@ public class Battle {
     SETUP, WAITING, READY, DONE
   };
 
+  public enum BattleType {
+    WILD_BATTLE, PVP_BATTLE
+  };
+
   private BattleState battleState = BattleState.SETUP;
+
+  public abstract BattleType getBattleType();
 
   /**
    * @return the battleState
    */
   public BattleState getBattleState() {
     return battleState;
+  }
+
+  public Integer getBattleId() {
+    return id;
   }
 
   /**

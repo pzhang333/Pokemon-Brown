@@ -1,14 +1,17 @@
 package cs.brown.edu.aelp.pokemmo.trainer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.util.Identifiable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Trainer extends Identifiable {
 
-  private List<Pokemon> team = new ArrayList<>();
+  private final Map<Integer, Pokemon> pokemonMap = new HashMap<>();
 
   private Pokemon activePokemon = null;
 
@@ -27,7 +30,7 @@ public class Trainer extends Identifiable {
   }
 
   public List<Pokemon> getTeam() {
-    return team;
+    return new ArrayList<>(pokemonMap.values());
   }
 
   public boolean allPokemonKnockedOut() {
@@ -40,8 +43,12 @@ public class Trainer extends Identifiable {
     return true;
   }
 
+  public Pokemon getPokemonById(Integer id) {
+    return pokemonMap.get(id);
+  }
+
   public void setActivePokemon(Pokemon pokemonIn) {
-    if (!team.contains(pokemonIn)) {
+    if (!pokemonMap.containsKey(pokemonIn.getId())) {
       throw new IllegalArgumentException("Pokemon not in team!");
     }
     activePokemon = pokemonIn;
@@ -49,10 +56,10 @@ public class Trainer extends Identifiable {
 
   public void addPokemonToTeam(Pokemon p) {
 
-    if (team.isEmpty()) {
+    if (pokemonMap.isEmpty()) {
       activePokemon = p;
     }
 
-    team.add(p);
+    pokemonMap.put(p.getId(), p);
   }
 }

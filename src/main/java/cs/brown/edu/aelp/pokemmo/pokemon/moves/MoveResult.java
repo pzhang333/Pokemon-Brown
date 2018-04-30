@@ -13,9 +13,7 @@ public class MoveResult {
   private Pokemon defPokemon;
   private Arena arena;
   private Move move;
-  private ComplexMove complexHandler;
-
-  private MoveOutcome outcome = MoveOutcome.NO_EFFECT;
+  private MoveOutcome outcome = null;
   private Integer damage = 0;
 
   private static final double NO_EFFECT = 0;
@@ -27,7 +25,7 @@ public class MoveResult {
     HIT, MISS, BLOCKED, NON_ATTACK_SUCCESS, NON_ATTACK_FAIL, NO_EFFECT
   }
 
-  public enum StatusOutcome{
+  public enum StatusOutcome {
     // TODO: We probably want a separate report for negative status effects?
   }
 
@@ -39,49 +37,41 @@ public class MoveResult {
     this.arena = arena;
   }
 
-  public MoveResult(Pokemon atkPokemon, Pokemon defPokemon, Move move,
-                    Arena arena, ComplexMove complexHandler) {
-    this.atkPokemon = atkPokemon;
-    this.defPokemon = defPokemon;
-    this.move = move;
-    this.arena = arena;
-    this.complexHandler = complexHandler;
-  }
-
   public void evaluate() {
     // TODO: Add checking for negative status effects
 
+    if (outcome != null) {
+      return;
+    }
+
+    outcome = MoveOutcome.NO_EFFECT;
     switch (move.getComplexity()) {
-      case BASIC:
-        basicEval();
-        break;
-      case OHKO:
-        ohkoEval();
-        break;
-      case STATUS:
-        break;
-      case DMG_STATUS:
-        break;
-      case BUFF:
-        break;
-      case DEBUFF:
-        break;
-      case RECOIL:
-        break;
-      case WEATHER:
-        break;
-      case COMPLEX:
-        complexHandler.eval();
-        break;
-      default:
-        break;
+    case BASIC:
+      basicEval();
+      break;
+    case OHKO:
+      ohkoEval();
+      break;
+    case STATUS:
+      break;
+    case DMG_STATUS:
+      break;
+    case BUFF:
+      break;
+    case DEBUFF:
+      break;
+    case RECOIL:
+      break;
+    case WEATHER:
+      break;
+    default:
+      break;
     }
   }
 
   public boolean accuracyCheck() {
     double effAccuracy = move.getAccuracy() * .01
-        * (atkPokemon.getEffectiveAcc()
-        / defPokemon.getEffectiveEva());
+        * (atkPokemon.getEffectiveAcc() / defPokemon.getEffectiveEva());
 
     // TODO: Remove print line
     System.out.println("Effective Accuracy: " + effAccuracy);
@@ -89,19 +79,20 @@ public class MoveResult {
     return Math.random() <= effAccuracy;
   }
 
-  public boolean ohkoAccCheck(){
+  public boolean ohkoAccCheck() {
     if (atkPokemon.getLevel() < defPokemon.getLevel()) {
       return false;
-    } else{
-      double effAccuracy = .01 * (atkPokemon.getLevel() - defPokemon.getLevel() + 30);
+    } else {
+      double effAccuracy = .01
+          * (atkPokemon.getLevel() - defPokemon.getLevel() + 30);
       return Math.random() <= effAccuracy;
     }
   }
 
-  public void basicEval(){
-    if (accuracyCheck()){
+  public void basicEval() {
+    if (accuracyCheck()) {
       double atkDefRatio = 0.0;
-      if (move.getCategory() == Move.MoveCategory.PHYSICAL){
+      if (move.getCategory() == Move.MoveCategory.PHYSICAL) {
         atkDefRatio = atkPokemon.getEffectiveAttack()
             / defPokemon.getEffectiveDefense();
       } else {
@@ -109,19 +100,20 @@ public class MoveResult {
             / defPokemon.getEffectiveSpecialDefense();
       }
 
-      double modifier = calcWeatherModifier() * calcCrit() * calcRng() * calcSTAB() * calcType() * burnModifier();
-      Double dmg = ((((((2 * atkPokemon.getLevel()) / 5) + 2) * move.getBasePower() * atkDefRatio) / 50) + 2) * modifier;
+      double modifier = calcWeatherModifier() * calcCrit() * calcRng()
+          * calcSTAB() * calcType() * burnModifier();
+      Double dmg = ((((((2 * atkPokemon.getLevel()) / 5) + 2)
+          * move.getBasePower() * atkDefRatio) / 50) + 2) * modifier;
       damage = dmg.intValue();
       outcome = MoveOutcome.HIT;
-    }
-    else{
+    } else {
       damage = 0;
       outcome = MoveOutcome.MISS;
     }
   }
 
-  public void ohkoEval(){
-    if (ohkoAccCheck()){
+  public void ohkoEval() {
+    if (ohkoAccCheck()) {
       damage = 99999999;
       outcome = MoveOutcome.HIT;
     } else {
@@ -186,319 +178,323 @@ public class MoveResult {
 
   public Double calcType() {
     double base = 1.0;
-    for (PokeTypes type : defPokemon.getType()){
+    for (PokeTypes type : defPokemon.getType()) {
       base *= typeModifier(type);
     }
     return base;
   }
 
+  public void setOutcome(MoveOutcome outcome) {
+    this.outcome = outcome;
+  }
+
   public Double typeModifier(PokeTypes targetType) {
     switch (move.getType()) {
-      case NORMAL:
-        switch (targetType) {
-          case ROCK:
-            return 0.5;
-          case GHOST:
-            return 0.0;
-          case STEEL:
-            return 0.5;
-          default:
-            return 1.0;
-        }
-      case FIGHTING:
-        switch (targetType) {
-          case NORMAL:
-            return 2.0;
-          case FLYING:
-            return 0.5;
-          case POISON:
-            return 0.5;
-          case ROCK:
-            return 2.0;
-          case BUG:
-            return 0.5;
-          case GHOST:
-            return 0.0;
-          case STEEL:
-            return 2.0;
-          case PSYCHIC:
-            return 0.5;
-          case ICE:
-            return 2.0;
-          case DARK:
-            return 2.0;
-          default:
-            return 1.0;
-        }
-      case FLYING:
-        switch (targetType) {
-          case FIGHTING:
-            return 2.0;
-          case ROCK:
-            return 0.5;
-          case BUG:
-            return 2.0;
-          case STEEL:
-            return 0.5;
-          case GRASS:
-            return 2.0;
-          case ELECTRIC:
-            return 0.5;
-          default:
-            return 1.0;
-        }
-      case POISON:
-        switch (targetType) {
-          case POISON:
-            return 0.5;
-          case GROUND:
-            return 0.5;
-          case ROCK:
-            return 0.5;
-          case GHOST:
-            return 0.5;
-          case STEEL:
-            return 0.0;
-          case GRASS:
-            return 2.0;
-          case ELECTRIC:
-            return 0.5;
-          default:
-            return 1.0;
-        }
-      case GROUND:
-        switch (targetType) {
-          case FLYING:
-            return 0.0;
-          case POISON:
-            return 2.0;
-          case ROCK:
-            return 2.0;
-          case BUG:
-            return 0.5;
-          case STEEL:
-            return 2.0;
-          case FIRE:
-            return 2.0;
-          case GRASS:
-            return 0.5;
-          case ELECTRIC:
-            return 2.0;
-          default:
-            return 1.0;
-        }
+    case NORMAL:
+      switch (targetType) {
       case ROCK:
-        switch (targetType) {
-          case FIGHTING:
-            return 0.5;
-          case FLYING:
-            return 2.0;
-          case GROUND:
-            return 0.5;
-          case BUG:
-            return 2.0;
-          case STEEL:
-            return 0.5;
-          case FIRE:
-            return 2.0;
-          case ICE:
-            return 2.0;
-          default:
-            return 1.0;
-        }
-      case BUG:
-        switch (targetType) {
-          case FIGHTING:
-            return 0.5;
-          case FLYING:
-            return 0.5;
-          case POISON:
-            return 0.5;
-          case GHOST:
-            return 0.5;
-          case STEEL:
-            return 0.5;
-          case FIRE:
-            return 0.5;
-          case GRASS:
-            return 2.0;
-          case PSYCHIC:
-            return 2.0;
-          case DARK:
-            return 2.0;
-          default:
-            return 1.0;
-        }
+        return 0.5;
       case GHOST:
-        switch (targetType) {
-          case NORMAL:
-            return 0.0;
-          case GHOST:
-            return 2.0;
-          case PSYCHIC:
-            return 2.0;
-          case DARK:
-            return 0.5;
-          default:
-            return 1.0;
-        }
+        return 0.0;
       case STEEL:
-        switch (targetType) {
-          case ROCK:
-            return 2.0;
-          case STEEL:
-            return 0.5;
-          case FIRE:
-            return 0.5;
-          case WATER:
-            return 0.5;
-          case ELECTRIC:
-            return 0.5;
-          case ICE:
-            return 2.0;
-          default:
-            return 1.0;
-        }
-      case FIRE:
-        switch (targetType) {
-          case ROCK:
-            return 0.5;
-          case BUG:
-            return 2.0;
-          case STEEL:
-            return 2.0;
-          case FIRE:
-            return 0.5;
-          case WATER:
-            return 0.5;
-          case GRASS:
-            return 2.0;
-          case ICE:
-            return 2.0;
-          case DRAGON:
-            return 0.5;
-          default:
-            return 1.0;
-        }
-      case WATER:
-        switch (targetType) {
-          case GROUND:
-            return 2.0;
-          case ROCK:
-            return 2.0;
-          case FIRE:
-            return 2.0;
-          case WATER:
-            return 0.5;
-          case GRASS:
-            return 0.5;
-          case DRAGON:
-            return 0.5;
-          default:
-            return 1.0;
-        }
-      case GRASS:
-        switch (targetType) {
-          case FLYING:
-            return 0.5;
-          case POISON:
-            return 0.5;
-          case GROUND:
-            return 2.0;
-          case ROCK:
-            return 2.0;
-          case BUG:
-            return 0.5;
-          case STEEL:
-            return 0.5;
-          case FIGHTING:
-            return 0.5;
-          case WATER:
-            return 2.0;
-          case GRASS:
-            return 0.5;
-          case DRAGON:
-            return 0.5;
-          default:
-            return 1.0;
-        }
-      case ELECTRIC:
-        switch (targetType) {
-          case FLYING:
-            return 2.0;
-          case GROUND:
-            return 0.0;
-          case WATER:
-            return 2.0;
-          case GRASS:
-            return 0.5;
-          case ELECTRIC:
-            return 0.5;
-          case DRAGON:
-            return 0.5;
-          default:
-            return 1.0;
-        }
-      case PSYCHIC:
-        switch (targetType) {
-          case FIGHTING:
-            return 2.0;
-          case POISON:
-            return 2.0;
-          case STEEL:
-            return 0.5;
-          case PSYCHIC:
-            return 0.5;
-          case DARK:
-            return 0.0;
-          default:
-            return 1.0;
-        }
-      case ICE:
-        switch (targetType) {
-          case FLYING:
-            return 2.0;
-          case GROUND:
-            return 2.0;
-          case STEEL:
-            return 0.5;
-          case FIRE:
-            return 0.5;
-          case WATER:
-            return 0.5;
-          case GRASS:
-            return 2.0;
-          case ICE:
-            return 0.5;
-          case DRAGON:
-            return 2.0;
-          default:
-            return 1.0;
-        }
-      case DRAGON:
-        switch (targetType) {
-          case STEEL:
-            return 0.5;
-          case DRAGON:
-            return 2.0;
-          default:
-            return 1.0;
-        }
-      case DARK:
-        switch (targetType) {
-          case FIGHTING:
-            return 0.5;
-          case GHOST:
-            return 2.0;
-          case PSYCHIC:
-            return 2.0;
-          case DARK:
-            return 0.5;
-          default:
-            return 1.0;
-        }
+        return 0.5;
       default:
         return 1.0;
+      }
+    case FIGHTING:
+      switch (targetType) {
+      case NORMAL:
+        return 2.0;
+      case FLYING:
+        return 0.5;
+      case POISON:
+        return 0.5;
+      case ROCK:
+        return 2.0;
+      case BUG:
+        return 0.5;
+      case GHOST:
+        return 0.0;
+      case STEEL:
+        return 2.0;
+      case PSYCHIC:
+        return 0.5;
+      case ICE:
+        return 2.0;
+      case DARK:
+        return 2.0;
+      default:
+        return 1.0;
+      }
+    case FLYING:
+      switch (targetType) {
+      case FIGHTING:
+        return 2.0;
+      case ROCK:
+        return 0.5;
+      case BUG:
+        return 2.0;
+      case STEEL:
+        return 0.5;
+      case GRASS:
+        return 2.0;
+      case ELECTRIC:
+        return 0.5;
+      default:
+        return 1.0;
+      }
+    case POISON:
+      switch (targetType) {
+      case POISON:
+        return 0.5;
+      case GROUND:
+        return 0.5;
+      case ROCK:
+        return 0.5;
+      case GHOST:
+        return 0.5;
+      case STEEL:
+        return 0.0;
+      case GRASS:
+        return 2.0;
+      case ELECTRIC:
+        return 0.5;
+      default:
+        return 1.0;
+      }
+    case GROUND:
+      switch (targetType) {
+      case FLYING:
+        return 0.0;
+      case POISON:
+        return 2.0;
+      case ROCK:
+        return 2.0;
+      case BUG:
+        return 0.5;
+      case STEEL:
+        return 2.0;
+      case FIRE:
+        return 2.0;
+      case GRASS:
+        return 0.5;
+      case ELECTRIC:
+        return 2.0;
+      default:
+        return 1.0;
+      }
+    case ROCK:
+      switch (targetType) {
+      case FIGHTING:
+        return 0.5;
+      case FLYING:
+        return 2.0;
+      case GROUND:
+        return 0.5;
+      case BUG:
+        return 2.0;
+      case STEEL:
+        return 0.5;
+      case FIRE:
+        return 2.0;
+      case ICE:
+        return 2.0;
+      default:
+        return 1.0;
+      }
+    case BUG:
+      switch (targetType) {
+      case FIGHTING:
+        return 0.5;
+      case FLYING:
+        return 0.5;
+      case POISON:
+        return 0.5;
+      case GHOST:
+        return 0.5;
+      case STEEL:
+        return 0.5;
+      case FIRE:
+        return 0.5;
+      case GRASS:
+        return 2.0;
+      case PSYCHIC:
+        return 2.0;
+      case DARK:
+        return 2.0;
+      default:
+        return 1.0;
+      }
+    case GHOST:
+      switch (targetType) {
+      case NORMAL:
+        return 0.0;
+      case GHOST:
+        return 2.0;
+      case PSYCHIC:
+        return 2.0;
+      case DARK:
+        return 0.5;
+      default:
+        return 1.0;
+      }
+    case STEEL:
+      switch (targetType) {
+      case ROCK:
+        return 2.0;
+      case STEEL:
+        return 0.5;
+      case FIRE:
+        return 0.5;
+      case WATER:
+        return 0.5;
+      case ELECTRIC:
+        return 0.5;
+      case ICE:
+        return 2.0;
+      default:
+        return 1.0;
+      }
+    case FIRE:
+      switch (targetType) {
+      case ROCK:
+        return 0.5;
+      case BUG:
+        return 2.0;
+      case STEEL:
+        return 2.0;
+      case FIRE:
+        return 0.5;
+      case WATER:
+        return 0.5;
+      case GRASS:
+        return 2.0;
+      case ICE:
+        return 2.0;
+      case DRAGON:
+        return 0.5;
+      default:
+        return 1.0;
+      }
+    case WATER:
+      switch (targetType) {
+      case GROUND:
+        return 2.0;
+      case ROCK:
+        return 2.0;
+      case FIRE:
+        return 2.0;
+      case WATER:
+        return 0.5;
+      case GRASS:
+        return 0.5;
+      case DRAGON:
+        return 0.5;
+      default:
+        return 1.0;
+      }
+    case GRASS:
+      switch (targetType) {
+      case FLYING:
+        return 0.5;
+      case POISON:
+        return 0.5;
+      case GROUND:
+        return 2.0;
+      case ROCK:
+        return 2.0;
+      case BUG:
+        return 0.5;
+      case STEEL:
+        return 0.5;
+      case FIGHTING:
+        return 0.5;
+      case WATER:
+        return 2.0;
+      case GRASS:
+        return 0.5;
+      case DRAGON:
+        return 0.5;
+      default:
+        return 1.0;
+      }
+    case ELECTRIC:
+      switch (targetType) {
+      case FLYING:
+        return 2.0;
+      case GROUND:
+        return 0.0;
+      case WATER:
+        return 2.0;
+      case GRASS:
+        return 0.5;
+      case ELECTRIC:
+        return 0.5;
+      case DRAGON:
+        return 0.5;
+      default:
+        return 1.0;
+      }
+    case PSYCHIC:
+      switch (targetType) {
+      case FIGHTING:
+        return 2.0;
+      case POISON:
+        return 2.0;
+      case STEEL:
+        return 0.5;
+      case PSYCHIC:
+        return 0.5;
+      case DARK:
+        return 0.0;
+      default:
+        return 1.0;
+      }
+    case ICE:
+      switch (targetType) {
+      case FLYING:
+        return 2.0;
+      case GROUND:
+        return 2.0;
+      case STEEL:
+        return 0.5;
+      case FIRE:
+        return 0.5;
+      case WATER:
+        return 0.5;
+      case GRASS:
+        return 2.0;
+      case ICE:
+        return 0.5;
+      case DRAGON:
+        return 2.0;
+      default:
+        return 1.0;
+      }
+    case DRAGON:
+      switch (targetType) {
+      case STEEL:
+        return 0.5;
+      case DRAGON:
+        return 2.0;
+      default:
+        return 1.0;
+      }
+    case DARK:
+      switch (targetType) {
+      case FIGHTING:
+        return 0.5;
+      case GHOST:
+        return 2.0;
+      case PSYCHIC:
+        return 2.0;
+      case DARK:
+        return 0.5;
+      default:
+        return 1.0;
+      }
+    default:
+      return 1.0;
     }
   }
 

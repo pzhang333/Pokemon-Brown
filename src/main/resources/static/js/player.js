@@ -22,6 +22,14 @@ class Player {
 	 * Initialize the sprite
 	 */
 	initSprite() {
+		
+		if (this.sprite != undefined) {
+			this.sprite.kill();
+		}
+		
+		if (this.tween != undefined) {
+			this.tween.stop();
+		}
 
 		/* Player animations */
 		this.animations = {
@@ -160,7 +168,7 @@ class Player {
 	 */
 	playAnim(animName, opts) {
 
-		if (this.sprite == undefined) {
+		if (this.sprite == undefined || this.sprite.alive == false) {
 			this.initSprite();
 		}
 		
@@ -335,6 +343,7 @@ class Player {
 		
 		Game.easystar.findPath(x, y, end.x, end.y, function(path) {
 			
+			
 			if (path == null) {
 				return;
 			}
@@ -343,7 +352,7 @@ class Player {
 				return;
 			}
 			
-			if (this == Game.player) {
+			if (this.id == Game.player.id) {
 				
 				let xyPath = [];
 				
@@ -360,6 +369,7 @@ class Player {
 				});
 			}
 			
+
 			this.traversePath(path);
 		}.bind(this));
 		
@@ -368,21 +378,21 @@ class Player {
 
 	showTeleport(x, y, chunk, cb) {
 		
-		if (Game.camera == undefined) {
+		if (game.camera == undefined) {
 			Game.player.setPos(x, y);
 			cb();
 			return;
 		}
 		
-		Game.camera.fade('#000000', 500);
+		game.camera.fade('#000000', 500);
 		
-		Game.camera.onFadeComplete.add(function() {
+		game.camera.onFadeComplete.add(function() {
 			
 			Game.player.setPos(x, y);
 			cb();
 			
-			Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
-				Game.camera.resetFX();
+			game.time.events.add(Phaser.Timer.SECOND * .75, function() {
+				game.camera.resetFX();
 			}, this);
 		}, this);
 
@@ -409,8 +419,13 @@ class Player {
 	}
 	
 	del() {
-		this.sprite.destroy();
-		Game.players[this.id] = undefined;
+		
+		if (this.sprite == undefined) {
+			return;
+		}
+		
+		this.sprite.kill();
+		//Game.players[this.id] = undefined;
 		return;
 	}
 

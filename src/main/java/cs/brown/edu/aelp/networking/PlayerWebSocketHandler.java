@@ -35,12 +35,12 @@ public class PlayerWebSocketHandler {
     PLAYER_REQUEST_PATH,
     ENCOUNTERED_POKEMON,
     TRADE,
-    CHAT,
-    SERVER_MESSAGE,
     START_BATTLE,
     END_BATTLE,
     BATTLE_TURN_UPDATE,
-    CLIENT_BATTLE_UPDATE
+    CLIENT_BATTLE_UPDATE,
+    CHAT,
+    SERVER_MESSAGE
   }
 
   public static enum OP_CODES {
@@ -95,7 +95,7 @@ public class PlayerWebSocketHandler {
       handleTrade(session, payload);
       break;
     case CLIENT_BATTLE_UPDATE:
-      handleClientPlayerUpdate(session, payload);
+      handleClientBattleUpdate(session, payload);
       break;
     case CHAT:
       handleChat(session, payload);
@@ -205,7 +205,7 @@ public class PlayerWebSocketHandler {
     PacketSender.sendTradePacket(other, t);
   }
 
-  private static void handleClientPlayerUpdate(Session session,
+  private static void handleClientBattleUpdate(Session session,
       JsonObject payload) {
 
     int turnId = payload.get("turn_id").getAsInt();

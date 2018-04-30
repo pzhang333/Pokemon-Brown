@@ -1,22 +1,24 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.util.Identifiable;
-import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 // TODO: We probably need a status column in our pokemon DB
 
@@ -260,6 +262,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     resetStatStages();
   }
 
+  public void setOwner(Trainer t) {
+    this.owner = t;
+  }
+
   public Integer getBaseHp() {
     return baseHp;
   }
@@ -319,11 +325,12 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   public void setHealth(int health) {
     if (health < 0) {
       currHp = 0;
-    } else if (health > hp) {
-      currHp = hp;
+    } else if (health >= getMaxHp()) {
+      currHp = getMaxHp();
+    } else {
+      currHp = health;
     }
 
-    this.currHp = health;
     this.setChanged(true);
   }
 

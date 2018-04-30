@@ -30,8 +30,8 @@ public class PvPBattle extends Battle {
 
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
 
-  public PvPBattle(Arena arena, Trainer a, Trainer b) {
-    super(arena);
+  public PvPBattle(Integer id, Arena arena, Trainer a, Trainer b) {
+    super(id, arena);
     this.a = a;
     this.b = b;
 
@@ -150,9 +150,12 @@ public class PvPBattle extends Battle {
     atkTrainer.getActivePokemon().getEffectSlot().handle(atkEvent);
 
     // TODO: ADD IN MOVE_RESULT
-    MoveResult result = new MoveResult(atkEvent.getAttackingPokemon(),
-        atkEvent.getDefendingPokemon(), turn.getMove(), getArena());
+    // MoveResult result = new MoveResult(atkEvent.getAttackingPokemon(),
+    // atkEvent.getDefendingPokemon(), turn.getMove(), getArena());
+
+    MoveResult result = turn.getMove().getMoveResult(atkEvent);
     result.evaluate();
+
     // Todo: defending events
     // System.out.println(result);
 
@@ -241,5 +244,10 @@ public class PvPBattle extends Battle {
       return b;
     }
     return a;
+  }
+
+  @Override
+  public BattleType getBattleType() {
+    return BattleType.PVP_BATTLE;
   }
 }

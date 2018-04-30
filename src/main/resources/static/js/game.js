@@ -5,9 +5,17 @@ var Game = {
 
 Game.init = function() {
 	
+	Game.ready = false;
 	//Game.easystar = new EasyStar.js();
-	Game.cursors = game.input.keyboard.createCursorKeys();
+	
 };
+
+Game.shutdown = function() {
+	game.world.removeAll();
+	Game.chunkId = false;
+	Game.player.sprite = undefined;
+	Game.ready = false;
+}
 
 Game.update = function() {
 
@@ -15,7 +23,7 @@ Game.update = function() {
 	let chunkId = net.getCurrentChunkId();
 	if (chunkId != Game.chunkId) {
 		this.loadCurrentChunk(true);
-		Game.chunkId = chunkId;
+		//Game.chunkId = net.chunkId;
 		return;
 	}
 
@@ -32,6 +40,7 @@ Game.update = function() {
 	} else if (this.cursors.down.isDown) {
 		this.player.step('down', (this.cursors.down.shiftKey) ? 2 : 1);
 	}
+	
 };
 
 Game.preload = function() {
@@ -39,6 +48,12 @@ Game.preload = function() {
 	game.load.image('tileset', 'assets/tilesets/tileset.png');
 	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
 
+	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
+	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
+	game.load.atlasJSONHash('attacks', 'assets/pokemon/attacks.png', 'assets/pokemon/attacks.json');
+	
+	game.load.audio('battle', ['assets/audio/battle.mp3']);
+	
 	// loading hud images
     game.load.image('backpack', 'assets/HUD/backpack.png');
     game.load.image('trophy', 'assets/HUD/trophy.png');
@@ -48,6 +63,9 @@ Game.preload = function() {
 
 Game.create = function() {
 	this.loadCurrentChunk(true);
+	
+	Game.ready = true;
+	game.camera.roundPx = true;
 };
 
 Game.drawLayers = function() {
@@ -71,13 +89,14 @@ Game.drawLayers = function() {
 };
 
 Game.handleMapClick = function(layer, pointer) {
+	
 	let coords = Game.computeTileCoords(pointer.worldX, Math.ceil((pointer.worldY - 16) / 16) * 16);
 
 	/* Hack due to offset */
 	if (coords.y == Game.map.height) {
 		coords.y--;
 	}
-
+	
 	Game.player.prepareMovement(coords);
 };
 
@@ -120,7 +139,6 @@ Game.getMapElement = function(x, y, map) {
 };
 
 Game.clearPlayers = function() {
-	console.log('Clear');
 	for (var key in Game.players) {
 	    if (Game.players.hasOwnProperty(key)) {      
 	    	
@@ -133,14 +151,16 @@ Game.clearPlayers = function() {
 	    	}
 	    	
 
-    		Game.players[id] = undefined;
+    		//Game.players[id] = undefined;
 	    }
 	}
 }
 
 Game.loadCurrentChunk = function(clear) {
+
+	Game.chunkId = false;
 	
-	if (Game.map != undefined && clear) {
+	if (Game.map != undefined) {
 		for(idx in Game.layerNames) {
 			Game.map.gameLayers[Game.layerNames[idx]].destroy();
 		}
@@ -152,12 +172,11 @@ Game.loadCurrentChunk = function(clear) {
 
 	let self = this;
 
+	Game.clearPlayers();
+	
 	net.getChunk(function(chunk) {
+		Game.clearPlayers();
 		
-		if (chunk == false) {
-			return;
-		}
-
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
 
 		Game.map = game.add.tilemap(chunk.id, 16, 16);
@@ -176,12 +195,21 @@ Game.loadCurrentChunk = function(clear) {
 		Game.player.initSprite();
 		Game.player.setVisible();
 		Game.player.setCameraFocus(Game.camera);
-		
 		Game.clearPlayers();
+		
+		Game.cursors = game.input.keyboard.createCursorKeys();
+		
+		Game.chunkId = net.chunkId;
+		
 	});
 };
 
 function drawHud() {
+	// hud grey bar
+	//floor = new Phaser.Rectangle(0, Game.map.heightInPixels-0.5*Game.map.heightInPixels, Game.map.widthInPixels, Game.map.heightInPixels/11);
+    //game.debug.geom(floor,'#A9A9A9');
+
+
 	// backpack icon
 	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/6.5, Game.map.heightInPixels-Game.map.heightInPixels/2, "trophy");
     backpackIcon.inputEnabled = true;
@@ -196,4 +224,6 @@ function drawHud() {
     let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/2.85, Game.map.heightInPixels-Game.map.heightInPixels/2, "coin");
     coinIcon.inputEnabled = true;
     coinIcon.fixedToCamera = true;
+
+    game.world.bringToTop(backpackIcon);
 }
