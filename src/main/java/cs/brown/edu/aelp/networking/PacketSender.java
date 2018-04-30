@@ -3,7 +3,9 @@ package cs.brown.edu.aelp.networking;
 import com.google.gson.JsonObject;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
+import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
+import cs.brown.edu.aelp.pokemmo.battle.impl.PvPBattle;
 import cs.brown.edu.aelp.pokemmo.battle.impl.WildBattle;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
@@ -88,32 +90,42 @@ public final class PacketSender {
     sendPacket(u, message);
   }
 
-  /*
-   * public static void sendEncounterPacket(User u, Pokemon p) { JsonObject
-   * message = new JsonObject(); message.addProperty("type",
-   * MESSAGE_TYPE.ENCOUNTERED_POKEMON.ordinal()); JsonObject payload = new
-   * JsonObject(); payload.add("location",
-   * Main.GSON().toJsonTree(u.getLocation())); payload.add("pokemon",
-   * Main.GSON().toJsonTree(p)); message.add("payload", payload); sendPacket(u,
-   * message); // TODO: Write an adapter to serialize Pokemon properly
-   * queueOpForChunk(buildPlayerOpMessage(u, OP_CODES.ENTERED_BATTLE),
-   * u.getLocation().getChunk()); }
-   */
-
-  public static void sendEncounterPacket(User u) {
-    WildBattle b = BattleManager.getInstance().createWildBattle(u);
+  private static JsonObject buildStartBattlePacket(Battle b, User u,
+      Pokemon opp, boolean pvp, String bg) {
     JsonObject packet = new JsonObject();
     packet.addProperty("type", MESSAGE_TYPE.START_BATTLE.ordinal());
     JsonObject payload = new JsonObject();
-    payload.add("pokemon_a",
-        Main.GSON().toJsonTree(b.getUser().getActivePokemon()));
-    payload.add("pokemon_team", Main.GSON().toJsonTree(b.getUser().getTeam()));
-    payload.add("pokemon_b", Main.GSON().toJsonTree(b.getWildPokemon()));
+    payload.add("pokemon_a", Main.GSON().toJsonTree(u.getActivePokemon()));
+    payload.add("pokemon_team", Main.GSON().toJsonTree(u.getTeam()));
+    payload.add("pokemon_b", Main.GSON().toJsonTree(opp));
     payload.addProperty("battle_id", b.getId());
-    payload.addProperty("pvp", Main.GSON().toJson(false));
-    payload.addProperty("background_name", "bg-meadow");
+    payload.addProperty("pvp", pvp);
+    payload.addProperty("background_name", bg);
     packet.add("payload", payload);
+    return packet;
+  }
+
+  public static void sendEncounterPacket(User u) {
+    WildBattle b = BattleManager.getInstance().createWildBattle(u);
+    JsonObject packet = buildStartBattlePacket(b, u, b.getWildPokemon(), false,
+        "bg-meadow");
     sendPacket(b.getUser(), packet);
+    queueOpForChunk(buildPlayerOpMessage(u, OP_CODES.ENTERED_BATTLE),
+        u.getLocation().getChunk());
+  }
+
+  public static void sendPvPPacket(User u1, User u2) {
+    PvPBattle b = BattleManager.getInstance().createPvPBattle(u1, u2);
+    JsonObject p1 = buildStartBattlePacket(b, u1, u2.getActivePokemon(), true,
+        "bg-meadow");
+    JsonObject p2 = buildStartBattlePacket(b, u2, u1.getActivePokemon(), true,
+        "bg-meadow");
+    sendPacket(u1, p1);
+    sendPacket(u2, p2);
+    queueOpForChunk(buildPlayerOpMessage(u1, OP_CODES.ENTERED_BATTLE),
+        u1.getLocation().getChunk());
+    queueOpForChunk(buildPlayerOpMessage(u2, OP_CODES.ENTERED_BATTLE),
+        u2.getLocation().getChunk());
   }
 
   public static void sendTradePacket(User u, Trade t) {

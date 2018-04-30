@@ -1,20 +1,18 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import cs.brown.edu.aelp.pokemmo.pokemon.Status;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.Builder;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.MoveCategory;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import cs.brown.edu.aelp.pokemmo.pokemon.Status;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.Builder;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.MoveCategory;
 
 public final class MoveLoader {
 
@@ -49,41 +47,25 @@ public final class MoveLoader {
       }
 
       Builder builder = new Move.Builder(id);
-      builder
-          .withAccuracy(accuracy)
-          .withPower(basePower)
-          .withDescription(description)
-          .withShortDescription(shortDesc)
-          .withName(name)
-          .withPP(pp)
-          .withCurrPP(pp)
-          .withPriority(priority)
-          .ofCategory(category)
-          .ofCategory(category)
-          .withFlags(flags);
+      builder.withAccuracy(accuracy).withPower(basePower)
+          .withDescription(description).withShortDescription(shortDesc)
+          .withName(name).withPP(pp).withCurrPP(pp).withPriority(priority)
+          .ofCategory(category).withFlags(flags);
 
       if (flags.contains(Move.Flags.RECOIL)) {
         Double recoil = getDecimal(move.getAsJsonArray("recoil"));
-        builder
-            .withRecoil(recoil);
+        builder.withRecoil(recoil);
       }
       if (flags.contains(Move.Flags.ENEMY) || flags.contains(Move.Flags.SELF)) {
         String stat = move.get("stat").getAsString();
-        Double statChance =
-            getDecimal(move.getAsJsonArray("statChance"));
+        Double statChance = getDecimal(move.getAsJsonArray("statChance"));
         Integer stages = move.get("stages").getAsInt();
-        builder
-            .affectsStat(stat)
-            .withStatChance(statChance)
-            .withStages(stages);
+        builder.affectsStat(stat).withStatChance(statChance).withStages(stages);
       }
       if (flags.contains(Move.Flags.STATUS)) {
         Status status = Status.valueOf(move.get("status").getAsString());
-        Double statusChance
-            = getDecimal(move.getAsJsonArray("statusChance"));
-        builder
-            .giveStatus(status)
-            .withStatusChance(statusChance);
+        Double statusChance = getDecimal(move.getAsJsonArray("statusChance"));
+        builder.giveStatus(status).withStatusChance(statusChance);
       }
 
       Move m = builder.build();
