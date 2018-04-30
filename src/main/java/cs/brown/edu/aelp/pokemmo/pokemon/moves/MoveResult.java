@@ -25,10 +25,6 @@ public class MoveResult {
     HIT, MISS, BLOCKED, NON_ATTACK_SUCCESS, NON_ATTACK_FAIL, NO_EFFECT
   }
 
-  public enum StatusOutcome {
-    // TODO: We probably want a separate report for negative status effects?
-  }
-
   public MoveResult(Pokemon atkPokemon, Pokemon defPokemon, Move move,
       Arena arena) {
     this.atkPokemon = atkPokemon;
@@ -45,27 +41,28 @@ public class MoveResult {
     }
 
     outcome = MoveOutcome.NO_EFFECT;
-    switch (move.getComplexity()) {
-    case BASIC:
-      basicEval();
-      break;
-    case OHKO:
+
+    List<Move.Flags> flags = move.getFlags();
+    if (flags.contains(Move.Flags.OHKO)) {
       ohkoEval();
-      break;
-    case STATUS:
-      break;
-    case DMG_STATUS:
-      break;
-    case BUFF:
-      break;
-    case DEBUFF:
-      break;
-    case RECOIL:
-      break;
-    case WEATHER:
-      break;
-    default:
-      break;
+    } else if (flags.contains(Move.Flags.DAMAGE)) {
+      basicEval();
+    }
+    if (flags.contains(Move.Flags.SELF)) {
+      String stat = move.getAffectedStat();
+      Integer stages = move.getStages();
+      Double chance = move.getStatChance();
+      if (chanceCheck(chance)){
+        affectStat(stat, stages, atkPokemon);
+      }
+    }
+    if (flags.contains(Move.Flags.ENEMY)){
+      String stat = move.getAffectedStat();
+      Integer stages = move.getStages();
+      Double chance = move.getStatChance();
+      if (chanceCheck(chance)){
+        affectStat(stat, stages, defPokemon);
+      }
     }
   }
 
@@ -91,7 +88,7 @@ public class MoveResult {
 
   public void basicEval() {
     if (accuracyCheck()) {
-      double atkDefRatio = 0.0;
+      double atkDefRatio;
       if (move.getCategory() == Move.MoveCategory.PHYSICAL) {
         atkDefRatio = atkPokemon.getEffectiveAttack()
             / defPokemon.getEffectiveDefense();
@@ -501,5 +498,36 @@ public class MoveResult {
   public Double burnModifier() {
     return (atkPokemon.getStatus() == Status.BURN
         && move.getCategory() == Move.MoveCategory.PHYSICAL) ? 0.5 : 1.0;
+  }
+
+  public Boolean chanceCheck(Double chance) {
+    Double randomNum = ThreadLocalRandom.current().nextDouble(1.0);
+    return randomNum <= chance;
+  }
+
+  public static void affectStat(String stat, Integer stages, Pokemon target) {
+    switch (stat) {
+      case "atk":
+        target.modifyAttackStage(stages);
+        break;
+      case "specAtk":
+        target.modifySpecialAttackStage(stages);
+        break;
+      case "def":
+        target.modifyDefenseStage(stages);
+        break;
+      case "specDef":
+        target.modifySpecialDefenseStage(stages);
+        break;
+      case "spd":
+        target.modifySpeedStage(stages);
+        break;
+      case "acc":
+        target.modifyAccuracyStage(stages);
+        break;
+      case "eva":
+        target.modifyEvasionStage(stages);
+        break;
+    }
   }
 }

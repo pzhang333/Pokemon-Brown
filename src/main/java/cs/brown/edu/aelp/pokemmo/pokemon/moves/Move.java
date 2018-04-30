@@ -1,5 +1,9 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
 import cs.brown.edu.aelp.pokemmo.pokemon.Status;
@@ -9,13 +13,8 @@ import cs.brown.edu.aelp.pokemmo.pokemon.Status;
  */
 public class Move {
 
-  /**
-   * Move Complexity Type. Simple moves are calculated normally. Complex moves
-   * require Java implemented Handlers.
-   */
-  public enum MoveComplexity {
-    BASIC, BUFF, DEBUFF, COMPLEX, STATUS, DMG_STATUS, WEATHER, OHKO, RECOIL,
-    ERROR
+  public enum Flags {
+    DAMAGE, OHKO, RECOIL, STATUS, SELF, ENEMY, COMPLEX
   }
 
   /**
@@ -26,13 +25,11 @@ public class Move {
   }
 
   public static class Builder {
-    private int id;
+    private Integer id;
 
     private Integer accuracy;
 
     private Integer basePower;
-
-    private MoveCategory category;
 
     private String description;
 
@@ -48,9 +45,13 @@ public class Move {
 
     private PokeTypes type;
 
-    private MoveComplexity complexity;
+    private List<Flags> flags;
+
+    private MoveCategory category;
 
     private String stat;
+
+    private Double statChance;
 
     private Integer stages;
 
@@ -58,12 +59,11 @@ public class Move {
 
     private Double statusChance;
 
-    private Weather weather;
-
     private Double recoil;
 
     public Builder(int id) {
       this.id = id;
+      flags = new ArrayList<>();
     }
 
     public Builder withAccuracy(Integer accuracy) {
@@ -73,11 +73,6 @@ public class Move {
 
     public Builder withPower(Integer basePower) {
       this.basePower = basePower;
-      return this;
-    }
-
-    public Builder ofCategory(MoveCategory category) {
-      this.category = category;
       return this;
     }
 
@@ -116,8 +111,13 @@ public class Move {
       return this;
     }
 
-    public Builder withComplexity(MoveComplexity complexity) {
-      this.complexity = complexity;
+    public Builder withFlags(List<Flags> flags) {
+      this.flags.addAll(flags);
+      return this;
+    }
+
+    public Builder ofCategory(MoveCategory category) {
+      this.category = category;
       return this;
     }
 
@@ -126,23 +126,23 @@ public class Move {
       return this;
     }
 
+    public Builder withStatChance(Double statChance) {
+      this.statChance = statChance;
+      return this;
+    }
+
     public Builder withStages(Integer stages) {
       this.stages = stages;
       return this;
     }
 
-    public Builder afflictsStatus(Status status) {
+    public Builder giveStatus(Status status) {
       this.status = status;
       return this;
     }
 
     public Builder withStatusChance(Double statusChance) {
       this.statusChance = statusChance;
-      return this;
-    }
-
-    public Builder createsWeather(Weather weather) {
-      this.weather = weather;
       return this;
     }
 
@@ -155,26 +155,34 @@ public class Move {
       Move move = new Move(this.id);
       move.accuracy = this.accuracy;
       move.basePower = this.basePower;
-      move.category = this.category;
       move.description = this.description;
       move.shortDescription = this.shortDescription;
       move.name = this.name;
       move.pp = this.pp;
-      move.currPP = this.currPP;
+      if (this.currPP < 0) {
+        move.currPP = 0;
+      } else if (this.currPP > this.pp) {
+        move.currPP = this.pp;
+      } else {
+        move.currPP = this.currPP;
+      }
       move.priority = this.priority;
       move.type = this.type;
-      move.complexity = this.complexity;
-
+      move.flags = this.flags;
+      move.category = this.category;
       move.stat = this.stat;
+      move.statChance = this.statChance;
       move.stages = this.stages;
       move.status = this.status;
       move.statusChance = this.statusChance;
-      move.weather = this.weather;
       move.recoil = this.recoil;
 
       return move;
     }
+  }
 
+  protected Move(int id) {
+    this.id = id;
   }
 
   protected Move(Move m) {
@@ -186,26 +194,30 @@ public class Move {
     this.shortDescription = m.shortDescription;
     this.name = m.name;
     this.pp = m.pp;
-    this.currPP = m.currPP;
+    if (m.currPP < 0) {
+      this.currPP = 0;
+    } else if (m.currPP > m.pp) {
+      this.currPP = m.pp;
+    } else {
+      this.currPP = m.currPP;
+    }
     this.priority = m.priority;
     this.type = m.type;
-    this.complexity = m.complexity;
-
+    this.flags = m.flags;
+    this.category = m.category;
     this.stat = m.stat;
+    this.statChance = m.statChance;
     this.stages = m.stages;
     this.status = m.status;
     this.statusChance = m.statusChance;
-    this.weather = m.weather;
     this.recoil = m.recoil;
   }
 
-  private int id;
+  private Integer id;
 
   private Integer accuracy;
 
   private Integer basePower;
-
-  private MoveCategory category;
 
   private String description;
 
@@ -221,9 +233,13 @@ public class Move {
 
   private PokeTypes type;
 
-  private MoveComplexity complexity;
+  private List<Flags> flags;
+
+  private MoveCategory category;
 
   private String stat;
+
+  private Double statChance;
 
   private Integer stages;
 
@@ -231,19 +247,11 @@ public class Move {
 
   private Double statusChance;
 
-  private Weather weather;
-
   private Double recoil;
-
-  // We want to construct moves only using the builder
-  protected Move(int id) {
-    this.id = id;
-  }
 
   /**
    * @return the accuracy
    */
-
   public Integer getAccuracy() {
     return accuracy;
   }
@@ -277,19 +285,22 @@ public class Move {
   }
 
   /**
-   * @return the name
+   * @return the move's name
    */
   public String getName() {
     return name;
   }
 
   /**
-   * @return the pp
+   * @return the max PP
    */
   public Integer getPP() {
     return pp;
   }
 
+  /**
+   * @return the current PP
+   */
   public Integer getCurrPP() {
     return currPP;
   }
@@ -308,39 +319,28 @@ public class Move {
     return type;
   }
 
-  /**
-   * @return the complexity
-   */
-  public MoveComplexity getComplexity() {
-    return complexity;
-  }
-
-  public String getStat() {
-    return stat;
-  }
-
-  private Integer getStages() {
-    return stages;
-  }
-
-  private Double statusChance() {
-    return statusChance;
-  }
-
-  private Weather getWeather() {
-    return weather;
-  }
-
-  private Double withRecoil() {
-    return recoil;
-  }
-
   public void setPP(int pp) {
     this.pp = pp;
   }
 
   public int getId() {
     return this.id;
+  }
+
+  public List<Flags> getFlags() {
+    return ImmutableList.copyOf(flags);
+  }
+
+  public String getAffectedStat() {
+    return stat;
+  }
+
+  public Integer getStages() {
+    return stages;
+  }
+
+  public Double getStatChance() {
+    return statChance;
   }
 
   public MoveResult getMoveResult(AttackEvent atkEvent) {
@@ -379,5 +379,4 @@ public class Move {
       return false;
     return true;
   }
-
 }
