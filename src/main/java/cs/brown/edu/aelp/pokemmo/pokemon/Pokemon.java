@@ -510,6 +510,59 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     return stage;
   }
 
+  public Pokemon snapshot() {
+    Pokemon pokemon = new Pokemon(getId());
+
+    pokemon.exp = this.exp;
+    pokemon.lvl = calcLevel(this.exp);
+
+    pokemon.baseHp = this.baseHp;
+
+    int scaledHp = hpScale(this.baseHp, pokemon.lvl);
+
+    pokemon.hp = scaledHp;
+
+    if (this.currHp <= 0) {
+      pokemon.currHp = pokemon.hp;
+    } else if (this.currHp > scaledHp) {
+      pokemon.currHp = pokemon.hp;
+    } else {
+      pokemon.currHp = this.currHp;
+    }
+
+    pokemon.attack = this.attack;
+    pokemon.defense = this.defense;
+    pokemon.specialAttack = this.specialAttack;
+    pokemon.specialDefense = this.specialDefense;
+    pokemon.speed = this.specialDefense;
+
+    pokemon.attackStage = this.attackStage;
+    pokemon.defenseStage = this.defenseStage;
+    pokemon.specialAttackStage = this.specialAttackStage;
+    pokemon.specialDefenseStage = this.specialDefenseStage;
+    pokemon.speedStage = this.speedStage;
+    pokemon.accuracyStage = this.accuracyStage;
+    pokemon.evasionStage = this.evasionStage;
+
+    pokemon.status = this.status;
+
+    pokemon.typeList = this.typeList;
+
+    pokemon.nickname = this.nickname;
+    pokemon.species = this.species;
+    pokemon.gender = this.gender;
+    pokemon.stored = this.stored;
+    pokemon.moves = this.moves;
+
+    pokemon.owner = this.owner;
+
+    pokemon.xOffset = this.xOffset;
+    pokemon.yOffset = this.yOffset;
+    pokemon.fps = this.fps;
+
+    return pokemon;
+  }
+
   private static Integer hpScale(int baseHp, int level) {
     Double scaledHp = Math.floor((2.0 * baseHp * level) / 100.0) + level + 10;
     return scaledHp.intValue();

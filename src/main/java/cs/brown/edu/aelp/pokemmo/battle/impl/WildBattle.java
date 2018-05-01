@@ -11,8 +11,6 @@ import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
-import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate.Summary;
-import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate.SummaryType;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
@@ -23,6 +21,8 @@ import cs.brown.edu.aelp.pokemmo.battle.events.KnockedOutEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchInEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchOutEvent;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.FightSummary;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.SwitchSummary;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
@@ -111,6 +111,8 @@ public class WildBattle extends Battle {
       }
 
       if (getBattleState().equals(BattleState.DONE)) {
+        sendBattleUpdate();
+
         // TODO: Add end of Battle event.
         return;
       }
@@ -175,9 +177,7 @@ public class WildBattle extends Battle {
     trainer.getActivePokemon().getEffectSlot().handle(switchInEvent);
 
     pendingBattleUpdate.addSummary(
-        new Summary(SummaryType.SWITCH, turn.getPokemonOut().getId(),
-            turn.getPokemonOut().getCurrHp(), "", turn.getPokemonIn().getId(),
-            turn.getPokemonIn().getCurrHp(), "", "Switch!"));
+        new SwitchSummary(turn.getPokemonIn(), turn.getPokemonOut()));
   }
 
   public void handleTurn(FightTurn turn) {
@@ -205,9 +205,8 @@ public class WildBattle extends Battle {
             atkPokemon.getSpecies(), turn.getMove().getName());
       }
 
-      pendingBattleUpdate.addSummary(new Summary(SummaryType.FIGHT,
-          atkPokemon.getId(), atkPokemon.getCurrHp(), "", defPokemon.getId(),
-          defPokemon.getCurrHp(), "", msg));
+      pendingBattleUpdate
+          .addSummary(new FightSummary(atkPokemon, defPokemon, msg, ""));
 
     } else {
 
@@ -254,15 +253,18 @@ public class WildBattle extends Battle {
           }
         }
 
-        pendingBattleUpdate
-            .addSummary(new Summary(SummaryType.FIGHT, atkPokemon.getId(),
-                atkPokemon.getCurrHp(), "basic", defendingPokemon.getId(),
-                defendingPokemon.getCurrHp(), "", base.toString()));
+        pendingBattleUpdate.addSummary(new FightSummary(atkPokemon,
+            defendingPokemon, base.toString(), "basic"));
 
       } else {
+
+        String anim = "basic";
+
         if (result.getOutcome().equals(MoveOutcome.MISS)) {
 
           System.out.println("The attack missed");
+
+          anim = "basic-miss";
 
           base.append(", but it missed.");
 
@@ -288,9 +290,8 @@ public class WildBattle extends Battle {
 
         Pokemon defPokemon = defTrainer.getActivePokemon();
 
-        pendingBattleUpdate.addSummary(new Summary(SummaryType.FIGHT,
-            atkPokemon.getId(), atkPokemon.getCurrHp(), "", defPokemon.getId(),
-            defPokemon.getCurrHp(), "", base.toString()));
+        pendingBattleUpdate.addSummary(
+            new FightSummary(atkPokemon, defPokemon, base.toString(), anim));
       }
     }
   }

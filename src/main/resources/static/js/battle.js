@@ -61,6 +61,7 @@ Battle.setHealth = function(pokemon, health) {
 	
 	pokemon.health = health;
 	
+	console.log('AYyyy: ' + health);
 	if (health == 0) {
 		if (Battle.attack.animations.currentAnim.isPlaying) {
 			Battle.attack.animations.currentAnim.onComplete.addOnce(function() {
@@ -95,12 +96,12 @@ Battle.showAttackSummary = function(first, cb) {
 	
 	let defFirst = Battle.getPokemonById(first.defendingId);
 	
-	let offsetsFirst = Battle.offsets[first.attackAnim];
+	let offsetsFirst = Battle.offsets[first.animation];
 	Game.time.events.add(Phaser.Timer.SECOND * offsetsFirst.time, function() {
-		Battle.setHealth(defFirst, first.defendingHealth);
+		Battle.setHealth(defFirst, first.health);
 	});
 	
-	Battle.showAttack(defFirst.sprite, first.attackAnim, function() {
+	Battle.showAttack(defFirst.sprite, first.animation, function() {
 		if (cb != undefined) {
 			cb();
 		}
@@ -820,27 +821,39 @@ Battle.showSummaries = function(summaries, packet) {
 		return;
 	}
 	
+	
+	console.log(summaries.slice(0));
+	
 	let summary = summaries.shift();
 	
 	// Battle.showAttackPair({defendingId: 1, attack: 'basic', damage: 75}, {defendingId: 2, attack: 'basic', damage: 250}, 1);
 
 	let SUMMARY_TYPE = {
-		FIGHT: 1,
-		SWITCH: 2
+		FIGHT: 0,
+		SWITCH: 1
 	};
 	
+	console.log(summary.msg);
+	if (summary.msg != undefined && summary.msg.length != 0) {
+		Battle.drawMessage(summary.msg);
+	}
+	
 	if (summary.type == SUMMARY_TYPE.FIGHT) {
-		Battle.showAttackSummary(summary, function() {
+		Battle.showAttackSummary({
+			defendingId: summary.defending.id,
+			health: summary.defending.health,
+			animation: summary.animation
+		}, function() {
 			Game.time.events.add(Phaser.Timer.SECOND * 1, function() {
 				Battle.showSummaries(summaries, packet);
 			});
 		});
-	} else {
-		let pOut = Battle.getPokemonById(summary.attackingId);
+	} else if (summary.type == SUMMARY_TYPE.SWITCH) {
+		let pOut = Battle.getPokemonById(summary.pokemon_out.id);
 		
 		let pIn = Battle.team[0];
 		for(let i = 0; i < Battle.team.length; i++) {
-			if (Battle.team[i].id == summary.defendingId) {
+			if (Battle.team[i].id == summary.pokemon_in.id) {
 				
 				pIn = Battle.team[i];
 				break;
