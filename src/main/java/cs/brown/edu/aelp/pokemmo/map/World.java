@@ -1,6 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
-import cs.brown.edu.aelp.util.JsonFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -8,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import cs.brown.edu.aelp.util.JsonFile;
 
 public class World {
 
@@ -60,33 +61,29 @@ public class World {
   }
 
   public Chunk loadChunk(Integer id, File file) throws IOException {
-
     String path = file.getAbsolutePath();
-
     JsonFile jFile = new JsonFile(path);
-
     String fname = file.getName();
-
     Chunk chunk = new Chunk(id, jFile.getInt("width"), jFile.getInt("height"),
         fname.substring(0, fname.lastIndexOf(".")));
 
-    // 2804 in layer "Bush" = Bush
     List<JsonFile> layers = jFile.getJsonList("layers");
     for (int i = 0; i < layers.size(); i++) {
       List<Double> tiles = layers.get(i).getList("data");
-      String n = layers.get(i).getString("name");
+      if (tiles == null) {
+        continue;
+      }
+      // String n = layers.get(i).getString("name");
       for (int j = 0; j < tiles.size(); j++) {
         int row = j / chunk.getWidth();
         int col = j % chunk.getWidth();
-        if (n.equals("Bush") && tiles.get(j) == BUSH_ID) {
+        if (tiles.get(j) == BUSH_ID) {
           chunk.addEntity(new Bush(new Location(chunk, row, col)));
         }
       }
     }
-
     this.addChunk(chunk);
     return chunk;
-
   }
 
   public void loadPortals(String path) throws IOException {
