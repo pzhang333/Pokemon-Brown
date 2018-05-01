@@ -157,6 +157,10 @@ Battle.doSwitch = function(pOut, pIn, cb) {
 			}
 			
 			Battle.drawPokemon(fore, bg);
+			
+			if (cb != undefined) {
+				cb();
+			}
 		});
 	});
 }
@@ -877,11 +881,11 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 				});
 			});
 		} else if (summary.type == SUMMARY_TYPE.SWITCH) {
-			let pOut = Battle.getPokemonById(summary.pokemon_out.id);
+			let pOut = Battle.getPokemonById(summary.pokemonOut.id);
 			
 			let pIn = Battle.team[0];
 			for(let i = 0; i < Battle.team.length; i++) {
-				if (Battle.team[i].id == summary.pokemon_in.id) {
+				if (Battle.team[i].id == summary.pokemonIn.id) {
 					
 					pIn = Battle.team[i];
 					break;

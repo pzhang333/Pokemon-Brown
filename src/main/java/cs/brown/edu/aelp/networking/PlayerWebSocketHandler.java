@@ -234,7 +234,7 @@ public class PlayerWebSocketHandler {
 
       for (Pokemon p : user.getTeam()) {
         if (p.getId() == switchId) {
-          t = new SwitchTurn(user, user.getActivePokemon(), p);
+          t = new SwitchTurn(user, p, user.getActivePokemon());
           break;
         }
       }

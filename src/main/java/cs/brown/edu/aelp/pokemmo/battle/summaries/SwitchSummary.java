@@ -32,8 +32,8 @@ public class SwitchSummary extends BattleSummary {
         JsonSerializationContext context) {
 
       JsonObject o = new JsonObject();
-      o.add("pokemon_in", Main.GSON().toJsonTree(src.pokemonIn));
-      o.add("pokemon_out", Main.GSON().toJsonTree(src.pokemonOut));
+      o.add("pokemonIn", Main.GSON().toJsonTree(src.pokemonIn));
+      o.add("pokemonOut", Main.GSON().toJsonTree(src.pokemonOut));
 
       return o;
 
