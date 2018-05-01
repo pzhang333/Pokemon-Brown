@@ -354,7 +354,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   }
 
   public void setHealth(int health) {
-    if (health < 0) {
+    if (health <= 0) {
       currHp = 0;
     } else if (health >= getMaxHp()) {
       currHp = getMaxHp();
@@ -514,21 +514,12 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     Pokemon pokemon = new Pokemon(getId());
 
     pokemon.exp = this.exp;
-    pokemon.lvl = calcLevel(this.exp);
+    pokemon.lvl = this.lvl;
 
     pokemon.baseHp = this.baseHp;
 
-    int scaledHp = hpScale(this.baseHp, pokemon.lvl);
-
-    pokemon.hp = scaledHp;
-
-    if (this.currHp <= 0) {
-      pokemon.currHp = pokemon.hp;
-    } else if (this.currHp > scaledHp) {
-      pokemon.currHp = pokemon.hp;
-    } else {
-      pokemon.currHp = this.currHp;
-    }
+    pokemon.hp = this.hp;
+    pokemon.currHp = this.currHp;
 
     pokemon.attack = this.attack;
     pokemon.defense = this.defense;

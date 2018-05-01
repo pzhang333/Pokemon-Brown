@@ -773,31 +773,40 @@ Battle.drawDefaultMenu = async function() {
 
 Battle.battleOver = async function(packet) {
 	
-	Battle.clearMoves();
-	Battle.clearButtons(Battle.stdButtons);
-	Battle.clearMessageText();
-	
-	
-	let msg = "";
-	if (packet.winner_id == Game.player.id) {
-		msg = "Victory!";
-	} else {
-		msg = "Loss.";
+	if (Battle.showing != undefined) {
+		await Battle.showing;
 	}
-	let messageText = new SlickUI.Element.Text(8, 8, msg);
-	messageText.size = 16;
-	Battle.panel.add(messageText);
 	
-	let buttonOffsetX = Battle.panel.width / 2;
-	let buttonWidth = Battle.panel.width / 4.1;
+	Battle.showing = new Promise(async function(resolve, reject) {
 	
-	let exitButton = new SlickUI.Element.Button(buttonOffsetX + 4, 0, 2 * buttonWidth, 2 * 48);
-	Battle.panel.add(exitButton);
-	exitButton.add(new SlickUI.Element.Text(0, 0, "Exit Battle")).center();
-	
-	await exitButton.events;
-	exitButton.events.onInputUp.add(function() {
-		Battle.endBattle();
+		Battle.clearMoves();
+		Battle.clearButtons(Battle.stdButtons);
+		Battle.clearMessageText();
+		
+		
+		let msg = "";
+		if (packet.winner_id == Game.player.id) {
+			msg = "Victory!";
+		} else {
+			msg = "Loss.";
+		}
+		let messageText = new SlickUI.Element.Text(8, 8, msg);
+		messageText.size = 16;
+		Battle.panel.add(messageText);
+		
+		let buttonOffsetX = Battle.panel.width / 2;
+		let buttonWidth = Battle.panel.width / 4.1;
+		
+		let exitButton = new SlickUI.Element.Button(buttonOffsetX + 4, 0, 2 * (buttonWidth + 2), 48 * 2);
+		Battle.panel.add(exitButton);
+		exitButton.add(new SlickUI.Element.Text(0, 0, "Exit Battle")).center();
+		
+		await exitButton.events;
+		exitButton.events.onInputUp.add(function() {
+			Battle.endBattle();
+		});
+		
+		resolve();
 	});
 }
 
@@ -813,71 +822,89 @@ Battle.setup = function(initPacket) {
 }
 
 
-Battle.showSummaries = function(summaries, packet) {
+Battle.showSummaries = async function(summaries, packet, resolveShow) {
 	
-	if (summaries.length == 0) {
-		// handle end packet...
-		Battle.team = packet.pokemon_team;
-		return;
+	if (Battle.subShowing != undefined) {
+		await Battle.subShowing;
 	}
 	
+	console.log('test1asdasd1!');
 	
-	console.log(summaries.slice(0));
+	Battle.subShowing = new Promise(function(resolve, reject) {
 	
-	let summary = summaries.shift();
-	
-	// Battle.showAttackPair({defendingId: 1, attack: 'basic', damage: 75}, {defendingId: 2, attack: 'basic', damage: 250}, 1);
-
-	let SUMMARY_TYPE = {
-		FIGHT: 0,
-		SWITCH: 1
-	};
-	
-	console.log(summary.msg);
-	if (summary.msg != undefined && summary.msg.length != 0) {
-		Battle.drawMessage(summary.msg);
-	}
-	
-	if (summary.type == SUMMARY_TYPE.FIGHT) {
-		Battle.showAttackSummary({
-			defendingId: summary.defending.id,
-			health: summary.defending.health,
-			animation: summary.animation
-		}, function() {
-			Game.time.events.add(Phaser.Timer.SECOND * 1, function() {
-				Battle.showSummaries(summaries, packet);
-			});
-		});
-	} else if (summary.type == SUMMARY_TYPE.SWITCH) {
-		let pOut = Battle.getPokemonById(summary.pokemon_out.id);
-		
-		let pIn = Battle.team[0];
-		for(let i = 0; i < Battle.team.length; i++) {
-			if (Battle.team[i].id == summary.pokemon_in.id) {
-				
-				pIn = Battle.team[i];
-				break;
-			}
+		if (summaries.length == 0) {
+			// handle end packet...
+			Battle.team = packet.pokemon_team;
+			resolve();
+			resolveShow();
+			return;
 		}
 		
-		Battle.doSwitch(pOut, pIn, function() {
-			Game.time.events.add(Phaser.Timer.SECOND * 1, function() {
-				Battle.showSummaries(summaries, packet);
-			});
-		});
-	}
+		let summary = summaries.shift();
+		
+		// Battle.showAttackPair({defendingId: 1, attack: 'basic', damage: 75}, {defendingId: 2, attack: 'basic', damage: 250}, 1);
 	
+		let SUMMARY_TYPE = {
+			FIGHT: 0,
+			SWITCH: 1
+		};
+		
+		console.log(summary.msg);
+		if (summary.msg != undefined && summary.msg.length != 0) {
+			Battle.drawMessage(summary.msg);
+		}
+		
+		console.log('Type: ' + summary.type);
+		if (summary.type == SUMMARY_TYPE.FIGHT) {
+			Battle.showAttackSummary({
+				defendingId: summary.defending.id,
+				health: summary.defending.health,
+				animation: summary.animation
+			}, function() {
+				Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
+					resolve();
+					Battle.showSummaries(summaries, packet, resolveShow);
+				});
+			});
+		} else if (summary.type == SUMMARY_TYPE.SWITCH) {
+			let pOut = Battle.getPokemonById(summary.pokemon_out.id);
+			
+			let pIn = Battle.team[0];
+			for(let i = 0; i < Battle.team.length; i++) {
+				if (Battle.team[i].id == summary.pokemon_in.id) {
+					
+					pIn = Battle.team[i];
+					break;
+				}
+			}
+			
+			Battle.doSwitch(pOut, pIn, function() {
+				Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
+					resolve();
+					Battle.showSummaries(summaries, packet, resolveShow);
+				});
+			});
+		}
+	});
 	
 }
 
 Battle.handleUpdate = async function(packet) {
 	console.log(packet);
 	
+	console.log(packet.update.summaries.slice(0));
+	
 	/*let userPokemon = pokemon_a;
 	if (pokemon_b.owner_id == Game.player.id) {
 		userPokemon = pokemon_b;
 	}*/
 	
-	Battle.showSummaries(packet.update.summaries, packet);
+	if (Battle.showing != undefined) {
+		await Battle.showing;
+	}
+	
+	Battle.showing = new Promise(function(resolve, reject) {
+		Battle.showSummaries(packet.update.summaries, packet, resolve);
+	});
 	
 }

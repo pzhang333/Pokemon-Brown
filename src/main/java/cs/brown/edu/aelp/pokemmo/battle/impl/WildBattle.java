@@ -111,6 +111,7 @@ public class WildBattle extends Battle {
       }
 
       if (getBattleState().equals(BattleState.DONE)) {
+
         sendBattleUpdate();
 
         // TODO: Add end of Battle event.
@@ -301,6 +302,8 @@ public class WildBattle extends Battle {
 
     winner = t;
     loser = other(t);
+
+    lastBattleUpdate = pendingBattleUpdate;
 
     setBattleState(BattleState.DONE);
   }
