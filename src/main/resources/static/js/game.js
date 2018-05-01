@@ -58,6 +58,10 @@ Game.preload = function() {
     game.load.image('backpack', 'assets/HUD/backpack.png');
     game.load.image('trophy', 'assets/HUD/trophy.png');
     game.load.image('coin', 'assets/HUD/coin.png');
+
+    // loading necessary libraries for drawing hud menu
+    // Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
+	// Game.slickUI.load('ui/kenney/kenney.json');
 };
 
 
@@ -205,6 +209,10 @@ Game.loadCurrentChunk = function(clear) {
 };
 
 function drawHud() {
+	// leaderboard panel
+	// let leaderboardPanel = new SlickUI.Element.Panel(8, 8, 150, Game.map.heightInPixels - 16)
+	// Game.slickUI.add();
+
 	// hud grey bar
 	completionSprite = game.add.graphics(0, 0);
 	completionSprite.beginFill(0x3d3d3d, 1);
