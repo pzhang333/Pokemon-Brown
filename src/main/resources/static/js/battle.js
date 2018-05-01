@@ -677,7 +677,7 @@ Battle.showMoves = async function() {
 	}
 }
 
-Battle.useMove = function(id) {
+Battle.useMove = async function(id) {
 	console.log('Use move: ' + id);
 	
 	let moves = Battle.frontPokemon.moves;
@@ -689,6 +689,14 @@ Battle.useMove = function(id) {
 		}
 	}
 	
+	if (Battle.showing != undefined) {
+		await Battle.showing;
+	}
+	
+	if (Battle.frontPokemon.health == 0) {
+		return;
+	}
+	
 	net.sendBattlePacket(BATTLE_ACTION.FIGHT, {
 		moveId: id
 	});
@@ -696,8 +704,12 @@ Battle.useMove = function(id) {
 	Battle.clearMoves();
 }
 
-Battle.switchTo = function(id) {
+Battle.switchTo = async function(id) {
 	console.log('Switch to: ' + id);
+	
+	if (Battle.showing != undefined) {
+		await Battle.showing;
+	}
 	
 	net.sendBattlePacket(BATTLE_ACTION.SWITCH, {
 		switchId: id
@@ -827,8 +839,6 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 	if (Battle.subShowing != undefined) {
 		await Battle.subShowing;
 	}
-	
-	console.log('test1asdasd1!');
 	
 	Battle.subShowing = new Promise(function(resolve, reject) {
 	
