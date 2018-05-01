@@ -80,5 +80,7 @@ public abstract class Battle extends Identifiable {
     return arena;
   }
 
+  // public abstract BattleUpdate sendBattleUpdate();
+
   public abstract void forfeit(Trainer t);
 }

@@ -282,4 +282,5 @@ public class PvPBattle extends Battle {
   public void forfeit(Trainer t) {
     victory(other(t));
   }
+
 }

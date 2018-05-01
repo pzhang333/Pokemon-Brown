@@ -1,22 +1,27 @@
 package cs.brown.edu.aelp.networking;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.jetty.websocket.api.WebSocketException;
+
 import com.google.gson.JsonObject;
+
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
+import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
 import cs.brown.edu.aelp.pokemmo.battle.impl.PvPBattle;
 import cs.brown.edu.aelp.pokemmo.battle.impl.WildBattle;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import org.eclipse.jetty.websocket.api.WebSocketException;
 
 public final class PacketSender {
 
@@ -170,8 +175,8 @@ public final class PacketSender {
     }
   }
 
-  public static void sendBattleTurnPacket(int battleId, String eventDescription,
-      Pokemon a, Pokemon b, int gameStateA, int gameStateB) {
+  public static void sendBattleTurnPacket(int battleId, Trainer to,
+      BattleUpdate eventDescription, Pokemon a, Pokemon b, int gameState) {
 
     JsonObject message = new JsonObject();
 
@@ -183,22 +188,20 @@ public final class PacketSender {
     payload.add("pokemon_a", Main.GSON().toJsonTree(a));
     payload.add("pokemon_b", Main.GSON().toJsonTree(b));
     payload.addProperty("battle_id", battleId);
-    payload.addProperty("event_description", eventDescription);
-    payload.addProperty("game_state_a", gameStateA);
-    payload.addProperty("game_state_b", gameStateB);
+    payload.add("update", Main.GSON().toJsonTree(eventDescription));
+    payload.addProperty("game_state", gameState);
 
     // adding the payload to the message
     message.add("payload", payload);
 
-    if (User.class.isInstance(a.getOwner())) {
-      User usr = (User) a.getOwner();
-      sendPacket(usr, message);
+    if (User.class.isInstance(to)) {
+      sendPacket((User) to, message);
     }
 
-    if (User.class.isInstance(b.getOwner())) {
-      User usr = (User) b.getOwner();
-      sendPacket(usr, message);
-    }
+    /*
+     * if (User.class.isInstance(b.getOwner())) { User usr = (User)
+     * b.getOwner(); sendPacket(usr, message); }
+     */
   }
 
   private static void sendPacket(User u, JsonObject message) {

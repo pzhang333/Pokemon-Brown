@@ -53,6 +53,21 @@ Battle.showKO = function(pokemon) {
 	tween.start();
 }
 
+Battle.setHealth = function(pokemon, health) {
+	
+	pokemon.health = health;
+	
+	if (health == 0) {
+		if (Battle.attack.animations.currentAnim.isPlaying) {
+			Battle.attack.animations.currentAnim.onComplete.addOnce(function() {
+				Battle.showKO(pokemon);
+			});
+		} else {
+			Battle.showKO(pokemon);
+		}
+	}
+}
+
 Battle.applyDamage = function(pokemon, damage) {
 	if (damage >= pokemon.health) {
 		pokemon.health = 0;
@@ -70,6 +85,24 @@ Battle.applyDamage = function(pokemon, damage) {
 }
 
 // Battle.showAttackPair({defendingId: 1, attack: 'basic', damage: 75}, {defendingId: 2, attack: 'basic', damage: 250}, 1);
+
+Battle.showAttackSummary = function(first, cb) {
+	
+	
+	let defFirst = Battle.getPokemonById(first.defendingId);
+	
+	let offsetsFirst = Battle.offsets[first.attackAnim];
+	Game.time.events.add(Phaser.Timer.SECOND * offsetsFirst.time, function() {
+		Battle.setHealth(defFirst, first.defendingHealth);
+	});
+	
+	Battle.showAttack(defFirst.sprite, first.attackAnim, function() {
+		if (cb != undefined) {
+			cb();
+		}
+	});
+}
+
 
 Battle.showAttackPair = function(first, second, delay) {
 	
@@ -723,6 +756,8 @@ Battle.drawDefaultMenu = async function() {
 		Battle.menuSeparator.kill();
 	}
 	
+	Battle.stdButtons = [fightButton, switchButton, itemButton, forfeitButton];
+	
 	Battle.menuSeparator = game.add.graphics(0, 0);
 	
 	Battle.menuSeparator.lineStyle(2, 0x999999);
@@ -734,7 +769,7 @@ Battle.drawDefaultMenu = async function() {
 Battle.battleOver = async function(packet) {
 	
 	Battle.clearMoves();
-	
+	Battle.clearButtons(Battle.stdButtons);
 	Battle.clearMessageText();
 	
 	
@@ -769,5 +804,41 @@ Battle.setup = function(initPacket) {
 	
 	Battle.team = initPacket.pokemon_team;
 	Battle.initPacket = initPacket;
+	
+}
+
+
+Battle.showSummaries = function(summaries, packet) {
+	
+	if (summaries.length == 0) {
+		// handle end packet...
+		
+		return;
+	}
+	
+	let summary = summaries.shift();
+	
+	// Battle.showAttackPair({defendingId: 1, attack: 'basic', damage: 75}, {defendingId: 2, attack: 'basic', damage: 250}, 1);
+
+	if (summary.type == undefined) {
+		Battle.showAttackSummary(summary);
+	} else {
+		
+	}
+	
+	Game.time.events.add(Phaser.Timer.SECOND * 1, function() {
+		Battle.showSummaries(summaries, packet);
+	});
+}
+
+Battle.handleUpdate = async function(packet) {
+	console.log(packet);
+	
+	/*let userPokemon = pokemon_a;
+	if (pokemon_b.owner_id == Game.player.id) {
+		userPokemon = pokemon_b;
+	}*/
+	
+	Battle.showSummaries(packet.update.summaries, packet);
 	
 }

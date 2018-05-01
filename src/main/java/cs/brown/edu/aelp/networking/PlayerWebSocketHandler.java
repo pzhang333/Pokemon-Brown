@@ -55,6 +55,10 @@ public class PlayerWebSocketHandler {
     RUN, SWITCH, USE_ITEM, FIGHT
   }
 
+  public static enum TURN_STATE {
+    NORMAL, MUST_SWITCH
+  };
+
   private static final MESSAGE_TYPE[] MESSAGE_TYPES = MESSAGE_TYPE.values();
   private static final ACTION_TYPE[] ACTION_TYPES = ACTION_TYPE.values();
 

@@ -69,6 +69,7 @@ class Net {
 		this.handlers[MESSAGE_TYPE.TELEPORT_PACKET] = this.teleportHandler;
 		this.handlers[MESSAGE_TYPE.START_BATTLE] = this.startBattleHandler;
 		this.handlers[MESSAGE_TYPE.END_BATTLE] = this.endBattleHandler;
+		this.handlers[MESSAGE_TYPE.BATTLE_TURN_UPDATE] = this.battleUpdateHandler;
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
 	}
@@ -352,6 +353,10 @@ class Net {
 	
 	endBattleHandler(event) {
 		Battle.battleOver(event.payload);
+	}
+	
+	battleUpdateHandler(event) {
+		Battle.handleUpdate(event.payload);
 	}
 
 	sendClientPlayerUpdate(networkPlayer, op){

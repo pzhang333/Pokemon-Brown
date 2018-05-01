@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import cs.brown.edu.aelp.networking.PacketSender;
+import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
+import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
+import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate.Summary;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
@@ -36,6 +40,10 @@ public class WildBattle extends Battle {
 
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
   private Trainer b;
+
+  private BattleUpdate lastBattleUpdate = null;
+
+  private BattleUpdate pendingBattleUpdate = null;
 
   public WildBattle(Integer id, Arena arena, User user, Pokemon wild) {
     super(id, arena);
@@ -73,6 +81,8 @@ public class WildBattle extends Battle {
 
     List<Turn> turns = new ArrayList<>(turnsMap.values());
     turns.sort(this::turnComparator);
+
+    pendingBattleUpdate = new BattleUpdate();
 
     boolean stop = false;
 
@@ -122,6 +132,10 @@ public class WildBattle extends Battle {
     }
 
     turnsMap.clear();
+
+    lastBattleUpdate = pendingBattleUpdate;
+
+    sendBattleUpdate();
 
     setBattleState(BattleState.WAITING);
   }
@@ -174,51 +188,103 @@ public class WildBattle extends Battle {
     atkTrainer.getEffectSlot().handle(atkEvent);
     atkTrainer.getActivePokemon().getEffectSlot().handle(atkEvent);
 
-    // TODO: ADD IN MOVE_RESULT
-    // MoveResult result = new MoveResult(atkEvent.getAttackingPokemon(),
-    // atkEvent.getDefendingPokemon(), turn.getMove(), getArena());
+    if (atkEvent.isPrevented()) {
 
-    MoveResult result = turn.getMove().getMoveResult(atkEvent);
-    result.evaluate();
+      Pokemon atkPokemon = atkTrainer.getActivePokemon();
+      Pokemon defPokemon = defTrainer.getActivePokemon();
 
-    // Todo: defending events
-    // System.out.println(result);
-
-    // TODO: Check if the player knocked themselves out or...
-    // Basically just make sure the self-destruct isn't broken... or really
-    // maybe it doesn't matter
-
-    if (result.getOutcome().equals(MoveOutcome.HIT)) {
-      // Other events...
-
-      System.out.println("The attack was effective or perhaps not...");
-
-      Pokemon defendingPokemon = result.getDefendingPokemon();
-
-      defendingPokemon
-          .setHealth(defendingPokemon.getCurrHp() - result.getDamage());
-
-      System.out.println(defendingPokemon.getCurrHp());
-
-      if (defendingPokemon.isKnockedOut()) {
-        System.out.println("K.O.!");
-        defendingPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
-            result.getAttackingPokemon(), defendingPokemon));
-
-        if (defTrainer.allPokemonKnockedOut()) {
-          victory(atkTrainer);
-        }
+      String msg = atkEvent.getPreventedMsg();
+      if (msg.isEmpty()) {
+        msg = String.format("%s used %s, but it failed!",
+            atkPokemon.getSpecies(), turn.getMove().getName());
       }
-    } else if (result.getOutcome().equals(MoveOutcome.MISS)) {
-      System.out.println("The attack missed");
-    } else if (result.getOutcome().equals(MoveOutcome.BLOCKED)) {
-      System.out.println("The attack was blocked");
-    } else if (result.getOutcome().equals(MoveOutcome.NO_EFFECT)) {
-      System.out.println("The attack had no effect");
-    } else if (result.getOutcome().equals(MoveOutcome.NON_ATTACK_SUCCESS)) {
-      System.out.println("The move succeded");
-    } else if (result.getOutcome().equals(MoveOutcome.NON_ATTACK_FAIL)) {
-      System.out.println("The move failed");
+
+      pendingBattleUpdate
+          .addSummary(new Summary(atkPokemon.getId(), atkPokemon.getCurrHp(),
+              "", defPokemon.getId(), defPokemon.getCurrHp(), "", msg));
+
+    } else {
+
+      // TODO: ADD IN MOVE_RESULT
+      // MoveResult result = new MoveResult(atkEvent.getAttackingPokemon(),
+      // atkEvent.getDefendingPokemon(), turn.getMove(), getArena());
+
+      MoveResult result = turn.getMove().getMoveResult(atkEvent);
+      result.evaluate();
+
+      // Todo: defending events
+      // System.out.println(result);
+
+      // TODO: Check if the player knocked themselves out or...
+      // Basically just make sure the self-destruct isn't broken... or really
+      // maybe it doesn't matter
+
+      Pokemon atkPokemon = atkTrainer.getActivePokemon();
+
+      StringBuilder base = new StringBuilder(atkPokemon.getSpecies())
+          .append(" used ").append(turn.getMove().getName());
+
+      if (result.getOutcome().equals(MoveOutcome.HIT)) {
+
+        base.append(".");
+        // Other events...
+
+        // System.out.println("The attack was effective or perhaps not...");
+
+        Pokemon defendingPokemon = result.getDefendingPokemon();
+
+        defendingPokemon
+            .setHealth(defendingPokemon.getCurrHp() - result.getDamage());
+
+        System.out.println(defendingPokemon.getCurrHp());
+
+        if (defendingPokemon.isKnockedOut()) {
+          // System.out.println("K.O.!");
+          defendingPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
+              result.getAttackingPokemon(), defendingPokemon));
+
+          if (defTrainer.allPokemonKnockedOut()) {
+            victory(atkTrainer);
+          }
+        }
+
+        pendingBattleUpdate.addSummary(new Summary(atkPokemon.getId(),
+            atkPokemon.getCurrHp(), "basic", defendingPokemon.getId(),
+            defendingPokemon.getCurrHp(), "", base.toString()));
+
+      } else {
+        if (result.getOutcome().equals(MoveOutcome.MISS)) {
+
+          System.out.println("The attack missed");
+
+          base.append(", but it missed.");
+
+        } else if (result.getOutcome().equals(MoveOutcome.BLOCKED)) {
+          System.out.println("The attack was blocked");
+
+          base.append(", but it was blocked.");
+
+        } else if (result.getOutcome().equals(MoveOutcome.NO_EFFECT)) {
+          System.out.println("The attack had no effect");
+
+          base.append(", but it had no effect.");
+
+        } else if (result.getOutcome().equals(MoveOutcome.NON_ATTACK_SUCCESS)) {
+          System.out.println("The move succeded");
+
+          base.append(".");
+        } else if (result.getOutcome().equals(MoveOutcome.NON_ATTACK_FAIL)) {
+          System.out.println("The move failed");
+
+          base.append(", but it failed.");
+        }
+
+        Pokemon defPokemon = defTrainer.getActivePokemon();
+
+        pendingBattleUpdate.addSummary(new Summary(atkPokemon.getId(),
+            atkPokemon.getCurrHp(), "", defPokemon.getId(),
+            defPokemon.getCurrHp(), "", base.toString()));
+      }
     }
   }
 
@@ -303,7 +369,23 @@ public class WildBattle extends Battle {
     return winner;
   }
 
+  @Override
   public void forfeit(Trainer t) {
     victory(other(t));
+  }
+
+  private void sendBattleUpdateTo(Trainer t) {
+    if (t.getId() == -1) {
+      return;
+    }
+
+    PacketSender.sendBattleTurnPacket(getId(), t, lastBattleUpdate,
+        t.getActivePokemon(), other(t).getActivePokemon(),
+        ((t.getActivePokemon().isKnockedOut()) ? TURN_STATE.MUST_SWITCH
+            : TURN_STATE.NORMAL).ordinal());
+  }
+
+  private void sendBattleUpdate() {
+    sendBattleUpdateTo(a);
   }
 }

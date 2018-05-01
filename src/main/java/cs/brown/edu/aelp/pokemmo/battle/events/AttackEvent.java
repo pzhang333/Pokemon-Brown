@@ -19,6 +19,10 @@ public class AttackEvent extends BattleEvent {
 
   private final Pokemon defendingPokemon;
 
+  private boolean prevented = false;
+
+  private String preventedMsg = "";
+
   /**
    * Construct an AttackEvent.
    *
@@ -82,4 +86,20 @@ public class AttackEvent extends BattleEvent {
     }
   }
 
+  public boolean isPrevented() {
+    return prevented;
+  }
+
+  public void setPrevented(boolean prevented) {
+    setPrevented(prevented, "");
+  }
+
+  public void setPrevented(boolean prevented, String msg) {
+    this.prevented = prevented;
+    this.preventedMsg = msg;
+  }
+
+  public String getPreventedMsg() {
+    return preventedMsg;
+  }
 }
