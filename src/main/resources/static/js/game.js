@@ -1,4 +1,6 @@
 
+let toDrawLeaderboard = false;
+
 var Game = {
 	players: {}
 }
@@ -60,8 +62,8 @@ Game.preload = function() {
     game.load.image('coin', 'assets/HUD/coin.png');
 
     // loading necessary libraries for drawing hud menu
-    // Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
-	// Game.slickUI.load('ui/kenney/kenney.json');
+    Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
+	Game.slickUI.load('ui/kenney/kenney.json');
 };
 
 
@@ -209,9 +211,11 @@ Game.loadCurrentChunk = function(clear) {
 };
 
 function drawHud() {
-	// leaderboard panel
-	// let leaderboardPanel = new SlickUI.Element.Panel(8, 8, 150, Game.map.heightInPixels - 16)
-	// Game.slickUI.add();
+
+	if (toDrawLeaderboard) {
+		drawLeadboard();
+	} else { 
+		console.log("stuff");}
 
 	// hud grey bar
 	completionSprite = game.add.graphics(0, 0);
@@ -222,19 +226,48 @@ function drawHud() {
 
 
 	// backpack icon
-	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/7, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "trophy");
-    backpackIcon.inputEnabled = true;
-    backpackIcon.fixedToCamera = true;
-
-    // trophy icon
-   	let trophyIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/4.60, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");
+	let trophyIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/7, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "trophy");
     trophyIcon.inputEnabled = true;
     trophyIcon.fixedToCamera = true;
+    trophyIcon.events.onInputDown.add(queueLeaderboard, this);
+
+    // trophy icon
+   	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/4.60, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");
+    backpackIcon.inputEnabled = true;
+    backpackIcon.fixedToCamera = true;
 
     // coin icon
     let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3.45, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "coin");
     coinIcon.inputEnabled = true;
     coinIcon.fixedToCamera = true;
+}
 
-    game.world.bringToTop(backpackIcon);
+function drawLeadboard() {
+	// leaderboard panel
+	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
+	Game.slickUI.add(Game.panel);
+
+	let header = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 20, "Leaderboard:");
+
+	let player1 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65, "1. top_user_id");
+	let player2 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 95, "2. top_user_id");
+	let player3 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 125, "3. top_user_id");
+	let player4 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 155, "4. top_user_id");
+	let player5 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 185, "5. top_user_id");
+
+	Game.panel.add(header);
+	Game.panel.add(player1);
+	Game.panel.add(player2);
+	Game.panel.add(player3);
+	Game.panel.add(player4);
+	Game.panel.add(player5);
+}
+
+function queueLeaderboard() {
+	if (toDrawLeaderboard) {
+		Game.panel.destroy();
+	} else {
+		drawLeadboard();
+	}
+	toDrawLeaderboard = !toDrawLeaderboard;
 }
