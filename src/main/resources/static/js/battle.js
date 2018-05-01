@@ -273,32 +273,34 @@ Battle.create = function() {
 	let pokemon_b = Battle.initPacket.pokemon_b;
 	
 	
-	let moves = [
-		{
-			id: 1,
-			name: "Scratch"
-		}
-	];
-	
 	// Other:
-	/*Battle.team = [
+	Battle.team = [
 		pokemon_a,
 		{
 			id: 123, 
 			species: 'pikachu',
-			moves: moves
+			health: 122,
+			maxHealth: 150
 		},
 		{
 			id: 234, 
 			species: 'chandelure',
-			moves: moves
+			health: 68,
+			maxHealth: 150
 		},
 		{
 			id: 345, 
 			species: 'arceus',
-			moves: moves
+			health: 100,
+			maxHealth: 150
+		},
+		{
+			id: 13232,
+			species: 'giratina',
+			health: 150,
+			maxHealth: 150
 		}
-	];*/
+	];
 
 	if (pokemon_a.owner_id == Game.player.id) {
 		Battle.frontPokemon = pokemon_a;
@@ -543,10 +545,14 @@ Battle.showTeam = async function() {
 		Battle.custDrawFrontPokemon(pokemon, function(key) {
 			let sprite = game.add.sprite(0, 0, key);
 			sprite.visible = true;
-			sprite.anchor.setTo(1, .35);
-			sprite.scale.set(.15, .15);
+			sprite.anchor.setTo(1, .5);
+			
+			let s = 35 / sprite.height;
+			
+			
+			sprite.scale.set(s, s);
 			sprite.x = x;
-			sprite.y = y;
+			sprite.y = y + 5;
 			
 			Battle.teamButtons.push(sprite);
 		});

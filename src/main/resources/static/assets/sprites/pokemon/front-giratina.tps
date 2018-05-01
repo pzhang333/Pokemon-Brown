@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.6.3</string>
         <key>fileName</key>
-        <string>C:/Users/mcdas/cs0320/final-project/src/main/resources/static/assets/sprites/pokemon/front-charmander.tps</string>
+        <string>C:/Users/mcdas/cs0320/final-project/src/main/resources/static/assets/sprites/pokemon/front-giratina.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -76,7 +76,7 @@
         <key>jpgQuality</key>
         <uint>80</uint>
         <key>pngOptimizationLevel</key>
-        <uint>0</uint>
+        <uint>1</uint>
         <key>webpQualityLevel</key>
         <uint>101</uint>
         <key>textureSubPath</key>
@@ -90,9 +90,9 @@
         <key>maxTextureSize</key>
         <QSize>
             <key>width</key>
-            <int>2048</int>
+            <int>4096</int>
             <key>height</key>
-            <int>2048</int>
+            <int>4096</int>
         </QSize>
         <key>fixedTextureSize</key>
         <QSize>
@@ -134,7 +134,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>front-charmander.json</filename>
+                <filename>front-giratina.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -171,7 +171,7 @@
             <key>trimMargin</key>
             <uint>1</uint>
             <key>trimMode</key>
-            <enum type="SpriteSettings::TrimMode">None</enum>
+            <enum type="SpriteSettings::TrimMode">Trim</enum>
             <key>tracerTolerance</key>
             <int>200</int>
             <key>heuristicMask</key>
@@ -183,91 +183,91 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">raw/front/charmander/00.png</key>
-            <key type="filename">raw/front/charmander/01.png</key>
-            <key type="filename">raw/front/charmander/02.png</key>
-            <key type="filename">raw/front/charmander/03.png</key>
-            <key type="filename">raw/front/charmander/04.png</key>
-            <key type="filename">raw/front/charmander/05.png</key>
-            <key type="filename">raw/front/charmander/06.png</key>
-            <key type="filename">raw/front/charmander/07.png</key>
-            <key type="filename">raw/front/charmander/08.png</key>
-            <key type="filename">raw/front/charmander/09.png</key>
-            <key type="filename">raw/front/charmander/10.png</key>
-            <key type="filename">raw/front/charmander/11.png</key>
-            <key type="filename">raw/front/charmander/12.png</key>
-            <key type="filename">raw/front/charmander/13.png</key>
-            <key type="filename">raw/front/charmander/14.png</key>
-            <key type="filename">raw/front/charmander/15.png</key>
-            <key type="filename">raw/front/charmander/16.png</key>
-            <key type="filename">raw/front/charmander/17.png</key>
-            <key type="filename">raw/front/charmander/18.png</key>
-            <key type="filename">raw/front/charmander/19.png</key>
-            <key type="filename">raw/front/charmander/20.png</key>
-            <key type="filename">raw/front/charmander/21.png</key>
-            <key type="filename">raw/front/charmander/22.png</key>
-            <key type="filename">raw/front/charmander/23.png</key>
-            <key type="filename">raw/front/charmander/24.png</key>
-            <key type="filename">raw/front/charmander/25.png</key>
-            <key type="filename">raw/front/charmander/26.png</key>
-            <key type="filename">raw/front/charmander/27.png</key>
-            <key type="filename">raw/front/charmander/28.png</key>
-            <key type="filename">raw/front/charmander/29.png</key>
-            <key type="filename">raw/front/charmander/30.png</key>
-            <key type="filename">raw/front/charmander/31.png</key>
-            <key type="filename">raw/front/charmander/32.png</key>
-            <key type="filename">raw/front/charmander/33.png</key>
-            <key type="filename">raw/front/charmander/34.png</key>
-            <key type="filename">raw/front/charmander/35.png</key>
-            <key type="filename">raw/front/charmander/36.png</key>
-            <key type="filename">raw/front/charmander/37.png</key>
-            <key type="filename">raw/front/charmander/38.png</key>
-            <key type="filename">raw/front/charmander/39.png</key>
-            <key type="filename">raw/front/charmander/40.png</key>
-            <key type="filename">raw/front/charmander/41.png</key>
-            <key type="filename">raw/front/charmander/42.png</key>
-            <key type="filename">raw/front/charmander/43.png</key>
-            <key type="filename">raw/front/charmander/44.png</key>
-            <key type="filename">raw/front/charmander/45.png</key>
-            <key type="filename">raw/front/charmander/46.png</key>
-            <key type="filename">raw/front/charmander/47.png</key>
-            <key type="filename">raw/front/charmander/48.png</key>
-            <key type="filename">raw/front/charmander/49.png</key>
-            <key type="filename">raw/front/charmander/50.png</key>
-            <key type="filename">raw/front/charmander/51.png</key>
-            <key type="filename">raw/front/charmander/52.png</key>
-            <key type="filename">raw/front/charmander/53.png</key>
-            <key type="filename">raw/front/charmander/54.png</key>
-            <key type="filename">raw/front/charmander/55.png</key>
-            <key type="filename">raw/front/charmander/56.png</key>
-            <key type="filename">raw/front/charmander/57.png</key>
-            <key type="filename">raw/front/charmander/58.png</key>
-            <key type="filename">raw/front/charmander/59.png</key>
-            <key type="filename">raw/front/charmander/60.png</key>
-            <key type="filename">raw/front/charmander/61.png</key>
-            <key type="filename">raw/front/charmander/62.png</key>
-            <key type="filename">raw/front/charmander/63.png</key>
-            <key type="filename">raw/front/charmander/64.png</key>
-            <key type="filename">raw/front/charmander/65.png</key>
-            <key type="filename">raw/front/charmander/66.png</key>
-            <key type="filename">raw/front/charmander/67.png</key>
-            <key type="filename">raw/front/charmander/68.png</key>
+            <key type="filename">raw/front/giratina-origin/00.png</key>
+            <key type="filename">raw/front/giratina-origin/01.png</key>
+            <key type="filename">raw/front/giratina-origin/02.png</key>
+            <key type="filename">raw/front/giratina-origin/03.png</key>
+            <key type="filename">raw/front/giratina-origin/04.png</key>
+            <key type="filename">raw/front/giratina-origin/05.png</key>
+            <key type="filename">raw/front/giratina-origin/06.png</key>
+            <key type="filename">raw/front/giratina-origin/07.png</key>
+            <key type="filename">raw/front/giratina-origin/08.png</key>
+            <key type="filename">raw/front/giratina-origin/09.png</key>
+            <key type="filename">raw/front/giratina-origin/10.png</key>
+            <key type="filename">raw/front/giratina-origin/11.png</key>
+            <key type="filename">raw/front/giratina-origin/12.png</key>
+            <key type="filename">raw/front/giratina-origin/13.png</key>
+            <key type="filename">raw/front/giratina-origin/14.png</key>
+            <key type="filename">raw/front/giratina-origin/15.png</key>
+            <key type="filename">raw/front/giratina-origin/16.png</key>
+            <key type="filename">raw/front/giratina-origin/17.png</key>
+            <key type="filename">raw/front/giratina-origin/18.png</key>
+            <key type="filename">raw/front/giratina-origin/19.png</key>
+            <key type="filename">raw/front/giratina-origin/20.png</key>
+            <key type="filename">raw/front/giratina-origin/21.png</key>
+            <key type="filename">raw/front/giratina-origin/22.png</key>
+            <key type="filename">raw/front/giratina-origin/23.png</key>
+            <key type="filename">raw/front/giratina-origin/24.png</key>
+            <key type="filename">raw/front/giratina-origin/25.png</key>
+            <key type="filename">raw/front/giratina-origin/26.png</key>
+            <key type="filename">raw/front/giratina-origin/27.png</key>
+            <key type="filename">raw/front/giratina-origin/28.png</key>
+            <key type="filename">raw/front/giratina-origin/29.png</key>
+            <key type="filename">raw/front/giratina-origin/30.png</key>
+            <key type="filename">raw/front/giratina-origin/31.png</key>
+            <key type="filename">raw/front/giratina-origin/32.png</key>
+            <key type="filename">raw/front/giratina-origin/33.png</key>
+            <key type="filename">raw/front/giratina-origin/34.png</key>
+            <key type="filename">raw/front/giratina-origin/35.png</key>
+            <key type="filename">raw/front/giratina-origin/36.png</key>
+            <key type="filename">raw/front/giratina-origin/37.png</key>
+            <key type="filename">raw/front/giratina-origin/38.png</key>
+            <key type="filename">raw/front/giratina-origin/39.png</key>
+            <key type="filename">raw/front/giratina-origin/40.png</key>
+            <key type="filename">raw/front/giratina-origin/41.png</key>
+            <key type="filename">raw/front/giratina-origin/42.png</key>
+            <key type="filename">raw/front/giratina-origin/43.png</key>
+            <key type="filename">raw/front/giratina-origin/44.png</key>
+            <key type="filename">raw/front/giratina-origin/45.png</key>
+            <key type="filename">raw/front/giratina-origin/46.png</key>
+            <key type="filename">raw/front/giratina-origin/47.png</key>
+            <key type="filename">raw/front/giratina-origin/48.png</key>
+            <key type="filename">raw/front/giratina-origin/49.png</key>
+            <key type="filename">raw/front/giratina-origin/50.png</key>
+            <key type="filename">raw/front/giratina-origin/51.png</key>
+            <key type="filename">raw/front/giratina-origin/52.png</key>
+            <key type="filename">raw/front/giratina-origin/53.png</key>
+            <key type="filename">raw/front/giratina-origin/54.png</key>
+            <key type="filename">raw/front/giratina-origin/55.png</key>
+            <key type="filename">raw/front/giratina-origin/56.png</key>
+            <key type="filename">raw/front/giratina-origin/57.png</key>
+            <key type="filename">raw/front/giratina-origin/58.png</key>
+            <key type="filename">raw/front/giratina-origin/59.png</key>
+            <key type="filename">raw/front/giratina-origin/60.png</key>
+            <key type="filename">raw/front/giratina-origin/61.png</key>
+            <key type="filename">raw/front/giratina-origin/62.png</key>
+            <key type="filename">raw/front/giratina-origin/63.png</key>
+            <key type="filename">raw/front/giratina-origin/64.png</key>
+            <key type="filename">raw/front/giratina-origin/65.png</key>
+            <key type="filename">raw/front/giratina-origin/66.png</key>
+            <key type="filename">raw/front/giratina-origin/67.png</key>
+            <key type="filename">raw/front/giratina-origin/68.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>12,14,24,29</rect>
+                <rect>39,39,78,77</rect>
                 <key>scale9Paddings</key>
-                <rect>12,14,24,29</rect>
+                <rect>39,39,78,77</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
         </map>
         <key>fileList</key>
         <array>
-            <filename>raw/front/charmander</filename>
+            <filename>raw/front/giratina-origin</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
@@ -282,7 +282,7 @@
         <key>packNormalMaps</key>
         <false/>
         <key>autodetectNormalMaps</key>
-        <false/>
+        <true/>
         <key>normalMapFilter</key>
         <string></string>
         <key>normalMapSuffix</key>

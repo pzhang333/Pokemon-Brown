@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.6.3</string>
         <key>fileName</key>
-        <string>C:/CS 0320/s18-abrevnov-esattler-lkilfoyl-pzhang15/src/main/resources/static/assets/sprites/pokemon/back-giratina.tps</string>
+        <string>C:/Users/mcdas/cs0320/final-project/src/main/resources/static/assets/sprites/pokemon/back-giratina.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -90,9 +90,9 @@
         <key>maxTextureSize</key>
         <QSize>
             <key>width</key>
-            <int>2048</int>
+            <int>4096</int>
             <key>height</key>
-            <int>2048</int>
+            <int>4096</int>
         </QSize>
         <key>fixedTextureSize</key>
         <QSize>
