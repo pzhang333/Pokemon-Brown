@@ -64,6 +64,10 @@ public class WildBattle extends Battle {
 
   private Turn genTrainerTurn() {
 
+    if (a.getActivePokemon().isKnockedOut()) {
+      return new NullTurn(b);
+    }
+
     Random rand = new Random();
     Move m = wild.getMoves().get(rand.nextInt(wild.getMoves().size()));
 
