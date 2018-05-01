@@ -13,6 +13,10 @@ import cs.brown.edu.aelp.pokemon.Main;
 
 public class BattleUpdate {
 
+  public static enum SummaryType {
+    FIGHT, SWITCH
+  }
+
   public static class Summary {
 
     private Integer attackingId;
@@ -29,10 +33,13 @@ public class BattleUpdate {
 
     private String msg;
 
-    public Summary(Integer attackingId, Integer attackingHealth,
-        String attackAnim, Integer defendingId, Integer defendingHealth,
-        String defendAnim, String msg) {
+    private Integer type;
+
+    public Summary(SummaryType type, Integer attackingId,
+        Integer attackingHealth, String attackAnim, Integer defendingId,
+        Integer defendingHealth, String defendAnim, String msg) {
       super();
+      this.type = type.ordinal();
       this.attackingId = attackingId;
       this.attackingHealth = attackingHealth;
       this.defendingHealth = defendingHealth;

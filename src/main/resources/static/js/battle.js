@@ -24,6 +24,10 @@ Battle.init = function() {
 	}
 };
 
+Battle.getPokemonByOwnerId = function(id) {
+	return (id == Battle.frontPokemon.owner_id) ? Battle.frontPokemon : Battle.backPokemon;
+}
+
 Battle.getPokemonById = function(id) {
 	return (id == Battle.frontPokemon.id) ? Battle.frontPokemon : Battle.backPokemon;
 }
@@ -812,7 +816,7 @@ Battle.showSummaries = function(summaries, packet) {
 	
 	if (summaries.length == 0) {
 		// handle end packet...
-		
+		Battle.team = packet.pokemon_team;
 		return;
 	}
 	
@@ -820,15 +824,37 @@ Battle.showSummaries = function(summaries, packet) {
 	
 	// Battle.showAttackPair({defendingId: 1, attack: 'basic', damage: 75}, {defendingId: 2, attack: 'basic', damage: 250}, 1);
 
-	if (summary.type == undefined) {
-		Battle.showAttackSummary(summary);
+	let SUMMARY_TYPE = {
+		FIGHT: 1,
+		SWITCH: 2
+	};
+	
+	if (summary.type == SUMMARY_TYPE.FIGHT) {
+		Battle.showAttackSummary(summary, function() {
+			Game.time.events.add(Phaser.Timer.SECOND * 1, function() {
+				Battle.showSummaries(summaries, packet);
+			});
+		});
 	} else {
+		let pOut = Battle.getPokemonById(summary.attackingId);
 		
+		let pIn = Battle.team[0];
+		for(let i = 0; i < Battle.team.length; i++) {
+			if (Battle.team[i].id == summary.defendingId) {
+				
+				pIn = Battle.team[i];
+				break;
+			}
+		}
+		
+		Battle.doSwitch(pOut, pIn, function() {
+			Game.time.events.add(Phaser.Timer.SECOND * 1, function() {
+				Battle.showSummaries(summaries, packet);
+			});
+		});
 	}
 	
-	Game.time.events.add(Phaser.Timer.SECOND * 1, function() {
-		Battle.showSummaries(summaries, packet);
-	});
+	
 }
 
 Battle.handleUpdate = async function(packet) {

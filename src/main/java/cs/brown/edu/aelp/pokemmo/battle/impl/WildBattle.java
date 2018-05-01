@@ -12,6 +12,7 @@ import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
 import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate.Summary;
+import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate.SummaryType;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
@@ -172,6 +173,11 @@ public class WildBattle extends Battle {
     // Broadcast switch in
     trainer.getEffectSlot().handle(switchInEvent);
     trainer.getActivePokemon().getEffectSlot().handle(switchInEvent);
+
+    pendingBattleUpdate.addSummary(
+        new Summary(SummaryType.SWITCH, turn.getPokemonOut().getId(),
+            turn.getPokemonOut().getCurrHp(), "", turn.getPokemonIn().getId(),
+            turn.getPokemonIn().getCurrHp(), "", "Switch!"));
   }
 
   public void handleTurn(FightTurn turn) {
@@ -199,9 +205,9 @@ public class WildBattle extends Battle {
             atkPokemon.getSpecies(), turn.getMove().getName());
       }
 
-      pendingBattleUpdate
-          .addSummary(new Summary(atkPokemon.getId(), atkPokemon.getCurrHp(),
-              "", defPokemon.getId(), defPokemon.getCurrHp(), "", msg));
+      pendingBattleUpdate.addSummary(new Summary(SummaryType.FIGHT,
+          atkPokemon.getId(), atkPokemon.getCurrHp(), "", defPokemon.getId(),
+          defPokemon.getCurrHp(), "", msg));
 
     } else {
 
@@ -248,9 +254,10 @@ public class WildBattle extends Battle {
           }
         }
 
-        pendingBattleUpdate.addSummary(new Summary(atkPokemon.getId(),
-            atkPokemon.getCurrHp(), "basic", defendingPokemon.getId(),
-            defendingPokemon.getCurrHp(), "", base.toString()));
+        pendingBattleUpdate
+            .addSummary(new Summary(SummaryType.FIGHT, atkPokemon.getId(),
+                atkPokemon.getCurrHp(), "basic", defendingPokemon.getId(),
+                defendingPokemon.getCurrHp(), "", base.toString()));
 
       } else {
         if (result.getOutcome().equals(MoveOutcome.MISS)) {
@@ -281,8 +288,8 @@ public class WildBattle extends Battle {
 
         Pokemon defPokemon = defTrainer.getActivePokemon();
 
-        pendingBattleUpdate.addSummary(new Summary(atkPokemon.getId(),
-            atkPokemon.getCurrHp(), "", defPokemon.getId(),
+        pendingBattleUpdate.addSummary(new Summary(SummaryType.FIGHT,
+            atkPokemon.getId(), atkPokemon.getCurrHp(), "", defPokemon.getId(),
             defPokemon.getCurrHp(), "", base.toString()));
       }
     }

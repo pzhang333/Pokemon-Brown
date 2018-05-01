@@ -190,6 +190,7 @@ public final class PacketSender {
     payload.addProperty("battle_id", battleId);
     payload.add("update", Main.GSON().toJsonTree(eventDescription));
     payload.addProperty("game_state", gameState);
+    payload.add("pokemon_team", Main.GSON().toJsonTree(to.getTeam()));
 
     // adding the payload to the message
     message.add("payload", payload);
