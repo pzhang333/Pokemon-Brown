@@ -21,8 +21,9 @@ public abstract class Battle extends Identifiable {
   private BattleState battleState = BattleState.SETUP;
 
   public abstract Trainer getLoser();
-  
+
   public abstract Trainer getWinner();
+
   /**
    * @return the battleState
    */
@@ -78,4 +79,6 @@ public abstract class Battle extends Identifiable {
   public Arena getArena() {
     return arena;
   }
+
+  public abstract void forfeit(Trainer t);
 }

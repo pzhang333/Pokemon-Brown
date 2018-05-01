@@ -274,7 +274,7 @@ Battle.create = function() {
 	
 	
 	// Other:
-	Battle.team = [
+	/*Battle.team = [
 		pokemon_a,
 		{
 			id: 123, 
@@ -300,7 +300,7 @@ Battle.create = function() {
 			health: 150,
 			maxHealth: 150
 		}
-	];
+	];*/
 
 	if (pokemon_a.owner_id == Game.player.id) {
 		Battle.frontPokemon = pokemon_a;
@@ -660,6 +660,11 @@ Battle.useMove = function(id) {
 
 Battle.switchTo = function(id) {
 	console.log('Switch to: ' + id);
+	
+	net.sendBattlePacket(BATTLE_ACTION.SWITCH, {
+		switchId: id
+	});
+	
 	Battle.clearTeam();
 }
 

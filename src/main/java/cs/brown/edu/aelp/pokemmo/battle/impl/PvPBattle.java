@@ -27,9 +27,9 @@ public class PvPBattle extends Battle {
   private final Trainer a;
 
   private final Trainer b;
-  
+
   private Trainer winner = null;
-  
+
   private Trainer loser = null;
 
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
@@ -206,7 +206,7 @@ public class PvPBattle extends Battle {
 
     winner = t;
     loser = other(t);
-    
+
     setBattleState(BattleState.DONE);
   }
 
@@ -260,18 +260,26 @@ public class PvPBattle extends Battle {
 
   @Override
   public String dbgStatus() {
-    // TODO Auto-generated method stub
-    return null;
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(a);
+    sb.append(b);
+
+    return sb.toString();
   }
 
   @Override
   public Trainer getLoser() {
-	return loser;
+    return loser;
   }
 
-  @Override 
+  @Override
   public Trainer getWinner() {
-	return winner;
+    return winner;
   }
- 
+
+  @Override
+  public void forfeit(Trainer t) {
+    victory(other(t));
+  }
 }

@@ -31,9 +31,9 @@ public class WildBattle extends Battle {
   private final Trainer a;
 
   private Trainer winner;
-  
+
   private Trainer loser;
-  
+
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
   private Trainer b;
 
@@ -227,7 +227,7 @@ public class WildBattle extends Battle {
 
     winner = t;
     loser = other(t);
-    
+
     setBattleState(BattleState.DONE);
   }
 
@@ -292,15 +292,18 @@ public class WildBattle extends Battle {
 
     return sb.toString();
   }
-  
+
   @Override
   public Trainer getLoser() {
-	return loser;
+    return loser;
   }
 
-  @Override 
+  @Override
   public Trainer getWinner() {
-	return winner;
+    return winner;
   }
 
+  public void forfeit(Trainer t) {
+    victory(other(t));
+  }
 }

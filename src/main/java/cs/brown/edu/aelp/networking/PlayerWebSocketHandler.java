@@ -20,9 +20,10 @@ import com.google.gson.JsonObject;
 
 import cs.brown.edu.aelp.networking.Trade.TRADE_STATUS;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
-import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
+import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
 import cs.brown.edu.aelp.pokemmo.data.DataSource.AuthException;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
@@ -30,6 +31,7 @@ import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 
 @WebSocket
@@ -209,14 +211,29 @@ public class PlayerWebSocketHandler {
       session.close();
     }
 
+    Battle battle = user.getCurrentBattle();
+
     Turn t = null;
     switch (ACTION_TYPES[payload.get("action").getAsInt()]) {
     case RUN:
       // TODO: run
-      System.out.println("User ran away");
+      battle.forfeit(user);
       break;
     case SWITCH:
       // TODO: switch
+      Integer switchId = payload.get("switchId").getAsInt();
+      System.out.println("Switch ID: " + switchId);
+
+      if (switchId == user.getActivePokemon().getId()) {
+        break;
+      }
+
+      for (Pokemon p : user.getTeam()) {
+        if (p.getId() == switchId) {
+          t = new SwitchTurn(user, user.getActivePokemon(), p);
+          break;
+        }
+      }
       break;
     case USE_ITEM:
       // TODO: use item
@@ -240,8 +257,6 @@ public class PlayerWebSocketHandler {
       session.close();
     }
 
-    Battle battle = user.getCurrentBattle();
-
     System.out.println(battle.getBattleState());
 
     synchronized (battle) {
@@ -261,9 +276,9 @@ public class PlayerWebSocketHandler {
 
         System.out.println(battle.dbgStatus());
       }
-      
+
       if (battle.getBattleState().equals(BattleState.DONE)) {
-    	  BattleManager.getInstance().endBattle(battle);
+        BattleManager.getInstance().endBattle(battle);
       }
     }
   }
