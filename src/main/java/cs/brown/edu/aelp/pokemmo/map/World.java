@@ -66,6 +66,7 @@ public class World {
     String fname = file.getName();
     Chunk chunk = new Chunk(id, jFile.getInt("width"), jFile.getInt("height"),
         fname.substring(0, fname.lastIndexOf(".")));
+
     List<JsonFile> layers = jFile.getJsonList("layers");
     for (int i = 0; i < layers.size(); i++) {
       List<Double> tiles = layers.get(i).getList("data");

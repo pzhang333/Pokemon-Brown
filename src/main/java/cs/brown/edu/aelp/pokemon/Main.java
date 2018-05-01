@@ -125,19 +125,21 @@ public final class Main {
       return;
     }
 
+    world.loadChunks();
+
     // try to load config
     int SAVE_PERIOD = 180; // seconds
     try {
       JsonFile cfg = new JsonFile("config/game_config.json");
       SAVE_PERIOD = cfg.getInt("save_period");
+      JsonFile spawn = cfg.getMap("spawn");
+      world.setSpawn(new Location(world.getChunk(spawn.getInt("chunk")),
+          spawn.getInt("row"), spawn.getInt("col")));
     } catch (IOException e) {
       System.out.println("Something went wrong reading game_config.json");
       e.printStackTrace();
       return;
     }
-
-    world.loadChunks();
-    world.setSpawn(new Location(world.getChunk(1), 5, 5));
 
     // try to start the save-thread if we're backed by SQL
     if (Main.getDataSource() instanceof SQLDataSource) {

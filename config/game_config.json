@@ -1,3 +1,9 @@
 {
-    "save_period" : 180
+    "save_period" : 180,
+    "spawn" :
+    {
+        "chunk" : 3,
+        "row" : 27,
+        "col" : 30
+    }
 }

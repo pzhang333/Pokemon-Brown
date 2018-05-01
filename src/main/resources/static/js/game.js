@@ -4,10 +4,10 @@ var Game = {
 }
 
 Game.init = function() {
-	
+
 	Game.ready = false;
 	//Game.easystar = new EasyStar.js();
-	
+
 };
 
 Game.shutdown = function() {
@@ -40,7 +40,7 @@ Game.update = function() {
 	} else if (this.cursors.down.isDown) {
 		this.player.step('down', (this.cursors.down.shiftKey) ? 2 : 1);
 	}
-	
+
 };
 
 Game.preload = function() {
@@ -51,9 +51,9 @@ Game.preload = function() {
 	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
 	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
 	game.load.atlasJSONHash('attacks', 'assets/pokemon/attacks.png', 'assets/pokemon/attacks.json');
-	
+
 	game.load.audio('battle', ['assets/audio/battle.mp3']);
-	
+
 	// loading hud images
     game.load.image('backpack', 'assets/HUD/backpack.png');
     game.load.image('trophy', 'assets/HUD/trophy.png');
@@ -63,7 +63,7 @@ Game.preload = function() {
 
 Game.create = function() {
 	this.loadCurrentChunk(true);
-	
+
 	Game.ready = true;
 	game.camera.roundPx = true;
 };
@@ -91,8 +91,7 @@ Game.moveGroupTo = function(parent,group,endPos){
 Game.drawLayers = function() {
 
 	/* TODO: Cleanup */
-	Game.layerNames = ['Base', 'Walk', 'Collision', 'Top'];
-
+	Game.layerNames = ['Base', 'Walk', 'Walkable', 'Collision', 'Top'];//, 'Bush'];
 	Game.map.gameLayers = {};
 
 	for(idx in Game.layerNames) {
@@ -122,14 +121,14 @@ Game.drawLayers = function() {
 };
 
 Game.handleMapClick = function(layer, pointer) {
-	
+
 	let coords = Game.computeTileCoords(pointer.worldX, Math.ceil((pointer.worldY - 16) / 16) * 16);
 
 	/* Hack due to offset */
 	if (coords.y == Game.map.height) {
 		coords.y--;
 	}
-	
+
 	Game.player.prepareMovement(coords);
 };
 
@@ -173,16 +172,16 @@ Game.getMapElement = function(x, y, map) {
 
 Game.clearPlayers = function() {
 	for (var key in Game.players) {
-	    if (Game.players.hasOwnProperty(key)) {      
-	    	
+	    if (Game.players.hasOwnProperty(key)) {
+
 	    	// Hack
 	    	let id = parseInt(key);
 	    	let player = Game.players[id]
-	    	
+
 	    	if (player != undefined) {
 	    		player.del();
 	    	}
-	    	
+
 
     		//Game.players[id] = undefined;
 	    }
@@ -192,15 +191,16 @@ Game.clearPlayers = function() {
 Game.loadCurrentChunk = function(clear) {
 
 	Game.chunkId = false;
-	
+
 	if (Game.map != undefined) {
 		for(idx in Game.layerNames) {
 			Game.map.gameLayers[Game.layerNames[idx]].destroy();
 		}
-		
+
 		Game.groundMapLayers.destroy();
 		Game.highMapLayers.destroy();
-		
+		Game.HUD.destroy();
+		Game.entities.destroy();
 		Game.map.destroy();
 		game.world.removeAll();
 	}
@@ -208,10 +208,10 @@ Game.loadCurrentChunk = function(clear) {
 	let self = this;
 
 	Game.clearPlayers();
-	
+
 	net.getChunk(function(chunk) {
 		Game.clearPlayers();
-		
+
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
 
 		
@@ -222,26 +222,26 @@ Game.loadCurrentChunk = function(clear) {
 	    
 		Game.map = game.add.tilemap(chunk.id, 16, 16);
 		Game.map.addTilesetImage('tileset', 'tileset', 16, 16);
-		
+
 		game.world.setBounds(0, 0, Game.map.widthInPixels, Game.map.heightInPixels);
 
 		self.drawLayers();
 
 		Game.collisionMatrix = self.calculateCollisionMatrix(Game.map);
-		Game.easystar = new EasyStar.js(); 
+		Game.easystar = new EasyStar.js();
 		Game.easystar.setGrid(Game.collisionMatrix);
     		Game.easystar.setAcceptableTiles([-1]);
-		
+
 		// Hack
 		Game.player.initSprite();
 		Game.player.setVisible();
 		Game.player.setCameraFocus(Game.camera);
 		Game.clearPlayers();
-		
+
 		Game.cursors = game.input.keyboard.createCursorKeys();
-		
+
 		Game.chunkId = net.chunkId;
-		
+
 	});
 };
 
