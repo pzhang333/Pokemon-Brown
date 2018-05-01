@@ -68,10 +68,30 @@ Game.create = function() {
 	game.camera.roundPx = true;
 };
 
+Game.moveGroupTo = function(parent,group,endPos){
+    // parent is the Phaser Group that contains the group to move (default: world)
+    // group is the Phaser Group to be moved
+    // endPos is the position (integer) at which to move it
+    // if endPos is some group's z value, the moved group will be right below (visually) that group
+    // This manipulation is needed because the rendering order and visual overlap of the sprites depend of the order of their groups
+    var startPos = group.z-1;
+    var diff = startPos-endPos;
+    if(diff > 0){
+        for(diff; diff > 0; diff--){
+            parent.moveDown(group);
+        }
+    }else if(diff < 0){
+        for(diff; diff < 0; diff++){
+            parent.moveUp(group);
+        }
+    }
+};
+
+
 Game.drawLayers = function() {
 
 	/* TODO: Cleanup */
-	Game.layerNames = ['Base', 'Walk', 'Collision', 'Top', 'Bush'];
+	Game.layerNames = ['Base', 'Walk', 'Collision', 'Top'];
 
 	Game.map.gameLayers = {};
 
@@ -79,13 +99,26 @@ Game.drawLayers = function() {
 
 		let layerName = Game.layerNames[idx];
 
-		Game.map.gameLayers[layerName] = Game.map.createLayer(layerName);
+		let group = (layerName != 'Top') ? Game.groundMapLayers : Game.highMapLayers;
+		
+		Game.map.gameLayers[layerName] = Game.map.createLayer(layerName, 0, 0, group);
 		Game.map.gameLayers[layerName].resizeWorld();
 	}
 
 	Game.map.gameLayers['Base'].inputEnabled = true;
 	Game.map.gameLayers['Base'].events.onInputUp.add(Game.handleMapClick, this);
 	self.drawHud();
+	
+	/*Game.moveGroupTo(game.world, Game.groundMapLayers, 0);
+	Game.moveGroupTo(game.world, Game.entities, 1);
+	Game.moveGroupTo(game.world, Game.highMapLayers, 2);
+	Game.moveGroupTo(game.world, Game.HUD, 200);*/
+	
+	game.world.sendToBack(Game.groundMapLayers);
+	game.world.bringToTop(Game.entities);
+	
+	game.world.bringToTop(Game.highMapLayers);
+	game.world.bringToTop(Game.HUD);
 };
 
 Game.handleMapClick = function(layer, pointer) {
@@ -165,7 +198,9 @@ Game.loadCurrentChunk = function(clear) {
 			Game.map.gameLayers[Game.layerNames[idx]].destroy();
 		}
 		
-
+		Game.groundMapLayers.destroy();
+		Game.highMapLayers.destroy();
+		
 		Game.map.destroy();
 		game.world.removeAll();
 	}
@@ -179,6 +214,12 @@ Game.loadCurrentChunk = function(clear) {
 		
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
 
+		
+		Game.groundMapLayers = game.add.group();
+	    Game.highMapLayers = game.add.group();
+	    Game.entities = game.add.group();
+	    Game.HUD = game.add.group();
+	    
 		Game.map = game.add.tilemap(chunk.id, 16, 16);
 		Game.map.addTilesetImage('tileset', 'tileset', 16, 16);
 		
@@ -205,6 +246,8 @@ Game.loadCurrentChunk = function(clear) {
 };
 
 function drawHud() {
+	
+	
 	// hud grey bar
 	completionSprite = game.add.graphics(0, 0);
 	completionSprite.beginFill(0x3d3d3d, 1);
@@ -228,5 +271,12 @@ function drawHud() {
     coinIcon.inputEnabled = true;
     coinIcon.fixedToCamera = true;
 
-    game.world.bringToTop(backpackIcon);
+
+    Game.HUD.add(completionSprite);
+    Game.HUD.add(backpackIcon);
+    Game.HUD.add(trophyIcon);
+    Game.HUD.add(coinIcon);
+    
+    
+    //game.world.bringToTop(backpackIcon);
 }
