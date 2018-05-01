@@ -70,15 +70,17 @@ public class World {
     Chunk chunk = new Chunk(id, jFile.getInt("width"), jFile.getInt("height"),
         fname.substring(0, fname.lastIndexOf(".")));
 
-    // 2804 in layer "Bush" = Bush
     List<JsonFile> layers = jFile.getJsonList("layers");
     for (int i = 0; i < layers.size(); i++) {
       List<Double> tiles = layers.get(i).getList("data");
-      String n = layers.get(i).getString("name");
+      if (tiles == null) {
+        continue;
+      }
+      // String n = layers.get(i).getString("name");
       for (int j = 0; j < tiles.size(); j++) {
         int row = j / chunk.getWidth();
         int col = j % chunk.getWidth();
-        if (n.equals("Bush") && tiles.get(j) == BUSH_ID) {
+        if (tiles.get(j) == BUSH_ID) {
           chunk.addEntity(new Bush(new Location(chunk, row, col)));
         }
       }
