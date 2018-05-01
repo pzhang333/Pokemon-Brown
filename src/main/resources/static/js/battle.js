@@ -741,24 +741,36 @@ Battle.drawDefaultMenu = async function() {
 	Battle.panel.add(fightButton);
 	fightButton.add(new SlickUI.Element.Text(0, 0, "Fight")).center();
 	await fightButton.events;
-	fightButton.events.onInputUp.add(function() {
-		if (Battle.moveButtons == undefined || Battle.moveButtons.length == 0) {
-			Battle.showMoves();
-		} else {
-			Battle.clearMoves();
-		}
-	});
+	
+	if (Battle.frontPokemon.health <= 0) {
+		fightButton.events.onInputUp.removeAll();
+		fightButton.events.onInputDown.removeAll();
+	} else {
+		fightButton.events.onInputUp.add(function() {
+			if (Battle.moveButtons == undefined || Battle.moveButtons.length == 0) {
+				Battle.showMoves();
+			} else {
+				Battle.clearMoves();
+			}
+		});
+	}
 	
 	let switchButton = new SlickUI.Element.Button(buttonOffsetX + 4, 50, buttonWidth, 48);
 	Battle.panel.add(switchButton);
 	switchButton.add(new SlickUI.Element.Text(0, 0, "Switch")).center(); 
-	switchButton.events.onInputUp.add(function() {
-		if (Battle.teamButtons == undefined || Battle.teamButtons.length == 0) {
-			Battle.showTeam();
-		} else {
-			Battle.clearTeam();
-		}
-	});
+	
+	if (Battle.frontPokemon.health <= 0) {
+		switchButton.events.onInputUp.removeAll();
+		switchButton.events.onInputDown.removeAll();
+	} else {
+		switchButton.events.onInputUp.add(function() {
+			if (Battle.teamButtons == undefined || Battle.teamButtons.length == 0) {
+				Battle.showTeam();
+			} else {
+				Battle.clearTeam();
+			}
+		});
+	}
 	
 	
 	let itemButton = new SlickUI.Element.Button(buttonOffsetX + 4 + buttonWidth + 4, 0, buttonWidth, 48);
@@ -784,6 +796,10 @@ Battle.drawDefaultMenu = async function() {
 	Battle.menuSeparator.lineStyle(2, 0x999999);
 	Battle.menuSeparator.moveTo(buttonOffsetX + 12, game.height - (108));
 	Battle.menuSeparator.lineTo(buttonOffsetX + 12, game.height - 16);
+	
+	if (Battle.frontPokemon.health <= 0) {
+		Battle.showTeam();
+	}
 	
 }
 
@@ -849,6 +865,9 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 		if (summaries.length == 0) {
 			// handle end packet...
 			Battle.team = packet.pokemon_team;
+			
+			Battle.drawDefaultMenu();
+			
 			resolve();
 			resolveShow();
 			return;
