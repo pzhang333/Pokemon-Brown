@@ -2,6 +2,7 @@ package cs.brown.edu.aelp.pokemmo.battle;
 
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.util.Identifiable;
 
 public abstract class Battle extends Identifiable {
@@ -19,6 +20,9 @@ public abstract class Battle extends Identifiable {
 
   private BattleState battleState = BattleState.SETUP;
 
+  public abstract Trainer getLoser();
+  
+  public abstract Trainer getWinner();
   /**
    * @return the battleState
    */

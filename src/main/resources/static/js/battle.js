@@ -414,7 +414,7 @@ Battle.drawPokemon = function(fore, bg) {
 	
 }
 
-Battle.drawMessage = function(text) {
+Battle.drawMessage = function(text, size) {
 	
 	Battle.clearMessageText();
 	
@@ -425,7 +425,12 @@ Battle.drawMessage = function(text) {
 	if (Battle.messageText == undefined) {
 		
 		Battle.messageText = new SlickUI.Element.Text(8, 8, text);
-		Battle.messageText.size = 12;
+		
+		if (size == undefined) {
+			size = 12;
+		}
+		
+		Battle.messageText.size = size;
 		
 		Battle.panel.add(Battle.messageText);
 	} else {
@@ -713,6 +718,36 @@ Battle.drawDefaultMenu = async function() {
 	Battle.menuSeparator.moveTo(buttonOffsetX + 12, game.height - (108));
 	Battle.menuSeparator.lineTo(buttonOffsetX + 12, game.height - 16);
 	
+}
+
+Battle.battleOver = async function(packet) {
+	
+	Battle.clearMoves();
+	
+	Battle.clearMessageText();
+	
+	
+	let msg = "";
+	if (packet.winner_id == Game.player.id) {
+		msg = "Victory!";
+	} else {
+		msg = "Loss.";
+	}
+	let messageText = new SlickUI.Element.Text(8, 8, msg);
+	messageText.size = 16;
+	Battle.panel.add(messageText);
+	
+	let buttonOffsetX = Battle.panel.width / 2;
+	let buttonWidth = Battle.panel.width / 4.1;
+	
+	let exitButton = new SlickUI.Element.Button(buttonOffsetX + 4, 0, 2 * buttonWidth, 2 * 48);
+	Battle.panel.add(exitButton);
+	exitButton.add(new SlickUI.Element.Text(0, 0, "Exit Battle")).center();
+	
+	await exitButton.events;
+	exitButton.events.onInputUp.add(function() {
+		Battle.endBattle();
+	});
 }
 
 Battle.setup = function(initPacket) {

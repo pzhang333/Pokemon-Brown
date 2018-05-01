@@ -20,6 +20,7 @@ import com.google.gson.JsonObject;
 
 import cs.brown.edu.aelp.networking.Trade.TRADE_STATUS;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
+import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
@@ -259,6 +260,10 @@ public class PlayerWebSocketHandler {
         battle.evaluate();
 
         System.out.println(battle.dbgStatus());
+      }
+      
+      if (battle.getBattleState().equals(BattleState.DONE)) {
+    	  BattleManager.getInstance().endBattle(battle);
       }
     }
   }

@@ -495,7 +495,7 @@
 		"pp": 10,
 		"priority": 0,
 		"type": "Normal",
-		"flags": ["DAMAGE", "STATUS"]
+		"flags": ["DAMAGE"]
 	},
 	"481": {
 		"id": 481,

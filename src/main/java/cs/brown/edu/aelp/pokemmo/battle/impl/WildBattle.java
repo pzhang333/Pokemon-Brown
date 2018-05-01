@@ -30,6 +30,10 @@ public class WildBattle extends Battle {
   private final Pokemon wild;
   private final Trainer a;
 
+  private Trainer winner;
+  
+  private Trainer loser;
+  
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
   private Trainer b;
 
@@ -221,6 +225,9 @@ public class WildBattle extends Battle {
   public void victory(Trainer t) {
     System.out.println("Victory for: " + t.getId());
 
+    winner = t;
+    loser = other(t);
+    
     setBattleState(BattleState.DONE);
   }
 
@@ -284,6 +291,16 @@ public class WildBattle extends Battle {
     sb.append(a.getActivePokemon()).append(wild);
 
     return sb.toString();
+  }
+  
+  @Override
+  public Trainer getLoser() {
+	return loser;
+  }
+
+  @Override 
+  public Trainer getWinner() {
+	return winner;
   }
 
 }
