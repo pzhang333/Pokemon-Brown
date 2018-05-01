@@ -68,6 +68,8 @@ class Net {
 		//this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
 		this.handlers[MESSAGE_TYPE.TELEPORT_PACKET] = this.teleportHandler;
 		this.handlers[MESSAGE_TYPE.START_BATTLE] = this.startBattleHandler;
+		this.handlers[MESSAGE_TYPE.END_BATTLE] = this.endBattleHandler;
+		this.handlers[MESSAGE_TYPE.BATTLE_TURN_UPDATE] = this.battleUpdateHandler;
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
 	}
@@ -327,8 +329,8 @@ class Net {
 		if (Game.player.tweenRunning()) {
 			Game.player.tween.stop(false);
 			Game.player.idle();
+			Game.player.setPos(loc.col, loc.row);
 		}
-		Game.player.setPos(loc.col, loc.row);
 
 		Battle.setup(payload);
 		game.state.start('Battle');
@@ -347,6 +349,14 @@ class Net {
 		} else {
 			console.log('Unknown message type!', data.type);
 		}
+	}
+	
+	endBattleHandler(event) {
+		Battle.battleOver(event.payload);
+	}
+	
+	battleUpdateHandler(event) {
+		Battle.handleUpdate(event.payload);
 	}
 
 	sendClientPlayerUpdate(networkPlayer, op){

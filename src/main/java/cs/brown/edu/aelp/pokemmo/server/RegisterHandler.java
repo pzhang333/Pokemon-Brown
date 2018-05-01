@@ -26,7 +26,7 @@ public class RegisterHandler implements Route {
     Map<String, Object> vars = new HashMap<>();
     try {
       validateInput(user, pass, email, species, nickname);
-      User u = UserManager.register(user, email, pass, species, nickname);
+      User u = UserManager.register(user, pass, email, species, nickname);
       vars.put("success", true);
       vars.put("token", u.getToken());
       vars.put("id", u.getId());

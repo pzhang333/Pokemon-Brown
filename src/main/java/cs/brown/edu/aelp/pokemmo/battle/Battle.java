@@ -2,15 +2,13 @@ package cs.brown.edu.aelp.pokemmo.battle;
 
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.util.Identifiable;
 
 public abstract class Battle extends Identifiable {
 
   public enum BattleState {
-    SETUP,
-    WAITING,
-    READY,
-    DONE
+    SETUP, WAITING, READY, DONE, WORKING
   };
 
   private final Arena arena;
@@ -22,10 +20,14 @@ public abstract class Battle extends Identifiable {
 
   private BattleState battleState = BattleState.SETUP;
 
+  public abstract Trainer getLoser();
+
+  public abstract Trainer getWinner();
+
   /**
    * @return the battleState
    */
-  public BattleState getBattleState() {
+  public synchronized BattleState getBattleState() {
     return battleState;
   }
 
@@ -33,9 +35,13 @@ public abstract class Battle extends Identifiable {
    * @param battleState
    *          the battleState to set
    */
-  protected void setBattleState(BattleState battleState) {
+  protected synchronized void setBattleState(BattleState battleState) {
     this.battleState = battleState;
   }
+
+  public abstract void evaluate();
+
+  public abstract boolean setTurn(Turn t);
 
   protected int turnComparator(Turn t1, Turn t2) {
 
@@ -68,7 +74,13 @@ public abstract class Battle extends Identifiable {
     return 0;
   }
 
+  public abstract String dbgStatus();
+
   public Arena getArena() {
     return arena;
   }
+
+  // public abstract BattleUpdate sendBattleUpdate();
+
+  public abstract void forfeit(Trainer t);
 }

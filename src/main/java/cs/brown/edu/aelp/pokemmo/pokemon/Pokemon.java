@@ -354,7 +354,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   }
 
   public void setHealth(int health) {
-    if (health < 0) {
+    if (health <= 0) {
       currHp = 0;
     } else if (health >= getMaxHp()) {
       currHp = getMaxHp();
@@ -510,6 +510,50 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     return stage;
   }
 
+  public Pokemon snapshot() {
+    Pokemon pokemon = new Pokemon(getId());
+
+    pokemon.exp = this.exp;
+    pokemon.lvl = this.lvl;
+
+    pokemon.baseHp = this.baseHp;
+
+    pokemon.hp = this.hp;
+    pokemon.currHp = this.currHp;
+
+    pokemon.attack = this.attack;
+    pokemon.defense = this.defense;
+    pokemon.specialAttack = this.specialAttack;
+    pokemon.specialDefense = this.specialDefense;
+    pokemon.speed = this.specialDefense;
+
+    pokemon.attackStage = this.attackStage;
+    pokemon.defenseStage = this.defenseStage;
+    pokemon.specialAttackStage = this.specialAttackStage;
+    pokemon.specialDefenseStage = this.specialDefenseStage;
+    pokemon.speedStage = this.speedStage;
+    pokemon.accuracyStage = this.accuracyStage;
+    pokemon.evasionStage = this.evasionStage;
+
+    pokemon.status = this.status;
+
+    pokemon.typeList = this.typeList;
+
+    pokemon.nickname = this.nickname;
+    pokemon.species = this.species;
+    pokemon.gender = this.gender;
+    pokemon.stored = this.stored;
+    pokemon.moves = this.moves;
+
+    pokemon.owner = this.owner;
+
+    pokemon.xOffset = this.xOffset;
+    pokemon.yOffset = this.yOffset;
+    pokemon.fps = this.fps;
+
+    return pokemon;
+  }
+
   private static Integer hpScale(int baseHp, int level) {
     Double scaledHp = Math.floor((2.0 * baseHp * level) / 100.0) + level + 10;
     return scaledHp.intValue();
@@ -532,8 +576,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   }
 
   public static Integer calcXpByLevel(int level) {
-    Double calcLevel = Math.ceil((5.0 / 4.0) * Math.pow(level, 3));
-    return calcLevel.intValue();
+    return (int) Math.ceil(Math.pow(level - 1, 3) * (4 / 5));
   }
 
   /*
@@ -620,7 +663,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       } else {
         o.addProperty("owner_id", src.getOwner().getId());
       }
-      o.addProperty("max_health", src.getMaxHp());
+      o.addProperty("fps", src.getFPS());
+      o.addProperty("x_offset", src.getXOffset());
+      o.addProperty("y_offset", src.getYOffset());
+      o.addProperty("maxHealth", src.getMaxHp());
       o.addProperty("health", src.getCurrHp());
       o.addProperty("status", src.getStatus().ordinal());
       o.addProperty("gender", src.getGender());

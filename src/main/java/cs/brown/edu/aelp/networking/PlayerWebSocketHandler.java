@@ -1,27 +1,38 @@
 package cs.brown.edu.aelp.networking;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import cs.brown.edu.aelp.networking.Trade.TRADE_STATUS;
-import cs.brown.edu.aelp.pokemmo.data.DataSource.AuthException;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
-import cs.brown.edu.aelp.pokemmo.map.Chunk;
-import cs.brown.edu.aelp.pokemmo.map.Location;
-import cs.brown.edu.aelp.pokemmo.map.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import cs.brown.edu.aelp.networking.Trade.TRADE_STATUS;
+import cs.brown.edu.aelp.pokemmo.battle.Battle;
+import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
+import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
+import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
+import cs.brown.edu.aelp.pokemmo.data.DataSource.AuthException;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
+import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.map.Path;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 
 @WebSocket
 public class PlayerWebSocketHandler {
@@ -29,36 +40,24 @@ public class PlayerWebSocketHandler {
   private static final Gson GSON = new Gson();
 
   public static enum MESSAGE_TYPE {
-    CONNECT,
-    INITIALIZE,
-    GAME_PACKET,
-    PLAYER_REQUEST_PATH,
-    ENCOUNTERED_POKEMON,
-    TRADE,
-    START_BATTLE,
-    END_BATTLE,
-    BATTLE_TURN_UPDATE,
-    CLIENT_BATTLE_UPDATE,
-    CHAT,
-    SERVER_MESSAGE
+    CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, ENCOUNTERED_POKEMON,
+    TRADE, START_BATTLE, END_BATTLE, BATTLE_TURN_UPDATE, CLIENT_BATTLE_UPDATE,
+    CHAT, SERVER_MESSAGE
   }
 
   public static enum OP_CODES {
-    ENTERED_CHUNK,
-    LEFT_CHUNK,
-    ENTERED_BATTLE,
-    LEFT_BATTLE,
-    CHAT
+    ENTERED_CHUNK, LEFT_CHUNK, ENTERED_BATTLE, LEFT_BATTLE, CHAT
   }
 
   // used for battle moves
 
   public static enum ACTION_TYPE {
-    RUN,
-    SWITCH,
-    USE_ITEM,
-    FIGHT
+    RUN, SWITCH, USE_ITEM, FIGHT
   }
+
+  public static enum TURN_STATE {
+    NORMAL, MUST_SWITCH
+  };
 
   private static final MESSAGE_TYPE[] MESSAGE_TYPES = MESSAGE_TYPE.values();
   private static final ACTION_TYPE[] ACTION_TYPES = ACTION_TYPE.values();
@@ -114,6 +113,7 @@ public class PlayerWebSocketHandler {
       User u = UserManager.authenticate(id, token);
       u.setSession(session);
       PacketSender.sendInitializationPacket(u);
+      System.out.println(u.getUsername() + " connected.");
       // TODO: Inform all other users of their connection?
     } catch (AuthException e1) {
       // their credentials were bad or something went wrong
@@ -208,22 +208,82 @@ public class PlayerWebSocketHandler {
 
     int turnId = payload.get("turn_id").getAsInt();
 
+    int id = payload.get("id").getAsInt();
+    User user = UserManager.getUserById(id);
+    if (!user.isConnected() || !user.getSession().equals(session)) {
+      System.err.println("Bad Session");
+      session.close();
+    }
+
+    Battle battle = user.getCurrentBattle();
+
+    Turn t = null;
     switch (ACTION_TYPES[payload.get("action").getAsInt()]) {
     case RUN:
       // TODO: run
-      System.out.println("User ran away");
+      battle.forfeit(user);
       break;
     case SWITCH:
       // TODO: switch
+      Integer switchId = payload.get("switchId").getAsInt();
+      System.out.println("Switch ID: " + switchId);
+
+      if (switchId == user.getActivePokemon().getId()) {
+        break;
+      }
+
+      for (Pokemon p : user.getTeam()) {
+        if (p.getId() == switchId) {
+          t = new SwitchTurn(user, p, user.getActivePokemon());
+          break;
+        }
+      }
       break;
     case USE_ITEM:
       // TODO: use item
       break;
     case FIGHT:
-      // TODO: fight
+
+      Integer moveId = payload.get("moveId").getAsInt();
+      System.out.println("Move ID: " + moveId);
+      List<Move> moves = user.getActivePokemon().getMoves();
+      for (Move m : moves) {
+        // System.out.println(m);
+        if (m.getId() == moveId) {
+          t = new FightTurn(user, m);
+          break;
+        }
+      }
+
       break;
     default:
       System.out.println("ERROR: Invalid packet sent to battle handler.");
+      session.close();
+    }
+
+    System.out.println(battle.getBattleState());
+
+    synchronized (battle) {
+
+      if (t == null || !battle.getBattleState().equals(BattleState.WAITING)) {
+        System.err.println("Not waiting");
+        session.close();
+      }
+
+      if (!battle.setTurn(t)) {
+        System.err.println("Bad Turn");
+        session.close();
+      }
+
+      if (battle.getBattleState().equals(BattleState.READY)) {
+        battle.evaluate();
+
+        System.out.println(battle.dbgStatus());
+      }
+
+      if (battle.getBattleState().equals(BattleState.DONE)) {
+        BattleManager.getInstance().endBattle(battle);
+      }
     }
   }
 

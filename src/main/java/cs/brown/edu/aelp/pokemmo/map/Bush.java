@@ -1,7 +1,6 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -17,24 +16,17 @@ public class Bush extends Entity {
     super(loc);
   }
 
-  public Pokemon triggerEntry(User u) {
+  public boolean triggerEntry(User u) {
     if (cooldowns.containsKey(u)) {
       if (cooldowns.get(u) > System.currentTimeMillis()) {
-        return null;
+        return false;
       } else {
         cooldowns.remove(u);
       }
     }
     cooldowns.put(u, System.currentTimeMillis() + cooldown);
     double d = r.nextDouble();
-    if (d >= chance) {
-      return null;
-    }
-    // TODO: Return real Pokemon
-    Pokemon.Builder b = new Pokemon.Builder(-1);
-    u.setPath(null);
-    u.setLocation(this.getLocation());
-    return b.build();
+    return d < chance;
   }
 
 }

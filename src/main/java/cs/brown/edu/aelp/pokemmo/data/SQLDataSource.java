@@ -123,10 +123,6 @@ public class SQLDataSource implements DataSource {
       user.addPokemonToTeam(pokemon);
     }
 
-    Pokemon pokemon = PokemonLoader.load("bulbasaur", Pokemon.calcXpByLevel(5));
-    pokemon.setOwner(user);
-    user.addPokemonToTeam(pokemon);
-
     return user;
   }
 
@@ -176,7 +172,7 @@ public class SQLDataSource implements DataSource {
   }
 
   @Override
-  public User registerUser(String username, String email, String password,
+  public User registerUser(String username, String password, String email,
       String species, String nickname) throws AuthException {
     // first check if the username is taken
     try {

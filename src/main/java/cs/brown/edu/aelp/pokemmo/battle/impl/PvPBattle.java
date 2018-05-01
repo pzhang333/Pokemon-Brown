@@ -1,5 +1,10 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
@@ -16,16 +21,16 @@ import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class PvPBattle extends Battle {
 
   private final Trainer a;
 
   private final Trainer b;
+
+  private Trainer winner = null;
+
+  private Trainer loser = null;
 
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
 
@@ -44,6 +49,8 @@ public class PvPBattle extends Battle {
     if (!getBattleState().equals(BattleState.READY)) {
       throw new RuntimeException("Not in ready state!");
     }
+
+    setBattleState(BattleState.WORKING);
 
     List<Turn> turns = new ArrayList<>(turnsMap.values());
     turns.sort(this::turnComparator);
@@ -197,15 +204,19 @@ public class PvPBattle extends Battle {
   public void victory(Trainer t) {
     System.out.println("Victory for: " + t.getId());
 
+    winner = t;
+    loser = other(t);
+
     setBattleState(BattleState.DONE);
   }
 
-  public void setTurn(Turn t) {
+  public boolean setTurn(Turn t) {
 
     // TODO: Check move logical validity...
 
     if (!getBattleState().equals(BattleState.WAITING)) {
-      throw new RuntimeException("Not in waiting state!");
+      return false;
+      // throw new RuntimeException("Not in waiting state!");
     }
 
     // This is ugly but (probably) works.
@@ -215,7 +226,7 @@ public class PvPBattle extends Battle {
     if (t.getTrainer().getActivePokemon().isKnockedOut()) {
 
       if (!(t instanceof SwitchTurn)) {
-        return;
+        return false;
       }
 
       turnsMap.put(t.getTrainer(), t);
@@ -236,6 +247,8 @@ public class PvPBattle extends Battle {
     if (turnsMap.size() == 2) {
       setBattleState(BattleState.READY);
     }
+
+    return true;
   }
 
   private Trainer other(Trainer t) {
@@ -244,4 +257,30 @@ public class PvPBattle extends Battle {
     }
     return a;
   }
+
+  @Override
+  public String dbgStatus() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(a);
+    sb.append(b);
+
+    return sb.toString();
+  }
+
+  @Override
+  public Trainer getLoser() {
+    return loser;
+  }
+
+  @Override
+  public Trainer getWinner() {
+    return winner;
+  }
+
+  @Override
+  public void forfeit(Trainer t) {
+    victory(other(t));
+  }
+
 }
