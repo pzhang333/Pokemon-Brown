@@ -279,17 +279,24 @@ Battle.preload = function() {
 	
 };
 
+Battle.run = function() {
+	Battle.init();
+	Battle.create();
+}
+
 Battle.endBattle = function() {
 	Battle.music.destroy();
 	
 	//Game.players = {};
-	game.state.start('Game');
+	game.state.restart();
 	
 	// HACK VERY BAD!
 	//location.reload();
 }
 
 Battle.create = function() {
+	
+	Game.map.gameLayers['Base'].inputEnabled = false;
 	
 	Battle.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
 	Battle.slickUI.load('ui/kenney/kenney.json');
@@ -300,10 +307,15 @@ Battle.create = function() {
 	Battle.music = game.add.audio('battle');
 	//Battle.music.loopFull(.1);
 	
-	this.stage = game.add.sprite(game.width / 2, game.height / 2, 'atlas1', Battle.initPacket.background_name);
-	this.stage.anchor.setTo(.5, .5);
+	console.log(game.height / 2);
+	
+	game.camera.follow(null);
+	game.camera.reset();
+	
+	this.stage = game.add.sprite(0, 0, 'atlas1', Battle.initPacket.background_name);
 	this.stage.width = game.width;
 	this.stage.height = game.height;
+	this.stage.anchor.setTo(0, 0);
 	
 	this.backPatch = game.add.sprite(game.width * (3 / 4), game.height * (6.25 / 12), 'atlas2', 'scenery/patch');
 	this.backPatch.anchor.setTo(0.5, 0.5);

@@ -333,7 +333,8 @@ class Net {
 		}
 
 		Battle.setup(payload);
-		game.state.start('Battle');
+		Battle.run();
+		//game.state.start('Battle');
 		//alert('Encountered wild pokemon with id: ' + pokemon.id);
 	}
 
