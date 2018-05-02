@@ -9,14 +9,14 @@
                 {
                     "location" :
                     {
-                        "row" : 25,
+                        "row" : 26,
                         "col" : 30
                     },
                     "goto" :
                     {
                         "chunk" : 2,
-                        "row" : 2,
-                        "col" : 2
+                        "row" : 4,
+                        "col" : 1
                     }
                 }
             ]
@@ -27,6 +27,19 @@
             "file" : "house_inside.json",
             "portals" :
             [
+				{
+                    "location" :
+                    {
+                        "row" : 4,
+                        "col" : 0
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 1,
+                        "row" : 27,
+                        "col" : 30
+                    }
+                }
             ]
         },
         {
