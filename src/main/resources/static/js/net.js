@@ -154,7 +154,7 @@ class Net {
 
 	initPacketHandler(msg) {
 
-		console.log(msg);
+		//console.log(msg);
 
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
@@ -345,7 +345,7 @@ class Net {
 	handleMsg(event) {
 
 //		console.log('test!');
-		console.log(event);
+		//console.log(event);
 
 		const data = JSON.parse(event.data);
 

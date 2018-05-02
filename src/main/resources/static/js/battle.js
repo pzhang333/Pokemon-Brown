@@ -287,8 +287,12 @@ Battle.run = function() {
 Battle.endBattle = function() {
 	Battle.music.destroy();
 	
+	Battle.clearMenu();
+	
+	console.log('EndBattle()');
+	
 	//Game.players = {};
-	game.state.restart();
+	game.state.start("Game", true, false);
 	
 	// HACK VERY BAD!
 	//location.reload();
@@ -504,11 +508,14 @@ Battle.clearMenu = function() {
 	
 	if (Battle.panel != undefined) {
 		Battle.panel.destroy();
+		Battle.panel = undefined;
 	}
 	
 	if (Battle.menuSeparator != undefined) {
 		Battle.menuSeparator.kill();
 	}
+	
+	Battle.clearButtons(Battle.stdButtons);
 }
 
 Battle.clearButtons = function(buttons) {
@@ -517,6 +524,7 @@ Battle.clearButtons = function(buttons) {
 	}
 	
 	for(let i = 0; i < buttons.length; i++) {
+		buttons[i].inputEnabled = false;
 		buttons[i].destroy();
 	}
 	
@@ -741,6 +749,8 @@ Battle.switchTo = async function(id) {
 Battle.forfeit = function() {
 	console.log('Forfeit!');
 	net.sendBattlePacket(BATTLE_ACTION.RUN, {});
+	
+	Battle.endBattle();
 }
 
 Battle.drawDefaultMenu = async function() {
