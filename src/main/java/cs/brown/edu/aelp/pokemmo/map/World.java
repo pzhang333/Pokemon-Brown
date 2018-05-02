@@ -1,6 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
-import cs.brown.edu.aelp.util.JsonFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -8,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import cs.brown.edu.aelp.util.JsonFile;
 
 public class World {
 
@@ -60,13 +61,9 @@ public class World {
   }
 
   public Chunk loadChunk(Integer id, File file) throws IOException {
-
     String path = file.getAbsolutePath();
-
     JsonFile jFile = new JsonFile(path);
-
     String fname = file.getName();
-
     Chunk chunk = new Chunk(id, jFile.getInt("width"), jFile.getInt("height"),
         fname.substring(0, fname.lastIndexOf(".")));
 
@@ -85,10 +82,8 @@ public class World {
         }
       }
     }
-
     this.addChunk(chunk);
     return chunk;
-
   }
 
   public void loadPortals(String path) throws IOException {
