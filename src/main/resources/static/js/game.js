@@ -309,6 +309,11 @@ function drawHud() {
     let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3.45, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "coin");
     coinIcon.inputEnabled = false;
     coinIcon.fixedToCamera = true;
+
+    // coin text
+    let coinText = game.add.bitmapText(Game.map.widthInPixels-Game.map.widthInPixels/3.58, Game.map.heightInPixels-Game.map.heightInPixels/2.2, 'carrier_command','x'+coinNumber,7.5);
+    coinText.inputEnabled = false;
+    coinText.fixedToCamera = true;
 }
 
 function drawLeadboard() {
