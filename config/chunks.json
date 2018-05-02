@@ -1,0 +1,47 @@
+{
+    "chunks" :
+    [
+        {
+            "id" : 1,
+            "file" : "main_chunk.json",
+            "portals" :
+            [
+                {
+                    "location" :
+                    {
+                        "row" : 25,
+                        "col" : 30
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 2,
+                        "row" : 2,
+                        "col" : 2
+                    }
+                }
+            ]
+            
+        },
+        {
+            "id" : 2,
+            "file" : "house_inside.json",
+            "portals" :
+            [
+            ]
+        },
+        {
+            "id" : 3,
+            "file" : "house_inside.json",
+            "portals" :
+            [
+            ]
+        },
+                {
+            "id" : 4,
+            "file" : "house_inside.json",
+            "portals" :
+            [
+            ]
+        }
+    ]
+}
