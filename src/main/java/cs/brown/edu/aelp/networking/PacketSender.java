@@ -12,9 +12,7 @@ import com.google.gson.JsonObject;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
-import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
-import cs.brown.edu.aelp.pokemmo.battle.impl.PvPBattle;
 import cs.brown.edu.aelp.pokemmo.battle.impl.WildBattle;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
@@ -32,6 +30,7 @@ public final class PacketSender {
 
   public static void sendGamePackets() {
     for (Chunk c : Main.getWorld().getAllChunks()) {
+
       JsonObject message = new JsonObject();
       // set the type
       message.addProperty("type", MESSAGE_TYPE.GAME_PACKET.ordinal());
@@ -45,7 +44,10 @@ public final class PacketSender {
       }
       message.add("payload", payload);
       // send to each user that has an open session
+
       for (User u : c.getUsers()) {
+
+        // System.out.print("sending packet to: " + u.getUsername());
         sendPacket(u, message);
       }
     }
@@ -111,17 +113,17 @@ public final class PacketSender {
     return packet;
   }
 
-  public static void sendEncounterPacket(User u) {
-    WildBattle b = BattleManager.getInstance().createWildBattle(u);
-    JsonObject packet = buildStartBattlePacket(b, u, b.getWildPokemon(), false,
-        "bg-meadow");
+  public static void sendEncounterPacket(WildBattle b) {
+    // WildBattle b = BattleManager.getInstance().createWildBattle(u);
+    JsonObject packet = buildStartBattlePacket(b, b.getUser(),
+        b.getWildPokemon(), false, "bg-meadow");
     sendPacket(b.getUser(), packet);
-    queueOpForChunk(buildPlayerOpMessage(u, OP_CODES.ENTERED_BATTLE),
-        u.getLocation().getChunk());
+    queueOpForChunk(buildPlayerOpMessage(b.getUser(), OP_CODES.ENTERED_BATTLE),
+        b.getUser().getLocation().getChunk());
   }
 
-  public static void sendPvPPacket(User u1, User u2) {
-    PvPBattle b = BattleManager.getInstance().createPvPBattle(u1, u2);
+  public static void sendPvPPacket(Battle b, User u1, User u2) {
+    // PvPBattle b = BattleManager.getInstance().createPvPBattle(u1, u2);
     JsonObject p1 = buildStartBattlePacket(b, u1, u2.getActivePokemon(), true,
         "bg-meadow");
     JsonObject p2 = buildStartBattlePacket(b, u2, u1.getActivePokemon(), true,

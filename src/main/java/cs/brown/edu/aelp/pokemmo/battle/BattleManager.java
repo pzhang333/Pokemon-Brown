@@ -40,16 +40,19 @@ public class BattleManager {
 
     battleMap.put(id, battle);
 
-    u.setCurrentBattle(battle);
-
     return battle;
   }
 
   public PvPBattle createPvPBattle(User u1, User u2) {
-    return new PvPBattle(getNewId(), new Arena(), u1, u2);
+    PvPBattle b = new PvPBattle(getNewId(), new Arena(), u1, u2);
+
+    battleMap.put(b.getId(), b);
+
+    return b;
   }
 
   public void endBattle(Battle battle) {
-	PacketSender.sendEndBattlePacket(battle.getId(), battle.getWinner().getId(), battle.getLoser().getId(), 0, 0);
+    PacketSender.sendEndBattlePacket(battle.getId(), battle.getWinner().getId(),
+        battle.getLoser().getId(), 0, 0);
   }
 }

@@ -274,32 +274,48 @@ Battle.preload = function() {
 	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
 	game.load.atlasJSONHash('attacks', 'assets/pokemon/attacks.png', 'assets/pokemon/attacks.json');
 	
-	Battle.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
-	Battle.slickUI.load('ui/kenney/kenney.json');
 	
 	game.load.audio('battle', ['assets/audio/battle.mp3']);
 	
 };
 
+Battle.run = function() {
+	Battle.init();
+	Battle.create();
+}
+
 Battle.endBattle = function() {
 	Battle.music.destroy();
 	
 	//Game.players = {};
-	game.state.start('Game');
+	game.state.restart();
 	
 	// HACK VERY BAD!
 	//location.reload();
 }
 
 Battle.create = function() {
+	
+	Game.map.gameLayers['Base'].inputEnabled = false;
+	
+	Battle.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
+	Battle.slickUI.load('ui/kenney/kenney.json');
+	
+	game.world.bringToTop(Battle.slickUI.container.displayGroup);
+	
 	//return;
 	Battle.music = game.add.audio('battle');
 	//Battle.music.loopFull(.1);
 	
-	this.stage = game.add.sprite(game.width / 2, game.height / 2, 'atlas1', Battle.initPacket.background_name);
-	this.stage.anchor.setTo(.5, .5);
+	console.log(game.height / 2);
+	
+	game.camera.follow(null);
+	game.camera.reset();
+	
+	this.stage = game.add.sprite(0, 0, 'atlas1', Battle.initPacket.background_name);
 	this.stage.width = game.width;
 	this.stage.height = game.height;
+	this.stage.anchor.setTo(0, 0);
 	
 	this.backPatch = game.add.sprite(game.width * (3 / 4), game.height * (6.25 / 12), 'atlas2', 'scenery/patch');
 	this.backPatch.anchor.setTo(0.5, 0.5);
@@ -733,6 +749,8 @@ Battle.drawDefaultMenu = async function() {
 	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
 	Battle.slickUI.add(Battle.panel);
 	
+	//game.world.bringToTop(Battle.slickUI.container.displayGroup);
+	
 	let buttonOffsetX = Battle.panel.width / 2;
 	let buttonWidth = Battle.panel.width / 4.1;
 	
@@ -743,8 +761,8 @@ Battle.drawDefaultMenu = async function() {
 	await fightButton.events;
 	
 	if (Battle.frontPokemon.health <= 0) {
-		fightButton.events.onInputUp.removeAll();
-		fightButton.events.onInputDown.removeAll();
+		//fightButton.events.onInputUp.removeAll();
+		//fightButton.events.onInputDown.removeAll();
 	} else {
 		fightButton.events.onInputUp.add(function() {
 			if (Battle.moveButtons == undefined || Battle.moveButtons.length == 0) {
@@ -760,8 +778,8 @@ Battle.drawDefaultMenu = async function() {
 	switchButton.add(new SlickUI.Element.Text(0, 0, "Switch")).center(); 
 	
 	if (Battle.frontPokemon.health <= 0) {
-		switchButton.events.onInputUp.removeAll();
-		switchButton.events.onInputDown.removeAll();
+		//switchButton.events.onInputUp.removeAll();
+		//switchButton.events.onInputDown.removeAll();
 	} else {
 		switchButton.events.onInputUp.add(function() {
 			if (Battle.teamButtons == undefined || Battle.teamButtons.length == 0) {
@@ -801,6 +819,7 @@ Battle.drawDefaultMenu = async function() {
 		Battle.showTeam();
 	}
 	
+//	Battle.sendToTop(Battle.slickUI);
 }
 
 Battle.battleOver = async function(packet) {
@@ -903,12 +922,16 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 			let pOut = Battle.getPokemonById(summary.pokemonOut.id);
 			
 			let pIn = Battle.team[0];
-			for(let i = 0; i < Battle.team.length; i++) {
-				if (Battle.team[i].id == summary.pokemonIn.id) {
-					
-					pIn = Battle.team[i];
-					break;
+			if (pOut.owner_id == Game.player.id) {
+				for(let i = 0; i < Battle.team.length; i++) {
+					if (Battle.team[i].id == summary.pokemonIn.id) {
+						
+						pIn = Battle.team[i];
+						break;
+					}
 				}
+			} else {
+				pIn = summary.pokemonIn;
 			}
 			
 			Battle.doSwitch(pOut, pIn, function() {

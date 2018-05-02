@@ -1,10 +1,24 @@
 package cs.brown.edu.aelp.pokemon;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import cs.brown.edu.aelp.commands.BattleCommand;
 import cs.brown.edu.aelp.commands.CoinsCommand;
 import cs.brown.edu.aelp.commands.CommandHandler;
+import cs.brown.edu.aelp.commands.HealTeam;
 import cs.brown.edu.aelp.commands.TeleportCommand;
 import cs.brown.edu.aelp.commands.TournamentCommand;
 import cs.brown.edu.aelp.networking.PacketSender;
@@ -23,16 +37,6 @@ import cs.brown.edu.aelp.pokemmo.server.LoginHandler;
 import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
 import cs.brown.edu.aelp.util.JsonFile;
 import freemarker.template.Configuration;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -200,9 +204,15 @@ public final class Main {
     TeleportCommand tc = new TeleportCommand();
     TournamentCommand tnc = new TournamentCommand();
     CoinsCommand cc = new CoinsCommand();
+    BattleCommand bc = new BattleCommand();
+    HealTeam ht = new HealTeam();
+
     ch.registerCommand(tc);
     ch.registerCommand(tnc);
     ch.registerCommand(cc);
+    ch.registerCommand(bc);
+    ch.registerCommand(ht);
+
     ch.start();
 
   }

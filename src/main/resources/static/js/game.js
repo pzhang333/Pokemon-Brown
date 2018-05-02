@@ -11,11 +11,14 @@ Game.init = function() {
 
 	Game.ready = false;
 	//Game.easystar = new EasyStar.js();
+	
 
 };
 
 Game.shutdown = function() {
+	console.log('test!');
 	game.world.removeAll();
+	
 	Game.chunkId = false;
 	Game.player.sprite = undefined;
 	Game.ready = false;
@@ -69,6 +72,8 @@ Game.preload = function() {
     // loading necessary libraries for drawing hud menu
     Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
 	Game.slickUI.load('ui/kenney/kenney.json');
+	
+	Battle.preload();
 };
 
 
@@ -124,11 +129,13 @@ Game.drawLayers = function() {
 	Game.moveGroupTo(game.world, Game.highMapLayers, 2);
 	Game.moveGroupTo(game.world, Game.HUD, 200);*/
 	
-	game.world.sendToBack(Game.groundMapLayers);
-	game.world.bringToTop(Game.entities);
+	//game.world.sendToBack(Game.entities);
+	//game.world.sendToBack(Game.highMapLayers);
+	//game.world.sendToBack(Game.groundMapLayers);
+	/*game.world.bringToTop(Game.entities);
 	
 	game.world.bringToTop(Game.highMapLayers);
-	game.world.bringToTop(Game.HUD);
+	game.world.bringToTop(Game.HUD);*/
 };
 
 Game.handleMapClick = function(layer, pointer) {
@@ -208,10 +215,6 @@ Game.loadCurrentChunk = function(clear) {
 			Game.map.gameLayers[Game.layerNames[idx]].destroy();
 		}
 
-		Game.groundMapLayers.destroy();
-		Game.highMapLayers.destroy();
-		Game.HUD.destroy();
-		Game.entities.destroy();
 		Game.map.destroy();
 		game.world.removeAll();
 	}
@@ -221,15 +224,34 @@ Game.loadCurrentChunk = function(clear) {
 	Game.clearPlayers();
 
 	net.getChunk(function(chunk) {
+		
+		if (Game.groundMapLayers != undefined) {
+			Game.groundMapLayers.destroy();
+		}
+		Game.groundMapLayers = game.add.group();
+		
+
+		if (Game.entities != undefined) {
+			Game.entities.destroy();
+		}
+		Game.entities = game.add.group();
+		
+		if (Game.highMapLayers != undefined) {
+			Game.highMapLayers.destroy();
+		}
+		Game.highMapLayers = game.add.group();
+		
+		
+		if (Game.HUD != undefined) {
+			Game.HUD.destroy();
+		}
+		Game.HUD = game.add.group();
+		
+		
+		
 		Game.clearPlayers();
 
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
-
-		
-		Game.groundMapLayers = game.add.group();
-	    Game.highMapLayers = game.add.group();
-	    Game.entities = game.add.group();
-	    Game.HUD = game.add.group();
 	    
 		Game.map = game.add.tilemap(chunk.id, 16, 16);
 		Game.map.addTilesetImage('tileset', 'tileset', 16, 16);
@@ -292,13 +314,6 @@ function drawHud() {
     let coinText = game.add.bitmapText(Game.map.widthInPixels-Game.map.widthInPixels/3.58, Game.map.heightInPixels-Game.map.heightInPixels/2.2, 'carrier_command','x'+coinNumber,7.5);
     coinText.inputEnabled = false;
     coinText.fixedToCamera = true;
-
-
-    Game.HUD.add(completionSprite);
-    Game.HUD.add(trophyIcon);
-    Game.HUD.add(backpackIcon);
-    Game.HUD.add(coinIcon);
-    Game.HUD.add(coinText);
 }
 
 function drawLeadboard() {
