@@ -67,6 +67,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     private boolean stored;
     private Trainer owner;
 
+    private Integer catchRate;
+    private Integer expOnDefeat;
+    private Integer evolveAt;
+
     private Integer xOffset;
     private Integer yOffset;
     private Integer fps;
@@ -177,6 +181,21 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       return this;
     }
 
+    public Builder evolvesAt(Integer evolveAt) {
+      this.evolveAt = evolveAt;
+      return this;
+    }
+
+    public Builder withCatchRate(Integer catchRate) {
+      this.catchRate = catchRate;
+      return this;
+    }
+
+    public Builder withEXPOnDefeat(Integer expOnDefeat) {
+      this.expOnDefeat = expOnDefeat;
+      return this;
+    }
+
     /**
      * Builds the Pokemon class and returns the built Pokemon class.
      *
@@ -223,6 +242,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       pokemon.xOffset = this.xOffset;
       pokemon.yOffset = this.yOffset;
       pokemon.fps = this.fps;
+
+      pokemon.catchRate = this.catchRate;
+      pokemon.expOnDefeat = this.expOnDefeat;
+      pokemon.evolveAt = this.evolveAt;
 
       return pokemon;
     }
@@ -288,6 +311,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   private boolean changed = false;
 
+  private Integer catchRate;
+  private Integer expOnDefeat;
+  private Integer evolveAt;
+
   private Pokemon(Integer id) {
     super(id);
     resetStatStages();
@@ -347,6 +374,14 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   public EffectSlot getEffectSlot() {
     return effectSlot;
+  }
+
+  public Integer getCatchRate() {
+    return catchRate;
+  }
+
+  public Integer getExpOnDefeat() {
+    return expOnDefeat;
   }
 
   public boolean isKnockedOut() {
@@ -577,6 +612,14 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   public static Integer calcXpByLevel(int level) {
     return (int) Math.ceil(Math.pow(level - 1, 3) * (4 / 5));
+  }
+
+  public static Integer xpWon(Pokemon winner, Pokemon loser) {
+    Double expGained = ((1.0 * loser.getExpOnDefeat() * loser.getLevel()) / 5)
+        * ((Math.pow(2 * loser.getLevel() + 10, 2.5))
+            / (Math.pow(winner.getLevel() + loser.getLevel() + 10, 2.5)))
+        + 1;
+    return expGained.intValue();
   }
 
   /*

@@ -6,6 +6,9 @@
         "baseStats": {"hp": 45, "atk": 49, "def": 49, "spa": 65, "spd": 65, "spe": 45},
         "moves": [22, 33, 45],
         "evo": "ivysaur",
+        "expOnDefeat": 64,
+        "catchRate": 45,
+        "evolveAt": 16,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -17,6 +20,9 @@
         "baseStats": {"hp": 60, "atk": 62, "def": 63, "spa": 80, "spd": 80, "spe": 60},
         "moves": [22, 33, 36, 77],
         "evo": "venusaur",
+        "expOnDefeat": 142,
+        "catchRate": 45,
+        "evolveAt": 32,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -28,6 +34,9 @@
         "baseStats": {"hp": 80, "atk": 82, "def": 83, "spa": 100, "spd": 100, "spe": 80},
         "moves": [33, 38, 77, 572],
         "evo": "",
+        "expOnDefeat": 236,
+        "catchRate": 45,
+        "evolveAt": -1,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -39,6 +48,9 @@
         "baseStats": {"hp": 39, "atk": 52, "def": 43, "spa": 60, "spd": 50, "spe": 65},
         "moves": [10, 45, 52],
         "evo": "charmeleon",
+        "expOnDefeat": 62,
+        "catchRate": 45,
+        "evolveAt": 16,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -50,6 +62,9 @@
         "baseStats": {"hp": 58, "atk": 64, "def": 58, "spa": 80, "spd": 65, "spe": 80},
         "moves": [10, 52, 163, 481],
         "evo": "charizard",
+        "expOnDefeat": 142,
+        "catchRate": 45,
+        "evolveAt": 36,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -61,6 +76,9 @@
         "baseStats": {"hp": 78, "atk": 84, "def": 78, "spa": 109, "spd": 85, "spe": 100},
         "moves": [53, 337, 394, 517],
         "evo": "",
+        "expOnDefeat": 240,
+        "catchRate": 45,
+        "evolveAt": -1,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -72,6 +90,9 @@
         "baseStats": {"hp": 44, "atk": 48, "def": 65, "spa": 50, "spd": 64, "spe": 43},
         "moves": [33, 39, 55],
         "evo": "wartortle",
+        "expOnDefeat": 63,
+        "catchRate": 45,
+        "evolveAt": 16,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -83,6 +104,9 @@
         "baseStats": {"hp": 59, "atk": 63, "def": 80, "spa": 65, "spd": 80, "spe": 58},
         "moves": [33, 44, 55, 401],
         "evo": "blastoise",
+        "expOnDefeat": 142,
+        "catchRate": 45,
+        "evolveAt": 36,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -94,6 +118,9 @@
         "baseStats": {"hp": 79, "atk": 83, "def": 100, "spa": 85, "spd": 105, "spe": 78},
         "moves": [44, 56, 401, 430],
         "evo": "",
+        "expOnDefeat": 239,
+        "catchRate": 45,
+        "evolveAt": -1,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -104,7 +131,10 @@
 		"types": ["Electric"],
         "baseStats": {"hp": 20, "atk": 40, "def": 15, "spa": 35, "spd": 35, "spe": 60},
         "moves": [39, 84],
-		"evo": "pikachu",
+        "evo": "pikachu",
+        "expOnDefeat": 41,
+        "catchRate": 190,
+        "evolveAt": 12,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -115,7 +145,10 @@
 		"types": ["Electric"],
         "baseStats": {"hp": 35, "atk": 55, "def": 40, "spa": 50, "spd": 50, "spe": 90},
         "moves": [21, 84, 98, 435],
-		"evo": "raichu",
+        "evo": "raichu",
+        "expOnDefeat": 112,
+        "catchRate": 190,
+        "evolveAt": 35,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -127,6 +160,9 @@
         "baseStats": {"hp": 60, "atk": 90, "def": 55, "spa": 90, "spd": 80, "spe": 110},
         "moves": [85, 98, 411, 528],
         "evo": "",
+        "expOnDefeat": 218,
+        "catchRate": 75,
+        "evolveAt": -1,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -138,6 +174,9 @@
         "baseStats": {"hp": 120, "atk": 120, "def": 120, "spa": 120, "spd": 120, "spe": 120},
         "moves": [245, 304, 434, 449],
         "evo": "",
+        "expOnDefeat": 324,
+        "catchRate": 3,
+        "evolveAt": -1,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -149,6 +188,9 @@
 		"baseStats": {"hp": 150, "atk": 120, "def": 100, "spa": 120, "spd": 100, "spe": 90},
 		"moves": [211, 337, 412, 421],
         "evo": "",
+        "expOnDefeat": 306,
+        "catchRate": 3,
+        "evolveAt": -1,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40
@@ -160,6 +202,9 @@
 		"baseStats": {"hp": 100, "atk": 150, "def": 140, "spa": 100, "spd": 90, "spe": 90},
         "moves": [90, 126, 359, 619],
         "evo": "",
+        "expOnDefeat": 302,
+        "catchRate": 3,
+        "evolveAt": -1,
         "xOffset": 0,
         "yOffset": 0,
         "fps": 40

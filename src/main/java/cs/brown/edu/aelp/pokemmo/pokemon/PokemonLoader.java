@@ -44,6 +44,10 @@ public final class PokemonLoader {
       Integer yOffset = pokemon.get("yOffset").getAsInt();
       Integer fps = pokemon.get("fps").getAsInt();
 
+      Integer expOnDefeat = pokemon.get("expOnDefeat").getAsInt();
+      Integer catchRate = pokemon.get("catchRate").getAsInt();
+      Integer evolveAt = pokemon.get("evolveAt").getAsInt();
+
       List<PokeTypes> typesList = new ArrayList<>();
 
       for (JsonElement type : types) {
@@ -68,7 +72,8 @@ public final class PokemonLoader {
           .withSpecAtk(spAtk).withSpecDef(spDef).withSpd(speed)
           .withTypes(typesList).withGender(gender).withExp(exp)
           .withMoves(moveList).withXOffset(xOffset).withYOffset(yOffset)
-          .withFPS(fps).build();
+          .withFPS(fps).evolvesAt(evolveAt).withCatchRate(catchRate)
+          .withEXPOnDefeat(expOnDefeat).build();
       return target;
 
     } catch (FileNotFoundException e) {
