@@ -2,7 +2,6 @@ package cs.brown.edu.aelp.pokemmo.map;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,8 +11,7 @@ import java.util.Map;
 
 public class Tournament {
 
-  private static final String PATH = World.DEFAULT_CHUNK_PATH
-      + "/tournament.json";
+  private static final String CHUNK_FILE = "tournament.json";
 
   private int size;
   private final Chunk chunk;
@@ -33,7 +31,7 @@ public class Tournament {
     this.size = size;
     this.cost = cost;
     this.chunk = Main.getWorld().loadChunk(Chunk.getNextDynamicId(),
-        new File(PATH));
+        CHUNK_FILE);
     // TODO: align these with the actual chunk
     Portal p = new Portal(entrance, new Location(this.chunk, 2, 2));
     Portal p1 = new Portal(new Location(this.chunk, 4, 0), exit);

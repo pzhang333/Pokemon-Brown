@@ -69,10 +69,6 @@ Game.preload = function() {
 
     // loading font assets
     game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
-
-    // loading necessary libraries for drawing hud menu
-    Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
-	Game.slickUI.load('ui/kenney/kenney.json');
 	
 	Battle.preload();
 };
@@ -123,7 +119,7 @@ Game.drawLayers = function() {
 
 	Game.map.gameLayers['Base'].inputEnabled = true;
 	Game.map.gameLayers['Base'].events.onInputUp.add(Game.handleMapClick, this);
-	self.drawHud();
+	Game.drawHud();
 	
 	/*Game.moveGroupTo(game.world, Game.groundMapLayers, 0);
 	Game.moveGroupTo(game.world, Game.entities, 1);
@@ -276,10 +272,13 @@ Game.loadCurrentChunk = function(clear) {
 
 		Game.chunkId = net.chunkId;
 
+	    // loading necessary libraries for drawing hud menu
+	    Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
+		Game.slickUI.load('ui/kenney/kenney.json');
 	});
 };
 
-function drawHud() {
+Game.drawHud = function() {
 
 	if (toDrawLeaderboard) {
 		drawLeadboard();
@@ -306,6 +305,8 @@ function drawHud() {
     backpackIcon.fixedToCamera = true;
     backpackIcon.events.onInputDown.add(queueBackpack, this);
 
+    Game.backpackIcon = backpackIcon;
+    
     // coin icon
     let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3.45, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "coin");
     coinIcon.inputEnabled = false;
@@ -340,6 +341,9 @@ function drawLeadboard() {
 
 function drawBackpack() {
 	// leaderboard panel
+	
+	console.log("ADASDAGSDSASFDSGF");
+	
 	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
 	Game.slickUI.add(Game.panel);
 
@@ -356,43 +360,24 @@ function drawBackpack() {
 	Game.panel.add(header);
 	Game.panel.add(pokeball1text);
 }
-
 function queueLeaderboard() {
 	if (toDrawLeaderboard || toDrawBackpack) {
-		Game.panel.destroy();
-		if (toDrawBackpack) {
-			drawLeadboard();
-			toDrawLeaderboard = true;
-			toDrawBackpack = false; 
-		} else {
-			toDrawBackpack = false; 
-			toDrawLeaderboard = false;
-			drawHud();
+		if (Game.panel.container != undefined) {
+			Game.panel.destroy();
 		}
-
 	} else {
 		drawLeadboard();
-		toDrawLeaderboard = true;
-		toDrawBackpack = false; 
 	}
+	toDrawLeaderboard = !toDrawLeaderboard;
 }
 
 function queueBackpack() {
-	if (toDrawLeaderboard || toDrawBackpack) {
-		Game.panel.destroy();
-		if (toDrawLeaderboard) {
-			drawBackpack();
-			toDrawLeaderboard = false;
-			toDrawBackpack = true; 
-		} else {
-			toDrawBackpack = false; 
-			toDrawLeaderboard = false;
-			drawHud();
+	if (toDrawBackpack || toDrawBackpack) {
+		if (Game.panel.container != undefined) {
+			Game.panel.destroy();
 		}
-
 	} else {
 		drawBackpack();
-		toDrawLeaderboard = false;
-		toDrawBackpack = true; 
 	}
+	toDrawBackpack = !toDrawBackpack;
 }

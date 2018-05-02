@@ -1,5 +1,6 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
+import cs.brown.edu.aelp.util.JsonFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -8,19 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import cs.brown.edu.aelp.util.JsonFile;
-
 public class World {
 
   private static final int BUSH_ID = 2804;
-  public static final String DEFAULT_CHUNK_PATH = "src/main/resources/static/assets/maps";
+  private static final String CHUNKS_PATH = "src/main/resources/static/assets/maps/";
+  private static final String CHUNK_FILE = "config/chunks.json";
 
   private Location spawn;
   private Map<Integer, Chunk> chunks = new ConcurrentHashMap<>();
   private Tournament tourney;
-
-  private String prefix = "chunk_";
-  private String suffix = ".json";
 
   public void addChunk(Chunk c) {
     chunks.put(c.getId(), c);
@@ -53,14 +50,15 @@ public class World {
   }
 
   public void loadChunks() {
-    loadChunks(DEFAULT_CHUNK_PATH);
+    loadChunks(CHUNK_FILE);
   }
 
   public void removeChunk(Chunk c) {
     this.chunks.remove(c.getId());
   }
 
-  public Chunk loadChunk(Integer id, File file) throws IOException {
+  public Chunk loadChunk(Integer id, String filename) throws IOException {
+    File file = new File(CHUNKS_PATH + filename);
     String path = file.getAbsolutePath();
     JsonFile jFile = new JsonFile(path);
     String fname = file.getName();
@@ -86,61 +84,30 @@ public class World {
     return chunk;
   }
 
-  public void loadPortals(String path) throws IOException {
-    JsonFile f = new JsonFile(path + "/portals.json");
-    List<JsonFile> portals = f.getJsonList("portals");
-    for (JsonFile p : portals) {
-      JsonFile start = p.getMap("location");
-      JsonFile end = p.getMap("goto");
-      Location loc = new Location(this.getChunk(start.getInt("chunkId")),
-          start.getInt("row"), start.getInt("col"));
-      Location goTo = new Location(this.getChunk(end.getInt("chunkId")),
-          end.getInt("row"), end.getInt("col"));
-      Portal portal = new Portal(loc, goTo);
-      loc.getChunk().addEntity(portal);
-    }
-  }
-
   public void loadChunks(String path) {
-
-    File[] files = new File(path).listFiles();
-
-    if (files == null) {
-      return;
-    }
-
-    for (File file : files) {
-      if (file.isFile()) {
-
-        String fileName = file.getName();
-
-        if (fileName.startsWith(prefix) && fileName.endsWith(suffix)) {
-
-          String chunkName = fileName.substring(prefix.length(),
-              fileName.length() - suffix.length());
-
-          try {
-
-            Integer chunkId = Integer.parseInt(chunkName);
-
-            loadChunk(chunkId, file);
-            System.out.printf("Loaded %s%d from `%s`\n", prefix, chunkId,
-                file.getAbsolutePath());
-
-          } catch (NumberFormatException ex) {
-            System.err.printf("Warning: invalid chunk id `%s`\n", chunkName);
-          } catch (IOException ex) {
-            System.err.printf("Error: failed to load chunk `%s`\n", chunkName);
-          }
-        }
-
-      }
-    }
     try {
-      loadPortals(path);
+      JsonFile f = new JsonFile(path);
+      for (JsonFile chunk : f.getJsonList("chunks")) {
+        int id = chunk.getInt("id");
+        loadChunk(chunk.getInt("id"), chunk.getString("file"));
+        System.out.printf("Loaded chunk %d from `%s`\n", id,
+            chunk.getString("file"));
+      }
+      for (JsonFile chunk : f.getJsonList("chunks")) {
+        List<JsonFile> portals = chunk.getJsonList("portals");
+        for (JsonFile p : portals) {
+          JsonFile start = p.getMap("location");
+          JsonFile end = p.getMap("goto");
+          Location loc = new Location(this.getChunk(chunk.getInt("id")),
+              start.getInt("row"), start.getInt("col"));
+          Location goTo = new Location(this.getChunk(end.getInt("chunk")),
+              end.getInt("row"), end.getInt("col"));
+          Portal portal = new Portal(loc, goTo);
+          loc.getChunk().addEntity(portal);
+        }
+      }
     } catch (IOException e) {
-      System.err.println("ERROR: Failed to load portals.");
+      e.printStackTrace();
     }
-
   }
 }

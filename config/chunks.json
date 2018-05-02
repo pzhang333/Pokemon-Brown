@@ -1,0 +1,60 @@
+{
+    "chunks" :
+    [
+        {
+            "id" : 1,
+            "file" : "main_chunk.json",
+            "portals" :
+            [
+                {
+                    "location" :
+                    {
+                        "row" : 26,
+                        "col" : 30
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 2,
+                        "row" : 4,
+                        "col" : 1
+                    }
+                }
+            ]
+            
+        },
+        {
+            "id" : 2,
+            "file" : "house_inside.json",
+            "portals" :
+            [
+				{
+                    "location" :
+                    {
+                        "row" : 4,
+                        "col" : 0
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 1,
+                        "row" : 27,
+                        "col" : 30
+                    }
+                }
+            ]
+        },
+        {
+            "id" : 3,
+            "file" : "house_inside.json",
+            "portals" :
+            [
+            ]
+        },
+                {
+            "id" : 4,
+            "file" : "house_inside.json",
+            "portals" :
+            [
+            ]
+        }
+    ]
+}

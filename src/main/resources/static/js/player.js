@@ -275,6 +275,10 @@ class Player {
 
 		net.sendPacket(MESSAGE_TYPE.PLAYER_REQUEST_PATH, {
 			path: [{
+				row: this.y,
+				col: this.x
+			},
+			{
 				row: y,
 				col: x
 			}]
