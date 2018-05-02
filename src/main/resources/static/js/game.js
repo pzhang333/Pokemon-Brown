@@ -281,6 +281,7 @@ function drawHud() {
 	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/4.60, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");
     backpackIcon.inputEnabled = true;
     backpackIcon.fixedToCamera = true;
+    backpackIcon.events.onInputDown.add(queueBackpack, this);
 
     // coin icon
     let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3.45, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "coin");
@@ -321,11 +322,33 @@ function drawLeadboard() {
 	Game.panel.add(player5);
 }
 
+function drawBackpack() {
+	// leaderboard panel
+	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
+	Game.slickUI.add(Game.panel);
+
+	let header = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 20, "Backpack:");
+
+	let player1 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65, "empty");
+
+	Game.panel.add(header);
+	Game.panel.add(player1);
+}
+
 function queueLeaderboard() {
-	if (toDrawLeaderboard) {
+	if (toDrawLeaderboard || toDrawBackpack) {
 		Game.panel.destroy();
 	} else {
 		drawLeadboard();
 	}
 	toDrawLeaderboard = !toDrawLeaderboard;
+}
+
+function queueBackpack() {
+	if (toDrawBackpack || toDrawBackpack) {
+		Game.panel.destroy();
+	} else {
+		drawBackpack();
+	}
+	toDrawBackpack = !toDrawBackpack;
 }
