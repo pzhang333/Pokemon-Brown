@@ -1,20 +1,8 @@
 package cs.brown.edu.aelp.pokemon;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import cs.brown.edu.aelp.commands.BattleCommand;
 import cs.brown.edu.aelp.commands.CoinsCommand;
 import cs.brown.edu.aelp.commands.CommandHandler;
@@ -26,6 +14,7 @@ import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
 import cs.brown.edu.aelp.networking.Trade;
 import cs.brown.edu.aelp.pokemmo.data.DataSource;
 import cs.brown.edu.aelp.pokemmo.data.DataSource.SaveException;
+import cs.brown.edu.aelp.pokemmo.data.Leaderboards;
 import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
@@ -37,6 +26,16 @@ import cs.brown.edu.aelp.pokemmo.server.LoginHandler;
 import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
 import cs.brown.edu.aelp.util.JsonFile;
 import freemarker.template.Configuration;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -65,6 +64,8 @@ public final class Main {
       b.registerTypeAdapter(Pokemon.class, new Pokemon.PokemonAdapter());
       b.registerTypeAdapter(Inventory.class, new Inventory.InventoryAdapter());
       b.registerTypeAdapter(Move.class, new Move.MoveAdapter());
+      b.registerTypeAdapter(Leaderboards.EloUser.class,
+          new Leaderboards.EloUser.EloUserAdapter());
       return b.create();
     }
   };

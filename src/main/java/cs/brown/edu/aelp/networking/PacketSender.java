@@ -1,25 +1,23 @@
 package cs.brown.edu.aelp.networking;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.eclipse.jetty.websocket.api.WebSocketException;
-
 import com.google.gson.JsonObject;
-
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.MESSAGE_TYPE;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
 import cs.brown.edu.aelp.pokemmo.battle.impl.WildBattle;
+import cs.brown.edu.aelp.pokemmo.data.Leaderboards;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.eclipse.jetty.websocket.api.WebSocketException;
 
 public final class PacketSender {
 
@@ -41,6 +39,10 @@ public final class PacketSender {
       if (chunkOps.containsKey(c.getId())) {
         payload.add("ops", Main.GSON().toJsonTree(chunkOps.get(c.getId())));
         chunkOps.remove(c.getId());
+      }
+      if (Leaderboards.isChanged()) {
+        payload.add("leaderboards",
+            Main.GSON().toJsonTree(Leaderboards.getTop5()));
       }
       message.add("payload", payload);
       // send to each user that has an open session
@@ -91,6 +93,7 @@ public final class PacketSender {
       }
     }
     values.add("players", Main.GSON().toJsonTree(otherPlayerInfo));
+    values.add("leaderboards", Main.GSON().toJsonTree(Leaderboards.getTop5()));
     message.add("payload", values);
     queueOpForChunk(buildPlayerOpMessage(u, OP_CODES.ENTERED_CHUNK),
         u.getLocation().getChunk());
