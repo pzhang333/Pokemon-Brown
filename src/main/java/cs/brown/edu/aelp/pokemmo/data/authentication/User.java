@@ -1,12 +1,21 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.eclipse.jetty.websocket.api.Session;
+
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
+import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Bush;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
@@ -20,11 +29,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Inventory;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-import org.eclipse.jetty.websocket.api.Session;
 
 public class User extends Trainer implements SQLBatchSavable {
 
@@ -110,7 +114,10 @@ public class User extends Trainer implements SQLBatchSavable {
       if (found) {
         System.out.printf("%s found a pokemon in the bushes.%n",
             this.getUsername());
-        PacketSender.sendEncounterPacket(this);
+        BattleManager.getInstance().createWildBattle(this);
+
+        this.setPath(null);
+        this.location = e.getLocation();
       }
     } else if (e instanceof Portal) {
       Portal p = (Portal) e;

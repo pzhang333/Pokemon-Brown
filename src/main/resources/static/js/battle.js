@@ -922,12 +922,16 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 			let pOut = Battle.getPokemonById(summary.pokemonOut.id);
 			
 			let pIn = Battle.team[0];
-			for(let i = 0; i < Battle.team.length; i++) {
-				if (Battle.team[i].id == summary.pokemonIn.id) {
-					
-					pIn = Battle.team[i];
-					break;
+			if (pOut.owner_id == Game.player.id) {
+				for(let i = 0; i < Battle.team.length; i++) {
+					if (Battle.team[i].id == summary.pokemonIn.id) {
+						
+						pIn = Battle.team[i];
+						break;
+					}
 				}
+			} else {
+				pIn = summary.pokemonIn;
 			}
 			
 			Battle.doSwitch(pOut, pIn, function() {

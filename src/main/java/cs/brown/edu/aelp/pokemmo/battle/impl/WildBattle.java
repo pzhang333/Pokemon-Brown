@@ -51,11 +51,19 @@ public class WildBattle extends Battle {
     this.wild = wild;
     this.a = user;
 
+    a.setCurrentBattle(this);
+
     this.b = new Trainer(-1);
     b.addPokemonToTeam(wild);
     this.b.setCurrentBattle(this);
 
+    sendInitPackets();
+
     setBattleState(BattleState.WAITING);
+  }
+
+  private void sendInitPackets() {
+    PacketSender.sendEncounterPacket(this);
   }
 
   public Pokemon getWildPokemon() {

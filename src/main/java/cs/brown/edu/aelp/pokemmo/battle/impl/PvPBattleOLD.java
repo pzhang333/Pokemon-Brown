@@ -5,11 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cs.brown.edu.aelp.networking.PacketSender;
-import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
-import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
@@ -20,61 +17,43 @@ import cs.brown.edu.aelp.pokemmo.battle.events.KnockedOutEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchInEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchOutEvent;
-import cs.brown.edu.aelp.pokemmo.battle.summaries.FightSummary;
-import cs.brown.edu.aelp.pokemmo.battle.summaries.SwitchSummary;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
-public class PvPBattle extends Battle {
+public class PvPBattleOLD extends Battle {
 
-  private final User a;
+  private final Trainer a;
 
-  private final User b;
+  private final Trainer b;
 
-  private Trainer winner;
+  private Trainer winner = null;
 
-  private Trainer loser;
+  private Trainer loser = null;
 
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
 
-  private BattleUpdate lastBattleUpdate = null;
-
-  private BattleUpdate pendingBattleUpdate = null;
-
-  public PvPBattle(Integer id, Arena arena, User a, User b) {
+  public PvPBattleOLD(Integer id, Arena arena, Trainer a, Trainer b) {
     super(id, arena);
-
     this.a = a;
     this.b = b;
-
-    a.setCurrentBattle(this);
-    b.setCurrentBattle(this);
-
-    sendInitPackets();
 
     setBattleState(BattleState.WAITING);
   }
 
-  private void sendInitPackets() {
-    PacketSender.sendPvPPacket(this, a, b);
-  }
-
-  @Override
   public void evaluate() {
 
-    System.out.println("evaluate()");
+    System.out.println(turnsMap);
 
     if (!getBattleState().equals(BattleState.READY)) {
       throw new RuntimeException("Not in ready state!");
     }
 
+    setBattleState(BattleState.WORKING);
+
     List<Turn> turns = new ArrayList<>(turnsMap.values());
     turns.sort(this::turnComparator);
-
-    pendingBattleUpdate = new BattleUpdate();
 
     boolean stop = false;
 
@@ -102,9 +81,6 @@ public class PvPBattle extends Battle {
       }
 
       if (getBattleState().equals(BattleState.DONE)) {
-
-        sendBattleUpdate();
-
         // TODO: Add end of Battle event.
         return;
       }
@@ -127,10 +103,6 @@ public class PvPBattle extends Battle {
     }
 
     turnsMap.clear();
-
-    lastBattleUpdate = pendingBattleUpdate;
-
-    sendBattleUpdate();
 
     setBattleState(BattleState.WAITING);
   }
@@ -167,9 +139,6 @@ public class PvPBattle extends Battle {
     // Broadcast switch in
     trainer.getEffectSlot().handle(switchInEvent);
     trainer.getActivePokemon().getEffectSlot().handle(switchInEvent);
-
-    pendingBattleUpdate.addSummary(
-        new SwitchSummary(turn.getPokemonIn(), turn.getPokemonOut()));
   }
 
   public void handleTurn(FightTurn turn) {
@@ -186,105 +155,49 @@ public class PvPBattle extends Battle {
     atkTrainer.getEffectSlot().handle(atkEvent);
     atkTrainer.getActivePokemon().getEffectSlot().handle(atkEvent);
 
-    if (atkEvent.isPrevented()) {
+    // TODO: ADD IN MOVE_RESULT
+    // MoveResult result = new MoveResult(atkEvent.getAttackingPokemon(),
+    // atkEvent.getDefendingPokemon(), turn.getMove(), getArena());
 
-      Pokemon atkPokemon = atkTrainer.getActivePokemon();
-      Pokemon defPokemon = defTrainer.getActivePokemon();
+    MoveResult result = turn.getMove().getMoveResult(atkEvent);
+    result.evaluate();
 
-      String msg = atkEvent.getPreventedMsg();
-      if (msg.isEmpty()) {
-        msg = String.format("%s used %s, but it failed!",
-            atkPokemon.getSpecies(), turn.getMove().getName());
-      }
+    // Todo: defending events
+    // System.out.println(result);
 
-      pendingBattleUpdate
-          .addSummary(new FightSummary(atkPokemon, defPokemon, msg, ""));
+    // TODO: Check if the player knocked themselves out or...
+    // Basically just make sure the self-destruct isn't broken... or really
+    // maybe it doesn't matter
 
-    } else {
+    if (result.getOutcome().equals(MoveOutcome.HIT)) {
+      // Other events...
 
-      // TODO: ADD IN MOVE_RESULT
-      // MoveResult result = new MoveResult(atkEvent.getAttackingPokemon(),
-      // atkEvent.getDefendingPokemon(), turn.getMove(), getArena());
+      System.out.println("The attack was effective or perhaps not...");
 
-      MoveResult result = turn.getMove().getMoveResult(atkEvent);
-      result.evaluate();
+      Pokemon defendingPokemon = result.getDefendingPokemon();
 
-      // Todo: defending events
-      // System.out.println(result);
+      defendingPokemon
+          .setHealth(defendingPokemon.getCurrHp() - result.getDamage());
 
-      // TODO: Check if the player knocked themselves out or...
-      // Basically just make sure the self-destruct isn't broken... or really
-      // maybe it doesn't matter
+      if (defendingPokemon.isKnockedOut()) {
+        System.out.println("K.O.!");
+        defendingPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
+            result.getAttackingPokemon(), defendingPokemon));
 
-      Pokemon atkPokemon = atkTrainer.getActivePokemon();
-
-      StringBuilder base = new StringBuilder(atkPokemon.getSpecies())
-          .append(" used ").append(turn.getMove().getName());
-
-      if (result.getOutcome().equals(MoveOutcome.HIT)) {
-
-        base.append(".");
-        // Other events...
-
-        // System.out.println("The attack was effective or perhaps not...");
-
-        Pokemon defendingPokemon = result.getDefendingPokemon();
-
-        defendingPokemon
-            .setHealth(defendingPokemon.getCurrHp() - result.getDamage());
-
-        System.out.println(defendingPokemon.getCurrHp());
-
-        if (defendingPokemon.isKnockedOut()) {
-          // System.out.println("K.O.!");
-          defendingPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
-              result.getAttackingPokemon(), defendingPokemon));
-
-          if (defTrainer.allPokemonKnockedOut()) {
-            victory(atkTrainer);
-          }
+        if (defTrainer.allPokemonKnockedOut()) {
+          victory(atkTrainer);
         }
-
-        pendingBattleUpdate.addSummary(new FightSummary(atkPokemon,
-            defendingPokemon, base.toString(), "basic"));
-
-      } else {
-
-        String anim = "basic";
-
-        if (result.getOutcome().equals(MoveOutcome.MISS)) {
-
-          System.out.println("The attack missed");
-
-          anim = "basic-miss";
-
-          base.append(", but it missed.");
-
-        } else if (result.getOutcome().equals(MoveOutcome.BLOCKED)) {
-          System.out.println("The attack was blocked");
-
-          base.append(", but it was blocked.");
-
-        } else if (result.getOutcome().equals(MoveOutcome.NO_EFFECT)) {
-          System.out.println("The attack had no effect");
-
-          base.append(", but it had no effect.");
-
-        } else if (result.getOutcome().equals(MoveOutcome.NON_ATTACK_SUCCESS)) {
-          System.out.println("The move succeded");
-
-          base.append(".");
-        } else if (result.getOutcome().equals(MoveOutcome.NON_ATTACK_FAIL)) {
-          System.out.println("The move failed");
-
-          base.append(", but it failed.");
-        }
-
-        Pokemon defPokemon = defTrainer.getActivePokemon();
-
-        pendingBattleUpdate.addSummary(
-            new FightSummary(atkPokemon, defPokemon, base.toString(), anim));
       }
+    } else if (result.getOutcome().equals(MoveOutcome.MISS)) {
+      System.out.println("The attack missed");
+    } else if (result.getOutcome().equals(MoveOutcome.BLOCKED)) {
+      System.out.println("The attack was blocked");
+    } else if (result.getOutcome().equals(MoveOutcome.NO_EFFECT)) {
+      System.out.println("The attack had no effect");
+    } else if (result.getOutcome().equals(MoveOutcome.NON_ATTACK_SUCCESS)) {
+      System.out.println("The move succeded");
+    } else if (result.getOutcome().equals(MoveOutcome.NON_ATTACK_FAIL)) {
+      System.out.println("The move failed");
     }
   }
 
@@ -294,8 +207,6 @@ public class PvPBattle extends Battle {
     winner = t;
     loser = other(t);
 
-    lastBattleUpdate = pendingBattleUpdate;
-
     setBattleState(BattleState.DONE);
   }
 
@@ -304,8 +215,8 @@ public class PvPBattle extends Battle {
     // TODO: Check move logical validity...
 
     if (!getBattleState().equals(BattleState.WAITING)) {
-      // throw new RuntimeException("Not in waiting state!");
       return false;
+      // throw new RuntimeException("Not in waiting state!");
     }
 
     // This is ugly but (probably) works.
@@ -333,7 +244,6 @@ public class PvPBattle extends Battle {
       turnsMap.put(t.getTrainer(), t);
     }
 
-    System.out.println("TM : " + turnsMap.size());
     if (turnsMap.size() == 2) {
       setBattleState(BattleState.READY);
     }
@@ -352,7 +262,8 @@ public class PvPBattle extends Battle {
   public String dbgStatus() {
     StringBuilder sb = new StringBuilder();
 
-    sb.append(a.getActivePokemon()).append(b.getActivePokemon());
+    sb.append(a);
+    sb.append(b);
 
     return sb.toString();
   }
@@ -372,19 +283,4 @@ public class PvPBattle extends Battle {
     victory(other(t));
   }
 
-  private void sendBattleUpdateTo(Trainer t) {
-    if (t.getId() == -1) {
-      return;
-    }
-
-    PacketSender.sendBattleTurnPacket(getId(), t, lastBattleUpdate,
-        t.getActivePokemon(), other(t).getActivePokemon(),
-        ((t.getActivePokemon().isKnockedOut()) ? TURN_STATE.MUST_SWITCH
-            : TURN_STATE.NORMAL).ordinal());
-  }
-
-  private void sendBattleUpdate() {
-    sendBattleUpdateTo(a);
-    sendBattleUpdateTo(b);
-  }
 }
