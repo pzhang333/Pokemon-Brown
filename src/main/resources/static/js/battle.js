@@ -733,6 +733,8 @@ Battle.drawDefaultMenu = async function() {
 	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
 	Battle.slickUI.add(Battle.panel);
 	
+	game.world.bringToTop(Battle.slickUI);
+	
 	let buttonOffsetX = Battle.panel.width / 2;
 	let buttonWidth = Battle.panel.width / 4.1;
 	
@@ -743,8 +745,8 @@ Battle.drawDefaultMenu = async function() {
 	await fightButton.events;
 	
 	if (Battle.frontPokemon.health <= 0) {
-		fightButton.events.onInputUp.removeAll();
-		fightButton.events.onInputDown.removeAll();
+		//fightButton.events.onInputUp.removeAll();
+		//fightButton.events.onInputDown.removeAll();
 	} else {
 		fightButton.events.onInputUp.add(function() {
 			if (Battle.moveButtons == undefined || Battle.moveButtons.length == 0) {
@@ -760,8 +762,8 @@ Battle.drawDefaultMenu = async function() {
 	switchButton.add(new SlickUI.Element.Text(0, 0, "Switch")).center(); 
 	
 	if (Battle.frontPokemon.health <= 0) {
-		switchButton.events.onInputUp.removeAll();
-		switchButton.events.onInputDown.removeAll();
+		//switchButton.events.onInputUp.removeAll();
+		//switchButton.events.onInputDown.removeAll();
 	} else {
 		switchButton.events.onInputUp.add(function() {
 			if (Battle.teamButtons == undefined || Battle.teamButtons.length == 0) {
@@ -801,6 +803,7 @@ Battle.drawDefaultMenu = async function() {
 		Battle.showTeam();
 	}
 	
+//	Battle.sendToTop(Battle.slickUI);
 }
 
 Battle.battleOver = async function(packet) {

@@ -11,7 +11,15 @@ Game.init = function() {
 };
 
 Game.shutdown = function() {
+	console.log('test!');
 	game.world.removeAll();
+	
+	Game.groundMapLayers.destroy();
+	Game.highMapLayers.destroy();
+	Game.HUD.destroy();
+	Game.entities.destroy();
+	Game.map.destroy();
+	
 	Game.chunkId = false;
 	Game.player.sprite = undefined;
 	Game.ready = false;
@@ -113,11 +121,11 @@ Game.drawLayers = function() {
 	Game.moveGroupTo(game.world, Game.highMapLayers, 2);
 	Game.moveGroupTo(game.world, Game.HUD, 200);*/
 	
-	game.world.sendToBack(Game.groundMapLayers);
+	/*game.world.sendToBack(Game.groundMapLayers);
 	game.world.bringToTop(Game.entities);
 	
 	game.world.bringToTop(Game.highMapLayers);
-	game.world.bringToTop(Game.HUD);
+	game.world.bringToTop(Game.HUD);*/
 };
 
 Game.handleMapClick = function(layer, pointer) {
