@@ -11,6 +11,7 @@ Game.init = function() {
 
 	Game.ready = false;
 	//Game.easystar = new EasyStar.js();
+	
 
 };
 
@@ -71,6 +72,8 @@ Game.preload = function() {
     // loading necessary libraries for drawing hud menu
     Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
 	Game.slickUI.load('ui/kenney/kenney.json');
+	
+	Battle.preload();
 };
 
 
@@ -221,6 +224,31 @@ Game.loadCurrentChunk = function(clear) {
 	Game.clearPlayers();
 
 	net.getChunk(function(chunk) {
+		
+		if (Game.groundMapLayers != undefined) {
+			Game.groundMapLayers.destroy();
+		}
+		Game.groundMapLayers = game.add.group();
+		
+
+		if (Game.entities != undefined) {
+			Game.entities.destroy();
+		}
+		Game.entities = game.add.group();
+		
+		if (Game.highMapLayers != undefined) {
+			Game.highMapLayers.destroy();
+		}
+		Game.highMapLayers = game.add.group();
+		
+		
+		if (Game.HUD != undefined) {
+			Game.HUD.destroy();
+		}
+		Game.HUD = game.add.group();
+		
+		
+		
 		Game.clearPlayers();
 
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
