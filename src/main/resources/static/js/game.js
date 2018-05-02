@@ -1,5 +1,7 @@
 
 let toDrawLeaderboard = false;
+let toDrawBackpack = false;
+let coinNumber = 100;
 
 var Game = {
 	players: {}
@@ -60,6 +62,9 @@ Game.preload = function() {
     game.load.image('backpack', 'assets/HUD/backpack.png');
     game.load.image('trophy', 'assets/HUD/trophy.png');
     game.load.image('coin', 'assets/HUD/coin.png');
+
+    // loading font assets
+    game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
 
     // loading necessary libraries for drawing hud menu
     Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
@@ -255,12 +260,11 @@ function drawHud() {
 
 	if (toDrawLeaderboard) {
 		drawLeadboard();
-	} else { 
-		console.log("stuff");
+	} else if (toDrawBackpack) {
+		toDrawBackpack();
 	}
 
 	// hud grey bar
-
 	completionSprite = game.add.graphics(0, 0);
 	completionSprite.beginFill(0x3d3d3d, 1);
 	completionSprite.drawRect(Game.map.widthInPixels/1.5, Game.map.heightInPixels-0.51*Game.map.heightInPixels, Game.map.widthInPixels, Game.map.heightInPixels/10.4);
@@ -280,14 +284,20 @@ function drawHud() {
 
     // coin icon
     let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3.45, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "coin");
-    coinIcon.inputEnabled = true;
+    coinIcon.inputEnabled = false;
     coinIcon.fixedToCamera = true;
+
+    // coin text
+    let coinText = game.add.bitmapText(Game.map.widthInPixels-Game.map.widthInPixels/3.58, Game.map.heightInPixels-Game.map.heightInPixels/2.2, 'carrier_command','x'+coinNumber,7.5);
+    coinText.inputEnabled = false;
+    coinText.fixedToCamera = true;
 
 
     Game.HUD.add(completionSprite);
     Game.HUD.add(trophyIcon);
     Game.HUD.add(backpackIcon);
     Game.HUD.add(coinIcon);
+    Game.HUD.add(coinText);
 }
 
 function drawLeadboard() {
