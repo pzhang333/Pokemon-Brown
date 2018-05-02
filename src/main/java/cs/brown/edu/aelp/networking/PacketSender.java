@@ -30,6 +30,7 @@ public final class PacketSender {
 
   public static void sendGamePackets() {
     for (Chunk c : Main.getWorld().getAllChunks()) {
+
       JsonObject message = new JsonObject();
       // set the type
       message.addProperty("type", MESSAGE_TYPE.GAME_PACKET.ordinal());
@@ -43,7 +44,10 @@ public final class PacketSender {
       }
       message.add("payload", payload);
       // send to each user that has an open session
+
       for (User u : c.getUsers()) {
+
+        // System.out.print("sending packet to: " + u.getUsername());
         sendPacket(u, message);
       }
     }

@@ -187,6 +187,7 @@ class Net {
 			newPlayer.id = player.id;
 			newPlayer.username = player.username;
 			
+			console.log(newPlayer);
 			Game.players[player.id] = newPlayer;
 			
 		}
@@ -215,6 +216,8 @@ class Net {
 				console.log(op);
 				
 				if (code == OP_CODES.PLAYER_ENTERED_CHUNK) {
+					
+					console.log('Player!');
 					
 					if (op.id == net.id) {
 						//Game.player.username = op.username;
@@ -270,6 +273,7 @@ class Net {
 				player.initSprite();
 				player.setVisible(true);
 				player.setPos(loc.col, loc.row);
+				console.log(player);
 				/*console.log('ayyy');*/
 				//continue;
 			}
@@ -341,7 +345,7 @@ class Net {
 	handleMsg(event) {
 
 //		console.log('test!');
-	//	console.log(event);
+		console.log(event);
 
 		const data = JSON.parse(event.data);
 
