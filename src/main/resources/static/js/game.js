@@ -65,6 +65,7 @@ Game.preload = function() {
     game.load.image('backpack', 'assets/HUD/backpack.png');
     game.load.image('trophy', 'assets/HUD/trophy.png');
     game.load.image('coin', 'assets/HUD/coin.png');
+    game.load.image('pokeball', 'assets/HUD/pokeball.png');
 
     // loading font assets
     game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
@@ -283,7 +284,7 @@ function drawHud() {
 	if (toDrawLeaderboard) {
 		drawLeadboard();
 	} else if (toDrawBackpack) {
-		toDrawBackpack();
+		drawBackpack();
 	}
 
 	// hud grey bar
@@ -344,26 +345,54 @@ function drawBackpack() {
 
 	let header = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 20, "Backpack:");
 
-	let player1 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65, "empty");
+	// let player1 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65, "empty");
 
+	let pokeball1 = game.add.sprite(0,0,'pokeball');
+    pokeball1.anchor.setTo(0.5);
+    let pokeball1text = new SlickUI.Element.Text(Game.panel.width/3.8 , 58, "x0");
+    pokeball1text.size = 9.5;
+
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5, Game.panel.height/2.75, pokeball1));
 	Game.panel.add(header);
-	Game.panel.add(player1);
+	Game.panel.add(pokeball1text);
 }
 
 function queueLeaderboard() {
 	if (toDrawLeaderboard || toDrawBackpack) {
 		Game.panel.destroy();
+		if (toDrawBackpack) {
+			drawLeadboard();
+			toDrawLeaderboard = true;
+			toDrawBackpack = false; 
+		} else {
+			toDrawBackpack = false; 
+			toDrawLeaderboard = false;
+			drawHud();
+		}
+
 	} else {
 		drawLeadboard();
+		toDrawLeaderboard = true;
+		toDrawBackpack = false; 
 	}
-	toDrawLeaderboard = !toDrawLeaderboard;
 }
 
 function queueBackpack() {
-	if (toDrawBackpack || toDrawBackpack) {
+	if (toDrawLeaderboard || toDrawBackpack) {
 		Game.panel.destroy();
+		if (toDrawLeaderboard) {
+			drawBackpack();
+			toDrawLeaderboard = false;
+			toDrawBackpack = true; 
+		} else {
+			toDrawBackpack = false; 
+			toDrawLeaderboard = false;
+			drawHud();
+		}
+
 	} else {
 		drawBackpack();
+		toDrawLeaderboard = false;
+		toDrawBackpack = true; 
 	}
-	toDrawBackpack = !toDrawBackpack;
 }
