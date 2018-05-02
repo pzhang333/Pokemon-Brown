@@ -101,11 +101,17 @@ Battle.showAttackSummary = function(first, cb) {
 		Battle.setHealth(defFirst, first.health);
 	});
 	
-	Battle.showAttack(defFirst.sprite, first.animation, function() {
+	if (offsetsFirst != undefined) {
+		Battle.showAttack(defFirst.sprite, first.animation, function() {
+			if (cb != undefined) {
+				cb();
+			}
+		});
+	} else {
 		if (cb != undefined) {
 			cb();
 		}
-	});
+	}
 }
 
 
