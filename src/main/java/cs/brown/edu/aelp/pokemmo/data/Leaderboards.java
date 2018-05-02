@@ -22,24 +22,24 @@ public class Leaderboards {
         }
       });
 
-  public static void setTop50(Collection<EloUser> users) {
-    assert users.size() <= 50;
+  public static void setTop5(Collection<EloUser> users) {
+    assert users.size() <= 5;
     scores.addAll(users);
   }
 
-  public static void tryInsertTop50(User u) {
+  public static void tryInsertTop5(User u) {
     EloUser eu = new EloUser(u.getId(), u.getUsername(), u.getElo());
-    tryInsertTop50(eu);
+    tryInsertTop5(eu);
   }
 
-  public static void tryInsertTop50(EloUser eu) {
-    if (scores.size() < 50 || scores.last().getElo() < eu.getElo()) {
+  public static void tryInsertTop5(EloUser eu) {
+    if (scores.size() < 5 || scores.last().getElo() < eu.getElo()) {
       scores.add(eu);
       scores.remove(scores.last());
     }
   }
 
-  public static SortedSet<EloUser> getTop50() {
+  public static SortedSet<EloUser> getTop5() {
     return Collections.unmodifiableSortedSet(scores);
   }
 
