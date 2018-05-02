@@ -274,8 +274,6 @@ Battle.preload = function() {
 	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
 	game.load.atlasJSONHash('attacks', 'assets/pokemon/attacks.png', 'assets/pokemon/attacks.json');
 	
-	Battle.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
-	Battle.slickUI.load('ui/kenney/kenney.json');
 	
 	game.load.audio('battle', ['assets/audio/battle.mp3']);
 	
@@ -292,6 +290,12 @@ Battle.endBattle = function() {
 }
 
 Battle.create = function() {
+	
+	Battle.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
+	Battle.slickUI.load('ui/kenney/kenney.json');
+	
+	game.world.bringToTop(Battle.slickUI.container.displayGroup);
+	
 	//return;
 	Battle.music = game.add.audio('battle');
 	//Battle.music.loopFull(.1);
@@ -733,7 +737,7 @@ Battle.drawDefaultMenu = async function() {
 	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
 	Battle.slickUI.add(Battle.panel);
 	
-	game.world.bringToTop(Battle.slickUI);
+	//game.world.bringToTop(Battle.slickUI.container.displayGroup);
 	
 	let buttonOffsetX = Battle.panel.width / 2;
 	let buttonWidth = Battle.panel.width / 4.1;

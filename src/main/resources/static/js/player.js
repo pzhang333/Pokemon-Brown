@@ -63,8 +63,6 @@ class Player {
 		
 		/* Load the sprite */
 		this.sprite = game.add.sprite(this.x * 16, this.y * 16, 'atlas1', this.animations['idle']);
-
-		Game.entities.add(this.sprite);
 		
 		this.sprite.anchor.set(.25, .5);
 		this.sprite.visible = false;
