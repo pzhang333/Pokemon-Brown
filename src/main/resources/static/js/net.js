@@ -200,13 +200,21 @@ class Net {
 
 		//msg = generateFakeGamePacket();
 
-	//	console.log(msg.payload);
 		if (game.state.current != "Game") {
 			return;
 		}
 
+		// leaderboard
+		let leaderboard = msg.payload.leaderboards;
+		if (leaderboard != undefined) {
+			console.log(leaderboard);
+			console.log("hello");
+		}
+
+		// op codes
 		let ops = msg.payload.ops;
 		if (ops != undefined) {
+			console.log(msg);
 
 			for(let i = 0; i < ops.length; i++) {
 				let op = ops[i];
