@@ -162,6 +162,15 @@ class Net {
 
 		Game.player.id = net.id;
 
+		let leaderboard = msg.payload.leaderboards;
+		if (leaderboard != undefined) {
+			Game.leaderboard = [];
+			for (let i = 0; i < leaderboard.length; i++) {
+    			let name = leaderboard[i].username;
+    			let elo = leaderboard[i].elo;
+				Game.leaderboard.push(new EloUser(name, elo));
+			}
+		}
 
 		let loc = msg.payload.location;
 
