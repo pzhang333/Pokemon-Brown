@@ -335,9 +335,7 @@ function drawLeadboard() {
 
 function drawBackpack() {
 	// leaderboard panel
-	
-	console.log("ADASDAGSDSASFDSGF");
-	
+		
 	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
 	Game.slickUI.add(Game.panel);
 
