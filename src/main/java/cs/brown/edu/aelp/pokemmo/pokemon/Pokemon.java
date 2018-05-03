@@ -412,6 +412,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   public void addExp(Integer experience) {
     this.exp += experience;
     this.lvl = calcLevel(this.exp);
+    if (this.lvl >= this.evolveAt){
+      // TODO: Inform user that their pokemon evolved!
+      evolve();
+    }
     this.setChanged(true);
   }
 
