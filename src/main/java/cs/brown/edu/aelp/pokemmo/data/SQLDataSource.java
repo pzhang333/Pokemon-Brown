@@ -224,6 +224,7 @@ public class SQLDataSource implements DataSource {
           if (rs.next()) {
             u = new User(rs.getInt("id"), username, email, token);
             u.setLocation(Main.getWorld().getSpawn());
+            u.setCurrency(1000);
           } else {
             conn.rollback();
             throw new AuthException();

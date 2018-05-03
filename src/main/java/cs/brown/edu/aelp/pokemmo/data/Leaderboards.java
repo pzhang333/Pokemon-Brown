@@ -31,6 +31,7 @@ public class Leaderboards {
 
   public static void setTop5(Collection<EloUser> users) {
     assert users.size() <= 5;
+    scores.clear();
     scores.addAll(users);
     changed = true;
   }
@@ -51,7 +52,9 @@ public class Leaderboards {
   public static void tryInsertTop5(EloUser eu) {
     if (scores.size() < 5 || scores.last().getElo() < eu.getElo()) {
       scores.add(eu);
-      scores.remove(scores.last());
+      while (scores.size() > 5) {
+        scores.remove(scores.last());
+      }
       changed = true;
     }
   }
