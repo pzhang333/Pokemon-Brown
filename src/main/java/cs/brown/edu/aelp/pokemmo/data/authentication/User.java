@@ -124,7 +124,6 @@ public class User extends Trainer implements SQLBatchSavable {
         Tournament t = w.getTournament();
         if (t.getEntrance().equals(p)) {
           if (!t.canJoin(this)) {
-            System.out.println(t.whyCantJoin(this));
             this.sendMessage(t.whyCantJoin(this));
             return;
           } else {
@@ -235,6 +234,21 @@ public class User extends Trainer implements SQLBatchSavable {
     if (this.getLocation().getChunk() == null
         || this.getLocation().getChunk().getId() < 0) {
       this.setLocation(Main.getWorld().getSpawn());
+    }
+  }
+
+  public void disconnectCleanup() {
+    // remove user from any battles they may be in
+    if (this.isInBattle()) {
+      this.getCurrentBattle().forfeit(this);
+    }
+    // remove them from the tournament
+    World w = Main.getWorld();
+    if (w.getTournament() != null) {
+      Tournament t = w.getTournament();
+      if (t.isParticipating(this)) {
+        t.removeUser(this);
+      }
     }
   }
 
