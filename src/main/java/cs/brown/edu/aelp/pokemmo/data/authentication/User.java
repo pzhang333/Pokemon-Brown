@@ -106,6 +106,9 @@ public class User extends Trainer implements SQLBatchSavable {
   }
 
   public void interact(Entity e) {
+    if (!e.canInteract(this)) {
+      return;
+    }
     if (e instanceof Bush) {
       Bush b = (Bush) e;
       boolean found = b.triggerEntry(this);

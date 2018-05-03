@@ -237,9 +237,10 @@ public class Tournament {
           "Congratulations! You won the tournament and earned the pool of %d coins.",
           this.pool));
     }
-    this.users.stream().forEach(u -> {
+    List<User> temp = new ArrayList<>(this.users);
+    for (User u : temp) {
       this.removeUser(u);
-    });
+    }
     this.entrance.remove();
     Main.getWorld().removeChunk(this.chunk);
   }
