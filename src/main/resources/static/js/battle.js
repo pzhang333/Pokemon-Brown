@@ -1,6 +1,7 @@
 var Battle = {
 	frontBaseURL: "/assets/pokemon/front/",
-	backBaseURL: "/assets/pokemon/back/"
+	backBaseURL: "/assets/pokemon/back/",
+	inBattle: false
 };
 
 
@@ -97,7 +98,9 @@ Battle.showAttackSummary = function(first, cb) {
 	let defFirst = Battle.getPokemonById(first.defendingId);
 	
 	let offsetsFirst = Battle.offsets[first.animation];
-	Game.time.events.add(Phaser.Timer.SECOND * offsetsFirst.time, function() {
+	let time = (offsetsFirst == undefined) ? .5 : offsetsFirst.time;
+	
+	Game.time.events.add(Phaser.Timer.SECOND * time, function() {
 		Battle.setHealth(defFirst, first.health);
 	});
 	
@@ -297,6 +300,8 @@ Battle.endBattle = function() {
 	
 	console.log('EndBattle()');
 	
+	Battle.inBattle = false;
+	
 	//Game.players = {};
 	game.state.start("Game", true, false);
 	
@@ -305,6 +310,8 @@ Battle.endBattle = function() {
 }
 
 Battle.create = function() {
+	
+	Battle.inBattle = true;
 	
 	Game.map.gameLayers['Base'].inputEnabled = false;
 	
