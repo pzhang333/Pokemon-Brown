@@ -411,6 +411,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   public void addExp(Integer experience) {
     this.exp += experience;
+    this.lvl = calcLevel(this.exp);
     this.setChanged(true);
   }
 
@@ -449,16 +450,33 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   public void evolve() {
     String evolvedSpecies = PokemonLoader.getEvolutionName(this.species);
-    // We don't care about the level of the Pokemon
-    Pokemon tempPokemon = PokemonLoader.load(evolvedSpecies, 0);
 
-    this.species = tempPokemon.getSpecies();
-    this.hp = tempPokemon.getBaseHp();
-    this.attack = tempPokemon.getAttack();
-    this.defense = tempPokemon.getDefense();
-    this.specialAttack = tempPokemon.getSpecialAttack();
-    this.specialDefense = tempPokemon.getSpecialDefense();
-    this.speed = tempPokemon.getSpeed();
+    if (!evolvedSpecies.isEmpty()) {
+      // We don't care about the level of the Pokemon
+      Pokemon temp = PokemonLoader.load(evolvedSpecies, 0);
+
+      this.species = temp.species;
+      this.baseHp = temp.baseHp;
+      this.attack = temp.attack;
+      this.defense = temp.defense;
+      this.specialAttack = temp.specialAttack;
+      this.specialDefense = temp.specialDefense;
+      this.speed = temp.speed;
+
+      this.typeList = temp.typeList;
+
+      this.moves = temp.moves;
+
+      this.catchRate = temp.catchRate;
+      this.expOnDefeat = temp.expOnDefeat;
+      this.evolveAt = temp.evolveAt;
+
+      this.xOffset = temp.xOffset;
+      this.yOffset = temp.yOffset;
+      this.fps = temp.fps;
+
+      this.setChanged(true);
+    }
   }
 
   public Double getEffectiveAttack() {
