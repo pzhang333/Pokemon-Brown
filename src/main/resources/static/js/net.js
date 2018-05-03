@@ -49,8 +49,8 @@ class Net {
 
 	constructor() {
 
-		this.host = '10.38.37.243';
-		//this.host = 'localhost';
+		//this.host = '10.38.37.243';
+		this.host = 'localhost';
     	//this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -207,8 +207,12 @@ class Net {
 		// leaderboard
 		let leaderboard = msg.payload.leaderboards;
 		if (leaderboard != undefined) {
-			console.log(leaderboard);
-			console.log("hello");
+			Game.leaderboard = [];
+			for (let i = 0; i < leaderboard.length; i++) {
+    			let name = leaderboard[i].username;
+    			let elo = leaderboard[i].elo;
+				Game.leaderboard.push(new EloUser(name, elo));
+			}
 		}
 
 		// op codes

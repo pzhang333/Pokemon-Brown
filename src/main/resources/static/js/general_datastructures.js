@@ -18,9 +18,15 @@ class Point3 {
 }
 
 class Chunk {
-
 	constructor(id, data) {
 		this.id = id;
 		this.data = data;
 	}
+}
+
+class EloUser {
+  constructor(name, elo) {
+    this.name = name;
+    this.elo = elo;
+  }
 }
