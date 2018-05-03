@@ -152,6 +152,7 @@ public class User extends Trainer implements SQLBatchSavable {
   }
 
   public void sendMessage(String s) {
+    System.out.printf("Messaging %s: %s%n", this.getUsername(), s);
     PacketSender.sendServerMessagePacket(this, s);
   }
 

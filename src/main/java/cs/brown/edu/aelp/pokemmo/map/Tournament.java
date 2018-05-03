@@ -204,7 +204,11 @@ public class Tournament {
 
   public void logBattleResult(User winner, User loser) {
     this.removeUser(loser);
+    loser.sendMessage(
+        "You've been eliminated from the tournament, better luck next time!");
     if (!this.users.isEmpty()) {
+      winner
+          .sendMessage("Congratulations! You have advanced to the next round.");
       boolean done = true;
       for (User u : this.users) {
         if (this.bracket.containsKey(u)
@@ -218,6 +222,10 @@ public class Tournament {
         this.queueNextRound(60);
       }
     }
+  }
+
+  public boolean isParticipating(User u) {
+    return this.users.contains(u);
   }
 
   public void end() {
