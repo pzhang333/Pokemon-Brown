@@ -3,7 +3,7 @@
     document.getElementById('game'), null, true, false);*/
 
 var game = new Phaser.Game(1000, 600,
-		Phaser.WEBGL =,
+		Phaser.WEBGL,
 	    document.getElementById('game'), null, true, false);
 
 

@@ -264,9 +264,10 @@ public class User extends Trainer implements SQLBatchSavable {
     if (l.getChunk().getId() < 0) {
       // we never want to save people into a dynamic chunk that may not exist in
       // the future
-      p.setInt(1, 1);
-      p.setInt(2, 1);
-      p.setInt(3, 1);
+      Location spawn = Main.getWorld().getSpawn();
+      p.setInt(1, spawn.getChunk().getId());
+      p.setInt(2, spawn.getRow());
+      p.setInt(3, spawn.getCol());
     } else {
       p.setInt(1, l.getChunk().getId());
       p.setInt(2, l.getRow());
