@@ -9,6 +9,7 @@ import cs.brown.edu.aelp.pokemmo.battle.impl.WildBattle;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokemonLoader;
+import cs.brown.edu.aelp.pokemmo.pokemon.RandomWildPokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 
 public class BattleManager {
@@ -30,7 +31,14 @@ public class BattleManager {
   }
 
   private Pokemon getWildPokemon(Trainer t) {
-    return PokemonLoader.load("bulbasaur", Pokemon.calcXpByLevel(3));
+    Double levels = 0.0;
+    for (Pokemon p : t.getTeam()){
+      levels = 1.0 * p.getLevel();
+    }
+    levels = levels / t.getTeam().size();
+    int avgLvl = levels.intValue();
+
+    return RandomWildPokemon.generateWildPokemon(avgLvl);
   }
 
   public WildBattle createWildBattle(User u) {

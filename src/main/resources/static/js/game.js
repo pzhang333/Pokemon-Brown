@@ -34,7 +34,7 @@ Game.update = function() {
 		return;
 	}
 
-	if (this.cursors == undefined) {
+	if (this.cursors == undefined || Battle.inBattle) {
 		return;
 	}
 

@@ -1,1 +1,0 @@
-SELECT id, username, elo FROM users ORDER BY elo DESC LIMIT 50;

@@ -1,6 +1,7 @@
 var Battle = {
 	frontBaseURL: "/assets/pokemon/front/",
-	backBaseURL: "/assets/pokemon/back/"
+	backBaseURL: "/assets/pokemon/back/",
+	inBattle: false,
 };
 
 
@@ -297,6 +298,8 @@ Battle.endBattle = function() {
 	
 	console.log('EndBattle()');
 	
+	Battle.inBattle = false;
+	
 	//Game.players = {};
 	game.state.start("Game", true, false);
 	
@@ -305,6 +308,8 @@ Battle.endBattle = function() {
 }
 
 Battle.create = function() {
+	
+	Battle.inBattle = true;
 	
 	Game.map.gameLayers['Base'].inputEnabled = false;
 	

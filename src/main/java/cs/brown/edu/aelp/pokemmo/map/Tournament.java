@@ -1,16 +1,28 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
+import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemon.Main;
+import cs.brown.edu.aelp.util.JsonFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Tournament {
 
+  private static final String CHUNK_CONFIG = "config/tournament_config.json";
   private static final String CHUNK_FILE = "tournament.json";
 
   private int size;
@@ -25,20 +37,42 @@ public class Tournament {
   private Portal exit;
   private int round = 1;
 
-  public Tournament(int size, int cost, Location entrance, Location exit)
-      throws IOException {
+  private static long cooldown = 0;
+
+  public Tournament() throws IOException {
+    JsonFile f = new JsonFile(CHUNK_CONFIG);
+    this.size = f.getInt("size");
+    this.cost = f.getInt("cost");
     assert size == 4 || size == 8 || size == 16 || size == 32;
-    this.size = size;
-    this.cost = cost;
     this.chunk = Main.getWorld().loadChunk(Chunk.getNextDynamicId(),
         CHUNK_FILE);
-    // TODO: align these with the actual chunk
-    Portal p = new Portal(entrance, new Location(this.chunk, 2, 2));
-    Portal p1 = new Portal(new Location(this.chunk, 4, 0), exit);
-    entrance.getChunk().addEntity(p);
-    this.chunk.addEntity(p1);
-    this.entrance = p;
-    this.exit = p1;
+    JsonFile ent_start = f.getMap("entrance", "location");
+    JsonFile ent_goto = f.getMap("entrance", "goto");
+    Location entranceLoc = new Location(
+        Main.getWorld().getChunk(ent_start.getInt("chunk")),
+        ent_start.getInt("row"), ent_start.getInt("col"));
+    Location entranceGoto = new Location(this.chunk, ent_goto.getInt("row"),
+        ent_goto.getInt("col"));
+    Portal entrance = new Portal(entranceLoc, entranceGoto);
+    JsonFile exit_start = f.getMap("exit", "location");
+    JsonFile exit_goto = f.getMap("exit", "goto");
+    Location exitLoc = new Location(this.chunk, exit_start.getInt("row"),
+        exit_start.getInt("col"));
+    Location exitGoto = new Location(
+        Main.getWorld().getChunk(exit_goto.getInt("chunk")),
+        exit_goto.getInt("row"), exit_goto.getInt("col"));
+    Portal exit = new Portal(exitLoc, exitGoto);
+    entrance.getLocation().getChunk().addEntity(entrance);
+    this.chunk.addEntity(exit);
+    this.entrance = entrance;
+    this.exit = exit;
+    for (User u : UserManager.getAllUsers()) {
+      if (u.isConnected()) {
+        u.sendMessage(
+            "A tournament is now open! Head to the arena north of spawn to participate.");
+      }
+    }
+    Tournament.cooldown = System.currentTimeMillis() + (15 * 60 * 1000);
   }
 
   public Portal getExit() {
@@ -54,6 +88,11 @@ public class Tournament {
     u.setCurrency(u.getCurrency() - this.cost);
     this.pool += this.cost;
     this.users.add(u);
+    u.sendMessage(String
+        .format("You have paid %d coins to join the tournament.", this.cost));
+    if (this.users.size() == this.size) {
+      this.start();
+    }
   }
 
   public void removeUser(User u) {
@@ -61,6 +100,12 @@ public class Tournament {
     if (!this.locked) {
       this.pool -= this.cost;
       u.setCurrency(u.getCurrency() + this.cost);
+      u.sendMessage(String.format(
+          "You have been refunded %d coins for leaving the tournament before it started.",
+          this.cost));
+    }
+    if (this.users.size() == 1 && this.locked) {
+      this.end();
     }
   }
 
@@ -97,7 +142,27 @@ public class Tournament {
             this.round, delay));
       }
     }
-    // TODO: Start a delayed task that will put people into battles
+    new Timer().schedule(new TimerTask() {
+      @Override
+      public void run() {
+        if (!Tournament.this.users.isEmpty()) {
+          Tournament.this.startBattles();
+        }
+      }
+    }, delay * 1000);
+  }
+
+  public void startBattles() {
+    Set<User> inBattle = new HashSet<>();
+    for (User u : this.users) {
+      if (inBattle.contains(u)) {
+        continue;
+      }
+      if (this.bracket.containsKey(u) && this.bracket.get(u) != null)
+        BattleManager.getInstance().createPvPBattle(u, this.bracket.get(u));
+      inBattle.add(u);
+      inBattle.add(this.bracket.get(u));
+    }
   }
 
   public void setupBracket() {
@@ -139,35 +204,73 @@ public class Tournament {
 
   public void logBattleResult(User winner, User loser) {
     this.removeUser(loser);
-    if (this.users.size() == 1) {
+    loser.sendMessage(
+        "You've been eliminated from the tournament, better luck next time!");
+    if (!this.users.isEmpty()) {
+      winner
+          .sendMessage("Congratulations! You have advanced to the next round.");
+      boolean done = true;
+      for (User u : this.users) {
+        if (this.bracket.containsKey(u)
+            && this.users.contains(this.bracket.get(u))) {
+          done = false;
+        }
+      }
+      if (done) {
+        this.setupBracket();
+        this.round++;
+        this.queueNextRound(60);
+      }
+    }
+  }
+
+  public boolean isParticipating(User u) {
+    return this.users.contains(u);
+  }
+
+  public void end() {
+    if (this.users.size() == 1 && this.locked) {
+      User winner = this.users.get(0);
       winner.setCurrency(winner.getCurrency() + this.pool);
       winner.sendMessage(String.format(
           "Congratulations! You won the tournament and earned the pool of %d coins.",
           this.pool));
-      this.end();
-      return;
     }
-    boolean done = true;
-    for (User u : this.users) {
-      if (this.bracket.containsKey(u)
-          && this.users.contains(this.bracket.get(u))) {
-        done = false;
-      }
-    }
-    if (done) {
-      this.setupBracket();
-      this.round++;
-      this.queueNextRound(60);
-    }
-  }
-
-  public void end() {
-    for (User u : this.users) {
+    this.users.stream().forEach(u -> {
       this.removeUser(u);
       u.teleportTo(this.exit.getGoTo());
-    }
+    });
     this.entrance.remove();
     Main.getWorld().removeChunk(this.chunk);
+  }
+
+  public static void startGenerator() {
+    ScheduledExecutorService timer = Executors
+        .newSingleThreadScheduledExecutor();
+
+    Runnable trySpawn = new Runnable() {
+      @Override
+      public void run() {
+        if (Tournament.cooldown > System.currentTimeMillis()) {
+          return;
+        }
+        World w = Main.getWorld();
+        if (w.getTournament() != null) {
+          return;
+        }
+        if (new Random().nextDouble() < 0.15) {
+          try {
+            Tournament t = new Tournament();
+            w.setTournament(t);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    };
+
+    timer.scheduleAtFixedRate(trySpawn, 60 * 1000, 60 * 1000,
+        TimeUnit.MILLISECONDS);
   }
 
   private static class EloComparator implements Comparator<User> {

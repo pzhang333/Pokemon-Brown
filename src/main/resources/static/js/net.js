@@ -49,9 +49,9 @@ class Net {
 
 	constructor() {
 
-		//this.host = '10.38.37.243';
-		this.host = '10.38.32.136';
+		this.host = '10.38.37.243';
 		//this.host = 'localhost';
+		//this.host = '10.38.32.136';
 		this.port = 4567;
 
 		this.cfg = {
@@ -76,13 +76,13 @@ class Net {
 	}
 
 	sendBattlePacket(action, payload) {
-		
+
 		payload.action = action;
 		payload.turn_id = -1;
-		
+
 		this.sendPacket(MESSAGE_TYPE.CLIENT_BATTLE_UPDATE, payload);
 	}
-	
+
 	sendPacket(type, payload) {
 		if (this.socket.readyState == this.socket.CLOSED) {
 			throw "Socket closed...";
@@ -164,7 +164,7 @@ class Net {
 
 
 		let loc = msg.payload.location;
-		
+
 		if (Game.ready) {
 			Game.player.showTeleport(loc.col, loc.row, loc.chunk_file, function() {
 				net.chunkId = loc.chunk_file;
@@ -173,26 +173,26 @@ class Net {
 		net.chunkId = loc.chunk_file;
 
 		Game.player.setPos(loc.col, loc.row);
-		
+
 		let players = msg.payload.players;
 		for(let i = 0; i < players.length; i++) {
-			
+
 			let player = players[i];
-			
+
 			if (player.id == net.id) {
 				Game.player.username = player.username;
 				continue;
 			}
-			
+
 			let newPlayer = new Player();
 			newPlayer.id = player.id;
 			newPlayer.username = player.username;
-			
+
 			console.log(newPlayer);
 			Game.players[player.id] = newPlayer;
-			
+
 		}
-		
+
 	}
 
 	gamePacketHandler(msg) {
@@ -207,44 +207,44 @@ class Net {
 
 		let ops = msg.payload.ops;
 		if (ops != undefined) {
-			
+
 			for(let i = 0; i < ops.length; i++) {
 				let op = ops[i];
-				
+
 				let code = op.code;
 				let id = op.id;
-				
+
 				console.log(op);
-				
+
 				if (code == OP_CODES.PLAYER_ENTERED_CHUNK) {
-					
+
 					console.log('Player!');
-					
+
 					if (op.id == net.id) {
 						//Game.player.username = op.username;
 						continue;
 					}
-					
+
 					let player = new Player();
-					
+
 					//player.initSprite();
 					//player.setVisible(true);
 					player.id = op.id;
 					player.username = op.username;
-					
+
 					if (Game.players[op.id] != undefined) {
 						Game.players[op.id].del();
 					}
-					
+
 					Game.players[op.id] = player;
-					
+
 				} else {
 					console.log('Unhandled op code: ' + code);
 				}
 			}
-			
+
 		}
-		
+
 		let handled = [];
 
 		let playerUpdates = msg.payload.users;
@@ -268,7 +268,7 @@ class Net {
 			if (Game.players[id] == undefined) {
 				continue;
 			}
-			
+
 			if (Game.players[id].sprite == undefined || Game.players[id].sprite.alive == false) {
 				let player = Game.players[id];
 				player.initSprite();
@@ -284,11 +284,11 @@ class Net {
 			let dest = update.destination;
 
 			if (dest == undefined) {
-				
+
 				if (!player.tweenRunning()) {
 					player.setPos(loc.col, loc.row);
 				}
-				
+
 				continue;
 			}
 
@@ -356,11 +356,11 @@ class Net {
 			console.log('Unknown message type!', data.type);
 		}
 	}
-	
+
 	endBattleHandler(event) {
 		Battle.battleOver(event.payload);
 	}
-	
+
 	battleUpdateHandler(event) {
 		Battle.handleUpdate(event.payload);
 	}

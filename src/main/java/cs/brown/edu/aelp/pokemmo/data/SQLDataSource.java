@@ -368,12 +368,12 @@ public class SQLDataSource implements DataSource {
   @Override
   public void loadLeaderboards() throws LoadException {
     try (PreparedStatement p = this
-        .prepStatementFromFile("src/main/resources/sql/get_top_50_elos.sql")) {
+        .prepStatementFromFile("src/main/resources/sql/get_top_5_elos.sql")) {
       try (ResultSet rs = p.executeQuery()) {
         while (rs.next()) {
           EloUser eu = new EloUser(rs.getInt("id"), rs.getString("username"),
               rs.getInt("elo"));
-          Leaderboards.tryInsertTop50(eu);
+          Leaderboards.tryInsertTop5(eu);
         }
       }
     } catch (SQLException | IOException e) {
