@@ -15,8 +15,34 @@
                     "goto" :
                     {
                         "chunk" : 2,
-                        "row" : 4,
-                        "col" : 1
+                        "row" : 35,
+                        "col" : 30
+                    }
+                },
+                {
+                    "location" :
+                    {
+                        "row" : 36,
+                        "col" : 21
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 3,
+                        "row" : 35,
+                        "col" : 30
+                    }
+                },
+                {
+                    "location" :
+                    {
+                        "row" : 37,
+                        "col" : 45
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 4,
+                        "row" : 35,
+                        "col" : 30
                     }
                 }
             ]
@@ -30,8 +56,21 @@
 				{
                     "location" :
                     {
-                        "row" : 4,
-                        "col" : 0
+                        "row" : 36,
+                        "col" : 30
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 1,
+                        "row" : 27,
+                        "col" : 30
+                    }
+                },
+                {
+                    "location" :
+                    {
+                        "row" : 36,
+                        "col" : 31
                     },
                     "goto" :
                     {
@@ -47,6 +86,32 @@
             "file" : "house_inside.json",
             "portals" :
             [
+				{
+                    "location" :
+                    {
+                        "row" : 36,
+                        "col" : 30
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 1,
+                        "row" : 37,
+                        "col" : 21
+                    }
+                },
+                {
+                    "location" :
+                    {
+                        "row" : 36,
+                        "col" : 31
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 1,
+                        "row" : 37,
+                        "col" : 21
+                    }
+                }
             ]
         },
                 {
@@ -54,6 +119,32 @@
             "file" : "house_inside.json",
             "portals" :
             [
+				{
+                    "location" :
+                    {
+                        "row" : 36,
+                        "col" : 30
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 1,
+                        "row" : 38,
+                        "col" : 45
+                    }
+                },
+                {
+                    "location" :
+                    {
+                        "row" : 36,
+                        "col" : 31
+                    },
+                    "goto" :
+                    {
+                        "chunk" : 1,
+                        "row" : 38,
+                        "col" : 45
+                    }
+                }
             ]
         }
     ]

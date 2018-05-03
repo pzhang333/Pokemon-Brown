@@ -124,6 +124,7 @@ public class User extends Trainer implements SQLBatchSavable {
         Tournament t = w.getTournament();
         if (t.getEntrance().equals(p)) {
           if (!t.canJoin(this)) {
+            System.out.println(t.whyCantJoin(this));
             this.sendMessage(t.whyCantJoin(this));
             return;
           } else {
@@ -232,7 +233,7 @@ public class User extends Trainer implements SQLBatchSavable {
   public void validateLocation() {
     if (this.getLocation().getChunk() == null
         || this.getLocation().getChunk().getId() < 0) {
-      this.setLocation(new Location(Main.getWorld().getChunk(1), 5, 5));
+      this.setLocation(Main.getWorld().getSpawn());
     }
   }
 
