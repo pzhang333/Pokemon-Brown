@@ -1,6 +1,11 @@
-var game = new Phaser.Game(1000, 600,
+/*var game = new Phaser.Game(1000, 600,
     (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 ? Phaser.CANVAS : Phaser.AUTO),
-    document.getElementById('game'), null, true, false);
+    document.getElementById('game'), null, true, false);*/
+
+var game = new Phaser.Game(1000, 600,
+		Phaser.WEBGL =,
+	    document.getElementById('game'), null, true, false);
+
 
 // Temp hack:
 Game.player = new Player();
