@@ -13,6 +13,7 @@ import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler;
 import cs.brown.edu.aelp.networking.Trade;
 import cs.brown.edu.aelp.pokemmo.data.DataSource;
+import cs.brown.edu.aelp.pokemmo.data.DataSource.LoadException;
 import cs.brown.edu.aelp.pokemmo.data.DataSource.SaveException;
 import cs.brown.edu.aelp.pokemmo.data.Leaderboards;
 import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
@@ -120,12 +121,15 @@ public final class Main {
         }
       };
 
-      // for the sake of triggering the table creation
-      Main.getDataSource();
+      // triggers table creation, too, if needed
+      Main.getDataSource().loadLeaderboards();
 
     } catch (IOException e) {
       System.out.println(
           "ERROR: Something went wrong reading database_info.json. Check the configuration file.");
+      e.printStackTrace();
+      return;
+    } catch (LoadException e) {
       e.printStackTrace();
       return;
     }

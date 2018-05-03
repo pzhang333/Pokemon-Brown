@@ -97,6 +97,7 @@ public class Tournament {
 
   public void removeUser(User u) {
     this.users.remove(u);
+    u.teleportTo(this.exit.getGoTo());
     if (!this.locked) {
       this.pool -= this.cost;
       u.setCurrency(u.getCurrency() + this.cost);
@@ -183,7 +184,6 @@ public class Tournament {
         this.seeds.put(i, u);
       }
     }
-    this.size /= 2;
     this.bracket.clear();
     for (int seed : this.seeds.keySet()) {
       int toPlay = this.size + 1 - seed;
@@ -193,6 +193,7 @@ public class Tournament {
         this.bracket.put(this.seeds.get(seed), null);
       }
     }
+    this.size /= 2;
   }
 
   public void start() {
@@ -238,7 +239,6 @@ public class Tournament {
     }
     this.users.stream().forEach(u -> {
       this.removeUser(u);
-      u.teleportTo(this.exit.getGoTo());
     });
     this.entrance.remove();
     Main.getWorld().removeChunk(this.chunk);
