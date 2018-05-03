@@ -1,0 +1,32 @@
+{
+    "size" : 4,
+    "cost" : 50,
+    "entrance" :
+    {
+        "location" :
+        {
+            "chunk" : 1,
+            "row" : 1,
+            "col" : 34
+        },
+        "goto" :
+        {
+            "row" : 20,
+            "col" : 20
+        }
+    },
+    "exit" :
+    {
+        "location" :
+        {
+            "row" : 19,
+            "col" : 20
+        },
+        "goto" :
+        {
+            "chunk" : 1,
+            "row" : 2,
+            "col" : 34
+        }
+    }
+}
