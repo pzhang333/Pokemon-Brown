@@ -51,7 +51,7 @@ class Net {
 
 		//this.host = '10.38.37.243';
 		//this.host = 'localhost';
-    	this.host = '10.38.32.136';
+    	//this.host = '10.38.32.136';
     	this.port = 4567;
 
 		this.cfg = {
