@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -554,6 +555,40 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     accuracyStage = 0;
     evasionStage = 0;
   }
+  
+  public boolean isCaught(String ballType) {
+    double ballBonus = 1.0;
+    double statusBonus = 1.0;
+    if (ballType.equals("great")) {
+      ballBonus = 1.5;
+    } else if (ballType.equals("ultra")) {
+      ballBonus = 2.0;
+    } else if (ballType.equals("master")) {
+      ballBonus = 255.0;
+    }
+    if (this.status == Status.SLEEP || this.status == Status.FREEZE){
+      statusBonus = 2.0;
+    } else if (this.status == Status.PARALYZE || this.status == Status.BURN || this.status == Status.POISON){
+      statusBonus = 1.5;
+    }
+
+    double a = ((3 * this.hp - 2 * this.currHp) * this.catchRate * ballBonus * statusBonus) / (3 * this.hp);
+
+    if (a >= 255.0){
+      return true;
+    }
+
+    Double b = 1048560 / Math.sqrt(Math.sqrt(16711680 / a));
+
+    int baseValue = b.intValue();
+
+    int a1 = ThreadLocalRandom.current().nextInt(0, 65536);
+    int a2 = ThreadLocalRandom.current().nextInt(0, 65536);
+    int a3 = ThreadLocalRandom.current().nextInt(0, 65536);
+    int a4 = ThreadLocalRandom.current().nextInt(0, 65536);
+
+    return a1 < baseValue && a2 < baseValue && a3 < baseValue && a4 < baseValue;
+  }
 
   private static int calcStage(int curStage, int dif) {
     int stage = curStage + dif;
@@ -643,6 +678,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
         + 1;
     return expGained.intValue();
   }
+
 
   /*
    * (non-Javadoc)
