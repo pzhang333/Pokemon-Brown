@@ -69,7 +69,10 @@ Game.preload = function() {
 
     // loading font assets
     game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
-	
+
+    // loading buttons
+    game.load.image('challenge_button', 'assets/buttons/button_challenge.png');
+
 	Battle.preload();
 };
 

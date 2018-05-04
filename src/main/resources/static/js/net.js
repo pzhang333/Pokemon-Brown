@@ -155,8 +155,6 @@ class Net {
 
 	initPacketHandler(msg) {
 
-		//console.log(msg);
-
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
 
