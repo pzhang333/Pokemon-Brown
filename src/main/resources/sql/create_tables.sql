@@ -146,7 +146,8 @@ CREATE TABLE IF NOT EXISTS users (
     currency integer DEFAULT 1000 NOT NULL,
     hashed_pw text NOT NULL,
     salt text NOT NULL,
-    session_token text
+    session_token text,
+    active_pokemon integer
 );
 
 

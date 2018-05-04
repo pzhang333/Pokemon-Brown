@@ -66,12 +66,6 @@ public class World {
     Chunk chunk = new Chunk(id, jFile.getInt("width"), jFile.getInt("height"),
         fname.substring(0, fname.lastIndexOf(".")));
 
-    if (jFile.getString("type") != null) {
-      if (jFile.getString("type").equals("heal")) {
-        chunk.setType(CHUNK_TYPE.HEAL);
-      }
-    }
-
     List<JsonFile> layers = jFile.getJsonList("layers");
     for (int i = 0; i < layers.size(); i++) {
       List<Double> tiles = layers.get(i).getList("data");
@@ -96,7 +90,12 @@ public class World {
       JsonFile f = new JsonFile(path);
       for (JsonFile chunk : f.getJsonList("chunks")) {
         int id = chunk.getInt("id");
-        loadChunk(chunk.getInt("id"), chunk.getString("file"));
+        Chunk c = loadChunk(chunk.getInt("id"), chunk.getString("file"));
+        if (chunk.getString("type") != null) {
+          if (chunk.getString("type").equals("heal")) {
+            c.setType(CHUNK_TYPE.HEAL);
+          }
+        }
         System.out.printf("Loaded chunk %d from `%s`\n", id,
             chunk.getString("file"));
       }

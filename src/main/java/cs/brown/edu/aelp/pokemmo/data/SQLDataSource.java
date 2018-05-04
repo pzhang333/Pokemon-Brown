@@ -120,7 +120,21 @@ public class SQLDataSource implements DataSource {
     user.setLocation(loc);
 
     for (Pokemon pokemon : this.loadPokemonForUser(user)) {
-      user.addPokemonToTeam(pokemon);
+      if (pokemon.isStored()) {
+        user.addInactivePokemon(pokemon);
+      } else {
+        user.addPokemonToTeam(pokemon);
+        int active = rs.getInt("active_pokemon");
+        if (rs.wasNull() || pokemon.getId() == active) {
+          user.setActivePokemon(pokemon);
+        }
+      }
+    }
+
+    if (user.getActivePokemon() == null) {
+      System.out.printf(
+          "WARNING: %s somehow failed to set an active pokemon during loading.%n",
+          user.getUsername());
     }
 
     return user;
@@ -244,6 +258,7 @@ public class SQLDataSource implements DataSource {
             poke.setOwner(u);
             poke.setStored(rs.getBoolean("stored"));
             u.addPokemonToTeam(poke);
+            u.setActivePokemon(poke);
             conn.commit();
             return u;
           } else {

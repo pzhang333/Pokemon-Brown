@@ -25,7 +25,10 @@ import cs.brown.edu.aelp.pokemon.Main;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.eclipse.jetty.websocket.api.Session;
 
 public class User extends Trainer implements SQLBatchSavable {
@@ -44,6 +47,7 @@ public class User extends Trainer implements SQLBatchSavable {
   private int state;
   private int orientation;
   private int elo = 100;
+  private Set<Pokemon> inactivePokemon = new HashSet<>();
 
   public User(int id, String username, String email, String sessionToken) {
     super(id);
@@ -51,6 +55,22 @@ public class User extends Trainer implements SQLBatchSavable {
     this.email = email;
     this.sessionToken = sessionToken;
     this.inventory = new Inventory(this);
+  }
+
+  public void addInactivePokemon(Pokemon p) {
+    this.inactivePokemon.add(p);
+  }
+
+  public void removeInactivePokemon(Pokemon p) {
+    this.inactivePokemon.remove(p);
+  }
+
+  public void clearInactivePokemon() {
+    this.inactivePokemon.clear();
+  }
+
+  public Set<Pokemon> getInactivePokemon() {
+    return new HashSet<>(this.inactivePokemon);
   }
 
   public Inventory getInventory() {
@@ -206,6 +226,11 @@ public class User extends Trainer implements SQLBatchSavable {
     }
   }
 
+  public void setActivePokemon(Pokemon p) {
+    super.setActivePokemon(p);
+    this.changed = true;
+  }
+
   public Path getPath() {
     return this.currentPath;
   }
@@ -226,7 +251,9 @@ public class User extends Trainer implements SQLBatchSavable {
   }
 
   public List<Pokemon> getAllPokemon() {
-    return getTeam();
+    List<Pokemon> pokes = new ArrayList<>(this.getTeam());
+    pokes.addAll(this.inactivePokemon);
+    return pokes;
   }
 
   public int updateElo(boolean won, int otherElo) {
@@ -266,7 +293,7 @@ public class User extends Trainer implements SQLBatchSavable {
   @Override
   public List<String> getUpdatableColumns() {
     return Lists.newArrayList("chunk", "row", "col", "currency",
-        "session_token");
+        "session_token", "active_pokemon");
   }
 
   @Override
@@ -286,7 +313,8 @@ public class User extends Trainer implements SQLBatchSavable {
     }
     p.setInt(4, this.getCurrency());
     p.setString(5, this.getToken());
-    p.setInt(6, this.getId());
+    p.setInt(6, this.getActivePokemon().getId());
+    p.setInt(7, this.getId());
     p.addBatch();
   }
 
