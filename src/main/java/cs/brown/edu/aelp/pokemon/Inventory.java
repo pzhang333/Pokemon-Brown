@@ -14,6 +14,15 @@ import java.util.List;
 
 public class Inventory implements SQLBatchSavable {
 
+  // ids:
+  // 0 pokeballs
+  // 1 great balls
+  // 2 ultra balls
+  // 3 master balls
+  // 4 hyper potions
+  // 5 full restore
+
+
   private final User owner;
   private final HashMap<Integer, Integer> items = new HashMap<>();
   private boolean changed = false;
