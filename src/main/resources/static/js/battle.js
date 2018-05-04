@@ -576,7 +576,7 @@ Battle.clearTeam = async function(drawMsg) {
 	}
 }
 
-Battle.clearMessageText = function() {
+Battle.clearMessageText = async function() {
 	
 	try {
 		await Battle.messageText;
