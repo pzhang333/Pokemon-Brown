@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import cs.brown.edu.aelp.networking.Trade.TRADE_STATUS;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
+import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
@@ -47,7 +48,9 @@ public class PlayerWebSocketHandler {
     BATTLE_TURN_UPDATE,
     CLIENT_BATTLE_UPDATE,
     CHAT,
-    SERVER_MESSAGE
+    SERVER_MESSAGE,
+    CHALLENGE, // 12
+    CHALLENGE_RESPONSE
   }
 
   public static enum OP_CODES {
@@ -113,6 +116,12 @@ public class PlayerWebSocketHandler {
       break;
     case CHAT:
       handleChat(session, payload);
+      break;
+    case CHALLENGE:
+      handleChallenge(session, payload);
+      break;
+    case CHALLENGE_RESPONSE:
+      handleChallengeResponse(session, payload);
       break;
     default:
       // something went wrong, we got an unknown message type
@@ -312,8 +321,64 @@ public class PlayerWebSocketHandler {
       return;
     }
     String msg = payload.get("message").getAsString();
+    if (msg.length() == 0) {
+      return;
+    }
+    // client will sanitize to avoid injection
     JsonObject chat = PacketSender.buildPlayerOpMessage(u, OP_CODES.CHAT);
     chat.addProperty("message", msg);
     PacketSender.queueOpForChunk(chat, u.getLocation().getChunk());
+  }
+
+  private static void handleChallenge(Session session, JsonObject payload) {
+    int id = payload.get("id").getAsInt();
+    User u1 = UserManager.getUserById(id);
+    if (u1 == null || u1.getSession() != session) {
+      session.close();
+      return;
+    }
+    if (u1.getChallenge() != null) {
+      String reason = u1.getChallenge().getTo() == u1 ? "denied" : "canceled";
+      PacketSender.sendChallengeResponse(u1.getChallenge().other(u1), reason);
+      u1.getChallenge().cancel();
+    }
+    if (!payload.has("challenged_id")) {
+      return;
+    }
+    int challenged = payload.get("challenged_id").getAsInt();
+    User u2 = UserManager.getUserById(challenged);
+    double dist = u1.getLocation().dist(u2.getLocation());
+    if (dist < 0 || dist > 2) {
+      return;
+    }
+    if (u2 == null || u2.getChallenge() != null || u2.isInBattle()) {
+      PacketSender.sendChallengeResponse(u1, "busy");
+      return;
+    }
+    // we actually don't need to do anything with this object, even tho it feels
+    // weird
+    new Challenge(u1, u2);
+    PacketSender.sendBattleChallenge(u2, u1);
+  }
+
+  private static void handleChallengeResponse(Session session,
+      JsonObject payload) {
+    int id = payload.get("id").getAsInt();
+    User u1 = UserManager.getUserById(id);
+    if (u1 == null || u1.getSession() != session) {
+      session.close();
+      return;
+    }
+    if (u1.getChallenge() == null || u1.getChallenge().getTo() != u1) {
+      return;
+    }
+    boolean accepted = payload.get("accepted").getAsBoolean();
+    if (!accepted) {
+      PacketSender.sendChallengeResponse(u1.getChallenge().getFrom(), "denied");
+      u1.getChallenge().cancel();
+    }
+    User u2 = u1.getChallenge().getFrom();
+    u1.getChallenge().cancel();
+    BattleManager.getInstance().createPvPBattle(u1, u2);
   }
 }

@@ -231,4 +231,22 @@ public final class PacketSender {
     sendPacket(u, packet);
   }
 
+  public static void sendBattleChallenge(User u, User from) {
+    JsonObject packet = new JsonObject();
+    packet.addProperty("type", MESSAGE_TYPE.CHALLENGE.ordinal());
+    JsonObject payload = new JsonObject();
+    payload.addProperty("from", from.getId());
+    packet.add("payload", payload);
+    sendPacket(u, packet);
+  }
+
+  public static void sendChallengeResponse(User u, String reason) {
+    JsonObject packet = new JsonObject();
+    packet.addProperty("type", MESSAGE_TYPE.CHALLENGE_RESPONSE.ordinal());
+    JsonObject payload = new JsonObject();
+    payload.addProperty("reason", reason);
+    packet.add("payload", payload);
+    sendPacket(u, packet);
+  }
+
 }

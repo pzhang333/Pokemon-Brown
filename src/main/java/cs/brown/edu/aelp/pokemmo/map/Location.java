@@ -30,6 +30,14 @@ public class Location {
     return this.col;
   }
 
+  public double dist(Location other) {
+    if (this.getChunk().getId() != other.getChunk().getId()) {
+      return -1;
+    }
+    return Math.sqrt(Math.pow(this.getRow() - other.getRow(), 2)
+        + Math.pow(this.getCol() - other.getCol(), 2));
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;

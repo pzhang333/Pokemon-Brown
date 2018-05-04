@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import cs.brown.edu.aelp.networking.Challenge;
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
@@ -48,6 +49,7 @@ public class User extends Trainer implements SQLBatchSavable {
   private int orientation;
   private int elo = 100;
   private Set<Pokemon> inactivePokemon = new HashSet<>();
+  private Challenge pendingChallenge;
 
   public User(int id, String username, String email, String sessionToken) {
     super(id);
@@ -55,6 +57,14 @@ public class User extends Trainer implements SQLBatchSavable {
     this.email = email;
     this.sessionToken = sessionToken;
     this.inventory = new Inventory(this);
+  }
+
+  public void setChallenge(Challenge c) {
+    this.pendingChallenge = c;
+  }
+
+  public Challenge getChallenge() {
+    return this.pendingChallenge;
   }
 
   public void addInactivePokemon(Pokemon p) {
@@ -87,6 +97,7 @@ public class User extends Trainer implements SQLBatchSavable {
 
   public void setElo(int elo) {
     this.elo = elo;
+    this.changed = true;
   }
 
   public int getElo() {
@@ -293,7 +304,7 @@ public class User extends Trainer implements SQLBatchSavable {
   @Override
   public List<String> getUpdatableColumns() {
     return Lists.newArrayList("chunk", "row", "col", "currency",
-        "session_token", "active_pokemon");
+        "session_token", "active_pokemon", "elo");
   }
 
   @Override
@@ -314,7 +325,8 @@ public class User extends Trainer implements SQLBatchSavable {
     p.setInt(4, this.getCurrency());
     p.setString(5, this.getToken());
     p.setInt(6, this.getActivePokemon().getId());
-    p.setInt(7, this.getId());
+    p.setInt(7, this.getElo());
+    p.setInt(8, this.getId());
     p.addBatch();
   }
 
