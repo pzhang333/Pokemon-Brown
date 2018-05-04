@@ -499,7 +499,7 @@ Battle.drawMessage = function(text, size) {
 		text = "";
 	}
 	
-	if (Battle.messageText == undefined) {
+	if (Battle.messageText == undefined || true) {
 		
 		Battle.messageText = new SlickUI.Element.Text(8, 8, text);
 		
@@ -527,6 +527,8 @@ Battle.clearMenu = function() {
 	if (Battle.menuSeparator != undefined) {
 		Battle.menuSeparator.kill();
 	}
+	
+	Battle.clearMessageText();
 	
 	Battle.clearButtons(Battle.stdButtons);
 }
@@ -574,6 +576,7 @@ Battle.clearMessageText = function() {
 	if (Battle.messageText != undefined) {
 		Battle.messageText.visible = false;
 	}
+	
 }
 
 Battle.showTeam = async function() {
@@ -881,7 +884,7 @@ Battle.battleOver = async function(packet) {
 		});
 		
 		resolve();
-	});
+	}, 10000);
 }
 
 Battle.setup = function(initPacket) {
@@ -908,7 +911,7 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 			// handle end packet...
 			Battle.team = packet.pokemon_team;
 			
-			Battle.drawDefaultMenu();
+			//Battle.drawDefaultMenu();
 			
 			resolve();
 			resolveShow();
@@ -924,9 +927,10 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 			SWITCH: 1
 		};
 		
-		console.log(summary.msg);
-		if (summary.msg != undefined && summary.msg.length != 0) {
-			Battle.drawMessage(summary.msg);
+		console.log('MESSADAFASD');
+		console.log('Msg: ' +  summary.message);
+		if (summary.message != undefined && summary.message.length != 0) {
+			Battle.drawMessage(summary.message);
 		}
 		
 		console.log('Type: ' + summary.type);
@@ -964,7 +968,7 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 				});
 			});
 		}
-	});
+	}, 10000);
 	
 }
 
@@ -984,6 +988,6 @@ Battle.handleUpdate = async function(packet) {
 	
 	Battle.showing = new Promise(function(resolve, reject) {
 		Battle.showSummaries(packet.update.summaries, packet, resolve);
-	});
+	}, 10000);
 	
 }
