@@ -501,24 +501,28 @@ Battle.drawMessage = async function(text, size) {
 		text = "";
 	}
 	
-	if (Battle.messageText == undefined || true) {
-		
-		Battle.messageText = new SlickUI.Element.Text(8, 8, text);
-		
-		if (size == undefined) {
-			size = 12;
+	try {
+		if (Battle.messageText == undefined || true) {
+			
+			Battle.messageText = new SlickUI.Element.Text(8, 8, text);
+			
+			if (size == undefined) {
+				size = 12;
+			}
+			
+			Battle.messageText.size = size;
+			
+			
+			await Battle.messageText;
+			Battle.panel.add(Battle.messageText);
+		} else {
+			Battle.messageText.value = text;
 		}
 		
-		Battle.messageText.size = size;
-		
-		
-		await Battle.messageText;
-		Battle.panel.add(Battle.messageText);
-	} else {
-		Battle.messageText.value = text;
+		Battle.messageText.visible = true;
+	} catch(err) {
+		console.log('warning: ' + err);
 	}
-	
-	Battle.messageText.visible = true;
 }
 
 Battle.clearMenu = function() {
@@ -579,7 +583,6 @@ Battle.clearTeam = async function(drawMsg) {
 Battle.clearMessageText = async function() {
 	
 	try {
-		await Battle.messageText;
 		if (Battle.messageText != undefined) {
 			Battle.messageText.visible = false;
 		}
