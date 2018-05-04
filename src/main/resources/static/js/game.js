@@ -65,7 +65,15 @@ Game.preload = function() {
     game.load.image('backpack', 'assets/HUD/backpack.png');
     game.load.image('trophy', 'assets/HUD/trophy.png');
     game.load.image('coin', 'assets/HUD/coin.png');
+    game.load.image('logout', 'assets/HUD/logout.png');
+    game.load.image('box', 'assets/HUD/box.png');
+
     game.load.image('pokeball', 'assets/HUD/pokeball.png');
+    game.load.image('greatball', 'assets/HUD/greatball.png');
+    game.load.image('ultraball', 'assets/HUD/ultraball.png');
+    game.load.image('masterball', 'assets/HUD/masterball.png');
+    game.load.image('hyperpotion', 'assets/HUD/hyperpotion.png');
+    game.load.image('fullrestore', 'assets/HUD/fullrestore.png');
 
     // loading font assets
     game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
@@ -294,13 +302,13 @@ Game.drawHud = function() {
     completionSprite.fixedToCamera = true;
 
 	// trophy icon
-	let trophyIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/7, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "trophy");
+	let trophyIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 165, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "trophy");
     trophyIcon.inputEnabled = true;
     trophyIcon.fixedToCamera = true;
     trophyIcon.events.onInputDown.add(queueLeaderboard, this);
 
 	// backpack icon
-	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/4.60, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");
+	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 100, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");
     backpackIcon.inputEnabled = true;
     backpackIcon.fixedToCamera = true;
     backpackIcon.events.onInputDown.add(queueBackpack, this);
@@ -308,15 +316,23 @@ Game.drawHud = function() {
     Game.backpackIcon = backpackIcon;
     
     // coin icon
-    let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3.45, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "coin");
+    let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 25, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "coin");
     coinIcon.inputEnabled = false;
     coinIcon.fixedToCamera = true;
 
     // coin text
-    let coinText = game.add.bitmapText(Game.map.widthInPixels-Game.map.widthInPixels/3.58, Game.map.heightInPixels-Game.map.heightInPixels/2.2, 'carrier_command','x'+coinNumber,7.5);
+    let coinText = game.add.bitmapText(Game.map.widthInPixels-Game.map.widthInPixels/3 + 35, Game.map.heightInPixels-Game.map.heightInPixels/2.2, 'carrier_command','x'+coinNumber,7.5);
     coinText.inputEnabled = false;
     coinText.fixedToCamera = true;
+
+    // logout button
+	let logoutIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 230, Game.map.heightInPixels-Game.map.heightInPixels/2.032 - 5, "logout");
+    logoutIcon.inputEnabled = true;
+    logoutIcon.fixedToCamera = true;
+    logoutIcon.events.onInputDown.add(logout, this);
 }
+
+
 
 function drawLeadboard() {
 	// leaderboard panel
@@ -343,14 +359,50 @@ function drawBackpack() {
 
 	// let player1 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65, "empty");
 
-	let pokeball1 = game.add.sprite(0,0,'pokeball');
-    pokeball1.anchor.setTo(0.5);
-    let pokeball1text = new SlickUI.Element.Text(Game.panel.width/3.8 , 58, "x0");
-    pokeball1text.size = 9.5;
+	let pokeball = game.add.sprite(0, 0, 'pokeball');
+    pokeball.anchor.setTo(0.5, 0.5);
+    let pokeballtext = new SlickUI.Element.Text(Game.panel.width/3.8, 58, "x0");
+    pokeballtext.size = 9.5;
 
-    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5, Game.panel.height/2.75, pokeball1));
-	Game.panel.add(header);
-	Game.panel.add(pokeball1text);
+    let greatball = game.add.sprite(0, 0, 'greatball');
+    greatball.anchor.setTo(0.5, 0.5);
+    let greatballtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58, "x0");
+    greatballtext.size = 9.5;
+
+    let ultraball = game.add.sprite(0, 0, 'ultraball');
+    ultraball.anchor.setTo(0.5, 0.5);
+    let ultraballtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200 , 58, "x0");
+    ultraballtext.size = 9.5;
+
+    let masterball = game.add.sprite(0, 0, 'masterball');
+    masterball.anchor.setTo(0.5, 0.5);
+    let masterballtext = new SlickUI.Element.Text(Game.panel.width/3.8, 58 + 100, "x0");
+    masterballtext.size = 9.5;
+
+    let hyperpotion = game.add.sprite(0, 0, 'hyperpotion');
+    hyperpotion.anchor.setTo(0.5, 0.5);
+    let hyperpotiontext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58 + 100, "x0");
+    hyperpotiontext.size = 9.5;
+
+    let fullrestore = game.add.sprite(0, 0, 'fullrestore');
+    fullrestore.anchor.setTo(0.5, 0.5);
+    let fullrestoretext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58 + 100, "x0");
+    fullrestoretext.size = 9.5;
+
+    Game.panel.add(header);
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5, Game.panel.height/2.75, pokeball));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5 + 100, Game.panel.height/2.75, greatball));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5 + 200, Game.panel.height/2.75, hyperpotion));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5, Game.panel.height/2.75 + 100, ultraball));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5 + 100, Game.panel.height/2.75 + 100, masterball));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5 + 200, Game.panel.height/2.75 + 100, fullrestore));
+	Game.panel.add(pokeballtext);
+    Game.panel.add(greatballtext);
+    Game.panel.add(hyperpotiontext);
+    Game.panel.add(ultraballtext);
+    Game.panel.add(masterballtext);
+    Game.panel.add(fullrestoretext);
+
 }
 function queueLeaderboard() {
 	if (toDrawLeaderboard || toDrawBackpack) {
@@ -374,4 +426,11 @@ function queueBackpack() {
 		drawBackpack();
 	}
 	toDrawBackpack = !toDrawBackpack;
+}
+
+function logout() {
+    console.log('clicked!');
+    Cookies.remove("id");
+    Cookies.remove("token");
+    location.reload();
 }
