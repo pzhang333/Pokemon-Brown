@@ -203,7 +203,7 @@ class Net {
 	}
 
 	gamePacketHandler(msg) {
-	//	console.log('Got game packet');
+		//	console.log('Got game packet');
 
 		//msg = generateFakeGamePacket();
 

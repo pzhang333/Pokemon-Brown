@@ -598,10 +598,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   }
 
   public void addHealth(Integer addHP) {
-    this.currHp = this.currHp + addHP;
-    if (this.currHp > this.hp){
-      this.currHp = this.hp;
-    }
+    setHealth(this.currHp + addHP);
   }
 
   private static int calcStage(int curStage, int dif) {
