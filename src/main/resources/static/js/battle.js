@@ -296,6 +296,8 @@ Battle.run = function() {
 Battle.endBattle = function() {
 	Battle.music.destroy();
 	
+	Battle.subsShowing = false;
+	Battle.showing = false;
 	Battle.clearMenu();
 	
 	console.log('EndBattle()');
