@@ -9,7 +9,7 @@ public abstract class Battle extends Identifiable {
 
   public enum BattleState {
     SETUP, WAITING, READY, DONE, WORKING
-  };
+  }
 
   private final Arena arena;
 
@@ -63,8 +63,8 @@ public abstract class Battle extends Identifiable {
         return priorityComparison;
       }
 
-      int speedComparison = -ft1.getTrainer().getActivePokemon().getSpeed()
-          .compareTo(ft2.getTrainer().getActivePokemon().getSpeed());
+      int speedComparison = -ft1.getTrainer().getActivePokemon().getEffectiveSpeed()
+          .compareTo(ft2.getTrainer().getActivePokemon().getEffectiveSpeed());
 
       if (speedComparison != 0) {
         return speedComparison;
