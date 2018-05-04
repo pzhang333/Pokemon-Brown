@@ -12,6 +12,11 @@ import java.util.stream.Collectors;
 
 public class Chunk extends Identifiable {
 
+  public enum CHUNK_TYPE {
+    DEFAULT,
+    HEAL
+  }
+
   private final int width;
 
   private final int height;
@@ -22,6 +27,7 @@ public class Chunk extends Identifiable {
   private List<Entity> entities = new ArrayList<>();
   private Set<User> usersHere = new HashSet<>();
   private final String fileName;
+  private CHUNK_TYPE type = CHUNK_TYPE.DEFAULT;
 
   public Chunk(int id, int width, int height, String fileName) {
     super(id);
@@ -29,6 +35,14 @@ public class Chunk extends Identifiable {
     this.height = height;
     this.grass = new boolean[this.width][this.height];
     this.fileName = fileName;
+  }
+
+  public void setType(CHUNK_TYPE type) {
+    this.type = type;
+  }
+
+  public CHUNK_TYPE getType() {
+    return this.type;
   }
 
   public String getFilename() {
@@ -70,6 +84,11 @@ public class Chunk extends Identifiable {
 
   public void addUser(User u) {
     this.usersHere.add(u);
+    if (this.type == CHUNK_TYPE.HEAL) {
+      u.getTeam().forEach(p -> {
+        p.fullRestore();
+      });
+    }
   }
 
   public void removeUser(User u) {

@@ -1,6 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.battle;
 
-import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.pokemmo.battle.impl.PvPBattle;
 import cs.brown.edu.aelp.pokemmo.battle.impl.WildBattle;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
@@ -61,10 +60,5 @@ public class BattleManager {
     battleMap.put(b.getId(), b);
 
     return b;
-  }
-
-  public void endBattle(Battle battle) {
-    PacketSender.sendEndBattlePacket(battle.getId(), battle.getWinner().getId(),
-        battle.getLoser().getId(), 0, 0);
   }
 }

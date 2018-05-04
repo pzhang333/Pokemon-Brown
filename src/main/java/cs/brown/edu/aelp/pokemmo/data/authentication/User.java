@@ -140,6 +140,14 @@ public class User extends Trainer implements SQLBatchSavable {
     }
   }
 
+  public void kick() {
+    this.setToken(null);
+    if (this.isConnected()) {
+      this.getSession().close();
+      this.disconnectCleanup();
+    }
+  }
+
   public void teleportTo(Location l) {
     this.setPath(null);
     Chunk old = this.getLocation().getChunk();
@@ -224,13 +232,13 @@ public class User extends Trainer implements SQLBatchSavable {
   public int updateElo(boolean won, int otherElo) {
     int K = 32;
     int s = won ? 1 : 0;
-    double r1 = Math.pow(10, (this.elo / 400));
-    double r2 = Math.pow(10, (otherElo / 400));
-    double e1 = r1 / (r1 + r2);
-    r1 = r1 + (K * (s - e1));
-    this.setElo((int) r1);
+    double R1 = Math.pow(10, (this.elo / 400));
+    double R2 = Math.pow(10, (otherElo / 400));
+    double e1 = R1 / (R1 + R2);
+    int newElo = (int) (this.elo + (K * (s - e1)));
+    this.setElo(newElo);
     Leaderboards.tryInsertTop5(this);
-    return (int) r1;
+    return newElo;
   }
 
   public void validateLocation() {

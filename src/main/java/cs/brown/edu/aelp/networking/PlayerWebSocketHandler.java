@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import cs.brown.edu.aelp.networking.Trade.TRADE_STATUS;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
-import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
@@ -205,9 +204,10 @@ public class PlayerWebSocketHandler {
     if (!t.setCurrency(me_curr, isUser1) || !t.setItems(me_items, isUser1)
         || !t.setPokemon(me_pokemon, isUser1)) {
       t.setStatus(TRADE_STATUS.CANCELED);
-      session.close();
-      System.out.println(
-          "WARNING: User %d tried to trade items, pokemon, or currency that they don't have.");
+      me.kick();
+      System.out.printf(
+          "WARNING: %s tried to trade items, pokemon, or currency that they don't have.%n",
+          me.getUsername());
     } else {
       trades.put(other_id, t);
       trades.put(me_id, t);
@@ -229,6 +229,7 @@ public class PlayerWebSocketHandler {
     if (!user.isConnected() || !user.getSession().equals(session)) {
       System.err.println("Bad Session");
       session.close();
+      return;
     }
 
     Battle battle = user.getCurrentBattle();
@@ -238,7 +239,7 @@ public class PlayerWebSocketHandler {
     case RUN:
       // TODO: run
       battle.forfeit(user);
-      break;
+      return;
     case SWITCH:
       // TODO: switch
       Integer switchId = payload.get("switchId").getAsInt();
@@ -274,7 +275,8 @@ public class PlayerWebSocketHandler {
       break;
     default:
       System.out.println("ERROR: Invalid packet sent to battle handler.");
-      session.close();
+      user.kick();
+      return;
     }
 
     System.out.println(battle.getBattleState());
@@ -283,12 +285,14 @@ public class PlayerWebSocketHandler {
 
       if (t == null || !battle.getBattleState().equals(BattleState.WAITING)) {
         System.err.println("Not waiting");
-        session.close();
+        user.kick();
+        return;
       }
 
       if (!battle.setTurn(t)) {
         System.err.println("Bad Turn");
-        session.close();
+        user.kick();
+        return;
       }
 
       if (battle.getBattleState().equals(BattleState.READY)) {
@@ -297,9 +301,6 @@ public class PlayerWebSocketHandler {
         System.out.println(battle.dbgStatus());
       }
 
-      if (battle.getBattleState().equals(BattleState.DONE)) {
-        BattleManager.getInstance().endBattle(battle);
-      }
     }
   }
 

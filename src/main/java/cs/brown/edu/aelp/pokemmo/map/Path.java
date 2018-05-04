@@ -19,12 +19,14 @@ public class Path {
   private final List<Entity> expectedEncounters = new ArrayList<>();
 
   public Path(List<Location> steps, List<Entity> entities) {
-    assert !steps.isEmpty();
+    assert steps.size() >= 2;
     this.steps = steps;
     this.start = steps.get(0);
     this.end = steps.get(steps.size() - 1);
     for (Entity e : entities) {
-      if (this.steps.contains(e.getLocation())) {
+      // don't interact with entities on the starting tile, it feels weird
+      List<Location> skipFirst = steps.subList(1, steps.size());
+      if (skipFirst.contains(e.getLocation())) {
         this.expectedEncounters.add(e);
       }
     }

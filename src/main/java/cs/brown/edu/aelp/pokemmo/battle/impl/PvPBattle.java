@@ -18,6 +18,7 @@ import cs.brown.edu.aelp.pokemmo.battle.events.SwitchOutEvent;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.FightSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.SwitchSummary;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Tournament;
 import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
@@ -26,6 +27,7 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -293,22 +295,46 @@ public class PvPBattle extends Battle {
   public void victory(Trainer t) {
     System.out.println("Victory for: " + t.getId());
 
-    User winner = (User) t;
-    User loser = (User) other(t);
-
-    int oldWinnerElo = winner.getElo();
-    winner.updateElo(true, loser.getElo());
-    loser.updateElo(false, oldWinnerElo);
-
     lastBattleUpdate = pendingBattleUpdate;
 
     setBattleState(BattleState.DONE);
 
-    World w = Main.getWorld();
-    if (w.getTournament() != null) {
-      Tournament tourn = w.getTournament();
-      if (tourn.isParticipating(winner)) {
-        tourn.logBattleResult(winner, loser);
+    winner = t;
+    loser = other(t);
+
+    PacketSender.sendEndBattlePacket(this.getId(), this.getWinner().getId(),
+        this.getLoser().getId(), 0, 0);
+
+    User w = (User) winner;
+    User l = (User) loser;
+
+    int oldWinnerElo = w.getElo();
+    w.updateElo(true, l.getElo());
+    l.updateElo(false, oldWinnerElo);
+
+    World world = Main.getWorld();
+    if (world.getTournament() != null) {
+      Tournament tourn = world.getTournament();
+      if (tourn.isParticipating(w)) {
+        tourn.logBattleResult(w, l);
+        w.getTeam().forEach(p -> {
+          p.fullRestore();
+        });
+        l.getTeam().forEach(p -> {
+          p.fullRestore();
+        });
+      }
+    }
+    for (User u : Arrays.asList(w, l)) {
+      boolean needsHeal = true;
+      for (Pokemon p : u.getTeam()) {
+        if (p.getCurrHp() != 0) {
+          needsHeal = false;
+          break;
+        }
+      }
+      if (needsHeal) {
+        u.teleportTo(new Location(Main.getWorld().getChunk(2), 30, 31));
       }
     }
   }
