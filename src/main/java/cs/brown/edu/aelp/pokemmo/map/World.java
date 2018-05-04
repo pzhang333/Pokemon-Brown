@@ -1,5 +1,6 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
+import cs.brown.edu.aelp.pokemmo.map.Chunk.CHUNK_TYPE;
 import cs.brown.edu.aelp.util.JsonFile;
 import java.io.File;
 import java.io.IOException;
@@ -89,7 +90,12 @@ public class World {
       JsonFile f = new JsonFile(path);
       for (JsonFile chunk : f.getJsonList("chunks")) {
         int id = chunk.getInt("id");
-        loadChunk(chunk.getInt("id"), chunk.getString("file"));
+        Chunk c = loadChunk(chunk.getInt("id"), chunk.getString("file"));
+        if (chunk.getString("type") != null) {
+          if (chunk.getString("type").equals("heal")) {
+            c.setType(CHUNK_TYPE.HEAL);
+          }
+        }
         System.out.printf("Loaded chunk %d from `%s`\n", id,
             chunk.getString("file"));
       }

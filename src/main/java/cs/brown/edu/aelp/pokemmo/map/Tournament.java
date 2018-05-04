@@ -167,26 +167,42 @@ public class Tournament {
   }
 
   public void setupBracket() {
+    System.out.println("Setting up bracket");
+    int highestSeed = -1;
     if (this.seeds.isEmpty()) {
       for (int i = 0; i < this.users.size(); i++) {
         this.seeds.put(i + 1, this.users.get(i));
+        highestSeed = i + 1;
       }
+      System.out.println("Did original ELO seeding");
     } else {
-      for (int i = 1; i <= this.size / 2; i++) {
+      for (int i = 1; i <= this.size; i++) {
+        System.out.println("Processing new seed: " + i);
         if (!this.seeds.containsKey(i)) {
+          System.out.println("New seed didn't exist?");
           break;
         }
         User u = this.seeds.get(i);
+        System.out.println("Seed used to be: " + u.getUsername());
         if (this.bracket.get(u) != null
             && this.users.contains(this.bracket.get(u))) {
           u = this.bracket.get(u);
         }
+        System.out.println("Seed is now: " + u.getUsername());
         this.seeds.put(i, u);
+        highestSeed = i;
       }
     }
+    assert highestSeed != -1;
     this.bracket.clear();
     for (int seed : this.seeds.keySet()) {
-      int toPlay = this.size + 1 - seed;
+      if (seed > highestSeed) {
+        break;
+      }
+      System.out.printf("Seed %d: %s%n", seed,
+          this.seeds.get(seed).getUsername());
+      int toPlay = highestSeed + 1 - seed;
+      System.out.println("is going to play seed: " + toPlay);
       if (this.seeds.containsKey(toPlay)) {
         this.bracket.put(this.seeds.get(seed), this.seeds.get(toPlay));
       } else {
@@ -243,6 +259,7 @@ public class Tournament {
     }
     this.entrance.remove();
     Main.getWorld().removeChunk(this.chunk);
+    Main.getWorld().setTournament(null);
   }
 
   public static void startGenerator() {
@@ -278,7 +295,7 @@ public class Tournament {
 
     @Override
     public int compare(User u1, User u2) {
-      int cmp = (-1) * Integer.compare(u1.getElo(), u2.getElo());
+      int cmp = Integer.compare(u1.getElo(), u2.getElo());
       if (cmp == 0) {
         return Integer.compare(u1.getId(), u2.getId());
       }

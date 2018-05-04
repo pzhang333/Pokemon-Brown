@@ -56,7 +56,8 @@ public final class UserManager {
    */
   public static User authenticate(int id, String token) throws AuthException {
     if (users.containsKey(id)) {
-      if (users.get(id).getToken().equals(token)) {
+      if (users.get(id).getToken() != null
+          && users.get(id).getToken().equals(token)) {
         users.get(id).validateLocation();
         return users.get(id);
       } else {

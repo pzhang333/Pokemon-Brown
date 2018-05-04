@@ -50,13 +50,14 @@
         },
         {
             "id" : 2,
-            "file" : "house_inside.json",
+            "file" : "pokecenter.json",
+            "type" : "heal",
             "portals" :
             [
 				{
                     "location" :
                     {
-                        "row" : 36,
+                        "row" : 39,
                         "col" : 30
                     },
                     "goto" :
@@ -69,7 +70,7 @@
                 {
                     "location" :
                     {
-                        "row" : 36,
+                        "row" : 39,
                         "col" : 31
                     },
                     "goto" :
