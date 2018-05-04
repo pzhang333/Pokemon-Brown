@@ -50,7 +50,7 @@ class Net {
 	constructor() {
 
 		//this.host = '10.38.37.243';
-		//this.host = 'localhost';
+		this.host = 'localhost';
     	//this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -295,7 +295,8 @@ class Net {
 				player.initSprite();
 				player.setVisible(true);
 				player.setPos(loc.col, loc.row);
-				console.log(player);
+				player.sprite.inputEnabled = true;
+    			player.sprite.events.onInputDown.add(playerInteraction, player);
 				/*console.log('ayyy');*/
 				//continue;
 			}
