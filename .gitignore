@@ -71,6 +71,8 @@ local.properties
 .idea/*
 .idea/
 
+.iml
+
 ########
 # MISC #
 ########
