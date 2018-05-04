@@ -7,6 +7,8 @@ var Home = {
 	]
 };
 
+var chatIdx = 0;
+
 Home.update = function() {
 	
 	for(let i = 0; i < Home.inputFields.length; i++) {
@@ -40,6 +42,9 @@ Home.preload = function() {
 
 Home.create = function() {
 
+	$("canvas").css('display', 'flex');
+	$("#chat-container").css('width', '0px').css('visibility', 'hidden');
+	
 	if (!!Cookies.get('token') && !!Cookies.get('id')) {
 		let token = Cookies.get('token');
 		let id = Cookies.get('id');
