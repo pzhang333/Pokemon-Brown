@@ -908,8 +908,20 @@ Battle.battleOver = async function(packet) {
 			Battle.endBattle();
 		});
 		
+		try {
+			Battle.clearMessageText();
+		} catch(err) {
+			
+		}
+		
 		resolve();
 	}, 10000);
+	
+	try {
+		Battle.clearMessageText();
+	} catch(err) {
+		
+	}
 }
 
 Battle.setup = function(initPacket) {
