@@ -29,10 +29,6 @@ public class HealTeam extends Command {
         p.fullRestore();
       }
 
-      u.getTeam().forEach(p -> {
-        p.setHealth(p.getMaxHp());
-      });
-
       System.out.printf("Healed all of %s (id: %d)'s Pokemon\n",
           u.getUsername(), u.getId());
     } catch (NumberFormatException e) {

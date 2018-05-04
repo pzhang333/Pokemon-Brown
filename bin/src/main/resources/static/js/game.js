@@ -148,7 +148,7 @@ Game.loadCurrentChunk = function() {
 	net.getChunk(function(chunk) {
 
 		
-		console.log(chunk)
+		console.log(chunk);
 		Game.chunkId = chunk.id;
 
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
