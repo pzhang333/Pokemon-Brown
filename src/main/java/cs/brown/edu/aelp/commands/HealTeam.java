@@ -5,6 +5,7 @@ import java.util.List;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 
 public class HealTeam extends Command {
 
@@ -22,6 +23,10 @@ public class HealTeam extends Command {
         System.out.printf("ERROR: Unknown user id(%d). Are they offline?\n",
             id);
         return;
+      }
+
+      for (Pokemon p : u.getTeam()){
+        p.fullRestore();
       }
 
       u.getTeam().forEach(p -> {

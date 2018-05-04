@@ -590,6 +590,20 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     return a1 < baseValue && a2 < baseValue && a3 < baseValue && a4 < baseValue;
   }
 
+  public void fullRestore() {
+    this.currHp = this.hp;
+    this.status = Status.NONE;
+    this.effectSlot = new EffectSlot();
+    this.setChanged(true);
+  }
+
+  public void addHealth(Integer addHP) {
+    this.currHp = this.currHp + addHP;
+    if (this.currHp > this.hp){
+      this.currHp = this.hp;
+    }
+  }
+
   private static int calcStage(int curStage, int dif) {
     int stage = curStage + dif;
 
@@ -678,7 +692,6 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
         + 1;
     return expGained.intValue();
   }
-
 
   /*
    * (non-Javadoc)
