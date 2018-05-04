@@ -12,7 +12,6 @@ Game.init = function() {
 	Game.ready = false;
 	//Game.easystar = new EasyStar.js();
 	Game.leaderboard = [];
-
 };
 
 Game.shutdown = function() {
@@ -66,7 +65,6 @@ Game.preload = function() {
     game.load.image('trophy', 'assets/HUD/trophy.png');
     game.load.image('coin', 'assets/HUD/coin.png');
     game.load.image('logout', 'assets/HUD/logout.png');
-    game.load.image('box', 'assets/HUD/box.png');
 
     game.load.image('pokeball', 'assets/HUD/pokeball.png');
     game.load.image('greatball', 'assets/HUD/greatball.png');
@@ -91,6 +89,30 @@ Game.create = function() {
 
 	Game.ready = true;
 	game.camera.roundPx = true;
+	
+	$("#chat-container").css('width', '300px').css('visibility', 'visible');
+	
+	$("#chat-input").on('keypress', function (e) {
+         if (e.which === 13) {
+
+        	let msg = $(this).val();
+        	
+        	if (msg.length == 0) {
+        		return;
+        	}
+        	
+            $(this).attr("disabled", "disabled");
+
+            net.sendPacket(MESSAGE_TYPE.CHAT, {
+            	message: msg
+            });
+            
+            $(this).val('');
+            $(this).removeAttr("disabled");
+         }
+         $(this).focus();
+   });
+
 };
 
 Game.moveGroupTo = function(parent,group,endPos){

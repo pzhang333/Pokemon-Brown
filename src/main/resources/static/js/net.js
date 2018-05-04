@@ -9,6 +9,8 @@ const MESSAGE_TYPE = {
     END_BATTLE: 7,
     BATTLE_TURN_UPDATE: 8,
     CLIENT_BATTLE_UPDATE: 9,
+    CHAT: 10,
+    SERVER_MESSAGE: 11,
     CHALLENGE_REQUEST: 12,
     CHALLENGE_RESPONSE: 13
 };
@@ -51,8 +53,8 @@ class Net {
 
 	constructor() {
 
-		//this.host = '10.38.37.243';
 		this.host = 'localhost';
+
     	//this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -72,8 +74,17 @@ class Net {
 		this.handlers[MESSAGE_TYPE.TELEPORT_PACKET] = this.teleportHandler;
 		this.handlers[MESSAGE_TYPE.START_BATTLE] = this.startBattleHandler;
 		this.handlers[MESSAGE_TYPE.END_BATTLE] = this.endBattleHandler;
-		this.handlers[MESSAGE_TYPE.BATTLE_TURN_UPDATE] = this.battleUpdateHandler;
+		this.handlers[MESSAGE_TYPE.BATTLE_TURN_UPDATE] = this.battleUpdateHandler;		
+		this.handlers[MESSAGE_TYPE.SERVER_MESSAGE] = function(event) {
+			let cleanMsg = event.payload.message.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+				return '&#' + i.charCodeAt(0) + ';';
+			});
+			
+			this.displayChatMsg(cleanMsg, 'color: darkred; font-weight: bold;');
+		}.bind(this);
 		this.handlers[MESSAGE_TYPE.CHALLENGE_RESPONSE] = this.challengeResponseHandler;
+
+		
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
 	}
@@ -261,7 +272,26 @@ class Net {
 
 					Game.players[op.id] = player;
 
-				} else {
+				} else if (code == OP_CODES.CHAT_RECEIVED) {
+					
+					
+					try {
+						let user = "";
+						if (id == Game.player.id) {
+							user = Game.player.username;
+						} else {
+							Game.players[op.id].username;
+						}
+
+						let cleanMsg = op.message.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+							return '&#' + i.charCodeAt(0) + ';';
+						});
+						
+						net.displayChatMsg('<b>' + user + ':</b> ' + cleanMsg);
+					} catch(err) {
+						console.log(err);
+					}
+				}	else {
 					console.log('Unhandled op code: ' + code);
 				}
 			}
@@ -366,6 +396,40 @@ class Net {
 		Battle.run();
 		//game.state.start('Battle');
 		//alert('Encountered wild pokemon with id: ' + pokemon.id);
+	}
+	
+	displayChatMsg(msg, style) {
+		if (game.state.current != "Game") {
+			return;
+		}
+		
+		let chat = $("#chat");
+		
+		if (msg.length == 0) {
+			return;
+		}
+		
+		let doScroll = false;
+		if (chat.scrollTop() + chat.innerHeight() >= chat[0].scrollHeight) {
+			doScroll = true;
+		}
+			
+		if (style == undefined) {
+			style = "";
+		}
+		
+		if (chatIdx % 2 != 0) {
+			chat.append('<li class="chat-msg" style="background-color: lightgray;' + style + '">' + msg + '</li>');
+		} else {
+			chat.append('<li class="chat-msg" style="background-color: darkgray;' + style + '">' + msg + '</li>');
+
+		}
+		
+		if (doScroll) {
+			chat.scrollTop(chat[0].scrollHeight);
+		}
+	
+		chatIdx++;
 	}
 
 	handleMsg(event) {
