@@ -622,12 +622,12 @@ Battle.showInv = async function() {
 
     Battle.invButtons = [];
 
-    let buttonWidth = Battle.panel.width / 4.1;
+    let buttonWidth = Battle.panel.width / 6.18;
 
     let pos = 0;
-    for(let i = 0; i < 4; i++) {
-        let yI = Math.floor(pos / 2);
-        let xI = pos % 2;
+    for(let i = 0; i < 6; i++) {
+        let yI = Math.floor(pos / 3);
+        let xI = pos % 3;
 
         let itemButton = new SlickUI.Element.Button(xI * (buttonWidth + 4), (yI * 50), buttonWidth, 48);
 
@@ -638,27 +638,42 @@ Battle.showInv = async function() {
         Phaser.Canvas.setImageRenderingCrisp(game.canvas);
 
         let text;
+        let count; // TODO: Get counts from packet
         let sprite;
 
         // If we want a throwing animation: https://www.spriters-resource.com/ds_dsi/pokemondiamondpearl/sheet/6924/
 
         if (pos == 0) {
             text = new SlickUI.Element.Text(50, 0, ucfirst('Pokeball'));
+            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
             sprite = game.add.sprite(0, 0, 'pokeball');
 		} else if (pos == 1) {
-            text = new SlickUI.Element.Text(50, 0, ucfirst('Hyper Potion'));
-            sprite = game.add.sprite(0, 0, 'hyperpotion');
+            text = new SlickUI.Element.Text(50, 0, ucfirst('Great Ball'));
+            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
+            sprite = game.add.sprite(0, 0, 'greatball');
 		} else if (pos == 2) {
+            text = new SlickUI.Element.Text(50, 0, ucfirst('Hyper Potion'));
+            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
+            sprite = game.add.sprite(0, 0, 'hyperpotion');
+		} else if (pos == 3){
             text = new SlickUI.Element.Text(50, 0, ucfirst('Ultra Ball'));
+            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
             sprite = game.add.sprite(0, 0, 'ultraball');
+		} else if (pos == 4) {
+            text = new SlickUI.Element.Text(50, 0, ucfirst('Master Ball'));
+            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
+            sprite = game.add.sprite(0, 0, 'masterball');
 		} else {
             text = new SlickUI.Element.Text(50, 0, ucfirst('Full Restore'));
+            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
             sprite = game.add.sprite(0, 0, 'fullrestore');
 		}
 
 
         text.size = 11;
+        count.size = 11;
         itemButton.add(text);
+        itemButton.add(count);
 
         await itemButton.events;
 
