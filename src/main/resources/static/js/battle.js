@@ -491,7 +491,7 @@ Battle.drawPokemon = function(fore, bg) {
 	
 }
 
-Battle.drawMessage = function(text, size) {
+Battle.drawMessage = async function(text, size) {
 	
 	Battle.clearMessageText();
 	
@@ -509,6 +509,8 @@ Battle.drawMessage = function(text, size) {
 		
 		Battle.messageText.size = size;
 		
+		
+		await Battle.messageText;
 		Battle.panel.add(Battle.messageText);
 	} else {
 		Battle.messageText.value = text;
