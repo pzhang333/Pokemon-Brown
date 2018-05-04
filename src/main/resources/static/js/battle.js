@@ -304,6 +304,10 @@ Battle.endBattle = function() {
 	
 	Battle.inBattle = false;
 	
+	for(let i = 0; i < Game.player.length; i++) {
+		Game.players[i].sprite.kill();
+	}
+	
 	//Game.players = {};
 	game.state.start("Game", true, false);
 	
