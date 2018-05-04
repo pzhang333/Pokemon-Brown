@@ -66,7 +66,6 @@ Game.preload = function() {
     game.load.image('trophy', 'assets/HUD/trophy.png');
     game.load.image('coin', 'assets/HUD/coin.png');
     game.load.image('logout', 'assets/HUD/logout.png');
-    game.load.image('box', 'assets/HUD/box.png');
 
     game.load.image('pokeball', 'assets/HUD/pokeball.png');
     game.load.image('greatball', 'assets/HUD/greatball.png');
