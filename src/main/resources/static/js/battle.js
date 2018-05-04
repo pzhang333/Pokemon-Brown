@@ -573,7 +573,7 @@ Battle.clearTeam = async function(drawMsg) {
 }
 
 Battle.clearMessageText = function() {
-	if (Battle.messageText != undefined) {
+	if (Battle.messageText != undefined && Battle.messageText.value != undefined) {
 		Battle.messageText.visible = false;
 	}
 	
