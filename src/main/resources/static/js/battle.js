@@ -880,9 +880,14 @@ Battle.battleOver = async function(packet) {
 		} else {
 			msg = "Loss.";
 		}
-		let messageText = new SlickUI.Element.Text(8, 8, msg);
-		messageText.size = 16;
-		Battle.panel.add(messageText);
+		
+		try {
+			let messageText = new SlickUI.Element.Text(8, 8, msg);
+			messageText.size = 16;
+			Battle.panel.add(messageText);
+		} catch(err) {
+			console.log('warning: ' + err);
+		}
 		
 		let buttonOffsetX = Battle.panel.width / 2;
 		let buttonWidth = Battle.panel.width / 4.1;
