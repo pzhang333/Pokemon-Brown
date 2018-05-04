@@ -577,8 +577,14 @@ Battle.clearTeam = async function(drawMsg) {
 }
 
 Battle.clearMessageText = function() {
-	if (Battle.messageText != undefined && Battle.messageText.value != undefined) {
-		Battle.messageText.visible = false;
+	
+	try {
+		await Battle.messageText;
+		if (Battle.messageText != undefined) {
+			Battle.messageText.visible = false;
+		}
+	} catch(err) {
+		console.log('warning: '+ err);
 	}
 	
 }
