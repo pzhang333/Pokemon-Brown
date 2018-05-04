@@ -11,7 +11,7 @@ Game.init = function() {
 
 	Game.ready = false;
 	//Game.easystar = new EasyStar.js();
-	
+	Game.leaderboard = [];
 
 };
 
@@ -325,25 +325,17 @@ function drawLeadboard() {
 
 	let header = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 20, "Leaderboard:");
 
-	let player1 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65, "1. top_user_id");
-	let player2 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 95, "2. top_user_id");
-	let player3 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 125, "3. top_user_id");
-	let player4 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 155, "4. top_user_id");
-	let player5 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 185, "5. top_user_id");
-
+	for (let i = 0; i < Game.leaderboard.length; i++) {
+		let usr = Game.leaderboard[i];
+		let player = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65+30*i, (i+1)+ ". " + usr.name + " (" + usr.elo + ")");
+		Game.panel.add(player);
+	}
 	Game.panel.add(header);
-	Game.panel.add(player1);
-	Game.panel.add(player2);
-	Game.panel.add(player3);
-	Game.panel.add(player4);
-	Game.panel.add(player5);
 }
 
 function drawBackpack() {
 	// leaderboard panel
-	
-	console.log("ADASDAGSDSASFDSGF");
-	
+		
 	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
 	Game.slickUI.add(Game.panel);
 
@@ -364,6 +356,7 @@ function queueLeaderboard() {
 	if (toDrawLeaderboard || toDrawBackpack) {
 		if (Game.panel.container != undefined) {
 			Game.panel.destroy();
+			toDrawBackpack = false;
 		}
 	} else {
 		drawLeadboard();
@@ -372,9 +365,10 @@ function queueLeaderboard() {
 }
 
 function queueBackpack() {
-	if (toDrawBackpack || toDrawBackpack) {
+	if (toDrawBackpack || toDrawLeaderboard) {
 		if (Game.panel.container != undefined) {
 			Game.panel.destroy();
+			toDrawLeaderboard = false;
 		}
 	} else {
 		drawBackpack();

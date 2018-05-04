@@ -293,8 +293,12 @@ public class PvPBattle extends Battle {
   public void victory(Trainer t) {
     System.out.println("Victory for: " + t.getId());
 
-    winner = t;
-    loser = other(t);
+    User winner = (User) t;
+    User loser = (User) other(t);
+
+    int oldWinnerElo = winner.getElo();
+    winner.updateElo(true, loser.getElo());
+    loser.updateElo(false, oldWinnerElo);
 
     lastBattleUpdate = pendingBattleUpdate;
 
@@ -303,12 +307,8 @@ public class PvPBattle extends Battle {
     World w = Main.getWorld();
     if (w.getTournament() != null) {
       Tournament tourn = w.getTournament();
-      if (winner instanceof User && loser instanceof User) {
-        User a = (User) winner;
-        User b = (User) loser;
-        if (tourn.isParticipating(a)) {
-          tourn.logBattleResult(a, b);
-        }
+      if (tourn.isParticipating(winner)) {
+        tourn.logBattleResult(winner, loser);
       }
     }
   }

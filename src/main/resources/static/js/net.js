@@ -162,7 +162,6 @@ class Net {
 
 		Game.player.id = net.id;
 
-
 		let loc = msg.payload.location;
 
 		if (Game.ready) {
@@ -173,6 +172,16 @@ class Net {
 		net.chunkId = loc.chunk_file;
 
 		Game.player.setPos(loc.col, loc.row);
+
+		let leaderboard = msg.payload.leaderboards;
+		if (leaderboard != undefined) {
+			Game.leaderboard = [];
+			for (let i = 0; i < leaderboard.length; i++) {
+    			let name = leaderboard[i].username;
+    			let elo = leaderboard[i].elo;
+				Game.leaderboard.push(new EloUser(name, elo));
+			}
+		}
 
 		let players = msg.payload.players;
 		for(let i = 0; i < players.length; i++) {
@@ -200,13 +209,25 @@ class Net {
 
 		//msg = generateFakeGamePacket();
 
-	//	console.log(msg.payload);
 		if (game.state.current != "Game") {
 			return;
 		}
 
+		// leaderboard
+		let leaderboard = msg.payload.leaderboards;
+		if (leaderboard != undefined) {
+			Game.leaderboard = [];
+			for (let i = 0; i < leaderboard.length; i++) {
+    			let name = leaderboard[i].username;
+    			let elo = leaderboard[i].elo;
+				Game.leaderboard.push(new EloUser(name, elo));
+			}
+		}
+
+		// op codes
 		let ops = msg.payload.ops;
 		if (ops != undefined) {
+			console.log(msg);
 
 			for(let i = 0; i < ops.length; i++) {
 				let op = ops[i];
