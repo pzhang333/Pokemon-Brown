@@ -783,7 +783,7 @@ Battle.forfeit = function() {
 }
 
 Battle.drawDefaultMenu = async function() {
-	Battle.clearMenu();
+	//Battle.clearMenu();
 	
 	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
 	Battle.slickUI.add(Battle.panel);
@@ -867,12 +867,15 @@ Battle.battleOver = async function(packet) {
 		await Battle.showing;
 	}
 	
+	Battle.clearMenu();
+	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
+	Battle.slickUI.add(Battle.panel);
+	
 	Battle.showing = new Promise(async function(resolve, reject) {
 	
 		Battle.clearMoves();
 		Battle.clearButtons(Battle.stdButtons);
 		Battle.clearMessageText();
-		
 		
 		let msg = "";
 		if (packet.winner_id == Game.player.id) {
