@@ -5,7 +5,6 @@ public class BattleSummary {
   public static enum SummaryType {
     FIGHT,
     SWITCH,
-    MISC,
     HEAL,
     DAMAGE
   }
