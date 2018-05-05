@@ -81,6 +81,8 @@ Game.preload = function() {
     // loading buttons
     game.load.image('challenge_button', 'assets/buttons/button_challenge.png');
     game.load.image('pending_challenge_button', 'assets/buttons/button_pending.png');
+    game.load.image('up_arrow', 'assets/buttons/uparrow.png');
+    game.load.image('down_arrow', 'assets/buttons/downarrow.png');
 
 	Battle.preload();
 };
@@ -374,9 +376,12 @@ function drawLeadboard() {
 
 	for (let i = 0; i < Game.leaderboard.length; i++) {
 		let usr = Game.leaderboard[i];
-		let player = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65+30*i, (i+1)+ ". " + usr.name + " (" + usr.elo + ")");
+		let player = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65+27*i, (i+1)+ ". " + usr.name + " (" + usr.elo + ")");
 		Game.panel.add(player);
 	}
+
+	let myElo = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65+29.6*Game.leaderboard.length, "My elo: " + Game.player.elo);
+	Game.panel.add(myElo);
 	Game.panel.add(header);
 }
 

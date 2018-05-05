@@ -53,8 +53,9 @@ class Net {
 
 	constructor() {
 
-		this.host = 'localhost';
-		//this.host = '10.38.37.243';
+
+		//this.host = 'localhost';
+		this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -71,7 +72,6 @@ class Net {
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
 		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler;
 		//this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
-		this.handlers[MESSAGE_TYPE.TELEPORT_PACKET] = this.teleportHandler;
 		this.handlers[MESSAGE_TYPE.START_BATTLE] = this.startBattleHandler;
 		this.handlers[MESSAGE_TYPE.END_BATTLE] = this.endBattleHandler;
 		this.handlers[MESSAGE_TYPE.BATTLE_TURN_UPDATE] = this.battleUpdateHandler;		
@@ -168,8 +168,16 @@ class Net {
 		//Game.player.id = msg.payload.id;
 	}
 
-	initPacketHandler(msg) {
+	async initPacketHandler(msg) {
 
+		if (Battle.inBattle) {
+			if (Battle.showing != undefined) {
+				await Battle.showing;
+			}
+			
+			Battle.endBattle();
+		}
+		
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
 
@@ -207,12 +215,15 @@ class Net {
 				Game.player.pokemon = player.pokemon;
                 Game.player.currency = player.currency;
                 Game.player.activePokemon = player.active_pokemon;
+				Game.player.elo = player.elo;
 				continue;
 			}
 
 			let newPlayer = new Player();
 			newPlayer.id = player.id;
 			newPlayer.username = player.username;
+			newPlayer.elo = player.elo;
+			newPlayer.pokemon = player.pokemon;
 
 			console.log(newPlayer);
 			Game.players[player.id] = newPlayer;
@@ -269,6 +280,8 @@ class Net {
 					//player.setVisible(true);
 					player.id = op.id;
 					player.username = op.username;
+					player.elo = op.elo;
+					player.pokemon = op.pokemon;
 
 					if (Game.players[op.id] != undefined) {
 						Game.players[op.id].del();
@@ -325,6 +338,7 @@ class Net {
                 Game.player.currency = msg.payload.users[i].currency;
                 Game.player.activePokemon = msg.payload.users[i].active_pokemon;
 
+				Game.player.elo = msg.payload.users[i].elo;
 				continue;
 			}
 
@@ -345,6 +359,8 @@ class Net {
 			}
 
 			let player = Game.players[id];
+			player.elo = update.elo;
+			player.pokemon = update.pokemon;
 
 			let dest = update.destination;
 
@@ -444,7 +460,7 @@ class Net {
 
 	handleMsg(event) {
 
-//		console.log('test!');
+		// console.log('test!');
 		//console.log(event);
 
 		const data = JSON.parse(event.data);

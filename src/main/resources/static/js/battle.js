@@ -151,7 +151,7 @@ Battle.showAttackPair = function(first, second, delay) {
 // Battle.doSwitch(Battle.backPokemon, new Pokemon(123, 'chandelure'));
 Battle.doSwitch = function(pOut, pIn, cb) {
 
-	let delay = .75;
+	let delay = 1.25;
 
 	let fore = (pOut.id == Battle.frontPokemon.id) ? pIn : undefined;
 	let bg = (pOut.id == Battle.backPokemon.id) ? pIn : undefined;
@@ -992,6 +992,8 @@ Battle.battleOver = async function(packet) {
 	if (Battle.showing != undefined) {
 		await Battle.showing;
 	}
+	
+	console.log('battle over');
 
 	Battle.clearMenu();
 	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
@@ -1065,13 +1067,26 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 	}
 
 	Battle.subShowing = new Promise(function(resolve, reject) {
+	
+		if (Battle.over) {
+			return
+		}
 
 		if (summaries.length == 0) {
 			// handle end packet...
 			Battle.team = packet.pokemon_team;
-
+			
+			if (Battle.pokemon_a.id == Battle.frontPokemon.id) {
+				Battle.frontPokemon.moves = Battle.pokemon_a.moves;
+			} else {
+				Battle.frontPokemon.moves = Battle.pokemon_b.moves;
+			}
+			
+			if (Battle.teamButtons != undefined && Battle.teamButtons.length != 0) {
+				Battle.showMoves();
+			}
 			//Battle.drawDefaultMenu();
-
+			
 			resolve();
 			resolveShow();
 			return;
@@ -1084,13 +1099,17 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 		let SUMMARY_TYPE = {
 			FIGHT: 0,
 			SWITCH: 1,
-      HEALTH_CHANGE : 2
+			HEALTH_CHANGE : 2
 		};
 
 		console.log('MESSADAFASD');
 		console.log('Msg: ' +  summary.message);
 		if (summary.message != undefined && summary.message.length != 0) {
-			Battle.drawMessage(summary.message);
+			try {
+				Battle.drawMessage(summary.message);
+			} catch(err) {
+				console.log('an err: ' + err);
+			}
 		}
 
 		console.log('Type: ' + summary.type);
@@ -1100,7 +1119,7 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 				health: summary.defending.health,
 				animation: summary.animation
 			}, function() {
-				Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
+				Game.time.events.add(Phaser.Timer.SECOND * 1.25, function() {
 					resolve();
 					Battle.showSummaries(summaries, packet, resolveShow);
 				});
@@ -1122,18 +1141,18 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 			}
 
 			Battle.doSwitch(pOut, pIn, function() {
-				Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
+				Game.time.events.add(Phaser.Timer.SECOND * 1.25, function() {
 					resolve();
 					Battle.showSummaries(summaries, packet, resolveShow);
 				});
 			});
 		} else if (summary.type == SUMMARY_TYPE.HEALTH_CHANGE) {
-      let p = Battle.getPokemonById(summary.pokemon.id);
-      Battle.setHealth(p, p.health + summary.amount)
-      Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
-        resolve();
-        Battle.showSummaries(summaries, packet, resolveShow);
-      });
+	      let p = Battle.getPokemonById(summary.pokemon.id);
+	      Battle.setHealth(p, p.health + summary.amount)
+	      Game.time.events.add(Phaser.Timer.SECOND * 1.25, function() {
+	        resolve();
+	        Battle.showSummaries(summaries, packet, resolveShow);
+      		});
     }
 	}, 10000);
 
@@ -1141,7 +1160,7 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 
 Battle.handleUpdate = async function(packet) {
 	console.log(packet);
-
+	console.log('update');
 	console.log(packet.update.summaries.slice(0));
 
 	/*let userPokemon = pokemon_a;

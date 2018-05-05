@@ -7,6 +7,7 @@ import cs.brown.edu.aelp.commands.BattleCommand;
 import cs.brown.edu.aelp.commands.CoinsCommand;
 import cs.brown.edu.aelp.commands.CommandHandler;
 import cs.brown.edu.aelp.commands.HealTeam;
+import cs.brown.edu.aelp.commands.ItemCommand;
 import cs.brown.edu.aelp.commands.TeleportCommand;
 import cs.brown.edu.aelp.commands.TournamentCommand;
 import cs.brown.edu.aelp.networking.PacketSender;
@@ -23,6 +24,9 @@ import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveLoader;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.complex.PoisonMove;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.complex.Wish;
 import cs.brown.edu.aelp.pokemmo.server.LoginHandler;
 import cs.brown.edu.aelp.pokemmo.server.RegisterHandler;
 import cs.brown.edu.aelp.util.JsonFile;
@@ -65,6 +69,8 @@ public final class Main {
       b.registerTypeAdapter(Pokemon.class, new Pokemon.PokemonAdapter());
       b.registerTypeAdapter(Inventory.class, new Inventory.InventoryAdapter());
       b.registerTypeAdapter(Move.class, new Move.MoveAdapter());
+      b.registerTypeAdapter(Wish.class, new Move.MoveAdapter());
+      b.registerTypeAdapter(PoisonMove.class, new Move.MoveAdapter());
       b.registerTypeAdapter(Leaderboards.EloUser.class,
           new Leaderboards.EloUser.EloUserAdapter());
       return b.create();
@@ -156,6 +162,7 @@ public final class Main {
           .newSingleThreadScheduledExecutor();
 
       Runnable save = new Runnable() {
+
         @Override
         public void run() {
           Collection<User> users = UserManager.getAllUsers();
@@ -205,18 +212,22 @@ public final class Main {
     packetTimer.scheduleAtFixedRate(sendPacket, PACKET_SENDING_PERIOD,
         PACKET_SENDING_PERIOD, TimeUnit.MILLISECONDS);
 
+    MoveLoader.setupOverrides();
+
     CommandHandler ch = new CommandHandler();
     TeleportCommand tc = new TeleportCommand();
     TournamentCommand tnc = new TournamentCommand();
     CoinsCommand cc = new CoinsCommand();
     BattleCommand bc = new BattleCommand();
     HealTeam ht = new HealTeam();
+    ItemCommand ic = new ItemCommand();
 
     ch.registerCommand(tc);
     ch.registerCommand(tnc);
     ch.registerCommand(cc);
     ch.registerCommand(bc);
     ch.registerCommand(ht);
+    ch.registerCommand(ic);
 
     ch.start();
 
