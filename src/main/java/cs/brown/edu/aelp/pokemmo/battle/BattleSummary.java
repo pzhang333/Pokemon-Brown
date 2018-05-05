@@ -5,8 +5,7 @@ public class BattleSummary {
   public static enum SummaryType {
     FIGHT,
     SWITCH,
-    HEAL,
-    DAMAGE
+    HEALTH_CHANGE
   }
 
   private final Integer type;
