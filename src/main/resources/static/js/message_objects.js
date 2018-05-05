@@ -30,3 +30,10 @@ class ChallengeResponseMessage {
       this.payload = {"id": id, "accepted": accepted};
   }
 }
+
+class UpdateTeamMessage {
+	constructor(id, team) {
+		this.type = 15;
+		this.payload = {"id": id, "pokemon": team};
+	}
+}

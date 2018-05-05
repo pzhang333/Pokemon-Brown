@@ -105,6 +105,7 @@ public final class PacketSender {
     payload.addProperty("background_name", bg);
     payload.add("location", Main.GSON().toJsonTree(u.getLocation()));
     packet.add("payload", payload);
+    System.out.println(packet);
     return packet;
   }
 
@@ -238,6 +239,12 @@ public final class PacketSender {
     JsonObject payload = new JsonObject();
     payload.addProperty("reason", reason);
     packet.add("payload", payload);
+    sendPacket(u, packet);
+  }
+
+  public static void sendOpenPokeConsolePacket(User u) {
+    JsonObject packet = new JsonObject();
+    packet.addProperty("type", MESSAGE_TYPE.OPEN_POKE_CONSOLE.ordinal());
     sendPacket(u, packet);
   }
 

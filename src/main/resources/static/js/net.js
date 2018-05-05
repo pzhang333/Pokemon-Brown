@@ -13,7 +13,8 @@ const MESSAGE_TYPE = {
     SERVER_MESSAGE: 11,
     CHALLENGE_REQUEST: 12,
     CHALLENGE_RESPONSE: 13,
-    UPDATE_ACTIVE_POKEMON: 14
+    UPDATE_ACTIVE_POKEMON: 14,
+    UPDATE_TEAM: 15
 };
 
 const BATTLE_ACTION = {
@@ -54,9 +55,9 @@ class Net {
 
 	constructor() {
 
-
-		//this.host = 'localhost';
-		this.host = '10.38.37.243';
+		// this.host = 'localhost';
+		this.host = 'localhost';
+		//this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -170,6 +171,8 @@ class Net {
 	}
 
 	async initPacketHandler(msg) {
+
+		console.log(msg);
 
 		if (Battle.inBattle) {
 			if (Battle.showing != undefined) {
@@ -334,11 +337,9 @@ class Net {
 			if (id == net.id) {
 				//console.log('skip: ' + id);
 				Game.player.items = msg.payload.users[i].items;
-
                 Game.player.pokemon = msg.payload.users[i].pokemon;
                 Game.player.currency = msg.payload.users[i].currency;
                 Game.player.activePokemon = msg.payload.users[i].active_pokemon;
-
 				Game.player.elo = msg.payload.users[i].elo;
 				continue;
 			}
@@ -543,6 +544,12 @@ class Net {
   		// accepts a p2p battle request
   		let messageObject = new ChallengeResponseMessage(id, true);
   		this.sendPacket(MESSAGE_TYPE.CHALLENGE_RESPONSE, messageObject.payload);
+  	}
+
+  	updateTeam(id, team) {
+  		// updates current team
+  		let messageObject = new UpdateTeamMessage(id, team);
+  		this.sendPacket(MESSAGE_TYPE.UPDATE_TEAM, messageObject.payload);
   	}
 }
 

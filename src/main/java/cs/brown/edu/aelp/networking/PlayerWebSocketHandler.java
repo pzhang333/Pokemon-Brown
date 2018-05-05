@@ -1,23 +1,9 @@
 package cs.brown.edu.aelp.networking;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import cs.brown.edu.aelp.networking.Trade.TRADE_STATUS;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
@@ -35,6 +21,17 @@ import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 @WebSocket
 public class PlayerWebSocketHandler {
@@ -42,24 +39,45 @@ public class PlayerWebSocketHandler {
   private static final Gson GSON = new Gson();
 
   public static enum MESSAGE_TYPE {
-    CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, ENCOUNTERED_POKEMON,
-    TRADE, START_BATTLE, END_BATTLE, BATTLE_TURN_UPDATE, CLIENT_BATTLE_UPDATE,
-    CHAT, SERVER_MESSAGE, CHALLENGE, // 12
-    CHALLENGE_RESPONSE, UPDATE_ACTIVE_POKEMON, UPDATE_TEAM
+    CONNECT,
+    INITIALIZE,
+    GAME_PACKET,
+    PLAYER_REQUEST_PATH,
+    ENCOUNTERED_POKEMON,
+    TRADE,
+    START_BATTLE,
+    END_BATTLE,
+    BATTLE_TURN_UPDATE,
+    CLIENT_BATTLE_UPDATE,
+    CHAT,
+    SERVER_MESSAGE,
+    CHALLENGE, // 12
+    CHALLENGE_RESPONSE,
+    UPDATE_ACTIVE_POKEMON,
+    UPDATE_TEAM,
+    OPEN_POKE_CONSOLE
   }
 
   public static enum OP_CODES {
-    ENTERED_CHUNK, LEFT_CHUNK, ENTERED_BATTLE, LEFT_BATTLE, CHAT
+    ENTERED_CHUNK,
+    LEFT_CHUNK,
+    ENTERED_BATTLE,
+    LEFT_BATTLE,
+    CHAT
   }
 
   // used for battle moves
 
   public static enum ACTION_TYPE {
-    RUN, SWITCH, USE_ITEM, FIGHT
+    RUN,
+    SWITCH,
+    USE_ITEM,
+    FIGHT
   }
 
   public static enum TURN_STATE {
-    NORMAL, MUST_SWITCH
+    NORMAL,
+    MUST_SWITCH
   };
 
   private static final MESSAGE_TYPE[] MESSAGE_TYPES = MESSAGE_TYPE.values();
@@ -240,7 +258,9 @@ public class PlayerWebSocketHandler {
     switch (ACTION_TYPES[payload.get("action").getAsInt()]) {
     case RUN:
       // TODO: run
-      battle.forfeit(user);
+      if (!battle.getBattleState().equals(BattleState.DONE)) {
+        battle.forfeit(user);
+      }
       return;
     case SWITCH:
       // TODO: switch
@@ -394,10 +414,13 @@ public class PlayerWebSocketHandler {
     }
     int poke_id = payload.get("pokemon_id").getAsInt();
     Pokemon p = u.getPokemonById(poke_id);
+
+    System.out.println("Set active pokemon: " + p);
+
     if (p != null && u.getTeam().contains(p)) {
       u.setActivePokemon(p);
     } else {
-      session.close();
+      u.kick();
       return;
     }
   }
@@ -419,9 +442,10 @@ public class PlayerWebSocketHandler {
       Pokemon p = u.getPokemonById(poke_id);
       if (p != null && u.getTeam().size() < 5) {
         u.addPokemonToTeam(p);
-        if (u.getTeam().size() == 1) {
-          u.setActivePokemon(p);
-        }
+        p.setStored(false);
+      } else {
+        u.kick();
+        return;
       }
     }
   }

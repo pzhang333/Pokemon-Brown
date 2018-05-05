@@ -96,6 +96,17 @@ public class World {
             c.setType(CHUNK_TYPE.HEAL);
           }
         }
+        List<JsonFile> consoles = chunk.getJsonList("consoles");
+        if (consoles != null) {
+          for (JsonFile console : consoles) {
+            Location loc = new Location(c, console.getInt("row"),
+                console.getInt("col"));
+            PokeConsole pc = new PokeConsole(loc);
+            c.addEntity(pc);
+            System.out.printf("Added PokeConsole at (%d, %d) in chunk %d%n",
+                loc.getRow(), loc.getCol(), c.getId());
+          }
+        }
         System.out.printf("Loaded chunk %d from `%s`\n", id,
             chunk.getString("file"));
       }
