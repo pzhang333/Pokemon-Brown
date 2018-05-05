@@ -1,19 +1,11 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
-import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
@@ -21,6 +13,12 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
 import cs.brown.edu.aelp.util.Identifiable;
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 // TODO: We probably need a status column in our pokemon DB
 
@@ -413,7 +411,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   public void addExp(Integer experience) {
     this.exp += experience;
     this.lvl = calcLevel(this.exp);
-    if (this.lvl >= this.evolveAt){
+    if (this.lvl >= this.evolveAt) {
       // TODO: Inform user that their pokemon evolved!
       evolve();
     }
@@ -555,7 +553,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     accuracyStage = 0;
     evasionStage = 0;
   }
-  
+
   public boolean isCaught(String ballType) {
     double ballBonus = 1.0;
     double statusBonus = 1.0;
@@ -566,15 +564,17 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     } else if (ballType.equals("master")) {
       ballBonus = 255.0;
     }
-    if (this.status == Status.SLEEP || this.status == Status.FREEZE){
+    if (this.status == Status.SLEEP || this.status == Status.FREEZE) {
       statusBonus = 2.0;
-    } else if (this.status == Status.PARALYZE || this.status == Status.BURN || this.status == Status.POISON){
+    } else if (this.status == Status.PARALYZE || this.status == Status.BURN
+        || this.status == Status.POISON) {
       statusBonus = 1.5;
     }
 
-    double a = ((3 * this.hp - 2 * this.currHp) * this.catchRate * ballBonus * statusBonus) / (3 * this.hp);
+    double a = ((3 * this.hp - 2 * this.currHp) * this.catchRate * ballBonus
+        * statusBonus) / (3 * this.hp);
 
-    if (a >= 255.0){
+    if (a >= 255.0) {
       return true;
     }
 
@@ -595,6 +595,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     this.status = Status.NONE;
     this.effectSlot = new EffectSlot();
     this.setChanged(true);
+  }
+
+  public void setStatus(Status status) {
+    this.status = status;
   }
 
   public void addHealth(Integer addHP) {

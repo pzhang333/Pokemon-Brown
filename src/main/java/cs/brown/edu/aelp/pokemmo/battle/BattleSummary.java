@@ -1,6 +1,6 @@
 package cs.brown.edu.aelp.pokemmo.battle;
 
-public abstract class BattleSummary {
+public class BattleSummary {
 
   public static enum SummaryType {
     FIGHT,
@@ -11,7 +11,7 @@ public abstract class BattleSummary {
   private final Integer type;
   private String message;
 
-  protected BattleSummary(SummaryType type, String message) {
+  public BattleSummary(SummaryType type, String message) {
     this.type = type.ordinal();
     this.message = message;
   }
