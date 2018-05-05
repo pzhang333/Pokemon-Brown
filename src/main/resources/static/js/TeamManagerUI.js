@@ -1,11 +1,14 @@
 function renderTeamManager(startIndex) {
-	// intialization
+	// initialization
+
 	let selectedTeamManager = [];
 	let teamMembersSelected = 0;
+
 	let team = Game.player.pokemon;
 	let selectedPokemon = team.filter(function (pokemon) {
-		!pokemon.stored
-	});
+			!pokemon.stored
+		});
+
 	for (let i=0; i<team.length; i++) {
 		if (selectedPokemon.includes(team[i])) {
 			selectedTeamManager.push(i);
@@ -24,7 +27,25 @@ function renderTeamManager(startIndex) {
 	xOut.events.onInputUp.add(function () {
     	// x-out of page
     	panel.destroy();
+    	// saving our new team
+    	selectedPokemon = [];
+    	console.log(selectedTeamManager);
+    	for (let i=0; i<selectedTeamManager.length; i++) {
+    		console.log(i);
+    		selectedPokemon.push(team[selectedTeamManager[i]]);
+    	}
+    	console.log(selectedPokemon);
+    	net.updateTeam(Game.player.id, selectedPokemon);
     });
+
+   	panel.add(header);
+	panel.add(new SlickUI.Element.DisplayObject(panel.width/1.1, panel.height/25, xOut));
+
+	renderTeamManagerHelper(0, selectedTeamManager, panel, team, teamMembersSelected);
+}
+
+function renderTeamManagerHelper(startIndex, selectedTeamManager, panel, team, teamMembersSelected) {
+
 	// page changers
 	let upArrow = game.add.sprite(0, 0, 'up_arrow');
 	let downArrow = game.add.sprite(0, 0, 'down_arrow');
@@ -33,18 +54,16 @@ function renderTeamManager(startIndex) {
 	downArrow.events.onInputUp.add(function () {
     	// scroll down
     	if (startIndex+6+1 < team.length) {
-    		renderTeamManager(startIndex+6);
+    		renderTeamManagerHelper(startIndex+6, selectedTeamManager, panel, team, teamMembersSelected);
     	}
     });
 	upArrow.events.onInputUp.add(function () {
     	// scroll up
     	if (startIndex-6 >= 0) {
-    		renderTeamManager(startIndex-6);
+    		renderTeamManagerHelper(startIndex-6, selectedTeamManager, panel, team, teamMembersSelected);
     	}
     });
 
-	panel.add(header);
-	panel.add(new SlickUI.Element.DisplayObject(panel.width/1.1, panel.height/25, xOut));
 	panel.add(new SlickUI.Element.DisplayObject(panel.width/1.2, panel.height/1.1, upArrow));
 	panel.add(new SlickUI.Element.DisplayObject(panel.width/1.1, panel.height/1.1, downArrow));
 

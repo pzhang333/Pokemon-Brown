@@ -47,4 +47,6 @@ public abstract class Entity {
     return 1000;
   }
 
+  public abstract void interact(User u);
+
 }

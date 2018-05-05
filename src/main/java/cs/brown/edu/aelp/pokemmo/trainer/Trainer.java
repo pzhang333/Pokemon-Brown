@@ -25,15 +25,7 @@ public class Trainer extends Identifiable {
   }
 
   public Pokemon getActivePokemon() {
-    // Returns a Pokemon that isn't knocked out
-    if (activePokemon.isKnockedOut()) {
-      for (Pokemon p : pokemonMap.values()) {
-        if (!p.isKnockedOut()) {
-          activePokemon = p;
-        }
-      }
-    }
-    return activePokemon;
+    return this.activePokemon;
   }
 
   public EffectSlot getEffectSlot() {
