@@ -8,15 +8,12 @@ import com.google.gson.JsonSerializer;
 import cs.brown.edu.aelp.networking.Challenge;
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
-import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.data.Leaderboards;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
-import cs.brown.edu.aelp.pokemmo.map.Bush;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Entity;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
-import cs.brown.edu.aelp.pokemmo.map.Portal;
 import cs.brown.edu.aelp.pokemmo.map.Tournament;
 import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
@@ -140,35 +137,7 @@ public class User extends Trainer implements SQLBatchSavable {
     if (!e.canInteract(this)) {
       return;
     }
-    if (e instanceof Bush) {
-      Bush b = (Bush) e;
-      boolean found = b.triggerEntry(this);
-      if (found) {
-        System.out.printf("%s found a pokemon in the bushes.%n",
-            this.getUsername());
-        BattleManager.getInstance().createWildBattle(this);
-
-        this.setPath(null);
-        this.location = e.getLocation();
-      }
-    } else if (e instanceof Portal) {
-      Portal p = (Portal) e;
-      World w = Main.getWorld();
-      if (w.getTournament() != null) {
-        Tournament t = w.getTournament();
-        if (t.getEntrance().equals(p)) {
-          if (!t.canJoin(this)) {
-            this.sendMessage(t.whyCantJoin(this));
-            return;
-          } else {
-            t.addUser(this);
-          }
-        } else if (t.getExit().equals(p)) {
-          t.removeUser(this);
-        }
-      }
-      this.teleportTo(p.getGoTo());
-    }
+    e.interact(this);
   }
 
   public void kick() {

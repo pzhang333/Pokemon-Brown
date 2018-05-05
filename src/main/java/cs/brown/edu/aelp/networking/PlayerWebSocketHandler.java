@@ -54,7 +54,8 @@ public class PlayerWebSocketHandler {
     CHALLENGE, // 12
     CHALLENGE_RESPONSE,
     UPDATE_ACTIVE_POKEMON,
-    UPDATE_TEAM
+    UPDATE_TEAM,
+    OPEN_POKE_CONSOLE
   }
 
   public static enum OP_CODES {
@@ -439,6 +440,9 @@ public class PlayerWebSocketHandler {
         if (u.getTeam().size() == 1) {
           u.setActivePokemon(p);
         }
+      } else {
+        u.kick();
+        return;
       }
     }
   }

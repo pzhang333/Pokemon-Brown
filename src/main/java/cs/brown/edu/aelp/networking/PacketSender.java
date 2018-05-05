@@ -241,4 +241,10 @@ public final class PacketSender {
     sendPacket(u, packet);
   }
 
+  public static void sendOpenPokeConsolePacket(User u) {
+    JsonObject packet = new JsonObject();
+    packet.addProperty("type", MESSAGE_TYPE.OPEN_POKE_CONSOLE.ordinal());
+    sendPacket(u, packet);
+  }
+
 }
