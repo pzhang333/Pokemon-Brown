@@ -786,6 +786,9 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       o.addProperty("y_offset", src.getYOffset());
       o.addProperty("maxHealth", src.getMaxHp());
       o.addProperty("health", src.getCurrHp());
+      o.addProperty("currLvlExp", Pokemon.calcXpByLevel(src.getLevel()));
+      o.addProperty("currExp", src.getExp());
+      o.addProperty("nextExp", Pokemon.calcXpByLevel(src.getLevel() + 1));
       o.addProperty("status", src.getStatus().ordinal());
       o.addProperty("gender", src.getGender());
       o.addProperty("nickname", src.getNickname());
