@@ -5,9 +5,9 @@ function renderTeamManager(startIndex) {
 	let teamMembersSelected = 0;
 
 	let team = Game.player.pokemon;
-	let selectedPokemon = team.filter(function (pokemon) {
-			!pokemon.stored
-		});
+	let selectedPokemon = team.filter(pokemon => pokemon.stored == false);
+
+	console.log(selectedPokemon);
 
 	for (let i=0; i<team.length; i++) {
 		if (selectedPokemon.includes(team[i])) {
@@ -15,6 +15,7 @@ function renderTeamManager(startIndex) {
 			teamMembersSelected++;
 		}
 	}
+
 	// panel
 	let panel = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/15, Game.map.widthInPixels/2, Game.map.heightInPixels/2.5);
 	Game.slickUI.add(panel);
@@ -29,12 +30,10 @@ function renderTeamManager(startIndex) {
     	panel.destroy();
     	// saving our new team
     	selectedPokemon = [];
-    	console.log(selectedTeamManager);
     	for (let i=0; i<selectedTeamManager.length; i++) {
     		console.log(i);
-    		selectedPokemon.push(team[selectedTeamManager[i]]);
+    		selectedPokemon.push(team[selectedTeamManager[i]].id);
     	}
-    	console.log(selectedPokemon);
     	net.updateTeam(Game.player.id, selectedPokemon);
     });
 

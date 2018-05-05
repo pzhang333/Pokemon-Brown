@@ -172,6 +172,8 @@ class Net {
 
 	async initPacketHandler(msg) {
 
+		console.log(msg);
+
 		if (Battle.inBattle) {
 			if (Battle.showing != undefined) {
 				await Battle.showing;
@@ -335,11 +337,9 @@ class Net {
 			if (id == net.id) {
 				//console.log('skip: ' + id);
 				Game.player.items = msg.payload.users[i].items;
-
                 Game.player.pokemon = msg.payload.users[i].pokemon;
                 Game.player.currency = msg.payload.users[i].currency;
                 Game.player.activePokemon = msg.payload.users[i].active_pokemon;
-
 				Game.player.elo = msg.payload.users[i].elo;
 				continue;
 			}
