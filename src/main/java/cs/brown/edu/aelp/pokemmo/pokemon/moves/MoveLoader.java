@@ -83,7 +83,6 @@ public final class MoveLoader {
 
       if (overrides.containsKey(id)) {
         try {
-          System.out.println(overrides.get(id).getClass());
           return overrides.get(id).getClass().getConstructor(Move.class)
               .newInstance(m);
         } catch (Exception e) {

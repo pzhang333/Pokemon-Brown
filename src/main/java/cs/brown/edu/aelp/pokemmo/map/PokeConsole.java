@@ -10,6 +10,11 @@ public class PokeConsole extends Entity {
   }
 
   @Override
+  public int getCooldown() {
+    return 3 * 1000;
+  }
+
+  @Override
   public void interact(User u) {
     PacketSender.sendOpenPokeConsolePacket(u);
   }
