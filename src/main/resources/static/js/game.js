@@ -575,6 +575,10 @@ async function drawTeam() {
                         x.sprite.loadTexture(x.spriteOff.texture);
                     }
 
+                    net.sendPacket(MESSAGE_TYPE.UPDATE_ACTIVE_POKEMON, {
+                        pokemon_id: pokemon.id
+                    });
+
                     Game.player.activePokemon = pokeButton.pokeId;
                     pokeButton.sprite.loadTexture(pokeButton.spriteOn.texture);
 
