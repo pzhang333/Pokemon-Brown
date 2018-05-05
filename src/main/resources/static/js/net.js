@@ -55,7 +55,7 @@ class Net {
 
 		this.host = 'localhost';
 
-    	//this.host = '10.38.32.136';
+    	// this.host = '10.38.32.136';
     	this.port = 4567;
 
 		this.cfg = {
@@ -83,7 +83,7 @@ class Net {
 			this.displayChatMsg(cleanMsg, 'color: darkred; font-weight: bold;');
 		}.bind(this);
 		this.handlers[MESSAGE_TYPE.CHALLENGE_RESPONSE] = this.challengeResponseHandler;
-
+		this.handlers[MESSAGE_TYPE.CHALLENGE_REQUEST] = this.requestChallengeHandler;
 		
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
@@ -482,6 +482,7 @@ class Net {
   	}
 
   	requestChallengeHandler(msg) {
+  		console.log(msg);
   		let payload = msg.payload;
 
   		let challengerId = payload.from;
@@ -497,6 +498,13 @@ class Net {
   		let messageObject = new RequestChallengeMessage(id, challengerId);
   		console.log(messageObject);
   		this.sendPacket(MESSAGE_TYPE.CHALLENGE_REQUEST, messageObject.payload);  	
+  	}
+
+  	cancelChallenge(id) {
+  		// sends a requesting a p2p battle
+  		let messageObject = new RequestChallengeMessage(id, -1);
+  		console.log(messageObject);
+  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_REQUEST, {id: messageObject.payload.id});  	
   	}
 
   	rejectChallenge(id) {

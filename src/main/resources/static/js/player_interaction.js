@@ -1,3 +1,5 @@
+let pending = false;
+
 function playerInteraction() {
 	let player = this;
 	if (player.clicked != undefined) {
@@ -8,7 +10,11 @@ function playerInteraction() {
 	if (player.clicked) {
 		drawOptionsMenu(player);
 	} else {
-		player.sprite.challenge.kill();
+		if (!pending) {
+			player.sprite.challenge.kill();
+		} else {
+			cancelChallengeUI(player);
+		}
 	}
 }
 
@@ -22,9 +28,11 @@ function drawOptionsMenu(player) {
 function challengePlayer() {
 	let player = this;
 	net.requestChallenge(Game.player.id, player.id);
-	console.log("s");
-	let challengeImage = game.make.image(-48/3, -2*Game.map.tileHeight, 'pending_challenge_button');
-	player.sprite.challenge = player.sprite.addChild(challengeImage);
+	player.sprite.challenge.kill();
+	let pendingImage = game.add.image(-48/3, -2*Game.map.tileHeight, 'pending_challenge_button');
+	pending = true;
+	player.sprite.challenge = player.sprite.addChild(pendingImage);
+	Game.playerFrozen = true;
 }
 
 function renderChallenge(player) {
@@ -64,3 +72,10 @@ function renderChallengeUpdate(response) {
 		panelMessage.destroy();
 	});
  }
+
+function cancelChallengeUI(player) {
+   net.cancelChallenge(Game.player.id);
+   Game.playerFrozen = false;
+   pending = false;
+   player.sprite.challenge.kill();
+}

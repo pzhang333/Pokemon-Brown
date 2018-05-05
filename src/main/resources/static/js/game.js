@@ -12,6 +12,7 @@ Game.init = function() {
 	Game.ready = false;
 	//Game.easystar = new EasyStar.js();
 	Game.leaderboard = [];
+	Game.playerFrozen = false;
 };
 
 Game.shutdown = function() {
@@ -178,8 +179,10 @@ Game.handleMapClick = function(layer, pointer) {
 		coords.y--;
 	}
 
-	Game.player.prepareMovement(coords);
-};
+	if (!Game.playerFrozen) {
+		Game.player.prepareMovement(coords);
+	}
+};	
 
 Game.computeTileCoords = function(x, y){
 	let layer = Game.map.gameLayers['Base'];
