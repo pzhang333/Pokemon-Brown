@@ -17,7 +17,15 @@ function renderTeamManager(startIndex) {
 	Game.slickUI.add(panel);
 	// header
 	let header = new SlickUI.Element.Text(panel.width/2 - panel.width/8 , 10, "Team Manager ");
-	panel.add(header);
+
+	// x-out button
+	let xOut = game.add.sprite(0, 0, 'x_icon');
+	xOut.inputEnabled = true;
+	xOut.events.onInputUp.add(function () {
+    	// x-out of page
+    	panel.destroy();
+    });
+	// page changers
 	let upArrow = game.add.sprite(0, 0, 'up_arrow');
 	let downArrow = game.add.sprite(0, 0, 'down_arrow');
 	downArrow.inputEnabled = true;
@@ -35,6 +43,8 @@ function renderTeamManager(startIndex) {
     	}
     });
 
+	panel.add(header);
+	panel.add(new SlickUI.Element.DisplayObject(panel.width/1.1, panel.height/25, xOut));
 	panel.add(new SlickUI.Element.DisplayObject(panel.width/1.2, panel.height/1.1, upArrow));
 	panel.add(new SlickUI.Element.DisplayObject(panel.width/1.1, panel.height/1.1, downArrow));
 
@@ -46,10 +56,12 @@ function renderTeamManager(startIndex) {
 				let button = new SlickUI.Element.Button(k*panel.width/3, i*panel.height/3 + panel.height/7.5, panel.width/3, panel.height/3);
 				// getting pokemon
 
-
-				Battle.custDrawFrontPokemon(team[3*i+k+startIndex], function(key) {
-					let pokeball = game.add.sprite(0, 0, key);
-					pokeball.anchor.setTo(0.5, 0.5);
+				let pok = team[3*i+k+startIndex];
+				Battle.custDrawFrontPokemon(pok, function(key) {
+					let pokemon = game.add.sprite(0, 0, key);
+					let scale = Math.min(65/pokemon.width, 65/pokemon.height);
+					pokemon.scale.setTo(scale, scale);
+					pokemon.anchor.setTo(0.5, 0.5);
 					panel.add(button);
 
 					if (selectedTeamManager.includes(3*i + k + startIndex)) {
@@ -74,15 +86,28 @@ function renderTeamManager(startIndex) {
 						}
 					}, this);
 
-					let level = new SlickUI.Element.Text(button.width/1.5, button.height/2.75, "lvl " + (startIndex+k + i*3));
-					let nickname = new SlickUI.Element.Text(button.width/1.5, button.height/1.5, "name " + k);
-					button.add(level);
-					button.add(nickname);
+					let level = new SlickUI.Element.Text(button.width/1.5, button.height/2.75, "lvl " + pok.level);
 
-					button.add(new SlickUI.Element.DisplayObject(panel.width/8, panel.height/4.2, pokeball));
+
+					scaleFont(button, pok.nickname, 16)
+
+					button.add(level);
+
+					button.add(new SlickUI.Element.DisplayObject(panel.width/10, panel.height/8, pokemon));
 
 				});
 			}
 		}
+	}
+}
+
+function scaleFont(button, nik, size) {
+	let nickname = new SlickUI.Element.Text(0, button.height/1.3, nik);
+	nickname.size = size;
+	button.add(nickname);
+	nickname.centerHorizontally();
+	if (nickname.text.textHeight > 24) {
+		nickname.text.destroy();
+		scaleFont(button, nik, size - 1);
 	}
 }

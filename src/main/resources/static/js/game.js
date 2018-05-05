@@ -82,6 +82,7 @@ Game.preload = function() {
     game.load.image('pending_challenge_button', 'assets/buttons/button_pending.png');
     game.load.image('up_arrow', 'assets/buttons/uparrow.png');
     game.load.image('down_arrow', 'assets/buttons/downarrow.png');
+    game.load.image('x_icon', 'assets/buttons/x.png');
 
 	Battle.preload();
 };

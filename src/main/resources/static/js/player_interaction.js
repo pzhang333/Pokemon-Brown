@@ -46,7 +46,6 @@ function renderChallenge(player) {
 	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
 	Game.slickUI.add(panelMessage);
 	let header = new SlickUI.Element.Text(10 , 10, "Accept challenge");
-	console.log(player.id);
 	let playerInfo = new SlickUI.Element.Text(10 , 70, Game.players[player.id].username + " (" + Game.players[player.id].elo + ")");
 	let rejectButton = new SlickUI.Element.Button(Game.map.widthInPixels/2.75, Game.map.heightInPixels/40, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
 	let acceptButton = new SlickUI.Element.Button(Game.map.widthInPixels/4.3, Game.map.heightInPixels/40, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
