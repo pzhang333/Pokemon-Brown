@@ -365,6 +365,13 @@ public class WildBattle extends Battle {
     }
     if (needsHeal) {
       u.teleportTo(new Location(Main.getWorld().getChunk(2), 30, 31));
+    } else if (u.getActivePokemon().isKnockedOut()) {
+      for (Pokemon p : u.getTeam()) {
+        if (!p.isKnockedOut()) {
+          u.setActivePokemon(p);
+          break;
+        }
+      }
     }
 
   }
