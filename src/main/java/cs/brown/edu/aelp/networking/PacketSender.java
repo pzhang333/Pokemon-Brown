@@ -83,16 +83,8 @@ public final class PacketSender {
     message.addProperty("type", MESSAGE_TYPE.INITIALIZE.ordinal());
     JsonObject values = new JsonObject();
     values.add("location", Main.GSON().toJsonTree(u.getLocation()));
-    List<JsonObject> otherPlayerInfo = new ArrayList<>();
-    for (User other : u.getLocation().getChunk().getUsers()) {
-      if (u.isConnected()) {
-        JsonObject user_data = new JsonObject();
-        user_data.addProperty("id", other.getId());
-        user_data.addProperty("username", other.getUsername());
-        otherPlayerInfo.add(user_data);
-      }
-    }
-    values.add("players", Main.GSON().toJsonTree(otherPlayerInfo));
+    values.add("players",
+        Main.GSON().toJsonTree(u.getLocation().getChunk().getUsers()));
     values.add("leaderboards", Main.GSON().toJsonTree(Leaderboards.getTop5()));
     message.add("payload", values);
     queueOpForChunk(buildPlayerOpMessage(u, OP_CODES.ENTERED_CHUNK),
