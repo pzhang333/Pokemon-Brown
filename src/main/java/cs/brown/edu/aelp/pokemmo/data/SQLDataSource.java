@@ -132,9 +132,12 @@ public class SQLDataSource implements DataSource {
     }
 
     if (user.getActivePokemon() == null) {
-      System.out.printf(
-          "WARNING: %s somehow failed to set an active pokemon during loading.%n",
-          user.getUsername());
+      user.setActivePokemon(user.getAllPokemon().get(0));
+      if (user.getActivePokemon() == null) {
+        System.out.printf(
+            "WARNING: %s somehow failed to set an active pokemon during loading.%n",
+            user.getUsername());
+      }
     }
 
     return user;
