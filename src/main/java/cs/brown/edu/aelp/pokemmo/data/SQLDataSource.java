@@ -1,5 +1,6 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
+import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
 import cs.brown.edu.aelp.pokemmo.data.Leaderboards.EloUser;
 import cs.brown.edu.aelp.pokemmo.data.authentication.Password;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
@@ -118,7 +119,6 @@ public class SQLDataSource implements DataSource {
     Chunk c = Main.getWorld().getChunk(rs.getInt("chunk"));
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
-
     for (Pokemon pokemon : this.loadPokemonForUser(user)) {
       if (pokemon.isStored()) {
         user.addInactivePokemon(pokemon);
@@ -132,9 +132,12 @@ public class SQLDataSource implements DataSource {
     }
 
     if (user.getActivePokemon() == null) {
-      System.out.printf(
-          "WARNING: %s somehow failed to set an active pokemon during loading.%n",
-          user.getUsername());
+      user.setActivePokemon(user.getAllPokemon().get(0));
+      if (user.getActivePokemon() == null) {
+        System.out.printf(
+            "WARNING: %s somehow failed to set an active pokemon during loading.%n",
+            user.getUsername());
+      }
     }
 
     return user;
@@ -264,6 +267,7 @@ public class SQLDataSource implements DataSource {
             u = new User(rs.getInt("id"), username, email, token);
             u.setLocation(Main.getWorld().getSpawn());
             u.setCurrency(1000);
+            u.getInventory().setItemAmount(ItemType.POKEBALL.ordinal(), 25);
           } else {
             conn.rollback();
             throw new AuthException();
