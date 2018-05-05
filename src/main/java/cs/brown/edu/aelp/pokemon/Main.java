@@ -7,6 +7,7 @@ import cs.brown.edu.aelp.commands.BattleCommand;
 import cs.brown.edu.aelp.commands.CoinsCommand;
 import cs.brown.edu.aelp.commands.CommandHandler;
 import cs.brown.edu.aelp.commands.HealTeam;
+import cs.brown.edu.aelp.commands.ItemCommand;
 import cs.brown.edu.aelp.commands.TeleportCommand;
 import cs.brown.edu.aelp.commands.TournamentCommand;
 import cs.brown.edu.aelp.networking.PacketSender;
@@ -211,12 +212,14 @@ public final class Main {
     CoinsCommand cc = new CoinsCommand();
     BattleCommand bc = new BattleCommand();
     HealTeam ht = new HealTeam();
+    ItemCommand ic = new ItemCommand();
 
     ch.registerCommand(tc);
     ch.registerCommand(tnc);
     ch.registerCommand(cc);
     ch.registerCommand(bc);
     ch.registerCommand(ht);
+    ch.registerCommand(ic);
 
     ch.start();
 
