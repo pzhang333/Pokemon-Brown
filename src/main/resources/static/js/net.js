@@ -12,7 +12,8 @@ const MESSAGE_TYPE = {
     CHAT: 10,
     SERVER_MESSAGE: 11,
     CHALLENGE_REQUEST: 12,
-    CHALLENGE_RESPONSE: 13
+    CHALLENGE_RESPONSE: 13,
+    UPDATE_ACTIVE_POKEMON: 14
 };
 
 const BATTLE_ACTION = {
@@ -55,6 +56,7 @@ class Net {
 
 
 		// this.host = 'localhost';
+		//this.host = 'localhost';
 		this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
@@ -212,8 +214,10 @@ class Net {
 			if (player.id == net.id) {
 				Game.player.username = player.username;
 				Game.player.items = player.items;
-				Game.player.elo = player.elo;
 				Game.player.pokemon = player.pokemon;
+                Game.player.currency = player.currency;
+                Game.player.activePokemon = player.active_pokemon;
+				Game.player.elo = player.elo;
 				continue;
 			}
 
@@ -331,12 +335,17 @@ class Net {
 			if (id == net.id) {
 				//console.log('skip: ' + id);
 				Game.player.items = msg.payload.users[i].items;
+
+                Game.player.pokemon = msg.payload.users[i].pokemon;
+                Game.player.currency = msg.payload.users[i].currency;
+                Game.player.activePokemon = msg.payload.users[i].active_pokemon;
+
 				Game.player.elo = msg.payload.users[i].elo;
-				Game.player.pokemon = msg.payload.users[i].pokemon;
 				continue;
 			}
 
 			if (Game.players[id] == undefined) {
+                //console.log(Game.player.pokemon);
 				continue;
 			}
 

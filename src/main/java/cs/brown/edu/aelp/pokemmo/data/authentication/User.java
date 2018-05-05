@@ -363,6 +363,7 @@ public class User extends Trainer implements SQLBatchSavable {
       o.add("location", Main.GSON().toJsonTree(src.getLocation()));
       o.add("items", Main.GSON().toJsonTree(src.getInventory()));
       o.add("pokemon", Main.GSON().toJsonTree(src.getAllPokemon()));
+      o.addProperty("active_pokemon", src.getActivePokemon().getId());
       o.addProperty("currency", src.getCurrency());
       o.addProperty("elo", src.getElo());
       if (src.getPath() != null) {

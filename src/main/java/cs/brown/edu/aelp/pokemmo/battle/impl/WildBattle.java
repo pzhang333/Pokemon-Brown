@@ -1,5 +1,11 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
@@ -28,11 +34,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 public class WildBattle extends Battle {
 
@@ -225,6 +226,8 @@ public class WildBattle extends Battle {
   public void handleTurn(FightTurn turn) {
     System.out.println("Fight turn");
 
+    turn.getMove().setPP(turn.getMove().getCurrPP() - 1);
+
     Trainer atkTrainer = turn.getTrainer();
     Trainer defTrainer = other(atkTrainer);
 
@@ -282,8 +285,6 @@ public class WildBattle extends Battle {
 
         defendingPokemon
             .setHealth(defendingPokemon.getCurrHp() - result.getDamage());
-
-        System.out.println(defendingPokemon.getCurrHp());
 
         this.getPendingBattleUpdate().addSummary(new FightSummary(atkPokemon,
             defendingPokemon, base.toString(), "basic"));
@@ -362,6 +363,13 @@ public class WildBattle extends Battle {
     }
     if (needsHeal) {
       u.teleportTo(new Location(Main.getWorld().getChunk(2), 30, 31));
+    } else if (u.getActivePokemon().isKnockedOut()) {
+      for (Pokemon p : u.getTeam()) {
+        if (!p.isKnockedOut()) {
+          u.setActivePokemon(p);
+          break;
+        }
+      }
     }
 
   }

@@ -1,7 +1,7 @@
 
-let toDrawLeaderboard = false;
-let toDrawBackpack = false;
-let coinNumber = 100;
+let leaderboardDrawn = false;
+let backpackDrawn = false;
+let teamDrawn = false;
 
 var Game = {
 	players: {}
@@ -66,6 +66,7 @@ Game.preload = function() {
     game.load.image('trophy', 'assets/HUD/trophy.png');
     game.load.image('coin', 'assets/HUD/coin.png');
     game.load.image('logout', 'assets/HUD/logout.png');
+    game.load.image('pokedex', 'assets/HUD/pokedex.png');
 
     game.load.image('pokeball', 'assets/HUD/pokeball.png');
     game.load.image('greatball', 'assets/HUD/greatball.png');
@@ -320,42 +321,43 @@ Game.loadCurrentChunk = function(clear) {
 
 Game.drawHud = function() {
 
-	if (toDrawLeaderboard) {
-		drawLeadboard();
-	} else if (toDrawBackpack) {
-		drawBackpack();
-	}
-
 	// hud grey bar
-	completionSprite = game.add.graphics(0, 0);
+	let completionSprite = game.add.graphics(0, 0);
 	completionSprite.beginFill(0x3d3d3d, 1);
 	completionSprite.drawRect(Game.map.widthInPixels/1.5, Game.map.heightInPixels-0.51*Game.map.heightInPixels, Game.map.widthInPixels, Game.map.heightInPixels/10.4);
 	completionSprite.boundsPadding = 0;
     completionSprite.fixedToCamera = true;
+    completionSprite.inputEnabled = true;
+
+    // team management icon
+    let teamIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/4 - 35, Game.map.heightInPixels-Game.map.heightInPixels/2 + 35, 'pokedex');
+    teamIcon.anchor.setTo(0.5, 0.5);
+    teamIcon.inputEnabled = true;
+    teamIcon.fixedToCamera = true;
+    teamIcon.events.onInputDown.add(queueTeam, this);
+
+    // coin icon
+	let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 20, Game.map.heightInPixels-Game.map.heightInPixels/2 + 75, 'coin');
+	coinIcon.anchor.setTo(0.5, 0.5);
+	coinIcon.inputEnabled = false;
+	coinIcon.fixedToCamera = true;
+
+    // coin text
+    let coinText = game.add.bitmapText(Game.map.widthInPixels-Game.map.widthInPixels/4 - 50, Game.map.heightInPixels-Game.map.heightInPixels/2.2 + 25, 'carrier_command','x'+Game.player.currency, 7.5);
+    coinText.inputEnabled = false;
+    coinText.fixedToCamera = true;
+
+    // backpack icon
+    let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 100, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");
+    backpackIcon.inputEnabled = true;
+    backpackIcon.fixedToCamera = true;
+    backpackIcon.events.onInputDown.add(queueBackpack, this);
 
 	// trophy icon
 	let trophyIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 165, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "trophy");
     trophyIcon.inputEnabled = true;
     trophyIcon.fixedToCamera = true;
     trophyIcon.events.onInputDown.add(queueLeaderboard, this);
-
-	// backpack icon
-	let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 100, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");
-    backpackIcon.inputEnabled = true;
-    backpackIcon.fixedToCamera = true;
-    backpackIcon.events.onInputDown.add(queueBackpack, this);
-
-    Game.backpackIcon = backpackIcon;
-    
-    // coin icon
-    let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 25, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "coin");
-    coinIcon.inputEnabled = false;
-    coinIcon.fixedToCamera = true;
-
-    // coin text
-    let coinText = game.add.bitmapText(Game.map.widthInPixels-Game.map.widthInPixels/3 + 35, Game.map.heightInPixels-Game.map.heightInPixels/2.2, 'carrier_command','x'+coinNumber,7.5);
-    coinText.inputEnabled = false;
-    coinText.fixedToCamera = true;
 
     // logout button
 	let logoutIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 230, Game.map.heightInPixels-Game.map.heightInPixels/2.032 - 5, "logout");
@@ -390,7 +392,7 @@ function drawBackpack() {
 	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
 	Game.slickUI.add(Game.panel);
 
-	let header = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 20, "Backpack:");
+	let header = new SlickUI.Element.Text(Game.panel.width/2 - 130 , 20, "Backpack:");
 
 	// let player1 = new SlickUI.Element.Text(Game.panel.width/2 - 100 , 65, "empty");
 	let items = Game.player.items;
@@ -441,28 +443,235 @@ function drawBackpack() {
 
 }
 function queueLeaderboard() {
-	if (toDrawLeaderboard || toDrawBackpack) {
+	if (backpackDrawn || teamDrawn) {
 		if (Game.panel.container != undefined) {
+            Battle.clearButtons(Game.pokemonButtons);
 			Game.panel.destroy();
-			toDrawBackpack = false;
+			backpackDrawn = false;
+			teamDrawn = false
 		}
+        leaderboardDrawn = true;
+        drawLeadboard();
+	} else if (leaderboardDrawn) {
+        if (Game.panel.container != undefined) {
+            Battle.clearButtons(Game.pokemonButtons);
+            Game.panel.destroy();
+            leaderboardDrawn = false;
+        }
 	} else {
-		drawLeadboard();
+		leaderboardDrawn = true;
+        drawLeadboard();
 	}
-	toDrawLeaderboard = !toDrawLeaderboard;
 }
 
 function queueBackpack() {
-	if (toDrawBackpack || toDrawLeaderboard) {
-		if (Game.panel.container != undefined) {
-			Game.panel.destroy();
-			toDrawLeaderboard = false;
+    if (leaderboardDrawn || teamDrawn) {
+        if (Game.panel.container != undefined) {
+            Battle.clearButtons(Game.pokemonButtons);
+            Game.panel.destroy();
+            leaderboardDrawn = false;
+            teamDrawn = false
+        }
+        backpackDrawn = true;
+        drawBackpack();
+    } else if (backpackDrawn) {
+        if (Game.panel.container != undefined) {
+            Battle.clearButtons(Game.pokemonButtons);
+            Game.panel.destroy();
+            backpackDrawn = false;
+        }
+    } else {
+        backpackDrawn = true;
+        drawBackpack();
+    }
+};
+
+function queueTeam() {
+    if (leaderboardDrawn || backpackDrawn) {
+        if (Game.panel.container != undefined) {
+            Battle.clearButtons(Game.pokemonButtons);
+            Game.panel.destroy();
+            leaderboardDrawn = false;
+            backpackDrawn = false
+        }
+        teamDrawn = true;
+        drawTeam();
+    } else if (teamDrawn) {
+        if (Game.panel.container != undefined) {
+            Battle.clearButtons(Game.pokemonButtons);
+            Game.panel.destroy();
+            teamDrawn = false;
+        }
+    } else {
+        teamDrawn = true;
+        drawTeam();
+    }
+};
+
+async function drawTeam() {
+    Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, 0, Game.map.widthInPixels/2, game.height - 98);
+    Game.slickUI.add(Game.panel);
+
+    Game.pokemonButtons = [];
+
+    let buttonWidth = Game.panel.width;
+    let buttonHeight = Game.panel.height / 5;
+
+    let allPokemon = Game.player.pokemon;
+    let pokemonCount = allPokemon.length;
+
+    let team = [];
+
+    for (let x = 0; x < pokemonCount; x++){
+    	let pokemon = allPokemon[x];
+    	if (!pokemon.stored) {
+    		team.push(pokemon);
 		}
-	} else {
-		drawBackpack();
 	}
-	toDrawBackpack = !toDrawBackpack;
-}
+
+    for (let i = 0; i < team.length; i++) {
+        let pokemon = team[i];
+
+
+        if (Game.player.activePokemon == undefined) {
+            Game.player.activePokemon = pokemon.id;
+        }
+
+        let pokeButton = new SlickUI.Element.Button(0, i * buttonHeight, buttonWidth, buttonHeight);
+
+
+        Game.panel.add(pokeButton);
+
+        Phaser.Canvas.setImageRenderingCrisp(game.canvas);
+
+        let text = new SlickUI.Element.Text(100, 5, ucfirst(pokemon.nickname));
+        let level = new SlickUI.Element.Text(250, 5, 'Lvl: ' + String(pokemon.level));
+
+        const y = (buttonHeight * (1 + i)) + 30;
+
+        let hp = new SlickUI.Element.Text(80, 26, 'HP: ');
+        let exp = new SlickUI.Element.Text(80, 56, 'EXP: ');
+
+        Battle.custDrawFrontPokemon(pokemon, function(key) {
+            pokeButton.events.onInputUp.removeAll();
+
+            pokeButton.pokeId = pokemon.id;
+
+            let sprite = game.add.sprite(0, 0, key);
+            sprite.visible = true;
+
+            if (pokemon.id == Game.player.activePokemon) {
+                pokeButton.sprite.loadTexture(pokeButton.spriteOn.texture);
+            }
+
+            if (pokemon.health > 0) {
+                pokeButton.events.onInputDown.add(function() {
+
+                    for(let i = 0; i < Game.pokemonButtons.length; i++) {
+                        let x = Game.pokemonButtons[i];
+
+                        if (x.sprite == undefined) {
+                            continue;
+                        }
+                        x.sprite.loadTexture(x.spriteOff.texture);
+                    }
+
+                    net.sendPacket(MESSAGE_TYPE.UPDATE_ACTIVE_POKEMON, {
+                        pokemon_id: pokemon.id
+                    });
+
+                    Game.player.activePokemon = pokeButton.pokeId;
+                    pokeButton.sprite.loadTexture(pokeButton.spriteOn.texture);
+
+                });
+            } else {
+                pokeButton.inputEnabled = false;
+                pokeButton.events.onInputDown.removeAll();
+                pokeButton.events.onInputUp.removeAll();
+            }
+
+
+            let h = 65 / sprite.height;
+            let w = 65 / sprite.width;
+
+            let s = Math.min(w, h);
+
+            sprite.scale.set(s, s);
+            sprite.anchor.setTo(0.5, 0.5);
+            sprite.x = Game.panel.x + 55;
+            sprite.y = y - 75;
+
+            sprite.fixedToCamera = true;
+
+            Game.pokemonButtons.push(sprite);
+        });
+
+        let healthbar = this.game.add.plugin(Phaser.Plugin.HealthMeter);
+        healthbar.bar(pokemon, {
+           x: Game.panel.x + 125,
+           y: y - 85,
+           width: 175,
+           height: 5
+        });
+
+        let currExp = pokemon.currExp - pokemon.currLvlExp;
+        let expToLevelUp = pokemon.nextExp - pokemon.currLvlExp;
+
+        if (pokemon.level >= 100){
+        	currExp = 100;
+        	expToLevelUp = 100;
+		}
+
+		let experience = {
+        	health: currExp,
+            maxHealth: expToLevelUp
+        };
+
+        let expbar = this.game.add.plugin(Phaser.Plugin.HealthMeter);
+        expbar.bar(experience, {
+            x: Game.panel.x + 125,
+            y: y - 55,
+            width: 175,
+            height: 5,
+			foreground: '#3884ff'
+        });
+
+        text.size = 12;
+        level.size = 12;
+        hp.size = 12;
+        exp.size = 12;
+        pokeButton.add(hp);
+        pokeButton.add(text);
+        pokeButton.add(level);
+        pokeButton.add(exp);
+
+       /* if (Game.player.activePokemon == pokemon.id || pokemon.id == 2) {
+        	console.log('testsetesttestess');
+            Game.activePokemonBox = game.add.graphics(0, 0);
+            Game.activePokemonBox.lineStyle(3, 0x1EA7E1, 1);
+            console.log(Game.panel.x, i * buttonHeight, pokeButton.width, pokeButton.height);
+
+
+           // Game.activePokemonBox.drawRect(Game.panel.x, i * buttonHeight, pokeButton.width, pokeButton.height);
+
+			//await Game.panel.x;
+            Game.activePokemonBox.drawRect(Game.panel.x + 4, (i * (buttonHeight + 4)), buttonWidth, buttonHeight);
+            Game.activePokemonBox.fixedToCamera = true;
+
+
+
+            Game.activePokemonBox.visible = true;
+
+            //Game.HUD.add(Game.activePokemonBox)
+		}*/
+
+        Game.pokemonButtons.push(healthbar);
+        Game.pokemonButtons.push(expbar);
+        Game.pokemonButtons.push(pokeButton);
+    }
+
+
+};
 
 function logout() {
     console.log('clicked!');
