@@ -168,7 +168,7 @@ class Net {
 		//Game.player.id = msg.payload.id;
 	}
 
-	initPacketHandler(msg) {
+	async initPacketHandler(msg) {
 
 		if (Battle.inBattle) {
 			if (Battle.showing != undefined) {
