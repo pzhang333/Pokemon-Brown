@@ -8,7 +8,6 @@ import com.google.gson.JsonSerializer;
 import cs.brown.edu.aelp.networking.Challenge;
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
-import cs.brown.edu.aelp.pokemmo.data.Leaderboards;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Entity;
@@ -255,7 +254,6 @@ public class User extends Trainer implements SQLBatchSavable {
     double e1 = R1 / (R1 + R2);
     int newElo = (int) (this.elo + (K * (s - e1)));
     this.setElo(newElo);
-    Leaderboards.tryInsertTop5(this);
     return newElo;
   }
 

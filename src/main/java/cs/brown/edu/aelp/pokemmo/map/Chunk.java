@@ -1,6 +1,8 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.util.Identifiable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,6 +90,11 @@ public class Chunk extends Identifiable {
       u.getTeam().forEach(p -> {
         p.fullRestore();
       });
+      for (Pokemon p : u.getTeam()) {
+        for (Move m : p.getMoves()) {
+          m.setPP(m.getPP());
+        }
+      }
     }
   }
 
