@@ -206,6 +206,7 @@ public class User extends Trainer implements SQLBatchSavable {
     }
   }
 
+  @Override
   public void setActivePokemon(Pokemon p) {
     super.setActivePokemon(p);
     this.changed = true;
