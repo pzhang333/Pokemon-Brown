@@ -1,5 +1,6 @@
 let pending = false;
 let battler = null;
+let panelMessage = null;
 
 function playerInteraction() {
 	let player = this;
@@ -39,13 +40,16 @@ function challengePlayer() {
 }
 
 function renderChallenge(player) {
-	let panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
+	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
 	Game.slickUI.add(panelMessage);
-	let header = new SlickUI.Element.Text(10 , 10, "Accept challenge?");
-	let rejectButton = new SlickUI.Element.Button(Game.map.widthInPixels/4.3, Game.map.heightInPixels/40, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
-	let acceptButton = new SlickUI.Element.Button(Game.map.widthInPixels/2.75, Game.map.heightInPixels/40, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
+	let header = new SlickUI.Element.Text(10 , 10, "Accept challenge");
+	console.log(player.id);
+	let playerInfo = new SlickUI.Element.Text(10 , 70, Game.players[player.id].username + " (" + Game.players[player.id].name + ")");
+	let rejectButton = new SlickUI.Element.Button(Game.map.widthInPixels/2.75, Game.map.heightInPixels/40, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
+	let acceptButton = new SlickUI.Element.Button(Game.map.widthInPixels/4.3, Game.map.heightInPixels/40, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
 
 	panelMessage.add(header);
+	panelMessage.add(playerInfo);
 	panelMessage.add(rejectButton);
 	panelMessage.add(acceptButton);
 
@@ -62,10 +66,10 @@ function renderChallenge(player) {
 }
 
 function renderChallengeUpdate(response) {
-	let panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
+	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
 	Game.slickUI.add(panelMessage);
 	let header = new SlickUI.Element.Text(10 , 10, "Challenge Update: " + response);
-	let okButton = new SlickUI.Element.Button(Game.map.widthInPixels/4.3, Game.map.heightInPixels/23, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
+	let okButton = new SlickUI.Element.Button(panelMessage.width/2 - Game.map.widthInPixels/(9.5*2), Game.map.heightInPixels/23, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
 
 	panelMessage.add(header);
 	panelMessage.add(okButton);
@@ -73,7 +77,7 @@ function renderChallengeUpdate(response) {
 	okButton.add(new SlickUI.Element.Text(0, 0, "Ok")).center();
 	okButton.events.onInputUp.add(function () {
 		panelMessage.destroy();
-		if (battler.sprite.challenge != undefined) {
+		if (battler != undefined) {
 			battler.sprite.challenge.kill();
 		}
 	});

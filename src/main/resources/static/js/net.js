@@ -55,7 +55,7 @@ class Net {
 
 		this.host = 'localhost';
 
-    	// this.host = '10.38.32.136';
+    	//this.host = '10.38.32.136';
     	this.port = 4567;
 
 		this.cfg = {
@@ -435,7 +435,7 @@ class Net {
 
 	handleMsg(event) {
 
-//		console.log('test!');
+		// console.log('test!');
 		//console.log(event);
 
 		const data = JSON.parse(event.data);
