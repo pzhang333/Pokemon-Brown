@@ -156,6 +156,10 @@ Battle.doSwitch = function(pOut, pIn, cb) {
 	let fore = (pOut.id == Battle.frontPokemon.id) ? pIn : undefined;
 	let bg = (pOut.id == Battle.backPokemon.id) ? pIn : undefined;
 
+	if (pOut.id != Battle.frontPokemon.id && pOut != Battle.backPokemon.id) {
+		Battle.endBattle();
+	}
+
 	Battle.switchOut(pOut, function() {
 		Game.time.events.add(Phaser.Timer.SECOND * delay, function() {
 
@@ -893,7 +897,12 @@ Battle.switchTo = async function(id) {
 	Battle.clearTeam();
 };
 
-Battle.forfeit = function() {
+Battle.forfeit = async function() {
+
+	if (Battle.showing != undefined) {
+	//	await Battle.showing;
+	}
+
 	console.log('Forfeit!');
 	net.sendBattlePacket(BATTLE_ACTION.RUN, {});
 
