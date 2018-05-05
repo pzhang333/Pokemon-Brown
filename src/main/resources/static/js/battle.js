@@ -322,7 +322,7 @@ Battle.endBattle = function() {
 	game.state.start("Game", true, false);
 
 	// HACK VERY BAD!
-	//location.reload();
+	location.reload();
 };
 
 Battle.create = function() {
