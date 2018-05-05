@@ -7,11 +7,11 @@ var Battle = {
 
 Battle.init = function() {
 	game.scale.pageAlignHorizontally = true;
-	
+
 	Battle.attackAnims = {
 		'basic': getAnimArr('basic', range(0, 8, range(0, 4)))
 	};
-	
+
 	Battle.offsets = {
 		'basic': {
 			x: 0,
@@ -40,28 +40,28 @@ Battle.getSpriteById = function(id) {
 
 Battle.showKO = function(pokemon) {
 	let tween = game.add.tween(pokemon.sprite);
-	
+
 	console.log(pokemon.id);
-	
+
 	tween.to({
 		x: pokemon.sprite.x,
 		y: pokemon.sprite.y + 150,
 		alpha: 0
 	}, Phaser.Timer.SECOND * .5);
-	
+
 	tween.onComplete.add(function () {
 		pokemon.healthbar.backBar.destroy();
 		pokemon.healthbar.healthBar.destroy();
 		pokemon.sprite.kill();
 	});
-	
+
 	tween.start();
 };
 
 Battle.setHealth = function(pokemon, health) {
-	
+
 	pokemon.health = health;
-	
+
 	console.log('AYyyy: ' + health);
 	if (health == 0) {
 		if (Battle.attack.animations.currentAnim.isPlaying) {
@@ -77,7 +77,7 @@ Battle.setHealth = function(pokemon, health) {
 Battle.applyDamage = function(pokemon, damage) {
 	if (damage >= pokemon.health) {
 		pokemon.health = 0;
-		
+
 		if (Battle.attack.animations.currentAnim.isPlaying) {
 			Battle.attack.animations.currentAnim.onComplete.addOnce(function() {
 				Battle.showKO(pokemon);
@@ -93,17 +93,17 @@ Battle.applyDamage = function(pokemon, damage) {
 // Battle.showAttackPair({defendingId: 1, attack: 'basic', damage: 75}, {defendingId: 2, attack: 'basic', damage: 250}, 1);
 
 Battle.showAttackSummary = function(first, cb) {
-	
-	
+
+
 	let defFirst = Battle.getPokemonById(first.defendingId);
-	
+
 	let offsetsFirst = Battle.offsets[first.animation];
 	let time = (offsetsFirst == undefined) ? .5 : offsetsFirst.time;
-	
+
 	Game.time.events.add(Phaser.Timer.SECOND * time, function() {
 		Battle.setHealth(defFirst, first.health);
 	});
-	
+
 	if (offsetsFirst != undefined) {
 		Battle.showAttack(defFirst.sprite, first.animation, function() {
 			if (cb != undefined) {
@@ -119,29 +119,29 @@ Battle.showAttackSummary = function(first, cb) {
 
 
 Battle.showAttackPair = function(first, second, delay) {
-	
+
 	if (delay == undefined) {
 		delay = .75;
 	}
-	
+
 	let defFirst = Battle.getPokemonById(first.defendingId);
-	
+
 	let offsetsFirst = Battle.offsets[first.attack];
 	Game.time.events.add(Phaser.Timer.SECOND * offsetsFirst.time, function() {
 		Battle.applyDamage(defFirst, first.damage);
 	});
-	
+
 	Battle.showAttack(defFirst.sprite, first.attack, function() {
-		
+
 		Game.time.events.add(Phaser.Timer.SECOND * delay, function() {
 			if (second != undefined) {
 				let defSecond = Battle.getPokemonById(second.defendingId);
-				
+
 				let offsetsSecond = Battle.offsets[second.attack];
 				Game.time.events.add(Phaser.Timer.SECOND * offsetsSecond.time, function() {
 					Battle.applyDamage(defSecond, second.damage);
 				});
-				
+
 				Battle.showAttack(defSecond.sprite, second.attack);
 			}
 		}, this);
@@ -150,23 +150,23 @@ Battle.showAttackPair = function(first, second, delay) {
 
 // Battle.doSwitch(Battle.backPokemon, new Pokemon(123, 'chandelure'));
 Battle.doSwitch = function(pOut, pIn, cb) {
-	
+
 	let delay = .75;
-	
+
 	let fore = (pOut.id == Battle.frontPokemon.id) ? pIn : undefined;
 	let bg = (pOut.id == Battle.backPokemon.id) ? pIn : undefined;
-	
+
 	Battle.switchOut(pOut, function() {
 		Game.time.events.add(Phaser.Timer.SECOND * delay, function() {
-			
+
 			if (fore != undefined) {
 				Battle.frontPokemon = pIn;
 			} else {
 				Battle.backPokemon = pIn;
 			}
-			
+
 			Battle.drawPokemon(fore, bg);
-			
+
 			if (cb != undefined) {
 				cb();
 			}
@@ -175,21 +175,21 @@ Battle.doSwitch = function(pOut, pIn, cb) {
 };
 
 Battle.switchIn = function(pokemon, cb) {
-	
+
 	console.log('Switch in: ', pokemon);
-	
+
 	let tween = game.add.tween(pokemon.sprite);
-	
+
 	pokemon.sprite.alpha = 0;
-	
+
 	let w = pokemon.sprite.width;
 	let h = pokemon.sprite.height;
-	
+
 	pokemon.sprite.width = 0;
 	pokemon.sprite.height = 0;
-	
+
 	pokemon.sprite.visible = true;
-	
+
 	tween.to({
 		x: pokemon.sprite.x,
 		y: pokemon.sprite.y,
@@ -197,25 +197,25 @@ Battle.switchIn = function(pokemon, cb) {
 		height: h,
 		alpha: 1
 	}, Phaser.Timer.SECOND * .5);
-	
+
 	tween.onComplete.add(function() {
 		Battle.drawHealthBox(pokemon);
 		pokemon.sprite.animations.add('idle');
-		pokemon.sprite.animations.play('idle', 40, true);	
-		
+		pokemon.sprite.animations.play('idle', 40, true);
+
 		if (cb != undefined) {
 			cb();
 		}
 	});
-	
+
 	tween.start();
-	
+
 };
 
 Battle.switchOut = function(pokemon, cb) {
-	
+
 	let tween = game.add.tween(pokemon.sprite);
-	
+
 	tween.to({
 		x: pokemon.sprite.x,
 		y: pokemon.sprite.y,
@@ -223,52 +223,52 @@ Battle.switchOut = function(pokemon, cb) {
 		width: 0,
 		height: 0
 	}, Phaser.Timer.SECOND * .5);
-	
+
 	tween.onComplete.add(function () {
 		pokemon.healthbar.destroy();
 		pokemon.sprite.kill();
-		
+
 		if (cb != undefined) {
 			cb();
 		}
 	});
-	
+
 	tween.start();
-	
+
 };
 
 Battle.showAttack = function(pokeSprite, name, cb) {
-	
+
 	if (name == undefined) {
 		name = 'basic';
 	}
 
 	//this.attack.visible = true;
 	//this.attack.animations.play(name, 3, true);
-	
+
 	if (this.attack != undefined) {
 		this.attack.kill();
 	}
 
 	let offsets = Battle.offsets[name];
-	
+
 	this.attack = game.add.sprite(
 			pokeSprite.x + offsets.x,
 			pokeSprite.y + offsets.y, 'attacks');
-	
+
 	this.attack.anchor.setTo(.5, .5);
 	this.attack.scale.setTo(offsets.xScale, offsets.yScale);
-	
+
 	for(name in Battle.attackAnims) {
 		console.log(name);
 		this.attack.animations.add(name, Battle.attackAnims[name]);
 	}
-	
+
 	this.attack.animations.play(name, 15, false);
 	this.attack.animations.currentAnim.onComplete.add(function () {
 		Battle.attack.kill();
 	}, this);
-	
+
 	if (cb != undefined) {
 		this.attack.animations.currentAnim.onComplete.add(cb, this);
 	}
@@ -289,9 +289,9 @@ Battle.preload = function() {
     game.load.image('masterball', 'assets/HUD/masterball.png');
     game.load.image('hyperpotion', 'assets/HUD/hyperpotion.png');
     game.load.image('fullrestore', 'assets/HUD/fullrestore.png');
-	
+
 	game.load.audio('battle', ['assets/audio/battle.mp3']);
-	
+
 };
 
 Battle.run = function() {
@@ -301,82 +301,82 @@ Battle.run = function() {
 
 Battle.endBattle = function() {
 	Battle.music.destroy();
-	
+
 	Battle.subsShowing = false;
 	Battle.showing = false;
 	Battle.clearMenu();
-	
+
 	console.log('EndBattle()');
-	
+
 	Battle.inBattle = false;
-	
+
 	for(let i = 0; i < Game.player.length; i++) {
 		Game.players[i].sprite.kill();
 	}
-	
+
 	//Game.players = {};
 	game.state.start("Game", true, false);
-	
+
 	// HACK VERY BAD!
 	//location.reload();
 };
 
 Battle.create = function() {
-	
+
 	Battle.inBattle = true;
-	
+
 	Game.map.gameLayers['Base'].inputEnabled = false;
-	
+
 	Battle.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
 	Battle.slickUI.load('ui/kenney/kenney.json');
-	
+
 	game.world.bringToTop(Battle.slickUI.container.displayGroup);
-	
+
 	//return;
 	Battle.music = game.add.audio('battle');
 	//Battle.music.loopFull(.1);
-	
+
 	console.log(game.height / 2);
-	
+
 	game.camera.follow(null);
 	game.camera.reset();
-	
+
 	this.stage = game.add.sprite(0, 0, 'atlas1', Battle.initPacket.background_name);
 	this.stage.width = game.width;
 	this.stage.height = game.height;
 	this.stage.anchor.setTo(0, 0);
-	
+
 	this.backPatch = game.add.sprite(game.width * (3 / 4), game.height * (6.25 / 12), 'atlas2', 'scenery/patch');
 	this.backPatch.anchor.setTo(0.5, 0.5);
 	this.backPatch.scale.set(1.25, 1.25);
 	this.backPatch.visible = true;
-	
+
 	this.frontPatch = game.add.sprite(game.width * (3.5 / 12), game.height * (8.5 / 12), 'atlas2', 'scenery/patch');
 	this.frontPatch.anchor.setTo(0.5, 0.5);
 	this.frontPatch.scale.set(1.5, 1.5);
 	this.frontPatch.visible = true;
-	
+
 	let pokemon_a = Battle.initPacket.pokemon_a;
 	let pokemon_b = Battle.initPacket.pokemon_b;
-	
-	
+
+
 	// Other:
 	/*Battle.team = [
 		pokemon_a,
 		{
-			id: 123, 
+			id: 123,
 			species: 'pikachu',
 			health: 122,
 			maxHealth: 150
 		},
 		{
-			id: 234, 
+			id: 234,
 			species: 'chandelure',
 			health: 68,
 			maxHealth: 150
 		},
 		{
-			id: 345, 
+			id: 345,
 			species: 'arceus',
 			health: 100,
 			maxHealth: 150
@@ -396,29 +396,29 @@ Battle.create = function() {
 		Battle.frontPokemon = pokemon_b;
 		Battle.backPokemon = pokemon_a;
 	}
-	
+
 	this.drawDefaultMenu();
 	this.drawPokemon(Battle.frontPokemon, Battle.backPokemon);
-	
+
 	this.drawMessage("Battle!");
-	
+
 	this.stage.visible = true;
 };
 
 Battle.drawBackground = function(key) {
-	
+
 	if (this.backPokemon.sprite != undefined) {
 		this.backPokemon.sprite.kill();
 	}
-	
+
 	this.backPokemon.sprite = game.add.sprite(game.width * (3 / 4), game.height * (6.25 / 12), key);
 	this.backPokemon.sprite.visible = false;
 	this.backPokemon.sprite.anchor.setTo(0.5, 1);
 	this.backPokemon.sprite.scale.set(.75, .75);
-	
-	
+
+
 	Battle.switchIn(this.backPokemon);
-	
+
 };
 
 Battle.drawHealthBox = function(pokemon) {
@@ -432,30 +432,30 @@ Battle.drawHealthBox = function(pokemon) {
 };
 
 Battle.drawForeground = function(key) {
-	
+
 	if (this.frontPokemon.sprite != undefined) {
 		this.frontPokemon.sprite.kill();
 	}
-	
+
 	this.frontPokemon.sprite = game.add.sprite(game.width * (3.5 / 12), game.height * (8.5 / 12), key);
 	this.frontPokemon.sprite.visible = false;
 	this.frontPokemon.sprite.anchor.setTo(0.5, 1);
 	this.frontPokemon.sprite.scale.set(.75, .75);
-	
-	
+
+
 	Battle.switchIn(Battle.frontPokemon);
 };
 
 Battle.custDrawFrontPokemon = function(pokemon, cb) {
-	
+
 	let frontKey = 'front-' + pokemon.species;
-	
+
 	if (game.cache.checkImageKey(frontKey)) {
 		cb(frontKey);
 	} else {
 		game.load.atlasJSONHash(frontKey, '/assets/sprites/pokemon/' + frontKey + '.png', '/assets/sprites/pokemon/' + frontKey + '.json');
 	}
-	
+
 	game.load.start();
 	game.load.onFileComplete.add(function(progress, cacheKey, success, totalLoaded, totalFiles) {
 		if (frontKey == cacheKey) {
@@ -465,23 +465,23 @@ Battle.custDrawFrontPokemon = function(pokemon, cb) {
 };
 
 Battle.drawPokemon = function(fore, bg) {
-	
+
 	let frontKey = false;
 	let backKey = false;
-	
+
 	if (fore != undefined) {
 		backKey = 'back-' + fore.species;
-		
+
 		if (game.cache.checkImageKey(backKey)) {
 			this.drawForeground(backKey);
 		} else {
 			game.load.atlasJSONHash(backKey, '/assets/sprites/pokemon/' + backKey + '.png', '/assets/sprites/pokemon/' + backKey + '.json');
 		}
 	}
-	
+
 	if (bg != undefined) {
 		frontKey = 'front-' + bg.species;
-		
+
 		if (game.cache.checkImageKey(frontKey)) {
 			this.drawBackground(frontKey);
 		} else {
@@ -490,45 +490,45 @@ Battle.drawPokemon = function(fore, bg) {
 	}
 
 	game.load.start();
-	
+
 	game.load.onFileComplete.add(function(progress, cacheKey, success, totalLoaded, totalFiles) {
-		
+
 		if (cacheKey == frontKey) {
 			this.drawBackground(cacheKey);
 		} else if (cacheKey == backKey) {
 			this.drawForeground(cacheKey);
 		}
-		 
+
 	}, this);
-	
+
 };
 
 Battle.drawMessage = async function(text, size) {
-	
+
 	Battle.clearMessageText();
-	
+
 	if (text == undefined) {
 		text = "";
 	}
-	
+
 	try {
 		if (Battle.messageText == undefined || true) {
-			
+
 			Battle.messageText = new SlickUI.Element.Text(8, 8, text);
-			
+
 			if (size == undefined) {
 				size = 12;
 			}
-			
+
 			Battle.messageText.size = size;
-			
-			
+
+
 			await Battle.messageText;
 			Battle.panel.add(Battle.messageText);
 		} else {
 			Battle.messageText.value = text;
 		}
-		
+
 		Battle.messageText.visible = true;
 	} catch(err) {
 		console.log('warning: ' + err);
@@ -1083,7 +1083,8 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 
 		let SUMMARY_TYPE = {
 			FIGHT: 0,
-			SWITCH: 1
+			SWITCH: 1,
+      HEALTH_CHANGE : 2
 		};
 
 		console.log('MESSADAFASD');
@@ -1116,7 +1117,7 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 						break;
 					}
 				}
-			} else {
+			}else {
 				pIn = summary.pokemonIn;
 			}
 
@@ -1126,7 +1127,14 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 					Battle.showSummaries(summaries, packet, resolveShow);
 				});
 			});
-		}
+		} else if (summary.type == SUMMARY_TYPE.HEALTH_CHANGE) {
+      let p = Battle.getPokemonById(summary.pokemon.id);
+      Battle.setHealth(p, p.health + summary.amount)
+      Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
+        resolve();
+        Battle.showSummaries(summaries, packet, resolveShow);
+      });
+    }
 	}, 10000);
 
 };

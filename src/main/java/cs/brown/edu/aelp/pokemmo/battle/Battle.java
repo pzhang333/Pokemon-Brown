@@ -1,18 +1,18 @@
 package cs.brown.edu.aelp.pokemmo.battle;
 
+import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.ItemSummary;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.util.Identifiable;
 
 public abstract class Battle extends Identifiable {
 
   public enum BattleState {
-    SETUP,
-    WAITING,
-    READY,
-    DONE,
-    WORKING
+    SETUP, WAITING, READY, DONE, WORKING
   }
 
   private final Arena arena;
@@ -97,6 +97,35 @@ public abstract class Battle extends Identifiable {
     }
 
     return 0;
+  }
+
+  protected void handleNonPokeballItem(ItemTurn turn) {
+    Item item = turn.getItem();
+    ItemType type = item.getType();
+
+    if (type == ItemType.OVERLOAD) {
+
+      Pokemon pokemon = turn.getTrainer().getActivePokemon();
+
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
+          String.format("%s overloaded!", pokemon.toString())));
+
+    } else if (type == ItemType.FULL_RESTORE) {
+
+      Pokemon pokemon = turn.getTrainer().getActivePokemon();
+      pokemon.fullRestore();
+
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
+          String.format("%s was fully restored.", pokemon.toString())));
+
+    } else {
+      // TODO...
+
+      Pokemon pokemon = turn.getTrainer().getActivePokemon();
+
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, true, String
+          .format("%s used item (%d)", pokemon.toString(), item.getId())));
+    }
   }
 
   public abstract String dbgStatus();

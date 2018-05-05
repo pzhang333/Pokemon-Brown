@@ -1,11 +1,19 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
+import cs.brown.edu.aelp.pokemmo.battle.Item;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
@@ -16,6 +24,7 @@ import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchInEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchOutEvent;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.FightSummary;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.ItemSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.SwitchSummary;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.map.Location;
@@ -26,11 +35,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class PvPBattle extends Battle {
 
@@ -97,6 +101,8 @@ public class PvPBattle extends Battle {
         handleTurn((FightTurn) turn);
       } else if (turn instanceof SwitchTurn) {
         handleTurn((SwitchTurn) turn);
+      } else if (turn instanceof ItemTurn) {
+        handleTurn((ItemTurn) turn);
       } else {
         handleTurn(turn);
       }
@@ -148,6 +154,23 @@ public class PvPBattle extends Battle {
     }
   }
 
+  private void handleTurn(ItemTurn turn) {
+
+    User u = (User) turn.getTrainer();
+    Item item = turn.getItem();
+    item.removeFromInventory(u.getInventory());
+
+    // TODO: Add messages
+
+    if (item.isPokeball()) {
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, false,
+          "You can't use a Pokeball in a PVP Battle!"));
+      return;
+    }
+
+    super.handleNonPokeballItem(turn);
+  }
+
   private void handleTurn(SwitchTurn turn) {
     Trainer trainer = turn.getTrainer();
 
@@ -174,6 +197,8 @@ public class PvPBattle extends Battle {
 
   public void handleTurn(FightTurn turn) {
     System.out.println("Fight turn");
+
+    turn.getMove().setPP(turn.getMove().getCurrPP() - 1);
 
     Trainer atkTrainer = turn.getTrainer();
     Trainer defTrainer = other(atkTrainer);
