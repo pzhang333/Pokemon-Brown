@@ -95,8 +95,12 @@ public class PlayerWebSocketHandler {
   @OnWebSocketClose
   public void onClose(Session session, int statusCode, String reason) {
     for (User u : UserManager.getAllUsers()) {
-      if (u.isConnected() && session == u.getSession()) {
+      // don't use .isConnected() because obviously their session is already
+      // closed; read the method name, idiot
+      if (u.getSession() != null && session == u.getSession()) {
         u.disconnectCleanup();
+        System.out.printf("%s (%d) disconnected.%n", u.getUsername(),
+            u.getId());
       }
     }
   }

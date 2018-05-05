@@ -7,7 +7,9 @@ import cs.brown.edu.aelp.commands.BattleCommand;
 import cs.brown.edu.aelp.commands.CoinsCommand;
 import cs.brown.edu.aelp.commands.CommandHandler;
 import cs.brown.edu.aelp.commands.HealTeam;
+import cs.brown.edu.aelp.commands.IdCommand;
 import cs.brown.edu.aelp.commands.ItemCommand;
+import cs.brown.edu.aelp.commands.KickCommand;
 import cs.brown.edu.aelp.commands.TeleportCommand;
 import cs.brown.edu.aelp.commands.TournamentCommand;
 import cs.brown.edu.aelp.networking.PacketSender;
@@ -106,9 +108,6 @@ public final class Main {
         .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
 
-    ScheduledExecutorService scheduler = Executors
-        .newSingleThreadScheduledExecutor();
-
     // ip, port, database, user, pass
     try {
       JsonFile cfg = new JsonFile("config/database_info.json");
@@ -130,20 +129,6 @@ public final class Main {
           }
         }
       };
-
-      Runnable save = new Runnable() {
-        @Override
-        public void run() {
-          // triggers table creation, too, if needed
-          try {
-            Main.getDataSource().loadLeaderboards();
-          } catch (LoadException e) {
-            e.printStackTrace();
-          }
-        }
-      };
-
-      scheduler.scheduleAtFixedRate(save, 0, 60, TimeUnit.SECONDS);
 
     } catch (IOException e) {
       System.out.println(
@@ -168,36 +153,48 @@ public final class Main {
       return;
     }
 
+    // load leaderboards initially, create table schema
+    try {
+      Main.getDataSource().loadLeaderboards();
+    } catch (LoadException e1) {
+      e1.printStackTrace();
+    }
+
     // try to start the save-thread if we're backed by SQL
-    if (Main.getDataSource() instanceof SQLDataSource) {
 
-      Runnable save = new Runnable() {
+    ScheduledExecutorService scheduler = Executors
+        .newSingleThreadScheduledExecutor();
 
-        @Override
-        public void run() {
-          Collection<User> users = UserManager.getAllUsers();
-          Collection<Pokemon> pokemon = new ArrayList<>();
-          for (User u : users) {
-            pokemon.addAll(u.getAllPokemon());
-          }
-          SQLDataSource data = (SQLDataSource) Main.getDataSource();
-          try {
+    Runnable save = new Runnable() {
+
+      @Override
+      public void run() {
+        Collection<User> users = UserManager.getAllUsers();
+        Collection<Pokemon> pokemon = new ArrayList<>();
+        for (User u : users) {
+          pokemon.addAll(u.getAllPokemon());
+        }
+        SQLDataSource data = (SQLDataSource) Main.getDataSource();
+        try {
+          if (Main.getDataSource() instanceof SQLDataSource) {
             System.out.printf("Saved %d users.%n", data.save(users));
             System.out.printf("Saved %d pokemon.%n", data.save(pokemon));
             UserManager.purgeDisconnectedUsers();
             users.stream().forEach(user -> user.setChanged(false));
             pokemon.stream().forEach(p1 -> p1.setChanged(false));
-          } catch (SaveException e) {
-            System.out.println("ERROR: Something went wrong during saving.");
-            e.printStackTrace();
           }
+          data.loadLeaderboards();
+          System.out.println("Updated leaderboards.");
+        } catch (SaveException | LoadException e) {
+          System.out
+              .println("ERROR: Something went wrong during saving or loading.");
+          e.printStackTrace();
         }
-      };
+      }
+    };
 
-      scheduler.scheduleAtFixedRate(save, SAVE_PERIOD, SAVE_PERIOD,
-          TimeUnit.SECONDS);
-
-    }
+    scheduler.scheduleAtFixedRate(save, SAVE_PERIOD, SAVE_PERIOD,
+        TimeUnit.SECONDS);
 
     runSparkServer((int) options.valueOf("port"));
 
@@ -232,6 +229,8 @@ public final class Main {
     BattleCommand bc = new BattleCommand();
     HealTeam ht = new HealTeam();
     ItemCommand ic = new ItemCommand();
+    KickCommand kc = new KickCommand();
+    IdCommand idc = new IdCommand();
 
     ch.registerCommand(tc);
     ch.registerCommand(tnc);
@@ -239,6 +238,8 @@ public final class Main {
     ch.registerCommand(bc);
     ch.registerCommand(ht);
     ch.registerCommand(ic);
+    ch.registerCommand(kc);
+    ch.registerCommand(idc);
 
     ch.start();
 

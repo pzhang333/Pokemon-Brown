@@ -40,9 +40,16 @@ public class RegisterHandler implements Route {
   public boolean validateInput(String name, String pass, String email,
       String species, String nickname) throws AuthException {
 
-    if (name.length() <= 3 || name.length() > 20) {
+    if (name.length() <= 3 || name.length() > 12) {
       throw new AuthException(
-          "Username must have greater than 3 and fewer than 21 characters.");
+          "Username must have greater than 3 and fewer than 13 characters.");
+    }
+    for (int i = 0; i < name.length(); i++) {
+      char c = name.charAt(i);
+      if (!Character.isAlphabetic(c) && !Character.isDigit(c)) {
+        throw new AuthException(
+            "Username can only contain letters and numbers.");
+      }
     }
 
     if (!pass.matches(

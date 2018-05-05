@@ -6,11 +6,14 @@ import cs.brown.edu.aelp.pokemon.Main;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public final class UserManager {
 
   private static final Map<Integer, User> users = new HashMap<>();
+  private static final Set<Integer> recentlyKicked = new HashSet<Integer>();
 
   private UserManager() {
   }
@@ -31,13 +34,18 @@ public final class UserManager {
       throws AuthException {
     DataSource data = Main.getDataSource();
     User user = data.authenticateUser(username, pass);
+    recentlyKicked.remove(user.getId());
     if (users.containsKey(user.getId())) {
       // We want to use their data from memory, but now they've got a new token.
       User memUser = users.get(user.getId());
       memUser.setToken(user.getToken());
       memUser.validateLocation();
+      System.out.printf("Loaded %s (%d) from memory.%n", user.getUsername(),
+          user.getId());
       return memUser;
     } else {
+      System.out.printf("Loaded %s (%d) from database.%n", user.getUsername(),
+          user.getId());
       users.put(user.getId(), user);
       return user;
     }
@@ -55,16 +63,24 @@ public final class UserManager {
    *           if something goes wrong
    */
   public static User authenticate(int id, String token) throws AuthException {
+    if (recentlyKicked.contains(id)) {
+      throw new AuthException(
+          "The server logged you out. Please use your password.");
+    }
     if (users.containsKey(id)) {
-      if (users.get(id).getToken() != null
-          && users.get(id).getToken().equals(token)) {
-        users.get(id).validateLocation();
-        return users.get(id);
+      User u = users.get(id);
+      if (u.getToken() != null && u.getToken().equals(token)) {
+        u.validateLocation();
+        System.out.printf("Loaded %s (%d) from memory (with token).%n",
+            u.getUsername(), u.getId());
+        return u;
       } else {
         throw new AuthException("Invalid token.");
       }
     } else {
       User user = Main.getDataSource().authenticateUser(id, token);
+      System.out.printf("Loaded %s (%d) from database (with token).%n",
+          user.getUsername(), user.getId());
       users.put(user.getId(), user);
       return user;
     }
@@ -88,6 +104,18 @@ public final class UserManager {
         users.remove(id);
       }
     }
+  }
+
+  /**
+   * Delete a user from memory, whether or not they've been recently saved. This
+   * is a dangerous method!
+   *
+   * @param u
+   *          the user
+   */
+  public static void forgetUser(User u) {
+    users.remove(u.getId());
+    recentlyKicked.add(u.getId());
   }
 
   /**

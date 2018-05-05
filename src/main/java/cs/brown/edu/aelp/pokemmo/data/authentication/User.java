@@ -114,6 +114,8 @@ public class User extends Trainer implements SQLBatchSavable {
     if (this.location == null || this.location.getChunk() != loc.getChunk()) {
       if (this.location != null) {
         this.location.getChunk().removeUser(this);
+        this.sendMessage(
+            "You have switched chunks and are now in a new chat channel.");
       }
       loc.getChunk().addUser(this);
     }
@@ -153,6 +155,7 @@ public class User extends Trainer implements SQLBatchSavable {
     this.setToken(null);
     if (this.isConnected()) {
       this.getSession().close();
+      this.setSession(null);
       this.disconnectCleanup();
     }
   }
@@ -353,12 +356,13 @@ public class User extends Trainer implements SQLBatchSavable {
   }
 
   public void addCaughtPokemon(Pokemon wild) {
-    Pokemon p = Main.getDataSource().insertNewPokemon(this, wild);
+    Pokemon p = Main.getDataSource().insertNewPokemon(this, wild,
+        this.getTeam().size() >= 5);
     if (p != null) {
-      if (this.getTeam().size() < 5) {
-        this.addPokemonToTeam(p);
-      } else {
+      if (p.isStored()) {
         this.addInactivePokemon(p);
+      } else {
+        this.addPokemonToTeam(p);
       }
     }
   }

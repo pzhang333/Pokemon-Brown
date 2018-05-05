@@ -1,6 +1,7 @@
 package cs.brown.edu.aelp.pokemmo.map;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.util.Identifiable;
@@ -10,7 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import org.eclipse.jetty.util.ConcurrentHashSet;
 
 public class Chunk extends Identifiable {
 
@@ -27,7 +28,7 @@ public class Chunk extends Identifiable {
 
   private final boolean[][] grass;
   private List<Entity> entities = new ArrayList<>();
-  private Set<User> usersHere = new HashSet<>();
+  private Set<Integer> usersHere = new ConcurrentHashSet<>();
   private final String fileName;
   private CHUNK_TYPE type = CHUNK_TYPE.DEFAULT;
 
@@ -85,7 +86,7 @@ public class Chunk extends Identifiable {
   }
 
   public void addUser(User u) {
-    this.usersHere.add(u);
+    this.usersHere.add(u.getId());
     if (this.type == CHUNK_TYPE.HEAL) {
       u.getTeam().forEach(p -> {
         p.fullRestore();
@@ -99,12 +100,18 @@ public class Chunk extends Identifiable {
   }
 
   public void removeUser(User u) {
-    this.usersHere.remove(u);
+    this.usersHere.remove(u.getId());
   }
 
   public Collection<User> getUsers() {
-    return Collections.unmodifiableSet(this.usersHere.stream()
-        .filter(User::isConnected).collect(Collectors.toSet()));
+    Set<User> users = new HashSet<>();
+    for (int i : this.usersHere) {
+      User u = UserManager.getUserById(i);
+      if (u != null && u.isConnected()) {
+        users.add(u);
+      }
+    }
+    return Collections.unmodifiableSet(users);
   }
 
   public static int getNextDynamicId() {

@@ -1,1 +1,1 @@
-INSERT INTO pokemon ("user_id", "nickname", "species", "experience") VALUES (?, ?, ?, ?) RETURNING "id", "gender", "stored";
+INSERT INTO pokemon ("user_id", "nickname", "species", "experience", "stored") VALUES (?, ?, ?, ?, ?) RETURNING "id", "gender";

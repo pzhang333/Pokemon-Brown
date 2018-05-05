@@ -17,6 +17,8 @@ public class PokeConsole extends Entity {
   @Override
   public void interact(User u) {
     PacketSender.sendOpenPokeConsolePacket(u);
+    u.setPath(null);
+    u.setLocation(this.getLocation());
   }
 
 }

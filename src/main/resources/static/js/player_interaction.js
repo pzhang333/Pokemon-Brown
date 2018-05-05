@@ -1,23 +1,31 @@
 let pending = false;
+let clicked_player = null;
 let battler = null;
 let panelMessage = null;
 
 function playerInteraction() {
+	if (panelMessage != null) {
+		console.log("returning on click because panel message not null");
+		return;
+	}
 	let player = this;
-		if (player.clicked != undefined) {
-			player.clicked = !player.clicked;
-		} else {
-			player.clicked = true;
-		}
-		if (player.clicked) {
-			drawOptionsMenu(player);
-		} else {
-			if (!pending && player.sprite.challenge != undefined) {
-				player.sprite.challenge.kill();
-			} else if (pending) {
-				cancelChallengeUI(player);
-			}
-		} 
+	if (pending) {
+		cancelChallengeUI(clicked_player);
+		clicked_player = null;
+		pending = false;
+		return;
+	}
+	if (clicked_player != null) {
+		clicked_player.sprite.challenge.kill();
+		clicked_player = null;
+		return;
+	}
+	let dist = Math.sqrt(Math.pow(Game.player.x - player.x, 2) + Math.pow(Game.player.y - player.y, 2));
+	if (dist > 5) {
+		return;
+	}
+	drawOptionsMenu(player);
+	clicked_player = player;
 }
 
 function drawOptionsMenu(player) {
@@ -30,19 +38,27 @@ function drawOptionsMenu(player) {
 function challengePlayer() {
 	battler = null;
 	let player = this;
-	net.requestChallenge(Game.player.id, player.id);
-	battler = player;
 	player.sprite.challenge.kill();
-	let pendingImage = game.add.image(-48/3, -2*Game.map.tileHeight, 'pending_challenge_button');
-	pending = true;
-	player.sprite.challenge = player.sprite.addChild(pendingImage);
-	Game.playerFrozen = true;
+	let dist = Math.sqrt(Math.pow(Game.player.x - player.x, 2) + Math.pow(Game.player.y - player.y, 2));
+	if (dist <= 5) {
+		net.requestChallenge(Game.player.id, player.id);
+		battler = player;
+		let pendingImage = game.add.image(-48/3, -2*Game.map.tileHeight, 'pending_challenge_button');
+		pending = true;
+		player.sprite.challenge = player.sprite.addChild(pendingImage);
+		Game.playerFrozen = true;
+	}
 }
 
 function renderChallenge(player) {
 	if (panelMessage != null) {
 		panelMessage.destroy();
 	}
+	if (clicked_player != null) {
+		clicked_player.sprite.challenge.kill();
+		clicked_player = null;
+	}
+	Game.playerFrozen = true;
 	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
 	Game.slickUI.add(panelMessage);
 	let header = new SlickUI.Element.Text(10 , 10, "Accept challenge");
@@ -60,16 +76,24 @@ function renderChallenge(player) {
 	rejectButton.events.onInputUp.add(function () {
 		net.rejectChallenge(Game.player.id, false);
 		panelMessage.destroy();
+		panelMessage = null;
+		Game.playerFrozen = false;
 	});
 	acceptButton.events.onInputUp.add(function () {
 		net.acceptChallenge(Game.player.id, true);
 		panelMessage.destroy();
+		panelMessage = null;
+		Game.playerFrozen = false;
 	});
 }
 
 function renderChallengeUpdate(response) {
 	if (panelMessage != null) {
 		panelMessage.destroy();
+	}
+	if (clicked_player != null) {
+		clicked_player.sprite.challenge.kill();
+		clicked_player = null;
 	}
 	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
 	Game.slickUI.add(panelMessage);
@@ -85,6 +109,9 @@ function renderChallengeUpdate(response) {
 		if (battler != null && battler.sprite.challenge != undefined) {
 			battler.sprite.challenge.kill();
 		}
+		Game.playerFrozen = false;
+		panelMessage = null;
+		pending = false;
 	});
 }
 

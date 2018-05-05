@@ -54,7 +54,7 @@ public interface DataSource {
    */
   public void loadLeaderboards() throws LoadException;
 
-  public Pokemon insertNewPokemon(User u, Pokemon p);
+  public Pokemon insertNewPokemon(User u, Pokemon p, boolean stored);
 
   /**
    * Type of Exception thrown when something goes wrong during authentication.
