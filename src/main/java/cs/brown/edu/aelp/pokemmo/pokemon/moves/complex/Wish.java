@@ -41,7 +41,6 @@ public class Wish extends Move {
         p.setHealth(p.getCurrHp() + (int) Math.ceil(p.getMaxHp() / 2));
 
         getEffectSlot().deregister(this);
-
         System.out.println("Wish came true!");
         return;
       }
