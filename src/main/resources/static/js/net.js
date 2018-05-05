@@ -556,7 +556,10 @@ class Net {
 
   	openTeamConsoleHandler() {
   		// pulls up menu to pick team
-  		renderTeamManager();
+  		if (!alreadyRenderingTeamManager) {
+  			renderTeamManager();
+  		}
+  		alreadyRenderingTeamManager = true;
   	}
 }
 

@@ -1,3 +1,5 @@
+let alreadyRenderingTeamManager = false;
+
 function renderTeamManager() {
 	// initialization
 
@@ -33,6 +35,7 @@ function renderTeamManager() {
     		selectedPokemon.push(team[selectedTeamManager[i]].id);
     	}
     	net.updateTeam(Game.player.id, selectedPokemon);
+    	alreadyRenderingTeamManager = false;
     });
 
    	panel.add(header);
