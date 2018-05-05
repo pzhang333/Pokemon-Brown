@@ -156,7 +156,7 @@ Battle.doSwitch = function(pOut, pIn, cb) {
 	let fore = (pOut.id == Battle.frontPokemon.id) ? pIn : undefined;
 	let bg = (pOut.id == Battle.backPokemon.id) ? pIn : undefined;
 
-	if (pOut.id != Battle.frontPokemon.id && pOut != Battle.backPokemon.id) {
+	if (pOut.id != Battle.frontPokemon.id && pOut.id != Battle.backPokemon.id) {
 		Battle.endBattle();
 	}
 
