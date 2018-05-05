@@ -186,6 +186,31 @@ public class SQLDataSource implements DataSource {
   }
 
   @Override
+  public Pokemon insertNewPokemon(User u, Pokemon poke) {
+    try (PreparedStatement p = this
+        .prepStatementFromFile("src/main/resources/sql/insert_pokemon.sql")) {
+      p.setInt(1, u.getId());
+      p.setString(2, poke.getNickname());
+      p.setString(3, poke.getSpecies());
+      p.setInt(4, poke.getExp());
+      try (ResultSet rs = p.executeQuery()) {
+        if (rs.next()) {
+          Pokemon new_poke = PokemonLoader.load(poke.getSpecies(),
+              poke.getExp(), rs.getInt("id"));
+          new_poke.setOwner(u);
+          new_poke.setStored(rs.getBoolean("stored"));
+          return new_poke;
+        } else {
+          System.out.println("ERROR: FAILED TO INSERT NEW POKEMON.");
+        }
+      }
+    } catch (SQLException | IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  @Override
   public User registerUser(String username, String password, String email,
       String species, String nickname) throws AuthException {
     // first check if the username is taken
