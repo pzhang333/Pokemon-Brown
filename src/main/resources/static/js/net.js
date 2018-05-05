@@ -103,6 +103,7 @@ class Net {
 		}
 
 		waitForSocketConnection(this.socket, function(socket) {
+			console.log(net.packet(type, payload));
 			socket.send(net.packet(type, payload));
 		}.bind(this));
 	}
@@ -487,16 +488,15 @@ class Net {
 
   		let challengerId = payload.from;
 
-  		if (Game.players[challengeId] != undefined) {
-  			let challenger = Game.players[challengeId];
+  		if (Game.players[challengerId] != undefined) {
+  			let player = Game.players[challengerId];
   			renderChallenge(player);
   		}
   	}
 
-  	requestChallenge(id, challengerId) {
+  	requestChallenge(id, challengedId) {
   		// sends a requesting a p2p battle
-  		let messageObject = new RequestChallengeMessage(id, challengerId);
-  		console.log(messageObject);
+  		let messageObject = new RequestChallengeMessage(id, challengedId);
   		this.sendPacket(MESSAGE_TYPE.CHALLENGE_REQUEST, messageObject.payload);  	
   	}
 
