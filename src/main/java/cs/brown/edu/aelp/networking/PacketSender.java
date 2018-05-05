@@ -40,10 +40,8 @@ public final class PacketSender {
         payload.add("ops", Main.GSON().toJsonTree(chunkOps.get(c.getId())));
         chunkOps.remove(c.getId());
       }
-      if (Leaderboards.isChanged()) {
-        payload.add("leaderboards",
-            Main.GSON().toJsonTree(Leaderboards.getTop5()));
-      }
+      payload.add("leaderboards",
+          Main.GSON().toJsonTree(Leaderboards.getTop5()));
       message.add("payload", payload);
       // send to each user that has an open session
 

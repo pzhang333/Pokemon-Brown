@@ -414,13 +414,15 @@ public class SQLDataSource implements DataSource {
   public void loadLeaderboards() throws LoadException {
     try (PreparedStatement p = this
         .prepStatementFromFile("src/main/resources/sql/get_top_5_elos.sql")) {
+      List<EloUser> newlist = new ArrayList<>();
       try (ResultSet rs = p.executeQuery()) {
         while (rs.next()) {
           EloUser eu = new EloUser(rs.getInt("id"), rs.getString("username"),
               rs.getInt("elo"));
-          Leaderboards.tryInsertTop5(eu);
+          newlist.add(eu);
         }
       }
+      Leaderboards.setTop5(newlist);
     } catch (SQLException | IOException e) {
       e.printStackTrace();
       throw new LoadException(

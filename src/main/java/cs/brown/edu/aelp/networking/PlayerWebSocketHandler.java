@@ -288,7 +288,7 @@ public class PlayerWebSocketHandler {
         return;
       }
 
-      t = new ItemTurn(user, new Item(id));
+      t = new ItemTurn(user, new Item(itemId));
 
       break;
     case FIGHT:
@@ -433,14 +433,18 @@ public class PlayerWebSocketHandler {
       return;
     }
     Chunk c = u.getLocation().getChunk();
+    boolean allowed = false;
     for (Entity e : c.getEntities()) {
       if (e instanceof PokeConsole) {
         double dist = e.getLocation().dist(u.getLocation());
-        if (dist < 0 || dist > 3) {
-          u.kick();
-          return;
+        if (dist < 3) {
+          allowed = true;
         }
       }
+    }
+    if (!allowed) {
+      u.kick();
+      return;
     }
     JsonArray arr = payload.get("pokemon").getAsJsonArray();
     if (arr.size() == 0 || arr.size() > 5) {
