@@ -53,8 +53,9 @@ class Net {
 
 	constructor() {
 
-		//this.host = 'localhost';
-		this.host = '10.38.37.243';
+
+		this.host = 'localhost';
+		//this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -204,12 +205,15 @@ class Net {
 			if (player.id == net.id) {
 				Game.player.username = player.username;
 				Game.player.items = player.items;
+				Game.player.elo = player.elo;
 				continue;
 			}
 
 			let newPlayer = new Player();
 			newPlayer.id = player.id;
 			newPlayer.username = player.username;
+			newPlayer.elo = player.elo;
+
 
 			console.log(newPlayer);
 			Game.players[player.id] = newPlayer;
@@ -266,6 +270,7 @@ class Net {
 					//player.setVisible(true);
 					player.id = op.id;
 					player.username = op.username;
+					player.elo = op.elo;
 
 					if (Game.players[op.id] != undefined) {
 						Game.players[op.id].del();
@@ -317,6 +322,7 @@ class Net {
 			if (id == net.id) {
 				//console.log('skip: ' + id);
 				Game.player.items = msg.payload.users[i].items;
+				Game.player.elo = msg.payload.users[i].elo;
 				continue;
 			}
 
@@ -336,6 +342,7 @@ class Net {
 			}
 
 			let player = Game.players[id];
+			player.elo = update.elo;
 
 			let dest = update.destination;
 
@@ -435,7 +442,7 @@ class Net {
 
 	handleMsg(event) {
 
-//		console.log('test!');
+		// console.log('test!');
 		//console.log(event);
 
 		const data = JSON.parse(event.data);
