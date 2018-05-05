@@ -206,6 +206,7 @@ public class Move {
     this.shortDescription = m.shortDescription;
     this.name = m.name;
     this.pp = m.pp;
+    System.out.println("Copy constructor move PP: " + m.currPP);
     if (m.currPP < 0) {
       this.currPP = 0;
     } else if (m.currPP > m.pp) {

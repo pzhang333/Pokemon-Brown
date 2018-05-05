@@ -1,21 +1,20 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
+import cs.brown.edu.aelp.pokemmo.pokemon.Status;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.Builder;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.MoveCategory;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.complex.Wish;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
-import cs.brown.edu.aelp.pokemmo.pokemon.Status;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.Builder;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.MoveCategory;
 
 public final class MoveLoader {
 
@@ -75,6 +74,7 @@ public final class MoveLoader {
       }
 
       Move m = builder.build();
+      addOverride(new Wish());
 
       if (overrides.containsKey(id)) {
         try {
