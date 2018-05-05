@@ -1017,7 +1017,7 @@ Battle.battleOver = async function(packet) {
 	
 	console.log('battle over');
 
-	Battle.clearMenu();
+	//Battle.clearMenu();
 	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
 	Battle.slickUI.add(Battle.panel);
 
@@ -1124,7 +1124,8 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 		let SUMMARY_TYPE = {
 			FIGHT: 0,
 			SWITCH: 1,
-			HEALTH_CHANGE : 2
+			HEALTH_CHANGE : 2,
+			ITEM: 3
 		};
 
 		console.log('MESSADAFASD');
@@ -1171,6 +1172,9 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 					Battle.showSummaries(summaries, packet, resolveShow);
 				});
 			});
+		} else if (summary.type == SUMMARY_TYPE.ITEM) {
+			resolve();
+	        Battle.showSummaries(summaries, packet, resolveShow);
 		} else if (summary.type == SUMMARY_TYPE.HEALTH_CHANGE) {
 	      let p = Battle.getPokemonById(summary.pokemon.id);
 	      Battle.setHealth(p, p.health + summary.amount);
