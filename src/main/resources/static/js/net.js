@@ -306,11 +306,11 @@ class Net {
 							user = Game.players[op.id].username;
 						}
 
-						let cleanMsg = op.message.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+						let cleanMsg = ('<b>' + user + ':</b> ' + op.message).replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
 							return '&#' + i.charCodeAt(0) + ';';
 						});
 						
-						net.displayChatMsg('<b>' + user + ':</b> ' + cleanMsg);
+						net.displayChatMsg(cleanMsg);
 					} catch(err) {
 						console.log(err);
 					}
