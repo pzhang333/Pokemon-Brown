@@ -1,14 +1,30 @@
 package cs.brown.edu.aelp.networking;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import cs.brown.edu.aelp.networking.Trade.TRADE_STATUS;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
 import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
+import cs.brown.edu.aelp.pokemmo.battle.Item;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
 import cs.brown.edu.aelp.pokemmo.data.DataSource.AuthException;
@@ -19,17 +35,6 @@ import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 @WebSocket
 public class PlayerWebSocketHandler {
@@ -37,42 +42,24 @@ public class PlayerWebSocketHandler {
   private static final Gson GSON = new Gson();
 
   public static enum MESSAGE_TYPE {
-    CONNECT,
-    INITIALIZE,
-    GAME_PACKET,
-    PLAYER_REQUEST_PATH,
-    ENCOUNTERED_POKEMON,
-    TRADE,
-    START_BATTLE,
-    END_BATTLE,
-    BATTLE_TURN_UPDATE,
-    CLIENT_BATTLE_UPDATE,
-    CHAT,
-    SERVER_MESSAGE,
-    CHALLENGE, // 12
+    CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, ENCOUNTERED_POKEMON,
+    TRADE, START_BATTLE, END_BATTLE, BATTLE_TURN_UPDATE, CLIENT_BATTLE_UPDATE,
+    CHAT, SERVER_MESSAGE, CHALLENGE, // 12
     CHALLENGE_RESPONSE
   }
 
   public static enum OP_CODES {
-    ENTERED_CHUNK,
-    LEFT_CHUNK,
-    ENTERED_BATTLE,
-    LEFT_BATTLE,
-    CHAT
+    ENTERED_CHUNK, LEFT_CHUNK, ENTERED_BATTLE, LEFT_BATTLE, CHAT
   }
 
   // used for battle moves
 
   public static enum ACTION_TYPE {
-    RUN,
-    SWITCH,
-    USE_ITEM,
-    FIGHT
+    RUN, SWITCH, USE_ITEM, FIGHT
   }
 
   public static enum TURN_STATE {
-    NORMAL,
-    MUST_SWITCH
+    NORMAL, MUST_SWITCH
   };
 
   private static final MESSAGE_TYPE[] MESSAGE_TYPES = MESSAGE_TYPE.values();
@@ -266,7 +253,15 @@ public class PlayerWebSocketHandler {
       }
       break;
     case USE_ITEM:
-      // TODO: use item
+      Integer itemId = payload.get("itemId").getAsInt();
+
+      int quantity = user.getInventory().getItemAmount(itemId);
+      if (quantity == 0) {
+        return;
+      }
+
+      t = new ItemTurn(user, new Item(id));
+
       break;
     case FIGHT:
 

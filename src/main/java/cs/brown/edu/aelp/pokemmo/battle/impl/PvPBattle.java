@@ -1,11 +1,20 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
+import cs.brown.edu.aelp.pokemmo.battle.Item;
+import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
@@ -26,11 +35,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class PvPBattle extends Battle {
 
@@ -101,6 +105,8 @@ public class PvPBattle extends Battle {
         handleTurn((FightTurn) turn);
       } else if (turn instanceof SwitchTurn) {
         handleTurn((SwitchTurn) turn);
+      } else if (turn instanceof ItemTurn) {
+        handleTurn((ItemTurn) turn);
       } else {
         handleTurn(turn);
       }
@@ -149,6 +155,28 @@ public class PvPBattle extends Battle {
     // Trainer failed to switch in a pokemon after a knockout. Trigger loss.
     if (turn.getTrainer().getActivePokemon().isKnockedOut()) {
       victory(other(turn.getTrainer()));
+    }
+  }
+
+  private void handleTurn(ItemTurn turn) {
+
+    Item item = turn.getItem();
+
+    // TODO: Add messages
+
+    if (item.isPokeball()) {
+      // TODO: Fail message
+      return;
+    }
+
+    ItemType type = item.getType();
+
+    if (type == ItemType.OVERLOAD) {
+
+    } else if (type == ItemType.FULL_RESTORE) {
+      turn.getTrainer().getActivePokemon().fullRestore();
+    } else {
+      // TODO...
     }
   }
 

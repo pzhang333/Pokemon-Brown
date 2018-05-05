@@ -15,6 +15,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
+import cs.brown.edu.aelp.pokemmo.battle.Item;
+import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
@@ -413,7 +415,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   public void addExp(Integer experience) {
     this.exp += experience;
     this.lvl = calcLevel(this.exp);
-    if (this.lvl >= this.evolveAt){
+    if (this.lvl >= this.evolveAt) {
       // TODO: Inform user that their pokemon evolved!
       evolve();
     }
@@ -555,26 +557,29 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     accuracyStage = 0;
     evasionStage = 0;
   }
-  
-  public boolean isCaught(String ballType) {
+
+  public boolean isCaught(Item ball) {
+
+    if (!ball.isPokeball()) {
+      return false;
+    } else if (ball.getType().equals(ItemType.MASTER_BALL)) {
+      return true;
+    }
+
     double ballBonus = 1.0;
     double statusBonus = 1.0;
-    if (ballType.equals("great")) {
-      ballBonus = 1.5;
-    } else if (ballType.equals("ultra")) {
-      ballBonus = 2.0;
-    } else if (ballType.equals("master")) {
-      ballBonus = 255.0;
-    }
-    if (this.status == Status.SLEEP || this.status == Status.FREEZE){
+
+    if (this.status == Status.SLEEP || this.status == Status.FREEZE) {
       statusBonus = 2.0;
-    } else if (this.status == Status.PARALYZE || this.status == Status.BURN || this.status == Status.POISON){
+    } else if (this.status == Status.PARALYZE || this.status == Status.BURN
+        || this.status == Status.POISON) {
       statusBonus = 1.5;
     }
 
-    double a = ((3 * this.hp - 2 * this.currHp) * this.catchRate * ballBonus * statusBonus) / (3 * this.hp);
+    double a = ((3 * this.hp - 2 * this.currHp) * this.catchRate * ballBonus
+        * statusBonus) / (3 * this.hp);
 
-    if (a >= 255.0){
+    if (a >= 255.0) {
       return true;
     }
 
