@@ -60,7 +60,7 @@ public class Trainer extends Identifiable {
   public void addPokemonToTeam(Pokemon p) {
 
     if (pokemonMap.isEmpty()) {
-      activePokemon = p;
+      this.setActivePokemon(p);
     }
 
     pokemonMap.put(p.getId(), p);
@@ -80,6 +80,9 @@ public class Trainer extends Identifiable {
   }
 
   public void emptyTeam() {
+    for (Pokemon p : this.pokemonMap.values()) {
+      p.setStored(true);
+    }
     this.pokemonMap.clear();
   }
 

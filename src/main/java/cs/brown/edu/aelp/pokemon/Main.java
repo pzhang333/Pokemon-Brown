@@ -21,6 +21,7 @@ import cs.brown.edu.aelp.pokemmo.data.SQLDataSource;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Location;
+import cs.brown.edu.aelp.pokemmo.map.Tournament;
 import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
@@ -213,6 +214,7 @@ public final class Main {
         PACKET_SENDING_PERIOD, TimeUnit.MILLISECONDS);
 
     MoveLoader.setupOverrides();
+    Tournament.startGenerator();
 
     CommandHandler ch = new CommandHandler();
     TeleportCommand tc = new TeleportCommand();

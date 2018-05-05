@@ -442,9 +442,7 @@ public class PlayerWebSocketHandler {
       Pokemon p = u.getPokemonById(poke_id);
       if (p != null && u.getTeam().size() < 5) {
         u.addPokemonToTeam(p);
-        if (u.getTeam().size() == 1) {
-          u.setActivePokemon(p);
-        }
+        p.setStored(false);
       } else {
         u.kick();
         return;
