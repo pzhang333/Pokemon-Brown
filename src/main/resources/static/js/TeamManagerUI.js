@@ -26,16 +26,18 @@ function renderTeamManager() {
 	let xOut = game.add.sprite(0, 0, 'x_icon');
 	xOut.inputEnabled = true;
 	xOut.events.onInputUp.add(function () {
-    	// x-out of page
-    	panel.destroy();
-    	// saving our new team
-    	selectedPokemon = [];
-    	for (let i=0; i<selectedTeamManager.length; i++) {
-    		console.log(i);
-    		selectedPokemon.push(team[selectedTeamManager[i]].id);
+		if (selectedTeamManager.length > 0) {
+	    	// x-out of page
+	    	panel.destroy();
+	    	// saving our new team
+	    	selectedPokemon = [];
+	    	for (let i=0; i<selectedTeamManager.length; i++) {
+	    		console.log(i);
+	    		selectedPokemon.push(team[selectedTeamManager[i]].id);
+	    	}
+	    	net.updateTeam(Game.player.id, selectedPokemon);
+	    	alreadyRenderingTeamManager = false;
     	}
-    	net.updateTeam(Game.player.id, selectedPokemon);
-    	alreadyRenderingTeamManager = false;
     });
 
    	panel.add(header);
