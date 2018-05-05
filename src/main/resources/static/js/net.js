@@ -305,12 +305,16 @@ class Net {
 						} else {
 							user = Game.players[op.id].username;
 						}
+						
+						let cleanUser = user.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+							return '&#' + i.charCodeAt(0) + ';';
+						});
 
-						let cleanMsg = ('<b>' + user + ':</b> ' + op.message).replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+						let cleanMsg = op.message.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
 							return '&#' + i.charCodeAt(0) + ';';
 						});
 						
-						net.displayChatMsg(cleanMsg);
+						net.displayChatMsg('<b>' + cleanUser + ':</b> ' + cleanMsg);
 					} catch(err) {
 						console.log(err);
 					}
