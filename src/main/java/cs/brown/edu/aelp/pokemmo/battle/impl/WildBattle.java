@@ -283,8 +283,6 @@ public class WildBattle extends Battle {
         defendingPokemon
             .setHealth(defendingPokemon.getCurrHp() - result.getDamage());
 
-        System.out.println(defendingPokemon.getCurrHp());
-
         this.getPendingBattleUpdate().addSummary(new FightSummary(atkPokemon,
             defendingPokemon, base.toString(), "basic"));
 

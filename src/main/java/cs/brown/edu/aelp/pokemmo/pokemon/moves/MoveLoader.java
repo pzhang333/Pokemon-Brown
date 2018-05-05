@@ -8,6 +8,7 @@ import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
 import cs.brown.edu.aelp.pokemmo.pokemon.Status;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.Builder;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move.MoveCategory;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.complex.PoisonMove;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.complex.Wish;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -21,6 +22,11 @@ public final class MoveLoader {
   private static final String FILEPATH = "data/pokemon/moves.json";
 
   private static final Map<Integer, Move> overrides = new HashMap<>();
+
+  public static void setupOverrides() {
+    addOverride(new Wish());
+    addOverride(new PoisonMove(77)); // poison powder
+  }
 
   public static void addOverride(Move m) {
     overrides.put(m.getId(), m);
@@ -74,7 +80,6 @@ public final class MoveLoader {
       }
 
       Move m = builder.build();
-      addOverride(new Wish());
 
       if (overrides.containsKey(id)) {
         try {

@@ -18,8 +18,6 @@ public class Wish extends Move {
 
   public Wish(Move m) {
     super(m);
-
-    System.out.println("AADSASDD");
   }
 
   private class WishEffect extends Effect {

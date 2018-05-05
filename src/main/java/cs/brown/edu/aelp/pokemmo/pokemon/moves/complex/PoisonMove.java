@@ -10,10 +10,14 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 
-public abstract class PosionMove extends Move {
+public class PoisonMove extends Move {
 
-  protected PosionMove(int id) {
+  public PoisonMove(int id) {
     super(id);
+  }
+
+  public PoisonMove(Move m) {
+    super(m);
   }
 
   public class PoisonEffect extends Effect {
@@ -26,10 +30,12 @@ public abstract class PosionMove extends Move {
 
     @Override
     public void handle(EndOfTurnEvent evt) {
+      System.out.println("Poison effect is processing end of turn");
       if (p.getStatus() == null || p.getStatus() != Status.POISON) {
         p.getEffectSlot().deregister(this);
         return;
       }
+      System.out.println("Adding dmg summary for poison.");
       int dmg = (int) p.getMaxHp() / 8;
       evt.getBattle().getPendingBattleUpdate()
           .addSummary(new HealthChangeSummary(p, -dmg,
@@ -47,12 +53,14 @@ public abstract class PosionMove extends Move {
     Status status = evt.getDefendingPokemon().getStatus();
 
     if (status != null && status != Status.NONE) {
+      System.out.println("Poison failed because status = " + status);
       mr.setOutcome(MoveOutcome.NON_ATTACK_FAIL);
     } else {
+      System.out.println("Poison succeeded");
       evt.getDefendingPokemon().setStatus(Status.POISON);
       evt.getDefendingPokemon().getEffectSlot()
           .register(new PoisonEffect(evt.getDefendingPokemon()));
-      mr.setOutcome(MoveOutcome.HIT);
+      mr.setOutcome(MoveOutcome.NON_ATTACK_SUCCESS);
     }
 
     return mr;
