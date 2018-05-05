@@ -357,6 +357,7 @@ public class User extends Trainer implements SQLBatchSavable {
         JsonSerializationContext ctx) {
       JsonObject o = new JsonObject();
       o.addProperty("id", src.getId());
+      o.addProperty("username", src.getUsername());
       o.addProperty("state", src.getState());
       o.addProperty("orientation", src.getOrientation());
       o.add("location", Main.GSON().toJsonTree(src.getLocation()));

@@ -683,7 +683,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   }
 
   public static Integer calcXpByLevel(int level) {
-    return (int) Math.ceil(Math.pow(level - 1, 3) * (4 / 5));
+    return (int) Math.ceil(Math.pow(level - 1, 3) * (4.0 / 5.0));
   }
 
   public static Integer xpWon(Pokemon winner, Pokemon loser) {

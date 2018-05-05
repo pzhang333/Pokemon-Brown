@@ -53,8 +53,8 @@ class Net {
 
 	constructor() {
 
-		this.host = 'localhost';
-
+		//this.host = 'localhost';
+		this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -281,7 +281,7 @@ class Net {
 						if (id == Game.player.id) {
 							user = Game.player.username;
 						} else {
-							Game.players[op.id].username;
+							user = Game.players[op.id].username;
 						}
 
 						let cleanMsg = op.message.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {

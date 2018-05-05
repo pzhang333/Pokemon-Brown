@@ -102,9 +102,6 @@ public class PvPBattle extends Battle {
       }
 
       if (getBattleState().equals(BattleState.DONE)) {
-
-        sendBattleUpdate();
-
         // TODO: Add end of Battle event.
         return;
       }
@@ -129,7 +126,6 @@ public class PvPBattle extends Battle {
     turnsMap.clear();
 
     this.setLastBattleUpdate(this.getPendingBattleUpdate());
-
     sendBattleUpdate();
 
     setBattleState(BattleState.WAITING);
@@ -294,6 +290,7 @@ public class PvPBattle extends Battle {
     this.setLastBattleUpdate(this.getPendingBattleUpdate());
 
     setBattleState(BattleState.DONE);
+    sendBattleUpdate();
 
     winner = t;
     loser = other(t);
