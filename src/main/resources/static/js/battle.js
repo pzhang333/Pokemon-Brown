@@ -156,7 +156,7 @@ Battle.doSwitch = function(pOut, pIn, cb) {
 	let fore = (pOut.id == Battle.frontPokemon.id) ? pIn : undefined;
 	let bg = (pOut.id == Battle.backPokemon.id) ? pIn : undefined;
 
-	if (pOut.id != Battle.frontPokemon.id && pOut != Battle.backPokemon.id) {
+	if (pOut.id != Battle.frontPokemon.id && pOut.id != Battle.backPokemon.id) {
 		Battle.endBattle();
 	}
 
@@ -322,7 +322,7 @@ Battle.endBattle = function() {
 	game.state.start("Game", true, false);
 
 	// HACK VERY BAD!
-	//location.reload();
+	location.reload();
 };
 
 Battle.create = function() {
@@ -649,7 +649,7 @@ Battle.showInv = async function() {
 
         if (pos == 0) {
             text = new SlickUI.Element.Text(50, 0, ucfirst('Pokeball'));
-            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
+            count = new SlickUI.Element.Text(50, 15, ucfirst("x"+mapGet(Game.player.items, 0, 0)));
             sprite = game.add.sprite(0, 0, 'pokeball');
 		} else if (pos == 1) {
             text = new SlickUI.Element.Text(50, 0, ucfirst('Great Ball'));
@@ -872,6 +872,9 @@ Battle.useMove = async function(id) {
 		await Battle.showing;
 	}
 
+
+	Battle.clearMoves();
+	
 	if (Battle.frontPokemon.health == 0) {
 		return;
 	}
@@ -880,7 +883,6 @@ Battle.useMove = async function(id) {
 		moveId: id
 	});
 
-	Battle.clearMoves();
 };
 
 Battle.switchTo = async function(id) {
@@ -900,7 +902,7 @@ Battle.switchTo = async function(id) {
 Battle.forfeit = async function() {
 
 	if (Battle.showing != undefined) {
-	//	await Battle.showing;
+		await Battle.showing;
 	}
 
 	console.log('Forfeit!');
@@ -927,10 +929,14 @@ Battle.drawDefaultMenu = async function() {
 	await fightButton.events;
 
 	if (Battle.frontPokemon.health <= 0) {
-		//fightButton.events.onInputUp.removeAll();
-		//fightButton.events.onInputDown.removeAll();
+		fightButton.events.onInputUp.removeAll();
+		fightButton.events.onInputDown.removeAll();
 	} else {
-		fightButton.events.onInputUp.add(function() {
+		fightButton.events.onInputUp.add(async function() {
+			if (Battle.showing != undefined) {
+				await Battle.showing;
+			}
+			
 			if (Battle.moveButtons == undefined || Battle.moveButtons.length == 0) {
 				Battle.showMoves();
 			} else {
@@ -944,10 +950,14 @@ Battle.drawDefaultMenu = async function() {
 	switchButton.add(new SlickUI.Element.Text(0, 0, "Switch")).center();
 
 	if (Battle.frontPokemon.health <= 0) {
-		//switchButton.events.onInputUp.removeAll();
-		//switchButton.events.onInputDown.removeAll();
+		switchButton.events.onInputUp.removeAll();
+		switchButton.events.onInputDown.removeAll();
 	} else {
-		switchButton.events.onInputUp.add(function() {
+		switchButton.events.onInputUp.add(async function() {
+			if (Battle.showing != undefined) {
+				await Battle.showing;
+			}
+			
 			if (Battle.teamButtons == undefined || Battle.teamButtons.length == 0) {
 				Battle.showTeam();
 			} else {
@@ -960,7 +970,10 @@ Battle.drawDefaultMenu = async function() {
 	let itemButton = new SlickUI.Element.Button(buttonOffsetX + 4 + buttonWidth + 4, 0, buttonWidth, 48);
 	Battle.panel.add(itemButton);
 	itemButton.add(new SlickUI.Element.Text(0, 0, "Item")).center();
-	itemButton.events.onInputUp.add(function () {
+	itemButton.events.onInputUp.add(async function () {
+		if (Battle.showing != undefined) {
+			await Battle.showing;
+		}
 		if (Battle.invButtons == undefined || Battle.invButtons.length == 0) {
 			Battle.showInv();
 		} else {
@@ -1004,50 +1017,52 @@ Battle.battleOver = async function(packet) {
 	
 	console.log('battle over');
 
-	Battle.clearMenu();
+	//Battle.clearMenu();
 	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
 	Battle.slickUI.add(Battle.panel);
 
 	Battle.showing = new Promise(async function(resolve, reject) {
 
-		Battle.clearMoves();
-		Battle.clearButtons(Battle.stdButtons);
-		Battle.clearMessageText();
-
-		let msg = "";
-		if (packet.winner_id == Game.player.id) {
-			msg = "Victory!";
-		} else {
-			msg = "Loss.";
-		}
-
-		try {
-			let messageText = new SlickUI.Element.Text(8, 8, msg);
-			messageText.size = 16;
-			Battle.panel.add(messageText);
-		} catch(err) {
-			console.log('warning: ' + err);
-		}
-
-		let buttonOffsetX = Battle.panel.width / 2;
-		let buttonWidth = Battle.panel.width / 4.1;
-
-		let exitButton = new SlickUI.Element.Button(buttonOffsetX + 4, 0, 2 * (buttonWidth + 2), 48 * 2);
-		Battle.panel.add(exitButton);
-		exitButton.add(new SlickUI.Element.Text(0, 0, "Exit Battle")).center();
-
-		await exitButton.events;
-		exitButton.events.onInputUp.add(function() {
-			Battle.endBattle();
-		});
-
-		try {
+		Game.time.events.add(Phaser.Timer.SECOND * .25, async function() {
+			Battle.clearMoves();
+			Battle.clearButtons(Battle.stdButtons);
 			Battle.clearMessageText();
-		} catch(err) {
-
-		}
-
-		resolve();
+			
+			let msg = "";
+			if (packet.winner_id == Game.player.id) {
+				msg = "Victory!";
+			} else {
+				msg = "Loss.";
+			}
+	
+			try {
+				let messageText = new SlickUI.Element.Text(8, 8, msg);
+				messageText.size = 16;
+				Battle.panel.add(messageText);
+			} catch(err) {
+				console.log('warning: ' + err);
+			}
+	
+			let buttonOffsetX = Battle.panel.width / 2;
+			let buttonWidth = Battle.panel.width / 4.1;
+	
+			let exitButton = new SlickUI.Element.Button(buttonOffsetX + 4, 0, 2 * (buttonWidth + 2), 48 * 2);
+			Battle.panel.add(exitButton);
+			exitButton.add(new SlickUI.Element.Text(0, 0, "Exit Battle")).center();
+	
+			await exitButton.events;
+			exitButton.events.onInputUp.add(function() {
+				resolve();
+				Battle.clearMoves();
+				Battle.endBattle();
+			});
+	
+			try {
+				Battle.clearMessageText();
+			} catch(err) {
+	
+			}
+		});
 	}, 10000);
 
 	try {
@@ -1077,7 +1092,7 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 
 	Battle.subShowing = new Promise(function(resolve, reject) {
 	
-		if (Battle.over) {
+		if (!Battle.inBattle) {
 			return
 		}
 
@@ -1094,7 +1109,8 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 			if (Battle.teamButtons != undefined && Battle.teamButtons.length != 0) {
 				Battle.showMoves();
 			}
-			//Battle.drawDefaultMenu();
+			
+			Battle.drawDefaultMenu();
 			
 			resolve();
 			resolveShow();
@@ -1108,7 +1124,8 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 		let SUMMARY_TYPE = {
 			FIGHT: 0,
 			SWITCH: 1,
-			HEALTH_CHANGE : 2
+			HEALTH_CHANGE : 2,
+			ITEM: 3
 		};
 
 		console.log('MESSADAFASD');
@@ -1155,13 +1172,17 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 					Battle.showSummaries(summaries, packet, resolveShow);
 				});
 			});
+		} else if (summary.type == SUMMARY_TYPE.ITEM) {
+			resolve();
+	        Battle.showSummaries(summaries, packet, resolveShow);
 		} else if (summary.type == SUMMARY_TYPE.HEALTH_CHANGE) {
 	      let p = Battle.getPokemonById(summary.pokemon.id);
-	      Battle.setHealth(p, p.health + summary.amount)
+	      Battle.setHealth(p, p.health + summary.amount);
+	      
 	      Game.time.events.add(Phaser.Timer.SECOND * 1.25, function() {
-	        resolve();
+	    	resolve();
 	        Battle.showSummaries(summaries, packet, resolveShow);
-      		});
+      	});
     }
 	}, 10000);
 
@@ -1170,7 +1191,14 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 Battle.handleUpdate = async function(packet) {
 	console.log(packet);
 	console.log('update');
-	console.log(packet.update.summaries.slice(0));
+	try {
+		console.log(packet.update.summaries.slice(0));
+	} catch(err) {
+		if (Battle.showing != undefined) {
+			await Battle.showing;
+		}
+		return;
+	}
 
 	/*let userPokemon = pokemon_a;
 	if (pokemon_b.owner_id == Game.player.id) {
@@ -1182,7 +1210,12 @@ Battle.handleUpdate = async function(packet) {
 	}
 
 	Battle.showing = new Promise(function(resolve, reject) {
-		Battle.showSummaries(packet.update.summaries, packet, resolve);
+		try {
+			Battle.showSummaries(packet.update.summaries, packet, resolve);
+		} catch(err) {
+			console.log(err);
+			resolve();
+		}
 	}, 10000);
 
 };

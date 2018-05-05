@@ -1,4 +1,6 @@
-function renderTeamManager(startIndex) {
+let alreadyRenderingTeamManager = false;
+
+function renderTeamManager() {
 	// initialization
 
 	let selectedTeamManager = [];
@@ -6,8 +8,6 @@ function renderTeamManager(startIndex) {
 
 	let team = Game.player.pokemon;
 	let selectedPokemon = team.filter(pokemon => pokemon.stored == false);
-
-	console.log(selectedPokemon);
 
 	for (let i=0; i<team.length; i++) {
 		if (selectedPokemon.includes(team[i])) {
@@ -26,15 +26,18 @@ function renderTeamManager(startIndex) {
 	let xOut = game.add.sprite(0, 0, 'x_icon');
 	xOut.inputEnabled = true;
 	xOut.events.onInputUp.add(function () {
-    	// x-out of page
-    	panel.destroy();
-    	// saving our new team
-    	selectedPokemon = [];
-    	for (let i=0; i<selectedTeamManager.length; i++) {
-    		console.log(i);
-    		selectedPokemon.push(team[selectedTeamManager[i]].id);
+		if (selectedTeamManager.length > 0) {
+	    	// x-out of page
+	    	panel.destroy();
+	    	// saving our new team
+	    	selectedPokemon = [];
+	    	for (let i=0; i<selectedTeamManager.length; i++) {
+	    		console.log(i);
+	    		selectedPokemon.push(team[selectedTeamManager[i]].id);
+	    	}
+	    	net.updateTeam(Game.player.id, selectedPokemon);
+	    	alreadyRenderingTeamManager = false;
     	}
-    	net.updateTeam(Game.player.id, selectedPokemon);
     });
 
    	panel.add(header);
@@ -84,7 +87,7 @@ function renderTeamManagerHelper(startIndex, selectedTeamManager, panel, team, t
 
 					if (selectedTeamManager.includes(3*i + k + startIndex)) {
 						button.sprite.loadTexture(button.spriteOn.texture);
-					}
+					} 
 
 					button.events.onInputDown.add(function () {
 						if (teamMembersSelected >= 5 && !selectedTeamManager.includes(3*i + k + startIndex)){

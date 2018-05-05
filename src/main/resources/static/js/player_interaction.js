@@ -4,27 +4,27 @@ let panelMessage = null;
 
 function playerInteraction() {
 	let player = this;
-	if (player.clicked != undefined) {
-		player.clicked = !player.clicked;
-	} else {
-		player.clicked = true;
-	}
-	if (player.clicked) {
-		drawOptionsMenu(player);
-	} else {
-		if (!pending && player.sprite.challenge != undefined) {
-			player.sprite.challenge.kill();
-		} else if (pending) {
-			cancelChallengeUI(player);
+		if (player.clicked != undefined) {
+			player.clicked = !player.clicked;
+		} else {
+			player.clicked = true;
 		}
-	}
+		if (player.clicked) {
+			drawOptionsMenu(player);
+		} else {
+			if (!pending && player.sprite.challenge != undefined) {
+				player.sprite.challenge.kill();
+			} else if (pending) {
+				cancelChallengeUI(player);
+			}
+		} 
 }
 
 function drawOptionsMenu(player) {
 	let challengeImage = game.add.image(-48/3, -2*Game.map.tileHeight, 'challenge_button');
 	challengeImage.inputEnabled = true;
-    challengeImage.events.onInputDown.add(challengePlayer, player);	
-   	player.sprite.challenge = player.sprite.addChild(challengeImage);
+	challengeImage.events.onInputDown.add(challengePlayer, player);	
+	player.sprite.challenge = player.sprite.addChild(challengeImage);
 }
 
 function challengePlayer() {
@@ -86,15 +86,15 @@ function renderChallengeUpdate(response) {
 			battler.sprite.challenge.kill();
 		}
 	});
- }
+}
 
 function cancelChallengeUI(player) {
-   net.cancelChallenge(Game.player.id);
-   Game.playerFrozen = false;
-   pending = false;
-   battler = null;
-   panelMessage = null;
-   if (player.sprite.challenge != undefined) {
-   	player.sprite.challenge.kill();
-   }
+	net.cancelChallenge(Game.player.id);
+	Game.playerFrozen = false;
+	pending = false;
+	battler = null;
+	panelMessage = null;
+	if (player.sprite.challenge != undefined) {
+		player.sprite.challenge.kill();
+	}
 }
