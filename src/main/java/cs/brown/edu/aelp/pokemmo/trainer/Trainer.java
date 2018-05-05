@@ -51,9 +51,6 @@ public class Trainer extends Identifiable {
   }
 
   public void setActivePokemon(Pokemon pokemonIn) {
-    if (!pokemonMap.containsKey(pokemonIn.getId())) {
-      throw new IllegalArgumentException("Pokemon not in team!");
-    }
     activePokemon = pokemonIn;
   }
 
