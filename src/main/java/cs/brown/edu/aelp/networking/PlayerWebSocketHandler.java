@@ -45,7 +45,7 @@ public class PlayerWebSocketHandler {
     CONNECT, INITIALIZE, GAME_PACKET, PLAYER_REQUEST_PATH, ENCOUNTERED_POKEMON,
     TRADE, START_BATTLE, END_BATTLE, BATTLE_TURN_UPDATE, CLIENT_BATTLE_UPDATE,
     CHAT, SERVER_MESSAGE, CHALLENGE, // 12
-    CHALLENGE_RESPONSE
+    CHALLENGE_RESPONSE, UPDATE_ACTIVE_POKEMON, UPDATE_TEAM
   }
 
   public static enum OP_CODES {
@@ -109,6 +109,12 @@ public class PlayerWebSocketHandler {
       break;
     case CHALLENGE_RESPONSE:
       handleChallengeResponse(session, payload);
+      break;
+    case UPDATE_ACTIVE_POKEMON:
+      handleUpdateActivePokemon(session, payload);
+      break;
+    case UPDATE_TEAM:
+      handleUpdateTeam(session, payload);
       break;
     default:
       // something went wrong, we got an unknown message type
@@ -375,5 +381,47 @@ public class PlayerWebSocketHandler {
     User u2 = u1.getChallenge().getFrom();
     u1.getChallenge().cancel();
     BattleManager.getInstance().createPvPBattle(u1, u2);
+  }
+
+  private static void handleUpdateActivePokemon(Session session,
+      JsonObject payload) {
+    int id = payload.get("id").getAsInt();
+    User u = UserManager.getUserById(id);
+    if (u == null || u.getSession() != session) {
+      session.close();
+      return;
+    }
+    int poke_id = payload.get("pokemon_id").getAsInt();
+    Pokemon p = u.getPokemonById(poke_id);
+    if (p != null && u.getTeam().contains(p)) {
+      u.setActivePokemon(p);
+    } else {
+      session.close();
+      return;
+    }
+  }
+
+  private static void handleUpdateTeam(Session session, JsonObject payload) {
+    int id = payload.get("id").getAsInt();
+    User u = UserManager.getUserById(id);
+    if (u == null || u.getSession() != session) {
+      session.close();
+      return;
+    }
+    JsonArray arr = payload.get("pokemon").getAsJsonArray();
+    if (arr.size() == 0) {
+      return;
+    }
+    u.emptyTeam();
+    for (JsonElement e : payload.get("pokemon").getAsJsonArray()) {
+      int poke_id = e.getAsInt();
+      Pokemon p = u.getPokemonById(poke_id);
+      if (p != null && u.getTeam().size() < 5) {
+        u.addPokemonToTeam(p);
+        if (u.getTeam().size() == 1) {
+          u.setActivePokemon(p);
+        }
+      }
+    }
   }
 }
