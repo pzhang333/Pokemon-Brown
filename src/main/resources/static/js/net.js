@@ -72,7 +72,6 @@ class Net {
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
 		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler;
 		//this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
-		this.handlers[MESSAGE_TYPE.TELEPORT_PACKET] = this.teleportHandler;
 		this.handlers[MESSAGE_TYPE.START_BATTLE] = this.startBattleHandler;
 		this.handlers[MESSAGE_TYPE.END_BATTLE] = this.endBattleHandler;
 		this.handlers[MESSAGE_TYPE.BATTLE_TURN_UPDATE] = this.battleUpdateHandler;		
@@ -171,6 +170,14 @@ class Net {
 
 	initPacketHandler(msg) {
 
+		if (Battle.inBattle) {
+			if (Battle.showing != undefined) {
+				await Battle.showing;
+			}
+			
+			Battle.endBattle();
+		}
+		
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
 
