@@ -44,10 +44,6 @@ public class PvPBattle extends Battle {
 
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
 
-  private BattleUpdate lastBattleUpdate = null;
-
-  private BattleUpdate pendingBattleUpdate = null;
-
   public PvPBattle(Integer id, Arena arena, User a, User b) {
     super(id, arena);
 
@@ -78,7 +74,7 @@ public class PvPBattle extends Battle {
     List<Turn> turns = new ArrayList<>(turnsMap.values());
     turns.sort(this::turnComparator);
 
-    pendingBattleUpdate = new BattleUpdate();
+    this.setPendingBattleUpdate(new BattleUpdate());
 
     boolean stop = false;
 
@@ -132,7 +128,7 @@ public class PvPBattle extends Battle {
 
     turnsMap.clear();
 
-    lastBattleUpdate = pendingBattleUpdate;
+    this.setLastBattleUpdate(this.getPendingBattleUpdate());
 
     sendBattleUpdate();
 
@@ -172,7 +168,7 @@ public class PvPBattle extends Battle {
     trainer.getEffectSlot().handle(switchInEvent);
     trainer.getActivePokemon().getEffectSlot().handle(switchInEvent);
 
-    pendingBattleUpdate.addSummary(
+    this.getPendingBattleUpdate().addSummary(
         new SwitchSummary(turn.getPokemonIn(), turn.getPokemonOut()));
   }
 
@@ -201,7 +197,7 @@ public class PvPBattle extends Battle {
             atkPokemon.getSpecies(), turn.getMove().getName());
       }
 
-      pendingBattleUpdate
+      this.getPendingBattleUpdate()
           .addSummary(new FightSummary(atkPokemon, defPokemon, msg, ""));
 
     } else {
@@ -249,7 +245,7 @@ public class PvPBattle extends Battle {
           }
         }
 
-        pendingBattleUpdate.addSummary(new FightSummary(atkPokemon,
+        this.getPendingBattleUpdate().addSummary(new FightSummary(atkPokemon,
             defendingPokemon, base.toString(), "basic"));
 
       } else {
@@ -286,7 +282,7 @@ public class PvPBattle extends Battle {
 
         Pokemon defPokemon = defTrainer.getActivePokemon();
 
-        pendingBattleUpdate.addSummary(
+        this.getPendingBattleUpdate().addSummary(
             new FightSummary(atkPokemon, defPokemon, base.toString(), anim));
       }
     }
@@ -295,7 +291,7 @@ public class PvPBattle extends Battle {
   public void victory(Trainer t) {
     System.out.println("Victory for: " + t.getId());
 
-    lastBattleUpdate = pendingBattleUpdate;
+    this.setLastBattleUpdate(this.getPendingBattleUpdate());
 
     setBattleState(BattleState.DONE);
 
@@ -417,7 +413,7 @@ public class PvPBattle extends Battle {
       return;
     }
 
-    PacketSender.sendBattleTurnPacket(getId(), t, lastBattleUpdate,
+    PacketSender.sendBattleTurnPacket(getId(), t, this.getLastBattleUpdate(),
         t.getActivePokemon(), other(t).getActivePokemon(),
         ((t.getActivePokemon().isKnockedOut()) ? TURN_STATE.MUST_SWITCH
             : TURN_STATE.NORMAL).ordinal());

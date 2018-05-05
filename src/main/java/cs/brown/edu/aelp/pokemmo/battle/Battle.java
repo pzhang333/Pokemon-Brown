@@ -8,7 +8,11 @@ import cs.brown.edu.aelp.util.Identifiable;
 public abstract class Battle extends Identifiable {
 
   public enum BattleState {
-    SETUP, WAITING, READY, DONE, WORKING
+    SETUP,
+    WAITING,
+    READY,
+    DONE,
+    WORKING
   }
 
   private final Arena arena;
@@ -17,6 +21,10 @@ public abstract class Battle extends Identifiable {
     super(id);
     this.arena = arena;
   }
+
+  private BattleUpdate lastBattleUpdate = null;
+
+  private BattleUpdate pendingBattleUpdate = null;
 
   private BattleState battleState = BattleState.SETUP;
 
@@ -43,6 +51,22 @@ public abstract class Battle extends Identifiable {
 
   public abstract boolean setTurn(Turn t);
 
+  public BattleUpdate getLastBattleUpdate() {
+    return this.lastBattleUpdate;
+  }
+
+  public BattleUpdate getPendingBattleUpdate() {
+    return this.pendingBattleUpdate;
+  }
+
+  public void setLastBattleUpdate(BattleUpdate bu) {
+    this.lastBattleUpdate = bu;
+  }
+
+  public void setPendingBattleUpdate(BattleUpdate bu) {
+    this.pendingBattleUpdate = bu;
+  }
+
   protected int turnComparator(Turn t1, Turn t2) {
 
     int actionComparison = t1.getAction().compareTo(t2.getAction());
@@ -63,7 +87,8 @@ public abstract class Battle extends Identifiable {
         return priorityComparison;
       }
 
-      int speedComparison = -ft1.getTrainer().getActivePokemon().getEffectiveSpeed()
+      int speedComparison = -ft1.getTrainer().getActivePokemon()
+          .getEffectiveSpeed()
           .compareTo(ft2.getTrainer().getActivePokemon().getEffectiveSpeed());
 
       if (speedComparison != 0) {

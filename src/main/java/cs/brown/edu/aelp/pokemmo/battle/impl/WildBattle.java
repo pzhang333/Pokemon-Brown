@@ -41,10 +41,6 @@ public class WildBattle extends Battle {
   private Map<Trainer, Turn> turnsMap = new HashMap<>();
   private Trainer b;
 
-  private BattleUpdate lastBattleUpdate = null;
-
-  private BattleUpdate pendingBattleUpdate = null;
-
   public WildBattle(Integer id, Arena arena, User user, Pokemon wild) {
     super(id, arena);
     this.wild = wild;
@@ -94,7 +90,7 @@ public class WildBattle extends Battle {
     List<Turn> turns = new ArrayList<>(turnsMap.values());
     turns.sort(this::turnComparator);
 
-    pendingBattleUpdate = new BattleUpdate();
+    this.setPendingBattleUpdate(new BattleUpdate());
 
     boolean stop = false;
 
@@ -148,7 +144,7 @@ public class WildBattle extends Battle {
 
     turnsMap.clear();
 
-    lastBattleUpdate = pendingBattleUpdate;
+    this.setLastBattleUpdate(this.getPendingBattleUpdate());
 
     sendBattleUpdate();
 
@@ -188,7 +184,7 @@ public class WildBattle extends Battle {
     trainer.getEffectSlot().handle(switchInEvent);
     trainer.getActivePokemon().getEffectSlot().handle(switchInEvent);
 
-    pendingBattleUpdate.addSummary(
+    this.getPendingBattleUpdate().addSummary(
         new SwitchSummary(turn.getPokemonIn(), turn.getPokemonOut()));
   }
 
@@ -217,7 +213,7 @@ public class WildBattle extends Battle {
             atkPokemon.getSpecies(), turn.getMove().getName());
       }
 
-      pendingBattleUpdate
+      this.getPendingBattleUpdate()
           .addSummary(new FightSummary(atkPokemon, defPokemon, msg, ""));
 
     } else {
@@ -265,7 +261,7 @@ public class WildBattle extends Battle {
           }
         }
 
-        pendingBattleUpdate.addSummary(new FightSummary(atkPokemon,
+        this.getPendingBattleUpdate().addSummary(new FightSummary(atkPokemon,
             defendingPokemon, base.toString(), "basic"));
 
       } else {
@@ -302,7 +298,7 @@ public class WildBattle extends Battle {
 
         Pokemon defPokemon = defTrainer.getActivePokemon();
 
-        pendingBattleUpdate.addSummary(
+        this.getPendingBattleUpdate().addSummary(
             new FightSummary(atkPokemon, defPokemon, base.toString(), anim));
       }
     }
@@ -314,7 +310,7 @@ public class WildBattle extends Battle {
     winner = t;
     loser = other(t);
 
-    lastBattleUpdate = pendingBattleUpdate;
+    this.setLastBattleUpdate(this.getPendingBattleUpdate());
     PacketSender.sendEndBattlePacket(this.getId(), this.getWinner().getId(),
         this.getLoser().getId(), 0, 0);
 
@@ -403,7 +399,7 @@ public class WildBattle extends Battle {
       return;
     }
 
-    PacketSender.sendBattleTurnPacket(getId(), t, lastBattleUpdate,
+    PacketSender.sendBattleTurnPacket(getId(), t, this.getLastBattleUpdate(),
         t.getActivePokemon(), other(t).getActivePokemon(),
         ((t.getActivePokemon().isKnockedOut()) ? TURN_STATE.MUST_SWITCH
             : TURN_STATE.NORMAL).ordinal());

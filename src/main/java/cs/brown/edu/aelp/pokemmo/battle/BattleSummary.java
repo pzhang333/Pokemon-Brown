@@ -11,8 +11,9 @@ public abstract class BattleSummary {
   private final Integer type;
   private String message;
 
-  protected BattleSummary(SummaryType type) {
+  protected BattleSummary(SummaryType type, String message) {
     this.type = type.ordinal();
+    this.message = message;
   }
 
   public void setMessage(String s) {
