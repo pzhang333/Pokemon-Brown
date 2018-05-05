@@ -1,11 +1,19 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
+import cs.brown.edu.aelp.pokemmo.battle.Item;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
+import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
@@ -23,11 +31,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 public class WildBattle extends Battle {
 
@@ -113,6 +116,8 @@ public class WildBattle extends Battle {
         handleTurn((FightTurn) turn);
       } else if (turn instanceof SwitchTurn) {
         handleTurn((SwitchTurn) turn);
+      } else if (turn instanceof ItemTurn) {
+        handleTurn((ItemTurn) turn);
       } else {
         handleTurn(turn);
       }
@@ -153,6 +158,29 @@ public class WildBattle extends Battle {
 
   private void handleTurn(Turn turn) {
     throw new IllegalArgumentException("No turn handler!");
+  }
+
+  private void handleTurn(ItemTurn turn) {
+
+    User u = (User) turn.getTrainer();
+    Item item = turn.getItem();
+    item.removeFromInventory(u.getInventory());
+
+    // TODO: Add messages
+
+    if (item.isPokeball()) {
+      boolean caught = wild.isCaught(item);
+
+      if (caught) {
+
+      } else {
+
+      }
+
+      return;
+    }
+
+    super.handleNonPokeballItem(turn);
   }
 
   private void handleTurn(NullTurn turn) {

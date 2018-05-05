@@ -276,7 +276,7 @@ public class PlayerWebSocketHandler {
       List<Move> moves = user.getActivePokemon().getMoves();
       for (Move m : moves) {
         // System.out.println(m);
-        if (m.getId() == moveId) {
+        if (m.getId() == moveId && m.getCurrPP() > 0) {
           t = new FightTurn(user, m);
           break;
         }

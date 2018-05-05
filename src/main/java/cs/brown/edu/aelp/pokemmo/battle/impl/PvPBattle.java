@@ -12,7 +12,6 @@ import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
 import cs.brown.edu.aelp.pokemmo.battle.Item;
-import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
@@ -25,6 +24,7 @@ import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchInEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchOutEvent;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.FightSummary;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.ItemSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.SwitchSummary;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.map.Location;
@@ -156,24 +156,19 @@ public class PvPBattle extends Battle {
 
   private void handleTurn(ItemTurn turn) {
 
+    User u = (User) turn.getTrainer();
     Item item = turn.getItem();
+    item.removeFromInventory(u.getInventory());
 
     // TODO: Add messages
 
     if (item.isPokeball()) {
-      // TODO: Fail message
+      getPendingBattleUpdate().addSummary(
+          new ItemSummary(item, "You can't use a Pokeball in a PVP Battle!"));
       return;
     }
 
-    ItemType type = item.getType();
-
-    if (type == ItemType.OVERLOAD) {
-
-    } else if (type == ItemType.FULL_RESTORE) {
-      turn.getTrainer().getActivePokemon().fullRestore();
-    } else {
-      // TODO...
-    }
+    super.handleNonPokeballItem(turn);
   }
 
   private void handleTurn(SwitchTurn turn) {
@@ -202,6 +197,8 @@ public class PvPBattle extends Battle {
 
   public void handleTurn(FightTurn turn) {
     System.out.println("Fight turn");
+
+    turn.getMove().setPP(turn.getMove().getCurrPP() - 1);
 
     Trainer atkTrainer = turn.getTrainer();
     Trainer defTrainer = other(atkTrainer);
