@@ -1053,6 +1053,7 @@ Battle.battleOver = async function(packet) {
 			await exitButton.events;
 			exitButton.events.onInputUp.add(function() {
 				resolve();
+				Battle.clearMoves();
 				Battle.endBattle();
 			});
 	
