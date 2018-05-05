@@ -5,7 +5,10 @@ import cs.brown.edu.aelp.pokemon.Inventory;
 public class Item {
 
   public static enum ItemType {
-    POKEBALL, MASTER_BALL, OVERLOAD, FULL_RESTORE
+    POKEBALL,
+    MASTER_BALL,
+    OVERLOAD,
+    FULL_RESTORE
   }
 
   private final int id;
@@ -17,7 +20,7 @@ public class Item {
   public boolean isPokeball() {
     ItemType type = getType();
 
-    return (type == ItemType.POKEBALL) && (type == ItemType.MASTER_BALL);
+    return (type == ItemType.POKEBALL) || (type == ItemType.MASTER_BALL);
   }
 
   public ItemType getType() {

@@ -1,11 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
@@ -35,6 +29,11 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PvPBattle extends Battle {
 
@@ -256,6 +255,9 @@ public class PvPBattle extends Battle {
 
         System.out.println(defendingPokemon.getCurrHp());
 
+        this.getPendingBattleUpdate().addSummary(new FightSummary(atkPokemon,
+            defendingPokemon, base.toString(), "basic"));
+
         if (defendingPokemon.isKnockedOut()) {
           // System.out.println("K.O.!");
           defendingPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
@@ -265,9 +267,6 @@ public class PvPBattle extends Battle {
             victory(atkTrainer);
           }
         }
-
-        this.getPendingBattleUpdate().addSummary(new FightSummary(atkPokemon,
-            defendingPokemon, base.toString(), "basic"));
 
       } else {
 

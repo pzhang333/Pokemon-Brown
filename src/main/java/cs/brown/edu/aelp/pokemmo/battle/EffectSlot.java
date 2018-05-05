@@ -1,13 +1,12 @@
 package cs.brown.edu.aelp.pokemmo.battle;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import cs.brown.edu.aelp.pokemmo.battle.events.BattleEvent;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class EffectSlot {
 
-  private List<Effect> effects = new LinkedList<>();
+  private Queue<Effect> effects = new ConcurrentLinkedQueue<>();
 
   public EffectSlot() {
   }
@@ -27,7 +26,7 @@ public class EffectSlot {
     effects.clear();
   }
 
-  public List<Effect> getEffects() {
+  public Queue<Effect> getEffects() {
     return effects;
   }
 

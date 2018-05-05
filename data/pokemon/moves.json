@@ -564,5 +564,18 @@
 		"priority": 0,
 		"type": "Ground",
 		"flags": ["DAMAGE"]
-	}
+	},
+    "273": {
+		"id": 273,
+		"accuracy": 0,
+		"basePower": 0,
+		"category": "Special",
+		"desc": "No additional effect.",
+		"shortDesc": "Heals 50% health two turns later.",
+		"name": "Wish",
+		"pp": 10,
+		"priority": 0,
+		"type": "Normal",
+		"flags": ["COMPLEX"]
+    }
 }

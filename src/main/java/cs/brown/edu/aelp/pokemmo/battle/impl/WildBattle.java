@@ -1,11 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
@@ -27,11 +21,18 @@ import cs.brown.edu.aelp.pokemmo.battle.summaries.FightSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.ItemSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.SwitchSummary;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import cs.brown.edu.aelp.pokemon.Main;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class WildBattle extends Battle {
 
@@ -124,10 +125,6 @@ public class WildBattle extends Battle {
       }
 
       if (getBattleState().equals(BattleState.DONE)) {
-
-        sendBattleUpdate();
-
-        // TODO: Add end of Battle event.
         return;
       }
 
@@ -168,6 +165,8 @@ public class WildBattle extends Battle {
     item.removeFromInventory(u.getInventory());
 
     // TODO: Add messages
+    System.out.println("used item id: " + item.getId());
+    System.out.println("is pokeball: " + item.isPokeball());
 
     if (item.isPokeball()) {
       boolean caught = wild.isCaught(item);
@@ -286,6 +285,9 @@ public class WildBattle extends Battle {
 
         System.out.println(defendingPokemon.getCurrHp());
 
+        this.getPendingBattleUpdate().addSummary(new FightSummary(atkPokemon,
+            defendingPokemon, base.toString(), "basic"));
+
         if (defendingPokemon.isKnockedOut()) {
           // System.out.println("K.O.!");
           defendingPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
@@ -295,9 +297,6 @@ public class WildBattle extends Battle {
             victory(atkTrainer);
           }
         }
-
-        this.getPendingBattleUpdate().addSummary(new FightSummary(atkPokemon,
-            defendingPokemon, base.toString(), "basic"));
 
       } else {
 
@@ -346,10 +345,25 @@ public class WildBattle extends Battle {
     loser = other(t);
 
     this.setLastBattleUpdate(this.getPendingBattleUpdate());
+    sendBattleUpdate();
     PacketSender.sendEndBattlePacket(this.getId(), this.getWinner().getId(),
         this.getLoser().getId(), 0, 0);
 
     setBattleState(BattleState.DONE);
+
+    User u = (User) (winner instanceof User ? winner : loser);
+
+    boolean needsHeal = true;
+    for (Pokemon p : u.getTeam()) {
+      if (p.getCurrHp() != 0) {
+        needsHeal = false;
+        break;
+      }
+    }
+    if (needsHeal) {
+      u.teleportTo(new Location(Main.getWorld().getChunk(2), 30, 31));
+    }
+
   }
 
   public boolean setTurn(Turn t) {

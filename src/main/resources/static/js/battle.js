@@ -992,6 +992,8 @@ Battle.battleOver = async function(packet) {
 	if (Battle.showing != undefined) {
 		await Battle.showing;
 	}
+	
+	console.log('battle over');
 
 	Battle.clearMenu();
 	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
@@ -1071,7 +1073,7 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 			Battle.team = packet.pokemon_team;
 
 			//Battle.drawDefaultMenu();
-
+			
 			resolve();
 			resolveShow();
 			return;
@@ -1090,7 +1092,11 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 		console.log('MESSADAFASD');
 		console.log('Msg: ' +  summary.message);
 		if (summary.message != undefined && summary.message.length != 0) {
-			Battle.drawMessage(summary.message);
+			try {
+				Battle.drawMessage(summary.message);
+			} catch(err) {
+				console.log('an err: ' + err);
+			}
 		}
 
 		console.log('Type: ' + summary.type);
@@ -1141,7 +1147,7 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 
 Battle.handleUpdate = async function(packet) {
 	console.log(packet);
-
+	console.log('update');
 	console.log(packet.update.summaries.slice(0));
 
 	/*let userPokemon = pokemon_a;
