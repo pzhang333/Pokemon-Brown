@@ -94,41 +94,7 @@ CREATE SEQUENCE IF NOT EXISTS pokemon_user_id_seq
 -- Name: pokemon_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE pokemon_user_id_seq OWNED BY pokemon.user_id;
-
-
---
--- TOC entry 193 (class 1259 OID 17773)
--- Name: status_effects; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE IF NOT EXISTS status_effects (
-    pokemon_id integer NOT NULL,
-    effect text NOT NULL
-);
-
-
---
--- TOC entry 192 (class 1259 OID 17771)
--- Name: status_effects_pokemon_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE IF NOT EXISTS status_effects_pokemon_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 2172 (class 0 OID 0)
--- Dependencies: 192
--- Name: status_effects_pokemon_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE status_effects_pokemon_id_seq OWNED BY status_effects.pokemon_id;
-
+ALTER SEQUENCE pokemon_user_id_seq OWNED BY pokemon.user_id
 
 --
 -- TOC entry 186 (class 1259 OID 17727)
@@ -198,14 +164,6 @@ ALTER TABLE ONLY pokemon ALTER COLUMN user_id SET DEFAULT nextval('pokemon_user_
 
 
 --
--- TOC entry 2030 (class 2604 OID 17776)
--- Name: status_effects pokemon_id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY status_effects ALTER COLUMN pokemon_id SET DEFAULT nextval('status_effects_pokemon_id_seq'::regclass);
-
-
---
 -- TOC entry 2025 (class 2604 OID 17730)
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
@@ -264,15 +222,6 @@ ALTER TABLE ONLY users
 --
 
 CREATE INDEX IF NOT EXISTS fki_user_id_foreign_key ON inventories USING btree (user_id);
-
-
---
--- TOC entry 2044 (class 2606 OID 17780)
--- Name: status_effects pokemon_id_foreign_key; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY status_effects
-    ADD CONSTRAINT pokemon_id_foreign_key FOREIGN KEY (pokemon_id) REFERENCES pokemon(id);
 
 
 --
