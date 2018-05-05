@@ -1,6 +1,7 @@
 package cs.brown.edu.aelp.pokemmo.data;
 
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 
 public interface DataSource {
 
@@ -52,6 +53,8 @@ public interface DataSource {
    * Attempts to load the top 50 elos into the leaderboards.
    */
   public void loadLeaderboards() throws LoadException;
+
+  public Pokemon insertNewPokemon(User u, Pokemon p);
 
   /**
    * Type of Exception thrown when something goes wrong during authentication.
