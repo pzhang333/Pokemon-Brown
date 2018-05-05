@@ -2,6 +2,7 @@ package cs.brown.edu.aelp.pokemmo.pokemon.moves.complex;
 
 import cs.brown.edu.aelp.pokemmo.battle.Effect;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.EndOfBattleEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.HealthChangeSummary;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
@@ -45,6 +46,11 @@ public class Wish extends Move {
       }
 
       turnsLeft--;
+    }
+
+    @Override
+    public void handle(EndOfBattleEvent event) {
+      getEffectSlot().deregister(this);
     }
 
   }
