@@ -897,7 +897,7 @@ Battle.forfeit = function() {
 	console.log('Forfeit!');
 	net.sendBattlePacket(BATTLE_ACTION.RUN, {});
 
-	Battle.endBattle();
+	//Battle.endBattle();
 };
 
 Battle.drawDefaultMenu = async function() {
@@ -1076,10 +1076,10 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 			// handle end packet...
 			Battle.team = packet.pokemon_team;
 			
-			if (Battle.pokemon_a.id == Battle.frontPokemon.id) {
-				Battle.frontPokemon.moves = Battle.pokemon_a.moves;
+			if (packet.pokemon_a.id == Battle.frontPokemon.id) {
+				Battle.frontPokemon.moves = packet.pokemon_a.moves;
 			} else {
-				Battle.frontPokemon.moves = Battle.pokemon_b.moves;
+				Battle.frontPokemon.moves = packet.pokemon_b.moves;
 			}
 			
 			if (Battle.teamButtons != undefined && Battle.teamButtons.length != 0) {
