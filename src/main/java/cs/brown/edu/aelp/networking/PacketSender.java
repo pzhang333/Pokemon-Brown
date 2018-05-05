@@ -105,6 +105,7 @@ public final class PacketSender {
     payload.addProperty("background_name", bg);
     payload.add("location", Main.GSON().toJsonTree(u.getLocation()));
     packet.add("payload", payload);
+    System.out.println(packet);
     return packet;
   }
 
