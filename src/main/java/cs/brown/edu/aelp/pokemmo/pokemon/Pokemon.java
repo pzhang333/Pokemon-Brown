@@ -1,24 +1,28 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
-import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
-import cs.brown.edu.aelp.pokemmo.data.authentication.User;
-import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
-import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
-import cs.brown.edu.aelp.pokemon.Main;
-import cs.brown.edu.aelp.util.Identifiable;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
+import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
+import cs.brown.edu.aelp.pokemmo.battle.Item;
+import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
+import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
+import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
+import cs.brown.edu.aelp.pokemon.Main;
+import cs.brown.edu.aelp.util.Identifiable;
 
 // TODO: We probably need a status column in our pokemon DB
 
@@ -554,16 +558,17 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     evasionStage = 0;
   }
 
-  public boolean isCaught(String ballType) {
+  public boolean isCaught(Item ball) {
+
+    if (!ball.isPokeball()) {
+      return false;
+    } else if (ball.getType().equals(ItemType.MASTER_BALL)) {
+      return true;
+    }
+
     double ballBonus = 1.0;
     double statusBonus = 1.0;
-    if (ballType.equals("great")) {
-      ballBonus = 1.5;
-    } else if (ballType.equals("ultra")) {
-      ballBonus = 2.0;
-    } else if (ballType.equals("master")) {
-      ballBonus = 255.0;
-    }
+
     if (this.status == Status.SLEEP || this.status == Status.FREEZE) {
       statusBonus = 2.0;
     } else if (this.status == Status.PARALYZE || this.status == Status.BURN
@@ -702,9 +707,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   // TODO: Fix toString
   @Override
   public String toString() {
-    return "Pokemon [id=" + this.getId() + ", health=" + currHp + ", type="
-        + typeList.get(0) + ", moves=" + moves + ", effectSlot=" + effectSlot
-        + "]";
+    return getNickname() + " (" + getSpecies() + ")";
   }
 
   @Override
