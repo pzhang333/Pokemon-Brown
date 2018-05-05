@@ -3,7 +3,7 @@ package cs.brown.edu.aelp.pokemmo.battle;
 public class BattleSummary {
 
   public static enum SummaryType {
-    FIGHT, SWITCH, HEAL, DAMAGE, ITEM
+    FIGHT, SWITCH, HEALTH_CHANGE, ITEM
   }
 
   private final Integer type;
