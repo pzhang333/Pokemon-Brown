@@ -1084,7 +1084,7 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 		let SUMMARY_TYPE = {
 			FIGHT: 0,
 			SWITCH: 1,
-      HEALTH_CHANGE : 2
+			HEALTH_CHANGE : 2
 		};
 
 		console.log('MESSADAFASD');
