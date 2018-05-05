@@ -80,6 +80,8 @@ Game.preload = function() {
     // loading buttons
     game.load.image('challenge_button', 'assets/buttons/button_challenge.png');
     game.load.image('pending_challenge_button', 'assets/buttons/button_pending.png');
+    game.load.image('up_arrow', 'assets/buttons/uparrow.png');
+    game.load.image('down_arrow', 'assets/buttons/downarrow.png');
 
 	Battle.preload();
 };
