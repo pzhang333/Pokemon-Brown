@@ -24,6 +24,7 @@ import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchInEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchOutEvent;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.FightSummary;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.ItemSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.SwitchSummary;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
@@ -172,9 +173,15 @@ public class WildBattle extends Battle {
       boolean caught = wild.isCaught(item);
 
       if (caught) {
+        getPendingBattleUpdate()
+            .addSummary(new ItemSummary(item, true, "Caught!"));
 
+        u.addCaughtPokemon(wild);
+
+        victory(u);
       } else {
-
+        getPendingBattleUpdate().addSummary(new ItemSummary(item, false,
+            "You can't use a Pokeball in a PVP Battle!"));
       }
 
       return;

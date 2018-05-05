@@ -602,6 +602,10 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     this.setChanged(true);
   }
 
+  public void setStatus(Status status) {
+    this.status = status;
+  }
+
   public void addHealth(Integer addHP) {
     setHealth(this.currHp + addHP);
   }

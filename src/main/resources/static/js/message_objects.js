@@ -14,3 +14,19 @@ class RequestPathMessage {
       this.payload = {"path": path};
   }
 }
+
+class RequestChallengeMessage {
+    constructor(id, challengedId) {
+      this.type = 12;
+      this.payload = {"id": id, "challenged_id": challengedId};
+  }
+}
+// to cancel challenge: 
+// send challenge packet with only new id and nothing else
+
+class ChallengeResponseMessage {
+    constructor(id, accepted) {
+      this.type = 13;
+      this.payload = {"id": id, "accepted": accepted};
+  }
+}

@@ -107,7 +107,7 @@ public abstract class Battle extends Identifiable {
 
       Pokemon pokemon = turn.getTrainer().getActivePokemon();
 
-      getPendingBattleUpdate().addSummary(new ItemSummary(item,
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
           String.format("%s overloaded!", pokemon.toString())));
 
     } else if (type == ItemType.FULL_RESTORE) {
@@ -115,7 +115,7 @@ public abstract class Battle extends Identifiable {
       Pokemon pokemon = turn.getTrainer().getActivePokemon();
       pokemon.fullRestore();
 
-      getPendingBattleUpdate().addSummary(new ItemSummary(item,
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
           String.format("%s was fully restored.", pokemon.toString())));
 
     } else {
@@ -123,7 +123,7 @@ public abstract class Battle extends Identifiable {
 
       Pokemon pokemon = turn.getTrainer().getActivePokemon();
 
-      getPendingBattleUpdate().addSummary(new ItemSummary(item, String
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, true, String
           .format("%s used item (%d)", pokemon.toString(), item.getId())));
     }
   }

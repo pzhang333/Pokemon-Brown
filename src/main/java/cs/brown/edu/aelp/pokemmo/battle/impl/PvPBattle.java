@@ -163,8 +163,8 @@ public class PvPBattle extends Battle {
     // TODO: Add messages
 
     if (item.isPokeball()) {
-      getPendingBattleUpdate().addSummary(
-          new ItemSummary(item, "You can't use a Pokeball in a PVP Battle!"));
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, false,
+          "You can't use a Pokeball in a PVP Battle!"));
       return;
     }
 

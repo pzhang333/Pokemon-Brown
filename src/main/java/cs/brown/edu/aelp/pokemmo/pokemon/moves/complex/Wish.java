@@ -3,6 +3,7 @@ package cs.brown.edu.aelp.pokemmo.pokemon.moves.complex;
 import cs.brown.edu.aelp.pokemmo.battle.Effect;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.HealSummary;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
@@ -37,16 +38,15 @@ public class Wish extends Move {
       if (turnsLeft == 0) {
 
         Pokemon p = trainer.getActivePokemon();
-
-        p.setHealth(p.getCurrHp() + (int) Math.ceil(p.getMaxHp() / 2));
-
+        int amt = (int) Math.ceil(p.getMaxHp() / 2);
+        p.setHealth(p.getCurrHp() + amt);
+        event.getBattle().getPendingBattleUpdate()
+            .addSummary(new HealSummary(p, amt, "Wish came true!"));
         getEffectSlot().deregister(this);
-        System.out.println("Wish came true!");
         return;
       }
 
       turnsLeft--;
-      System.out.println("Wish Turns left: " + turnsLeft);
     }
 
   }

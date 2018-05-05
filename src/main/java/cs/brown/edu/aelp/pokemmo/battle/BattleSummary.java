@@ -1,15 +1,15 @@
 package cs.brown.edu.aelp.pokemmo.battle;
 
-public abstract class BattleSummary {
+public class BattleSummary {
 
   public static enum SummaryType {
-    FIGHT, SWITCH, ITEM, MISC
+    FIGHT, SWITCH, HEAL, DAMAGE, ITEM
   }
 
   private final Integer type;
   private String message;
 
-  protected BattleSummary(SummaryType type, String message) {
+  public BattleSummary(SummaryType type, String message) {
     this.type = type.ordinal();
     this.message = message;
   }

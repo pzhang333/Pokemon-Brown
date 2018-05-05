@@ -10,7 +10,9 @@ const MESSAGE_TYPE = {
     BATTLE_TURN_UPDATE: 8,
     CLIENT_BATTLE_UPDATE: 9,
     CHAT: 10,
-    SERVER_MESSAGE: 11
+    SERVER_MESSAGE: 11,
+    CHALLENGE_REQUEST: 12,
+    CHALLENGE_RESPONSE: 13
 };
 
 const BATTLE_ACTION = {
@@ -50,9 +52,10 @@ function waitForSocketConnection(socket, callback) {
 class Net {
 
 	constructor() {
-		//this.host = '10.38.37.243';
-		this.host = 'localhost'
-    	//this.host = '10.38.32.136';
+
+		this.host = 'localhost';
+
+    	// this.host = '10.38.32.136';
     	this.port = 4567;
 
 		this.cfg = {
@@ -71,8 +74,7 @@ class Net {
 		this.handlers[MESSAGE_TYPE.TELEPORT_PACKET] = this.teleportHandler;
 		this.handlers[MESSAGE_TYPE.START_BATTLE] = this.startBattleHandler;
 		this.handlers[MESSAGE_TYPE.END_BATTLE] = this.endBattleHandler;
-		this.handlers[MESSAGE_TYPE.BATTLE_TURN_UPDATE] = this.battleUpdateHandler;
-		
+		this.handlers[MESSAGE_TYPE.BATTLE_TURN_UPDATE] = this.battleUpdateHandler;		
 		this.handlers[MESSAGE_TYPE.SERVER_MESSAGE] = function(event) {
 			let cleanMsg = event.payload.message.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
 				return '&#' + i.charCodeAt(0) + ';';
@@ -80,6 +82,8 @@ class Net {
 			
 			this.displayChatMsg(cleanMsg, 'color: darkred; font-weight: bold;');
 		}.bind(this);
+		this.handlers[MESSAGE_TYPE.CHALLENGE_RESPONSE] = this.challengeResponseHandler;
+		this.handlers[MESSAGE_TYPE.CHALLENGE_REQUEST] = this.requestChallengeHandler;
 		
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
@@ -99,6 +103,7 @@ class Net {
 		}
 
 		waitForSocketConnection(this.socket, function(socket) {
+			console.log(net.packet(type, payload));
 			socket.send(net.packet(type, payload));
 		}.bind(this));
 	}
@@ -165,8 +170,6 @@ class Net {
 
 	initPacketHandler(msg) {
 
-		//console.log(msg);
-
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
 
@@ -200,6 +203,7 @@ class Net {
 
 			if (player.id == net.id) {
 				Game.player.username = player.username;
+				Game.player.items = player.items;
 				continue;
 			}
 
@@ -215,7 +219,7 @@ class Net {
 	}
 
 	gamePacketHandler(msg) {
-	//	console.log('Got game packet');
+		//	console.log('Got game packet');
 
 		//msg = generateFakeGamePacket();
 
@@ -312,6 +316,7 @@ class Net {
 		//	console.log(id + " : " + net.id)
 			if (id == net.id) {
 				//console.log('skip: ' + id);
+				Game.player.items = msg.payload.users[i].items;
 				continue;
 			}
 
@@ -324,7 +329,8 @@ class Net {
 				player.initSprite();
 				player.setVisible(true);
 				player.setPos(loc.col, loc.row);
-				console.log(player);
+				player.sprite.inputEnabled = true;
+    			player.sprite.events.onInputDown.add(playerInteraction, player);
 				/*console.log('ayyy');*/
 				//continue;
 			}
@@ -459,6 +465,58 @@ class Net {
   		// sends a message with an updated player object
   		let messageObject = new RequestPathMessage(path);
   		socket.send(JSON.parse(messageObject));
+  	}
+
+  	challengeResponseHandler(msg) {
+  		let payload = msg.payload;
+
+  		if (payload.reason == "denied") {
+  			// expired, canceled, busy
+  			renderChallengeUpdate("Challenge denied.");
+  		} else if (payload.reason == "canceled") {
+  			renderChallengeUpdate("Challenge canceled.");
+  		} else if (payload.reason == "busy") {
+  			renderChallengeUpdate("Challenge busy.");
+  		} else {
+  			renderChallengeUpdate("Challenge expired.");
+  		}
+  	}
+
+  	requestChallengeHandler(msg) {
+  		console.log(msg);
+  		let payload = msg.payload;
+
+  		let challengerId = payload.from;
+
+  		if (Game.players[challengerId] != undefined) {
+  			let player = Game.players[challengerId];
+  			renderChallenge(player);
+  		}
+  	}
+
+  	requestChallenge(id, challengedId) {
+  		// sends a requesting a p2p battle
+  		let messageObject = new RequestChallengeMessage(id, challengedId);
+  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_REQUEST, messageObject.payload);  	
+  	}
+
+  	cancelChallenge(id) {
+  		// sends a requesting a p2p battle
+  		let messageObject = new RequestChallengeMessage(id, -1);
+  		console.log(messageObject);
+  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_REQUEST, {id: messageObject.payload.id});  	
+  	}
+
+  	rejectChallenge(id) {
+  		// rejects a p2p battle request
+  		let messageObject = new ChallengeResponseMessage(id, false);
+  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_RESPONSE, messageObject.payload);  	
+  	}
+
+  	acceptChallenge(id) {
+  		// accepts a p2p battle request
+  		let messageObject = new ChallengeResponseMessage(id, true);
+  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_RESPONSE, messageObject.payload);
   	}
 }
 

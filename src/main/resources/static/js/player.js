@@ -14,6 +14,7 @@ class Player {
 		/* Various variables */
 		this.fps = 6;
 		this.speed = 64;
+		this.clicked = false;
 
 		//this.initSprite();
 	}
