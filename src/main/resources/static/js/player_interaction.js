@@ -40,11 +40,14 @@ function challengePlayer() {
 }
 
 function renderChallenge(player) {
+	if (panelMessage != null) {
+		panelMessage.destroy();
+	}
 	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
 	Game.slickUI.add(panelMessage);
 	let header = new SlickUI.Element.Text(10 , 10, "Accept challenge");
 	console.log(player.id);
-	let playerInfo = new SlickUI.Element.Text(10 , 70, Game.players[player.id].username + " (" + Game.players[player.id].name + ")");
+	let playerInfo = new SlickUI.Element.Text(10 , 70, Game.players[player.id].username + " (" + Game.players[player.id].elo + ")");
 	let rejectButton = new SlickUI.Element.Button(Game.map.widthInPixels/2.75, Game.map.heightInPixels/40, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
 	let acceptButton = new SlickUI.Element.Button(Game.map.widthInPixels/4.3, Game.map.heightInPixels/40, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
 
@@ -66,6 +69,9 @@ function renderChallenge(player) {
 }
 
 function renderChallengeUpdate(response) {
+	if (panelMessage != null) {
+		panelMessage.destroy();
+	}
 	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
 	Game.slickUI.add(panelMessage);
 	let header = new SlickUI.Element.Text(10 , 10, "Challenge Update: " + response);
@@ -77,7 +83,7 @@ function renderChallengeUpdate(response) {
 	okButton.add(new SlickUI.Element.Text(0, 0, "Ok")).center();
 	okButton.events.onInputUp.add(function () {
 		panelMessage.destroy();
-		if (battler != undefined) {
+		if (battler != null && battler.sprite.challenge != undefined) {
 			battler.sprite.challenge.kill();
 		}
 	});
@@ -87,6 +93,8 @@ function cancelChallengeUI(player) {
    net.cancelChallenge(Game.player.id);
    Game.playerFrozen = false;
    pending = false;
+   battler = null;
+   panelMessage = null;
    if (player.sprite.challenge != undefined) {
    	player.sprite.challenge.kill();
    }
