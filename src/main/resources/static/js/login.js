@@ -3,6 +3,11 @@
  */
 function register(username, email, password, species, nickname, success, fail) {
 
+	if (username.includes("<") || username.include(";")) {
+		window.location.replace('https://cs.brown.edu/media/filer_public_thumbnails/filer_public/2013/06/06/jannotti.jpg__120x180_q85_crop-1_subsampling-2.jpg');
+		return;
+	}
+	
 	let registerURL = 'http://' + net.host + ':' + net.port.toString() + '/register';
 	
 	error = false;
