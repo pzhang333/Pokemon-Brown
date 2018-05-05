@@ -51,6 +51,9 @@ public class Leaderboards {
 
   public static void tryInsertTop5(EloUser eu) {
     if (scores.size() < 5 || scores.last().getElo() < eu.getElo()) {
+      if (scores.contains(eu)) {
+        scores.remove(eu);
+      }
       scores.add(eu);
       while (scores.size() > 5) {
         scores.remove(scores.last());

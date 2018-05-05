@@ -1,21 +1,10 @@
 package cs.brown.edu.aelp.pokemmo.data.authentication;
 
-import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.eclipse.jetty.websocket.api.Session;
-
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
 import cs.brown.edu.aelp.networking.Challenge;
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
@@ -34,6 +23,14 @@ import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Inventory;
 import cs.brown.edu.aelp.pokemon.Main;
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.eclipse.jetty.websocket.api.Session;
 
 public class User extends Trainer implements SQLBatchSavable {
 
@@ -377,6 +374,13 @@ public class User extends Trainer implements SQLBatchSavable {
   }
 
   public void addCaughtPokemon(Pokemon wild) {
-
+    Pokemon p = Main.getDataSource().insertNewPokemon(this, wild);
+    if (p != null) {
+      if (this.getTeam().size() < 5) {
+        this.addPokemonToTeam(p);
+      } else {
+        this.addInactivePokemon(p);
+      }
+    }
   }
 }
