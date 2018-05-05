@@ -257,7 +257,9 @@ public class PlayerWebSocketHandler {
     switch (ACTION_TYPES[payload.get("action").getAsInt()]) {
     case RUN:
       // TODO: run
-      battle.forfeit(user);
+      if (!battle.getBattleState().equals(BattleState.DONE)) {
+        battle.forfeit(user);
+      }
       return;
     case SWITCH:
       // TODO: switch
@@ -411,6 +413,9 @@ public class PlayerWebSocketHandler {
     }
     int poke_id = payload.get("pokemon_id").getAsInt();
     Pokemon p = u.getPokemonById(poke_id);
+
+    System.out.println("Set active pokemon: " + p);
+
     if (p != null && u.getTeam().contains(p)) {
       u.setActivePokemon(p);
     } else {
