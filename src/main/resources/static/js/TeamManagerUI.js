@@ -7,8 +7,6 @@ function renderTeamManager() {
 	let team = Game.player.pokemon;
 	let selectedPokemon = team.filter(pokemon => pokemon.stored == false);
 
-	console.log(selectedPokemon);
-
 	for (let i=0; i<team.length; i++) {
 		if (selectedPokemon.includes(team[i])) {
 			selectedTeamManager.push(i);

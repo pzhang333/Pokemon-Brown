@@ -649,7 +649,7 @@ Battle.showInv = async function() {
 
         if (pos == 0) {
             text = new SlickUI.Element.Text(50, 0, ucfirst('Pokeball'));
-            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
+            count = new SlickUI.Element.Text(50, 15, ucfirst("x"+mapGet(Game.player.items, 0, 0)));
             sprite = game.add.sprite(0, 0, 'pokeball');
 		} else if (pos == 1) {
             text = new SlickUI.Element.Text(50, 0, ucfirst('Great Ball'));
