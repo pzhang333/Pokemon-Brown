@@ -41,7 +41,7 @@ public class Wish extends Move {
         int amt = (int) Math.ceil(p.getMaxHp() / 2);
         p.setHealth(p.getCurrHp() + amt);
         event.getBattle().getPendingBattleUpdate()
-            .addSummary(new HealSummary(p, "Wish came true!", amt));
+            .addSummary(new HealSummary(p, amt, "Wish came true!"));
         getEffectSlot().deregister(this);
         return;
       }
