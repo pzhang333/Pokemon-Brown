@@ -646,11 +646,12 @@ Battle.showInv = async function() {
         let sprite;
 
         // If we want a throwing animation: https://www.spriters-resource.com/ds_dsi/pokemondiamondpearl/sheet/6924/
-
+        let itemId = 0;
         if (pos == 0) {
             text = new SlickUI.Element.Text(50, 0, ucfirst('Pokeball'));
-            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
+            count = new SlickUI.Element.Text(50, 15, ucfirst("x"+mapGet(Game.player.items, 0, 0)));
             sprite = game.add.sprite(0, 0, 'pokeball');
+            
 		} else if (pos == 1) {
             text = new SlickUI.Element.Text(50, 0, ucfirst('Great Ball'));
             count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
@@ -665,8 +666,10 @@ Battle.showInv = async function() {
             sprite = game.add.sprite(0, 0, 'ultraball');
 		} else if (pos == 4) {
             text = new SlickUI.Element.Text(50, 0, ucfirst('Master Ball'));
-            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
+            count = new SlickUI.Element.Text(50, 15, ucfirst("x" + mapGet(Game.player.items, 1, 0)));
             sprite = game.add.sprite(0, 0, 'masterball');
+            itemId = 1;
+            
 		} else {
             text = new SlickUI.Element.Text(50, 0, ucfirst('Full Restore'));
             count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
@@ -680,6 +683,9 @@ Battle.showInv = async function() {
         itemButton.add(count);
 
         await itemButton.events;
+        itemButton.events.onInputUp.add(function() {
+           	net.sendBattlePacket(BATTLE_ACTION.USE_ITEM, {itemId: itemId})
+        });
 
         let x = Battle.panel.x + (xI * (buttonWidth + 4)) + (text.x);
         let y = Battle.panel.y + (yI * 50) + (48 / 2);

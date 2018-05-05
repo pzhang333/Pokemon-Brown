@@ -106,6 +106,9 @@ public final class Main {
         .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
 
+    ScheduledExecutorService scheduler = Executors
+        .newSingleThreadScheduledExecutor();
+
     // ip, port, database, user, pass
     try {
       JsonFile cfg = new JsonFile("config/database_info.json");
@@ -128,15 +131,23 @@ public final class Main {
         }
       };
 
-      // triggers table creation, too, if needed
-      Main.getDataSource().loadLeaderboards();
+      Runnable save = new Runnable() {
+        @Override
+        public void run() {
+          // triggers table creation, too, if needed
+          try {
+            Main.getDataSource().loadLeaderboards();
+          } catch (LoadException e) {
+            e.printStackTrace();
+          }
+        }
+      };
+
+      scheduler.scheduleAtFixedRate(save, 0, 60, TimeUnit.SECONDS);
 
     } catch (IOException e) {
       System.out.println(
           "ERROR: Something went wrong reading database_info.json. Check the configuration file.");
-      e.printStackTrace();
-      return;
-    } catch (LoadException e) {
       e.printStackTrace();
       return;
     }
@@ -159,8 +170,6 @@ public final class Main {
 
     // try to start the save-thread if we're backed by SQL
     if (Main.getDataSource() instanceof SQLDataSource) {
-      ScheduledExecutorService scheduler = Executors
-          .newSingleThreadScheduledExecutor();
 
       Runnable save = new Runnable() {
 
