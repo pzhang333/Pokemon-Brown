@@ -49,7 +49,7 @@ public class PlayerWebSocketHandler {
     CLIENT_BATTLE_UPDATE,
     CHAT,
     SERVER_MESSAGE,
-    CHALLENGE, // 12
+    CHALLENGE, 
     CHALLENGE_RESPONSE,
     UPDATE_ACTIVE_POKEMON,
     UPDATE_TEAM
@@ -356,7 +356,7 @@ public class PlayerWebSocketHandler {
     int challenged = payload.get("challenged_id").getAsInt();
     User u2 = UserManager.getUserById(challenged);
     double dist = u1.getLocation().dist(u2.getLocation());
-    if (dist < 0 || dist > 2) {
+    if (dist < 0 || dist > 8) {
       return;
     }
     if (u2 == null || u2.getChallenge() != null || u2.isInBattle()) {
@@ -384,6 +384,7 @@ public class PlayerWebSocketHandler {
     if (!accepted) {
       PacketSender.sendChallengeResponse(u1.getChallenge().getFrom(), "denied");
       u1.getChallenge().cancel();
+      return;
     }
     User u2 = u1.getChallenge().getFrom();
     u1.getChallenge().cancel();

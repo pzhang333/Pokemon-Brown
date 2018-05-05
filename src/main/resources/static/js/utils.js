@@ -69,3 +69,10 @@ function getFromMatrix(matrix, x, y, def) {
 
 	return value;
 }
+
+function getCoordinatesFromTile(x, y) {
+	let corX = Game.map.tileWidth*x;
+	let corY = Game.map.tileHeight*y;
+
+	return new Phaser.Point(corX, corY);
+}
