@@ -1,4 +1,4 @@
-function renderTeamManager(startIndex) {
+function renderTeamManager() {
 	// initialization
 
 	let selectedTeamManager = [];
@@ -84,7 +84,7 @@ function renderTeamManagerHelper(startIndex, selectedTeamManager, panel, team, t
 
 					if (selectedTeamManager.includes(3*i + k + startIndex)) {
 						button.sprite.loadTexture(button.spriteOn.texture);
-					}
+					} 
 
 					button.events.onInputDown.add(function () {
 						if (teamMembersSelected >= 5 && !selectedTeamManager.includes(3*i + k + startIndex)){

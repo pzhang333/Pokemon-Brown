@@ -14,7 +14,8 @@ const MESSAGE_TYPE = {
     CHALLENGE_REQUEST: 12,
     CHALLENGE_RESPONSE: 13,
     UPDATE_ACTIVE_POKEMON: 14,
-    UPDATE_TEAM: 15
+    UPDATE_TEAM: 15,
+    OPEN_POKE_CONSOLE: 16
 };
 
 const BATTLE_ACTION = {
@@ -56,8 +57,8 @@ class Net {
 	constructor() {
 
 		// this.host = 'localhost';
-		this.host = 'localhost';
-		//this.host = '10.38.37.243';
+		//this.host = 'localhost';
+		this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -86,7 +87,8 @@ class Net {
 		}.bind(this);
 		this.handlers[MESSAGE_TYPE.CHALLENGE_RESPONSE] = this.challengeResponseHandler;
 		this.handlers[MESSAGE_TYPE.CHALLENGE_REQUEST] = this.requestChallengeHandler;
-		
+		this.handlers[MESSAGE_TYPE.OPEN_POKE_CONSOLE] = this.openTeamConsoleHandler;
+
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
 	}
@@ -550,6 +552,11 @@ class Net {
   		// updates current team
   		let messageObject = new UpdateTeamMessage(id, team);
   		this.sendPacket(MESSAGE_TYPE.UPDATE_TEAM, messageObject.payload);
+  	}
+
+  	openTeamConsoleHandler() {
+  		// pulls up menu to pick team
+  		renderTeamManager();
   	}
 }
 
