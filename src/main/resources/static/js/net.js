@@ -213,6 +213,7 @@ class Net {
 				Game.player.username = player.username;
 				Game.player.items = player.items;
 				Game.player.elo = player.elo;
+				Game.player.pokemon = player.pokemon;
 				continue;
 			}
 
@@ -220,7 +221,7 @@ class Net {
 			newPlayer.id = player.id;
 			newPlayer.username = player.username;
 			newPlayer.elo = player.elo;
-
+			newPlayer.pokemon = player.pokemon;
 
 			console.log(newPlayer);
 			Game.players[player.id] = newPlayer;
@@ -278,6 +279,7 @@ class Net {
 					player.id = op.id;
 					player.username = op.username;
 					player.elo = op.elo;
+					player.pokemon = op.pokemon;
 
 					if (Game.players[op.id] != undefined) {
 						Game.players[op.id].del();
@@ -330,6 +332,7 @@ class Net {
 				//console.log('skip: ' + id);
 				Game.player.items = msg.payload.users[i].items;
 				Game.player.elo = msg.payload.users[i].elo;
+				Game.player.pokemon = msg.payload.users[i].pokemon;
 				continue;
 			}
 
@@ -350,6 +353,7 @@ class Net {
 
 			let player = Game.players[id];
 			player.elo = update.elo;
+			player.pokemon = update.pokemon;
 
 			let dest = update.destination;
 
