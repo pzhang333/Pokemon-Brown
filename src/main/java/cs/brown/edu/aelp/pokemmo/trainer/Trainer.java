@@ -3,6 +3,7 @@ package cs.brown.edu.aelp.pokemmo.trainer;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
+import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.util.Identifiable;
 import java.util.ArrayList;
@@ -46,8 +47,11 @@ public class Trainer extends Identifiable {
     return true;
   }
 
-  public Pokemon getPokemonById(Integer id) {
-    return pokemonMap.get(id);
+  public Pokemon getPokemonById(int id) {
+    if (pokemonMap.containsKey(id)) {
+      return pokemonMap.get(id);
+    }
+    return null;
   }
 
   public void setActivePokemon(Pokemon pokemonIn) {
@@ -79,6 +83,9 @@ public class Trainer extends Identifiable {
   public void emptyTeam() {
     for (Pokemon p : this.pokemonMap.values()) {
       p.setStored(true);
+      if (this instanceof User) {
+        ((User) this).addInactivePokemon(p);
+      }
     }
     this.pokemonMap.clear();
   }

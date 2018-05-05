@@ -17,8 +17,10 @@ import cs.brown.edu.aelp.pokemmo.data.DataSource.AuthException;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Entity;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
+import cs.brown.edu.aelp.pokemmo.map.PokeConsole;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import java.util.ArrayList;
@@ -415,8 +417,6 @@ public class PlayerWebSocketHandler {
     int poke_id = payload.get("pokemon_id").getAsInt();
     Pokemon p = u.getPokemonById(poke_id);
 
-    System.out.println("Set active pokemon: " + p);
-
     if (p != null && u.getTeam().contains(p)) {
       u.setActivePokemon(p);
     } else {
@@ -432,21 +432,31 @@ public class PlayerWebSocketHandler {
       session.close();
       return;
     }
+    Chunk c = u.getLocation().getChunk();
+    for (Entity e : c.getEntities()) {
+      if (e instanceof PokeConsole) {
+        double dist = e.getLocation().dist(u.getLocation());
+        if (dist < 0 || dist > 3) {
+          u.kick();
+          return;
+        }
+      }
+    }
     JsonArray arr = payload.get("pokemon").getAsJsonArray();
-    if (arr.size() == 0) {
+    if (arr.size() == 0 || arr.size() > 5) {
       return;
     }
     u.emptyTeam();
     for (JsonElement e : payload.get("pokemon").getAsJsonArray()) {
       int poke_id = e.getAsInt();
       Pokemon p = u.getPokemonById(poke_id);
-      if (p != null && u.getTeam().size() < 5) {
-        u.addPokemonToTeam(p);
-        p.setStored(false);
-      } else {
+      if (p == null) {
         u.kick();
         return;
       }
+      u.addPokemonToTeam(p);
+      u.removeInactivePokemon(p);
+      p.setStored(false);
     }
   }
 }

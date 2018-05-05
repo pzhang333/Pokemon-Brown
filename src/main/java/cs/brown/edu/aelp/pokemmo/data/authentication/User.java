@@ -24,9 +24,11 @@ import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import org.eclipse.jetty.websocket.api.Session;
 
 public class User extends Trainer implements SQLBatchSavable {
@@ -45,7 +47,7 @@ public class User extends Trainer implements SQLBatchSavable {
   private int state;
   private int orientation;
   private int elo = 100;
-  private Set<Pokemon> inactivePokemon = new HashSet<>();
+  private Map<Integer, Pokemon> inactivePokemon = new HashMap<>();
   private Challenge pendingChallenge;
 
   public User(int id, String username, String email, String sessionToken) {
@@ -54,6 +56,14 @@ public class User extends Trainer implements SQLBatchSavable {
     this.email = email;
     this.sessionToken = sessionToken;
     this.inventory = new Inventory(this);
+  }
+
+  @Override
+  public Pokemon getPokemonById(int id) {
+    if (this.inactivePokemon.containsKey(id)) {
+      return this.inactivePokemon.get(id);
+    }
+    return super.getPokemonById(id);
   }
 
   public void setChallenge(Challenge c) {
@@ -65,19 +75,19 @@ public class User extends Trainer implements SQLBatchSavable {
   }
 
   public void addInactivePokemon(Pokemon p) {
-    this.inactivePokemon.add(p);
+    this.inactivePokemon.put(p.getId(), p);
   }
 
   public void removeInactivePokemon(Pokemon p) {
-    this.inactivePokemon.remove(p);
+    this.inactivePokemon.remove(p.getId());
   }
 
   public void clearInactivePokemon() {
     this.inactivePokemon.clear();
   }
 
-  public Set<Pokemon> getInactivePokemon() {
-    return new HashSet<>(this.inactivePokemon);
+  public Collection<Pokemon> getInactivePokemon() {
+    return Collections.unmodifiableCollection(this.inactivePokemon.values());
   }
 
   public Inventory getInventory() {
@@ -233,7 +243,7 @@ public class User extends Trainer implements SQLBatchSavable {
 
   public List<Pokemon> getAllPokemon() {
     List<Pokemon> pokes = new ArrayList<>(this.getTeam());
-    pokes.addAll(this.inactivePokemon);
+    pokes.addAll(this.getInactivePokemon());
     return pokes;
   }
 
