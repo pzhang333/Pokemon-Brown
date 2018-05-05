@@ -1,10 +1,9 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves.complex;
 
-import cs.brown.edu.aelp.pokemmo.battle.BattleSummary;
-import cs.brown.edu.aelp.pokemmo.battle.BattleSummary.SummaryType;
 import cs.brown.edu.aelp.pokemmo.battle.Effect;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.EndOfTurnEvent;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.DamageSummary;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.Status;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
@@ -32,9 +31,8 @@ public abstract class PosionMove extends Move {
         return;
       }
       int dmg = (int) p.getMaxHp() / 8;
-      evt.getBattle().getPendingBattleUpdate()
-          .addSummary(new BattleSummary(SummaryType.MISC,
-              String.format("%s took poison damage.", p.getNickname())));
+      evt.getBattle().getPendingBattleUpdate().addSummary(new DamageSummary(p,
+          dmg, String.format("%s took poison damage.", p.toString())));
       p.setHealth(p.getCurrHp() - dmg);
     }
 

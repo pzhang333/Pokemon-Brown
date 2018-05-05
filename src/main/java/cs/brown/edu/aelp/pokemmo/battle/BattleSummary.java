@@ -6,7 +6,8 @@ public class BattleSummary {
     FIGHT,
     SWITCH,
     MISC,
-    HEAL
+    HEAL,
+    DAMAGE
   }
 
   private final Integer type;
