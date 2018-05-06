@@ -57,8 +57,8 @@ class Net {
 	constructor() {
 
 		// this.host = 'localhost';
-		//this.host = 'localhost';
-		this.host = '10.38.37.243';
+		this.host = 'localhost';
+		//this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -348,16 +348,6 @@ class Net {
                 Game.player.activePokemon = update.active_pokemon;
 				Game.player.elo = update.elo;
 				
-				if (dest == undefined) {
-
-					//if (!player.tweenRunning()) {
-					player.setPos(loc.col, loc.row);
-					player.idle();
-					//}
-
-					continue;
-				}
-				
 				continue;
 			}
 
@@ -569,7 +559,16 @@ class Net {
   		this.sendPacket(MESSAGE_TYPE.UPDATE_TEAM, messageObject.payload);
   	}
 
-  	openTeamConsoleHandler() {
+  	openTeamConsoleHandler(msg) {
+  		
+  		let loc = msg.payload.location;
+
+		if (Game.player.tweenRunning()) {
+			Game.player.tween.stop(false);
+			Game.player.idle();
+			Game.player.setPos(loc.col, loc.row);
+		}
+  		
   		// pulls up menu to pick team
   		if (!alreadyRenderingTeamManager) {
   			renderTeamManager();
