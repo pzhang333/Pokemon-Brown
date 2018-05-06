@@ -447,7 +447,7 @@ function drawBackpack() {
 
 }
 function queueLeaderboard() {
-	if (Battle.inBattle || !Game.ready) {
+	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
 	
@@ -474,7 +474,7 @@ function queueLeaderboard() {
 }
 
 function queueBackpack() {
-	if (Battle.inBattle || !Game.ready) {
+	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
 	
@@ -501,7 +501,7 @@ function queueBackpack() {
 
 function queueTeam() {
 	
-	if (Battle.inBattle || !Game.ready) {
+	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
 	
@@ -531,7 +531,7 @@ function queueTeam() {
 };
 
 async function drawTeam() {
-	if (Battle.inBattle || !Game.ready) {
+	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
 	
@@ -700,7 +700,7 @@ async function drawTeam() {
 };
 
 function logout() {
-	
+	 
 	if (Battle.inBattle) {
 		return;
 	}
