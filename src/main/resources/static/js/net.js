@@ -380,6 +380,7 @@ class Net {
 					player.tween.onComplete.add(function() {
 						player.tween.stop(false);
 						player.setPos(loc.col, loc.row);
+						player.idle();
 						player.tween.onComplete.removeAll();
 					}, this, 200);
 				}

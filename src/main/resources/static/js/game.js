@@ -388,7 +388,7 @@ function drawLeadboard() {
 }
 
 function drawBackpack() {
-	if (Battle.inBattle || !Game.ready) {
+	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
 	// leaderboard panel
