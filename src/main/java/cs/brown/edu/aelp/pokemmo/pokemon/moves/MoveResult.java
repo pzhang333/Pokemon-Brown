@@ -1,12 +1,11 @@
 package cs.brown.edu.aelp.pokemmo.pokemon.moves;
 
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.pokemon.PokeTypes;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.Status;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MoveResult {
   private Pokemon atkPokemon;
@@ -22,7 +21,12 @@ public class MoveResult {
   private static final double EFFECTIVE = 2.0;
 
   public enum MoveOutcome {
-    HIT, MISS, BLOCKED, NON_ATTACK_SUCCESS, NON_ATTACK_FAIL, NO_EFFECT
+    HIT,
+    MISS,
+    BLOCKED,
+    NON_ATTACK_SUCCESS,
+    NON_ATTACK_FAIL,
+    NO_EFFECT
   }
 
   public MoveResult(Pokemon atkPokemon, Pokemon defPokemon, Move move,
@@ -52,18 +56,25 @@ public class MoveResult {
       String stat = move.getAffectedStat();
       Integer stages = move.getStages();
       Double chance = move.getStatChance();
-      if (chanceCheck(chance)){
+      if (chanceCheck(chance)) {
         affectStat(stat, stages, atkPokemon);
+        if (!flags.contains(Move.Flags.DAMAGE)) {
+          outcome = MoveOutcome.NON_ATTACK_SUCCESS;
+        }
       }
     }
-    if (flags.contains(Move.Flags.ENEMY)){
+    if (flags.contains(Move.Flags.ENEMY)) {
       String stat = move.getAffectedStat();
       Integer stages = move.getStages();
       Double chance = move.getStatChance();
-      if (chanceCheck(chance)){
+      if (chanceCheck(chance)) {
         affectStat(stat, stages, defPokemon);
+        if (!flags.contains(Move.Flags.DAMAGE)) {
+          outcome = MoveOutcome.NON_ATTACK_SUCCESS;
+        }
       }
     }
+
   }
 
   public boolean accuracyCheck() {
@@ -507,27 +518,27 @@ public class MoveResult {
 
   public static void affectStat(String stat, Integer stages, Pokemon target) {
     switch (stat) {
-      case "atk":
-        target.modifyAttackStage(stages);
-        break;
-      case "specAtk":
-        target.modifySpecialAttackStage(stages);
-        break;
-      case "def":
-        target.modifyDefenseStage(stages);
-        break;
-      case "specDef":
-        target.modifySpecialDefenseStage(stages);
-        break;
-      case "spd":
-        target.modifySpeedStage(stages);
-        break;
-      case "acc":
-        target.modifyAccuracyStage(stages);
-        break;
-      case "eva":
-        target.modifyEvasionStage(stages);
-        break;
+    case "atk":
+      target.modifyAttackStage(stages);
+      break;
+    case "specAtk":
+      target.modifySpecialAttackStage(stages);
+      break;
+    case "def":
+      target.modifyDefenseStage(stages);
+      break;
+    case "specDef":
+      target.modifySpecialDefenseStage(stages);
+      break;
+    case "spd":
+      target.modifySpeedStage(stages);
+      break;
+    case "acc":
+      target.modifyAccuracyStage(stages);
+      break;
+    case "eva":
+      target.modifyEvasionStage(stages);
+      break;
     }
   }
 }

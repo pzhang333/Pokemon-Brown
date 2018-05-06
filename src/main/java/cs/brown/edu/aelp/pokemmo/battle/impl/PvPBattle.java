@@ -17,6 +17,7 @@ import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchInEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchOutEvent;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.FightSummary;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.HealthChangeSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.ItemSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.SwitchSummary;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
@@ -24,6 +25,7 @@ import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Tournament;
 import cs.brown.edu.aelp.pokemmo.map.World;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
@@ -229,10 +231,6 @@ public class PvPBattle extends Battle {
       // Todo: defending events
       // System.out.println(result);
 
-      // TODO: Check if the player knocked themselves out or...
-      // Basically just make sure the self-destruct isn't broken... or really
-      // maybe it doesn't matter
-
       Pokemon atkPokemon = atkTrainer.getActivePokemon();
 
       StringBuilder base = new StringBuilder(atkPokemon.toString())
@@ -240,7 +238,17 @@ public class PvPBattle extends Battle {
 
       if (result.getOutcome().equals(MoveOutcome.HIT)) {
 
-        base.append(".");
+        double t = result.calcType();
+        if (t == 0.0) {
+          base.append(", but it had no effect.");
+        } else if (t > 0.0 && t < 1.0) {
+          base.append(", but it's not very effective.");
+        } else if (t > 1.0) {
+          base.append(", it's super effective!");
+        } else {
+          base.append(".");
+        }
+
         // Other events...
 
         // System.out.println("The attack was effective or perhaps not...");
@@ -255,6 +263,16 @@ public class PvPBattle extends Battle {
         this.getPendingBattleUpdate().addSummary(new FightSummary(atkPokemon,
             defendingPokemon, base.toString(), "basic"));
 
+        // recoil check
+        if (turn.getMove().getFlags().contains(Move.Flags.RECOIL)) {
+          int dmg = (int) turn.getMove().getRecoilPercent()
+              * result.getDamage();
+          atkPokemon.setHealth(atkPokemon.getCurrHp() - dmg);
+          this.getPendingBattleUpdate().addSummary(new HealthChangeSummary(
+              atkPokemon,
+              String.format("%s took recoil damage.", atkPokemon.toString())));
+        }
+
         if (defendingPokemon.isKnockedOut()) {
           // System.out.println("K.O.!");
           defendingPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
@@ -262,6 +280,18 @@ public class PvPBattle extends Battle {
 
           if (defTrainer.allPokemonKnockedOut()) {
             victory(atkTrainer);
+            return;
+          }
+        }
+
+        if (atkPokemon.isKnockedOut()) {
+          // System.out.println("K.O.!");
+          atkPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
+              result.getAttackingPokemon(), atkPokemon));
+
+          if (atkTrainer.allPokemonKnockedOut()) {
+            victory(defTrainer);
+            return;
           }
         }
 

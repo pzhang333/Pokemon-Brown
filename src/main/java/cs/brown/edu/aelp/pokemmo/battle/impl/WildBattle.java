@@ -11,12 +11,14 @@ import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.EndOfBattleEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.EndOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.KnockedOutEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchInEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.SwitchOutEvent;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.FightSummary;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.HealthChangeSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.ItemSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.SwitchSummary;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
@@ -261,10 +263,6 @@ public class WildBattle extends Battle {
       // Todo: defending events
       // System.out.println(result);
 
-      // TODO: Check if the player knocked themselves out or...
-      // Basically just make sure the self-destruct isn't broken... or really
-      // maybe it doesn't matter
-
       Pokemon atkPokemon = atkTrainer.getActivePokemon();
 
       StringBuilder base = new StringBuilder(atkPokemon.toString())
@@ -285,6 +283,16 @@ public class WildBattle extends Battle {
         this.getPendingBattleUpdate().addSummary(new FightSummary(atkPokemon,
             defendingPokemon, base.toString(), "basic"));
 
+        // recoil check
+        if (turn.getMove().getFlags().contains(Move.Flags.RECOIL)) {
+          int dmg = (int) (turn.getMove().getRecoilPercent()
+              * result.getDamage());
+          atkPokemon.setHealth(atkPokemon.getCurrHp() - dmg);
+          this.getPendingBattleUpdate().addSummary(new HealthChangeSummary(
+              atkPokemon,
+              String.format("%s took recoil damage.", atkPokemon.toString())));
+        }
+
         if (defendingPokemon.isKnockedOut()) {
           // System.out.println("K.O.!");
           defendingPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
@@ -292,6 +300,17 @@ public class WildBattle extends Battle {
 
           if (defTrainer.allPokemonKnockedOut()) {
             victory(atkTrainer);
+          }
+        }
+
+        if (atkPokemon.isKnockedOut()) {
+          // System.out.println("K.O.!");
+          atkPokemon.getEffectSlot().handle(new KnockedOutEvent(this,
+              result.getAttackingPokemon(), atkPokemon));
+
+          if (atkTrainer.allPokemonKnockedOut()) {
+            victory(defTrainer);
+            return;
           }
         }
 
@@ -340,6 +359,16 @@ public class WildBattle extends Battle {
 
     winner = t;
     loser = other(t);
+
+    EndOfBattleEvent eob = new EndOfBattleEvent(this, winner);
+    winner.getEffectSlot().handle(eob);
+    loser.getEffectSlot().handle(eob);
+    for (Pokemon p : winner.getTeam()) {
+      p.getEffectSlot().handle(eob);
+    }
+    for (Pokemon p : loser.getTeam()) {
+      p.getEffectSlot().handle(eob);
+    }
 
     this.setLastBattleUpdate(this.getPendingBattleUpdate());
     sendBattleUpdate();
