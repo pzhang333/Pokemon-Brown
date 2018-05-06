@@ -3,18 +3,18 @@ class Player {
 	/**
 	 * Construct a new playerType.
 	 */
-	constructor(playerType) {
+	 constructor(playerType) {
 
-		/* Player type */
-		if (playerType == undefined) {
-			playerType = "lucas";
-		}
-		this.playerType = "lucas";
+	 	/* Player type */
+	 	if (playerType == undefined) {
+	 		playerType = "lucas";
+	 	}
+	 	this.playerType = "lucas";
 
-		/* Various variables */
-		this.fps = 6;
-		this.speed = 64;
-		this.clicked = false;
+	 	/* Various variables */
+	 	this.fps = 6;
+	 	this.speed = 64;
+	 	this.clicked = false;
 
 		//this.initSprite();
 	}
@@ -22,107 +22,108 @@ class Player {
 	/**
 	 * Initialize the sprite
 	 */
-	initSprite() {
-		
-		if (this.sprite != undefined) {
-			this.sprite.kill();
-		}
-		
-		if (this.tween != undefined) {
-			this.tween.stop();
-		}
+	 initSprite() {
 
-		/* Player animations */
-		this.animations = {
-			'idle': getAnimArr(this.playerType, range(0, 1)),
-			'idle-forward': getAnimArr(this.playerType, range(0, 1)),
-			'idle-backward': getAnimArr(this.playerType, range(4, 5)),
-			'idle-left': getAnimArr(this.playerType, range(8, 9)),
-			'idle-right': getAnimArr(this.playerType, range(12, 13)),
-			'walk-forward': getAnimArr(this.playerType, range(1, 4, 0)),
-			'walk-backward': getAnimArr(this.playerType, range(5, 8, 4)),
-			'walk-left': getAnimArr(this.playerType, range(9, 12, 8)),
-			'walk-right': getAnimArr(this.playerType, range(13, 16, 12))
-		};
+	 	if (this.sprite != undefined) {
+	 		this.sprite.kill();
+	 	}
 
-		this.directions = ['left', 'up', 'down', 'right'];
+	 	if (this.tween != undefined) {
+	 		this.tween.stop();
+	 	}
 
-		this.facing = 'down';
+	 	/* Player animations */
+	 	this.animations = {
+	 		'idle': getAnimArr(this.playerType, range(0, 1)),
+	 		'idle-forward': getAnimArr(this.playerType, range(0, 1)),
+	 		'idle-backward': getAnimArr(this.playerType, range(4, 5)),
+	 		'idle-left': getAnimArr(this.playerType, range(8, 9)),
+	 		'idle-right': getAnimArr(this.playerType, range(12, 13)),
+	 		'walk-forward': getAnimArr(this.playerType, range(1, 4, 0)),
+	 		'walk-backward': getAnimArr(this.playerType, range(5, 8, 4)),
+	 		'walk-left': getAnimArr(this.playerType, range(9, 12, 8)),
+	 		'walk-right': getAnimArr(this.playerType, range(13, 16, 12))
+	 	};
 
-		if (this.x == undefined) {
-			this.x = -1000;
-		}
+	 	this.directions = ['left', 'up', 'down', 'right'];
 
-		if (this.y == undefined) {
-			this.y = -1000;
-		}
+	 	this.facing = 'down';
 
-		/* Delete the old sprite */
-		if (this.sprite != undefined) {
-			this.sprite.destroy();
-		}
-		
-		/* Load the sprite */
-		this.sprite = game.add.sprite(this.x * 16, this.y * 16, 'atlas1', this.animations['idle']);
-		
-		if (Game.entities != undefined) {
-			Game.entities.add(this.sprite);
-		}
-		
-		this.sprite.anchor.set(.25, .5);
-		this.sprite.visible = false;
+	 	if (this.x == undefined) {
+	 		this.x = -1000;
+	 	}
 
-		/* Add all animations to the sprie. */
-		for(name in this.animations) {
-			this.sprite.animations.add(name, this.animations[name]);
-		}
+	 	if (this.y == undefined) {
+	 		this.y = -1000;
+	 	}
 
-		/* Start the `idle` animation */
-		this.idle();
+	 	/* Delete the old sprite */
+	 	if (this.sprite != undefined) {
+	 		this.sprite.destroy();
+	 	}
 
-		if (this.id == Game.player.id) {
-		this.usernameSprite = game.add.text(-48/2, -2*16, this.username, {
-			font: '11px Arial',
-			fill: 'blue',
-			textAlign: 'center'
-		});
-		} else {
-			this.usernameSprite = game.add.text(-48/2, -2*16, this.username, {
-			font: '11px Arial',
-			fill: 'white',
-			textAlign: 'center'
-		});
-		}
+	 	/* Load the sprite */
+	 	this.sprite = game.add.sprite(this.x * 16, this.y * 16, 'atlas1', this.animations['idle']);
 
-		this.sprite.username = this.sprite.addChild(this.usernameSprite);	
-	}
+	 	if (Game.entities != undefined) {
+	 		Game.entities.add(this.sprite);
+	 	}
 
-	idle(cancel) {
-		if (cancel == undefined) {
-			cancel = false;
-		}
+	 	this.sprite.anchor.set(.25, .5);
+	 	this.sprite.visible = false;
 
-		this.playAnim(this.getAnim('idle', this.facing), {
-			cancel: cancel,
-			loop: true
-		});
-	}
+	 	/* Add all animations to the sprie. */
+	 	for(name in this.animations) {
+	 		this.sprite.animations.add(name, this.animations[name]);
+	 	}
 
-	setCameraFocus(camera) {
-		camera.follow(this.sprite, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
-	}
+	 	/* Start the `idle` animation */
+	 	this.idle();
 
-	getAnim(action, dir) {
+	 	if (this.id == Game.player.id) {
+	 		this.usernameSprite = game.add.text(5, -2*16, this.username, {
+	 			font: '11px Arial',
+	 			fill: 'blue',
+	 			textAlign: 'center'
+	 		});
+	 	} else {
+	 		this.usernameSprite = game.add.text(5, -2*16, this.username, {
+	 			font: '11px Arial',
+	 			fill: 'white',
+	 			textAlign: 'center'
+	 		});
+	 	}
 
-		if (!this.directions.includes(dir)) {
-			return undefined;
-		}
+	 	this.usernameSprite.anchor.set(0.5, 0);
+	 	this.sprite.username = this.sprite.addChild(this.usernameSprite);	
+	 }
 
-		if (dir == 'down') {
-			dir = 'forward';
-		} else if (dir == 'up') {
-			dir = 'backward';
-		}
+	 idle(cancel) {
+	 	if (cancel == undefined) {
+	 		cancel = false;
+	 	}
+
+	 	this.playAnim(this.getAnim('idle', this.facing), {
+	 		cancel: cancel,
+	 		loop: true
+	 	});
+	 }
+
+	 setCameraFocus(camera) {
+	 	camera.follow(this.sprite, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+	 }
+
+	 getAnim(action, dir) {
+
+	 	if (!this.directions.includes(dir)) {
+	 		return undefined;
+	 	}
+
+	 	if (dir == 'down') {
+	 		dir = 'forward';
+	 	} else if (dir == 'up') {
+	 		dir = 'backward';
+	 	}
 
 		//console.log(action + '-' + dir);
 		return action + '-' + dir;
@@ -131,54 +132,54 @@ class Player {
 	/**
 	 * Set the visible state.
 	 */ 
-	setVisible(state) {
-		if (state == undefined) {
-			state = true;
-		}
+	 setVisible(state) {
+	 	if (state == undefined) {
+	 		state = true;
+	 	}
 
-		this.sprite.visible = state;
-	}
+	 	this.sprite.visible = state;
+	 }
 
 	/**
 	 * Set the (x, y) coordinates.
 	 */
-	setPos(x, y) {
-		this.setX(x);
-		this.setY(y);
-	}
+	 setPos(x, y) {
+	 	this.setX(x);
+	 	this.setY(y);
+	 }
 
 	/**
 	 * Set the Y coordinate.
 	 */
-	setY(y) {
-		this.pendingY = undefined;
-		this.y = y;
-		
-		if (this.sprite != undefined) {
-			this.sprite.y = 16 * y;
-		}
-	}
+	 setY(y) {
+	 	this.pendingY = undefined;
+	 	this.y = y;
+
+	 	if (this.sprite != undefined) {
+	 		this.sprite.y = 16 * y;
+	 	}
+	 }
 
 	/**
 	 * Set the X coordinate.
 	 */
-	setX(x) {
-		this.pendingX = undefined;
-		this.x = x;
-		
-		if (this.sprite != undefined) {
-			this.sprite.x = 16 * x;
-		}
-	}
+	 setX(x) {
+	 	this.pendingX = undefined;
+	 	this.x = x;
+
+	 	if (this.sprite != undefined) {
+	 		this.sprite.x = 16 * x;
+	 	}
+	 }
 
 	/**
 	 * Idle when the current animation completes.
 	 */
-	idleOnComplete() {
-		this.sprite.animations.currentAnim.onComplete.addOnce(function() {
-			this.idle();
-		}, this);
-	}
+	 idleOnComplete() {
+	 	this.sprite.animations.currentAnim.onComplete.addOnce(function() {
+	 		this.idle();
+	 	}, this);
+	 }
 
 	/**
 	 * Player an animation.
@@ -187,66 +188,66 @@ class Player {
 	 *		fps		- Frames per second
 	 *		loop	- Should the animation loop?
 	 */
-	playAnim(animName, opts) {
+	 playAnim(animName, opts) {
 
-		if (this.sprite == undefined || this.sprite.alive == false) {
-			this.initSprite();
-		}
-		
-		if (opts == undefined) {
-			opts = {};
-		}
+	 	if (this.sprite == undefined || this.sprite.alive == false) {
+	 		this.initSprite();
+	 	}
 
-		let cancel = mapGet(opts, 'cancel', false);
-		let fps = mapGet(opts, 'fps', this.fps);
-		let loop = mapGet(opts, 'loop', false);
+	 	if (opts == undefined) {
+	 		opts = {};
+	 	}
 
-		/* If the cancel option is set, stop the current animation. */
-		if (cancel) {
-			this.sprite.animations.stop();
-			this.sprite.animations.play(animName, fps, loop);
-			this.idleOnComplete();
-			return;
-		}
+	 	let cancel = mapGet(opts, 'cancel', false);
+	 	let fps = mapGet(opts, 'fps', this.fps);
+	 	let loop = mapGet(opts, 'loop', false);
 
-		/* Get the current animation. */
-		let currentAnim = this.sprite.animations.currentAnim;
+	 	/* If the cancel option is set, stop the current animation. */
+	 	if (cancel) {
+	 		this.sprite.animations.stop();
+	 		this.sprite.animations.play(animName, fps, loop);
+	 		this.idleOnComplete();
+	 		return;
+	 	}
 
-		/* The current animation is already playing */
-		if(currentAnim != undefined && currentAnim.name == animName) {
-			return;
-		}
+	 	/* Get the current animation. */
+	 	let currentAnim = this.sprite.animations.currentAnim;
+
+	 	/* The current animation is already playing */
+	 	if(currentAnim != undefined && currentAnim.name == animName) {
+	 		return;
+	 	}
 
 		/* If an animation is already playing, wait for the animation to finish.
 		 * TODO: Possibly create some kind of FIFO queue?
 		 */
-		if(currentAnim.isPlaying && !currentAnim.loop) {
-			currentAnim.onComplete.addOnce(function () {
-				this.playAnim(animName, opts);
-				this.idleOnComplete();
-			}, this);
-		} else {
+		 if(currentAnim.isPlaying && !currentAnim.loop) {
+		 	currentAnim.onComplete.addOnce(function () {
+		 		this.playAnim(animName, opts);
+		 		this.idleOnComplete();
+		 	}, this);
+		 } else {
 
-			/* No animation is currently playing, start it. */
-			this.sprite.animations.stop();
-			this.sprite.animations.play(animName, fps, loop);
-			this.idleOnComplete();
+		 	/* No animation is currently playing, start it. */
+		 	this.sprite.animations.stop();
+		 	this.sprite.animations.play(animName, fps, loop);
+		 	this.idleOnComplete();
+		 }
+
 		}
-
-	}
 
 	/**
 	 * Step the player in a direction.
 	 * dir 		- 'left', 'right', 'up', or 'down'.
 	 */
-	step(dir) {
-		if (debounce(this, 'lastStep', 50)) {
-			return;
-		}
+	 step(dir) {
+	 	if (debounce(this, 'lastStep', 50)) {
+	 		return;
+	 	}
 
-		if (this.tweenRunning()) {
-			return;
-		}
+	 	if (this.tweenRunning()) {
+	 		return;
+	 	}
 		// Can make animation choppy. Fix only if truly needed
 		//this.tweenStop();
 
@@ -497,57 +498,57 @@ class Player {
 
 		this.tweenStop(function() {
 
-		this.path = path;
-		let x = path[0].x;
-		let y = path[0].y;
-
-		this.orientBy(this.x, this.y, x, y);
-
-		this.playAnim(this.getAnim('walk', this.facing), {
-			loop: true
-		});
-
-		let duration = .2;
-
-		let tween = game.add.tween(this.sprite);
-		this.pendingX = x;
-		this.pendingY = y;
-		tween.to({
-			x: 16 * x,
-			y: 16 * y
-		}, Phaser.Timer.SECOND * duration);
-
-		/* Setup the tween update callback */
-		tween.onUpdateCallback(function() {
-
-			if (debounce(this, 'lastMovementUpdate', Phaser.Timer.SECOND * (duration / 4))) {
-				return;
-			}
+			this.path = path;
+			let x = path[0].x;
+			let y = path[0].y;
 
 			this.orientBy(this.x, this.y, x, y);
 
-			this.playAnim(this.getAnim('walk', this.facing));
-		}, this);
+			this.playAnim(this.getAnim('walk', this.facing), {
+				loop: true
+			});
 
-		/* Return to idle once the tween is complete. */
-		tween.onComplete.add(function () {
-			/* Update the (x, y) */
-			this.setPos(x, y);
+			let duration = .2;
 
-			/* Pop the path */
-			path.shift();
+			let tween = game.add.tween(this.sprite);
+			this.pendingX = x;
+			this.pendingY = y;
+			tween.to({
+				x: 16 * x,
+				y: 16 * y
+			}, Phaser.Timer.SECOND * duration);
 
-			/* Continue Traversal or Finish */
-			if (path.length != 0) {
-				this.traversePath(path);
-			} else {
-				this.finishMovement(x, y);
-			}
-		}, this);
+			/* Setup the tween update callback */
+			tween.onUpdateCallback(function() {
 
-		/* Play the tween */
-		this.tween = tween;
-		tween.start();
+				if (debounce(this, 'lastMovementUpdate', Phaser.Timer.SECOND * (duration / 4))) {
+					return;
+				}
+
+				this.orientBy(this.x, this.y, x, y);
+
+				this.playAnim(this.getAnim('walk', this.facing));
+			}, this);
+
+			/* Return to idle once the tween is complete. */
+			tween.onComplete.add(function () {
+				/* Update the (x, y) */
+				this.setPos(x, y);
+
+				/* Pop the path */
+				path.shift();
+
+				/* Continue Traversal or Finish */
+				if (path.length != 0) {
+					this.traversePath(path);
+				} else {
+					this.finishMovement(x, y);
+				}
+			}, this);
+
+			/* Play the tween */
+			this.tween = tween;
+			tween.start();
 		}.bind(this));
 	}
 
