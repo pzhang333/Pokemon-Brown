@@ -34,7 +34,7 @@ Game.update = function() {
 		return;
 	}
 
-	if (this.cursors == undefined || Battle.inBattle) {
+	if (this.cursors == undefined || Battle.inBattle || Game.playerFrozen) {
 		return;
 	}
 

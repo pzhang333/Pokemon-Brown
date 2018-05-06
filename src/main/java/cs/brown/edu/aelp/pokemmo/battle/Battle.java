@@ -12,11 +12,7 @@ import cs.brown.edu.aelp.util.Identifiable;
 public abstract class Battle extends Identifiable {
 
   public enum BattleState {
-    SETUP,
-    WAITING,
-    READY,
-    DONE,
-    WORKING
+    SETUP, WAITING, READY, DONE, WORKING
   }
 
   private final Arena arena;
@@ -123,14 +119,22 @@ public abstract class Battle extends Identifiable {
       getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
           String.format("%s was fully restored.", pokemon.toString())));
 
+    } else if (type == ItemType.OVERLOAD) {
+
+      Pokemon pokemon = turn.getTrainer().getActivePokemon();
+      pokemon.overload();
+
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
+          String.format("The Overload increased %s power at the cost of health",
+              pokemon.toString())));
     } else {
-      // TODO...
 
       Pokemon pokemon = turn.getTrainer().getActivePokemon();
 
       getPendingBattleUpdate().addSummary(new ItemSummary(item, true, String
           .format("%s used item (%d)", pokemon.toString(), item.getId())));
     }
+
   }
 
   public abstract String dbgStatus();
@@ -142,4 +146,6 @@ public abstract class Battle extends Identifiable {
   // public abstract BattleUpdate sendBattleUpdate();
 
   public abstract void forfeit(Trainer t);
+
+  public abstract void updateXp(Trainer winner, Trainer loser);
 }

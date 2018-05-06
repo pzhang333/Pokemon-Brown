@@ -1,5 +1,11 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
@@ -30,11 +36,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class PvPBattle extends Battle {
 
@@ -187,6 +188,8 @@ public class PvPBattle extends Battle {
 
     this.getPendingBattleUpdate().addSummary(
         new SwitchSummary(turn.getPokemonIn(), turn.getPokemonOut()));
+
+    turn.getPokemonOut().resetStatStages();
   }
 
   public void handleTurn(FightTurn turn) {
@@ -346,8 +349,13 @@ public class PvPBattle extends Battle {
     winner = t;
     loser = other(t);
 
+    winner.resetAllStatStages();
+    loser.resetAllStatStages();
+
     PacketSender.sendEndBattlePacket(this.getId(), this.getWinner().getId(),
         this.getLoser().getId(), 0, 0);
+
+    updateXp(winner, loser);
 
     User w = (User) winner;
     User l = (User) loser;
@@ -477,5 +485,10 @@ public class PvPBattle extends Battle {
   private void sendBattleUpdate() {
     sendBattleUpdateTo(a);
     sendBattleUpdateTo(b);
+  }
+
+  @Override
+  public void updateXp(Trainer winner, Trainer loser) {
+
   }
 }
