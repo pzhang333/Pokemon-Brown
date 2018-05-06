@@ -309,6 +309,7 @@ Battle.endBattle = function() {
 	Battle.subsShowing = false;
 	Battle.showing = false;
 	Battle.clearMenu();
+	Battle.exitButton.destroy();
 
 	console.log('EndBattle()');
 
@@ -322,7 +323,7 @@ Battle.endBattle = function() {
 	game.state.start("Game", true, false);
 
 	// HACK VERY BAD!
-	location.reload();
+	// location.reload();
 };
 
 Battle.create = function() {
@@ -334,7 +335,7 @@ Battle.create = function() {
 	Battle.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
 	Battle.slickUI.load('ui/kenney/kenney.json');
 
-	game.world.bringToTop(Battle.slickUI.container.displayGroup);
+	//game.world.bringToTop(Battle.slickUI.container.displayGroup);
 
 	//return;
 	Battle.music = game.add.audio('battle');
@@ -918,7 +919,7 @@ Battle.forfeit = async function() {
 };
 
 Battle.drawDefaultMenu = async function() {
-	//Battle.clearMenu();
+	Battle.clearMenu();
 
 	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
 	Battle.slickUI.add(Battle.panel);
@@ -1055,6 +1056,8 @@ Battle.battleOver = async function(packet) {
 			let exitButton = new SlickUI.Element.Button(buttonOffsetX + 4, 0, 2 * (buttonWidth + 2), 48 * 2);
 			Battle.panel.add(exitButton);
 			exitButton.add(new SlickUI.Element.Text(0, 0, "Exit Battle")).center();
+			
+			Battle.exitButton = exitButton;
 	
 			await exitButton.events;
 			exitButton.events.onInputUp.add(function() {
@@ -1197,6 +1200,10 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 Battle.handleUpdate = async function(packet) {
 	console.log(packet);
 	console.log('update');
+    Battle.clearTeam();
+    Battle.clearMoves();
+    Battle.clearInv();
+    Battle.clearMessageText();
 	try {
 		console.log(packet.update.summaries.slice(0));
 	} catch(err) {

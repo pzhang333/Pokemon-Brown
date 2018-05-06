@@ -51,18 +51,16 @@ function challengePlayer() {
 }
 
 function renderChallenge(player) {
-	
-	if (Battle.inBattle) {
-		net.rejectChallenge(Game.player.id, false);
-		return;
-	}
-	
 	if (panelMessage != null) {
 		panelMessage.destroy();
 	}
 	if (clicked_player != null) {
 		clicked_player.sprite.challenge.kill();
 		clicked_player = null;
+	}
+	if (Battle.inBattle) {
+		net.rejectChallenge(Game.player.id, false);
+		return;
 	}
 	Game.playerFrozen = true;
 	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);

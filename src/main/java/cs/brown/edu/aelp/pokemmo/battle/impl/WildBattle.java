@@ -1,16 +1,9 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
-import cs.brown.edu.aelp.pokemmo.battle.BattleUpdate;
 import cs.brown.edu.aelp.pokemmo.battle.Item;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
@@ -34,6 +27,11 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class WildBattle extends Battle {
 
@@ -95,8 +93,6 @@ public class WildBattle extends Battle {
 
     List<Turn> turns = new ArrayList<>(turnsMap.values());
     turns.sort(this::turnComparator);
-
-    this.setPendingBattleUpdate(new BattleUpdate());
 
     boolean stop = false;
 
@@ -246,8 +242,8 @@ public class WildBattle extends Battle {
 
       String msg = atkEvent.getPreventedMsg();
       if (msg.isEmpty()) {
-        msg = String.format("%s used %s, but it failed!",
-            atkPokemon.getSpecies(), turn.getMove().getName());
+        msg = String.format("%s used %s, but it failed!", atkPokemon.toString(),
+            turn.getMove().getName());
       }
 
       this.getPendingBattleUpdate()
@@ -271,7 +267,7 @@ public class WildBattle extends Battle {
 
       Pokemon atkPokemon = atkTrainer.getActivePokemon();
 
-      StringBuilder base = new StringBuilder(atkPokemon.getSpecies())
+      StringBuilder base = new StringBuilder(atkPokemon.toString())
           .append(" used ").append(turn.getMove().getName());
 
       if (result.getOutcome().equals(MoveOutcome.HIT)) {

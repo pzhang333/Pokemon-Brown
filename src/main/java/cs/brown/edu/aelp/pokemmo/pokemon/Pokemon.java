@@ -705,7 +705,8 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   // TODO: Fix toString
   @Override
   public String toString() {
-    return getNickname() + " (" + getSpecies() + ")";
+    return getSpecies().substring(0, 1).toUpperCase()
+        + getSpecies().substring(1);
   }
 
   @Override

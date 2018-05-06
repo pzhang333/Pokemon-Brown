@@ -12,7 +12,11 @@ import cs.brown.edu.aelp.util.Identifiable;
 public abstract class Battle extends Identifiable {
 
   public enum BattleState {
-    SETUP, WAITING, READY, DONE, WORKING
+    SETUP,
+    WAITING,
+    READY,
+    DONE,
+    WORKING
   }
 
   private final Arena arena;
@@ -24,7 +28,7 @@ public abstract class Battle extends Identifiable {
 
   private BattleUpdate lastBattleUpdate = null;
 
-  private BattleUpdate pendingBattleUpdate = null;
+  private BattleUpdate pendingBattleUpdate = new BattleUpdate();
 
   private BattleState battleState = BattleState.SETUP;
 
@@ -61,6 +65,7 @@ public abstract class Battle extends Identifiable {
 
   public void setLastBattleUpdate(BattleUpdate bu) {
     this.lastBattleUpdate = bu;
+    this.setPendingBattleUpdate(new BattleUpdate());
   }
 
   public void setPendingBattleUpdate(BattleUpdate bu) {
