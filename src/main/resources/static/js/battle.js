@@ -1186,7 +1186,8 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 	        Battle.showSummaries(summaries, packet, resolveShow);
 		} else if (summary.type == SUMMARY_TYPE.HEALTH_CHANGE) {
 	      let p = Battle.getPokemonById(summary.pokemon.id);
-	      Battle.setHealth(p, p.health + summary.amount);
+	      console.log(summary.pokemon);
+	      Battle.setHealth(p, summary.pokemon.health);
 	      
 	      Game.time.events.add(Phaser.Timer.SECOND * 1.25, function() {
 	    	resolve();
