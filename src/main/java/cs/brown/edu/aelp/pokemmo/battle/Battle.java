@@ -146,4 +146,6 @@ public abstract class Battle extends Identifiable {
   // public abstract BattleUpdate sendBattleUpdate();
 
   public abstract void forfeit(Trainer t);
+
+  public abstract void updateXp(Trainer winner, Trainer loser);
 }

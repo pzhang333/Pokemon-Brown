@@ -355,6 +355,8 @@ public class PvPBattle extends Battle {
     PacketSender.sendEndBattlePacket(this.getId(), this.getWinner().getId(),
         this.getLoser().getId(), 0, 0);
 
+    updateXp(winner, loser);
+
     User w = (User) winner;
     User l = (User) loser;
 
@@ -483,5 +485,10 @@ public class PvPBattle extends Battle {
   private void sendBattleUpdate() {
     sendBattleUpdateTo(a);
     sendBattleUpdateTo(b);
+  }
+
+  @Override
+  public void updateXp(Trainer winner, Trainer loser) {
+
   }
 }
