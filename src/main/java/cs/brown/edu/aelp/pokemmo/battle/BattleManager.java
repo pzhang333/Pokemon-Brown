@@ -30,7 +30,7 @@ public class BattleManager {
   private Pokemon getWildPokemon(Trainer t) {
     Double levels = 0.0;
     for (Pokemon p : t.getTeam()) {
-      levels = 1.0 * p.getLevel();
+      levels += 1.0 * p.getLevel();
     }
     levels = levels / t.getTeam().size();
     int avgLvl = levels.intValue();

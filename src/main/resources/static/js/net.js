@@ -57,8 +57,8 @@ class Net {
 	constructor() {
 
 		// this.host = 'localhost';
-		//this.host = 'localhost';
-		this.host = '10.38.37.243';
+		this.host = 'localhost';
+		//this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -70,8 +70,8 @@ class Net {
 
 		// TODO: maybe use somekind of queue?
 
-		this.handlers = {}
-		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
+		this.handlers = {};
+		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler;
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
 		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler;
 		//this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;

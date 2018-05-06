@@ -67,8 +67,11 @@ public final class PokemonLoader {
         gender = 1;
       }
 
+      String nickname = species.substring(0, 1).toUpperCase() + species.substring(1);
+
+
       Pokemon target = new Pokemon.Builder(id).ofSpecies(species)
-          .withNickName(species).withBaseHp(hp).withAtk(attack).withDef(defense)
+          .withNickName(nickname).withBaseHp(hp).withAtk(attack).withDef(defense)
           .withSpecAtk(spAtk).withSpecDef(spDef).withSpd(speed)
           .withTypes(typesList).withGender(gender).withExp(exp)
           .withMoves(moveList).withXOffset(xOffset).withYOffset(yOffset)
