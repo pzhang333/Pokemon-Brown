@@ -122,6 +122,34 @@ function renderTeamManagerHelper(startIndex, selectedTeamManager, panel, team, t
 	}
 }
 
+function renderTradeUpdate(response) {
+	if (panelMessage != null) {
+		panelMessage.destroy();
+	}
+
+	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
+	Game.slickUI.add(panelMessage);
+	let header = new SlickUI.Element.Text(10 , 10, "Trade Update: " + response);
+	let okButton = new SlickUI.Element.Button(panelMessage.width/2 - Game.map.widthInPixels/(9.5*2), Game.map.heightInPixels/23, Game.map.widthInPixels/9.5, Game.map.heightInPixels/25);
+
+	panelMessage.add(header);
+	panelMessage.add(okButton);
+
+	okButton.add(new SlickUI.Element.Text(0, 0, "Ok")).center();
+	okButton.events.onInputUp.add(function () {
+		panelMessage.destroy();
+		if (battler != null && battler.sprite.challenge != undefined) {
+			battler.sprite.challenge.kill();
+		}
+		if (battler != null && battler.sprite.trade != undefined) {
+			battler.sprite.trade.kill();
+		}
+		Game.playerFrozen = false;
+		panelMessage = null;
+		pending = false;
+	});
+}
+
 function scaleFont(button, nik, size) {
 	let nickname = new SlickUI.Element.Text(0, button.height/1.3, nik);
 	nickname.size = size;

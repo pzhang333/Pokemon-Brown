@@ -55,6 +55,7 @@
 		<script src="/js/lib/healthMeter.js"></script>
 		<script src="/js/player_interaction.js"></script>
 		<script src="/js/game.js"></script>
+		<script src="/js/TradeUI.js"></script>
 		<script src="/js/TeamManagerUI.js"></script>
 		<script src="/js/utils.js"></script>
 		<script src="/js/battle.js"></script>

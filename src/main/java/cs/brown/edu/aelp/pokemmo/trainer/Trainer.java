@@ -1,15 +1,16 @@
 package cs.brown.edu.aelp.pokemmo.trainer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.util.Identifiable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Trainer extends Identifiable {
 
@@ -93,6 +94,12 @@ public class Trainer extends Identifiable {
       }
     }
     this.pokemonMap.clear();
+  }
+
+  public void resetAllStatStages() {
+    for (Pokemon p : this.pokemonMap.values()) {
+      p.resetStatStages();
+    }
   }
 
 }

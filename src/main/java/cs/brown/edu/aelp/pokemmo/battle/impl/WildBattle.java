@@ -1,5 +1,11 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
@@ -29,11 +35,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 public class WildBattle extends Battle {
 
@@ -178,8 +179,8 @@ public class WildBattle extends Battle {
 
         victory(u);
       } else {
-        getPendingBattleUpdate().addSummary(new ItemSummary(item, false,
-            "You can't use a Pokeball in a PVP Battle!"));
+        getPendingBattleUpdate().addSummary(
+            new ItemSummary(item, false, wild.toString() + " escaped!"));
       }
 
       return;
@@ -219,6 +220,8 @@ public class WildBattle extends Battle {
 
     this.getPendingBattleUpdate().addSummary(
         new SwitchSummary(turn.getPokemonIn(), turn.getPokemonOut()));
+
+    turn.getPokemonOut().resetStatStages();
   }
 
   public void handleTurn(FightTurn turn) {

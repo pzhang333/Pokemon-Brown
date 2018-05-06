@@ -178,6 +178,122 @@ Battle.doSwitch = function(pOut, pIn, cb) {
 	});
 };
 
+Battle.showCapture = function(summary, ballKey, success, cb) {
+	
+	let pokemon = Battle.getPokemonById(this.backPokemon.id);
+	
+	ball = game.add.sprite(0, game.height, ballKey);
+	ball.anchor.setTo(0.5, 0.5);
+	ball.scale.setTo(0.5, 0.5);
+	/*
+	 *   //NOTE THAT Y GOES FROM ZERO TO MATH.PI
+    var from = {x:10, y: 0};
+    var to = {x:w-10, y: Math.PI};
+    var tw = new TWEEN.Tween(from);
+    tw.to(to, 3000);
+    tw.onUpdate(function(){
+        tweenX = this.x;
+        //THIS IS THE IMPORTANT BIT
+        tweenY = h - (Math.sin(this.y) * h);
+       // console.log("tweenY: " + tweenY);
+    });
+    tw.start();
+	 */
+	ball.tween = game.add.tween(ball);
+	ball.y = 0;
+	
+	ball.tween.to({
+		x: pokemon.sprite.x,
+		y: Math.PI
+	}, Phaser.Timer.SECOND * .75);
+	
+	ball.tween.onUpdateCallback(function () {
+		ball.y = pokemon.sprite.y - (200 * Math.sin(ball.y));
+	});
+	
+	ball.tween.onComplete.add(function() {
+		ball.y = pokemon.sprite.y;
+		
+		Game.time.events.add(Phaser.Timer.SECOND * .25, function() {
+			Battle.switchOut(pokemon, function() {
+				if (!success) {
+					Game.time.events.add(Phaser.Timer.SECOND * .35, function() {
+						
+						let fore = (pokemon.id == Battle.frontPokemon.id) ? pokemon : undefined;
+						let bg = (pokemon.id == Battle.backPokemon.id) ? pokemon : undefined;
+						
+						ball.tween = game.add.tween(ball);
+						ball.tween.to({
+							alpha: 0
+						}, Phaser.Timer.SECOND * .35);
+						ball.tween.start();
+						
+						ball.tween.onComplete.add(function() {
+							if (summary.message != undefined && summary.message.length != 0) {
+								try {
+									Battle.drawMessage(summary.message);
+								} catch(err) {
+									console.log('an err: ' + err);
+								}
+							}
+							
+							Game.time.events.add(Phaser.Timer.SECOND * 1.5, function() {
+								if (cb != undefined) {
+									cb();
+								}
+							});
+						});
+						
+						Battle.drawPokemon(fore, bg);
+					})
+				} else {
+					ball.tween = game.add.tween(ball);
+					ball.tween.to({
+						alpha: 0
+					}, Phaser.Timer.SECOND * .35);
+					
+					ball.tween.onComplete.add(function() {
+						if (summary.message != undefined && summary.message.length != 0) {
+							try {
+								Battle.drawMessage(summary.message);
+							} catch(err) {
+								console.log('an err: ' + err);
+							}
+						}
+						
+						Game.time.events.add(Phaser.Timer.SECOND * 1.5, function() {
+							if (cb != undefined) {
+								cb();
+							}
+						})
+					});
+					
+					ball.tween.start();
+				}
+			});
+		});
+	});
+	
+	ball.tween.start();
+	
+};
+
+Battle.showItemUsage = function(summary, cb) {
+	
+	console.log(summary);
+	if (summary.item.id < 2) {
+		// pokeball
+		if (summary.item.id == 1) {
+			Battle.showCapture(summary, 'masterball', summary.success, cb);
+		} else {
+			Battle.showCapture(summary, 'pokeball', summary.success, cb);
+		}
+	} else {
+		cb();
+	}
+	
+};
+
 Battle.switchIn = function(pokemon, cb) {
 
 	console.log('Switch in: ', pokemon);
@@ -1145,16 +1261,19 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 
 		console.log('MESSADAFASD');
 		console.log('Msg: ' +  summary.message);
-		if (summary.message != undefined && summary.message.length != 0) {
-			try {
-				Battle.drawMessage(summary.message);
-			} catch(err) {
-				console.log('an err: ' + err);
-			}
-		}
+		
 
 		console.log('Type: ' + summary.type);
 		if (summary.type == SUMMARY_TYPE.FIGHT) {
+			
+			if (summary.message != undefined && summary.message.length != 0) {
+				try {
+					Battle.drawMessage(summary.message);
+				} catch(err) {
+					console.log('an err: ' + err);
+				}
+			}
+			
 			Battle.showAttackSummary({
 				defendingId: summary.defending.id,
 				health: summary.defending.health,
@@ -1166,6 +1285,15 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 				});
 			});
 		} else if (summary.type == SUMMARY_TYPE.SWITCH) {
+			
+			if (summary.message != undefined && summary.message.length != 0) {
+				try {
+					Battle.drawMessage(summary.message);
+				} catch(err) {
+					console.log('an err: ' + err);
+				}
+			}
+			
 			let pOut = Battle.getPokemonById(summary.pokemonOut.id);
 
 			let pIn = Battle.team[0];
@@ -1188,18 +1316,29 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 				});
 			});
 		} else if (summary.type == SUMMARY_TYPE.ITEM) {
-			resolve();
-	        Battle.showSummaries(summaries, packet, resolveShow);
+			Battle.showItemUsage(summary, function() {
+				resolve();
+		        Battle.showSummaries(summaries, packet, resolveShow);
+			});
 		} else if (summary.type == SUMMARY_TYPE.HEALTH_CHANGE) {
-	      let p = Battle.getPokemonById(summary.pokemon.id);
-	      console.log(summary.pokemon);
-	      Battle.setHealth(p, summary.pokemon.health);
-	      
-	      Game.time.events.add(Phaser.Timer.SECOND * 1.25, function() {
-	    	resolve();
-	        Battle.showSummaries(summaries, packet, resolveShow);
-      	});
-    }
+		
+			if (summary.message != undefined && summary.message.length != 0) {
+				try {
+					Battle.drawMessage(summary.message);
+				} catch(err) {
+					console.log('an err: ' + err);
+				}
+			}
+			
+		      let p = Battle.getPokemonById(summary.pokemon.id);
+		      console.log(summary.pokemon);
+		      Battle.setHealth(p, summary.pokemon.health);
+		      
+		      Game.time.events.add(Phaser.Timer.SECOND * 1.25, function() {
+		    	resolve();
+		        Battle.showSummaries(summaries, packet, resolveShow);
+	      	});
+		}
 	}, 10000);
 
 };
