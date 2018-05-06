@@ -65,6 +65,7 @@ Game.preload = function() {
     game.load.image('backpack', 'assets/HUD/backpack.png');
     game.load.image('trophy', 'assets/HUD/trophy.png');
     game.load.image('coin', 'assets/HUD/coin.png');
+    game.load.image('coin_trade', 'assets/HUD/coin_old.png');
     game.load.image('logout', 'assets/HUD/logout.png');
     game.load.image('pokedex', 'assets/HUD/pokedex.png');
 
@@ -84,6 +85,7 @@ Game.preload = function() {
     game.load.image('up_arrow', 'assets/buttons/uparrow.png');
     game.load.image('down_arrow', 'assets/buttons/downarrow.png');
     game.load.image('x_icon', 'assets/buttons/x.png');
+    game.load.image('trade', 'assets/buttons/button_trade.png');
 
 	Battle.preload();
 };

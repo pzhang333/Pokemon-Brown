@@ -79,6 +79,22 @@ class Player {
 
 		/* Start the `idle` animation */
 		this.idle();
+
+		if (this.id == Game.player.id) {
+		this.usernameSprite = game.add.text(-48/2, -2*16, this.username, {
+			font: '11px Arial',
+			fill: 'blue',
+			textAlign: 'center'
+		});
+		} else {
+			this.usernameSprite = game.add.text(-48/2, -2*16, this.username, {
+			font: '11px Arial',
+			fill: 'white',
+			textAlign: 'center'
+		});
+		}
+
+		this.sprite.username = this.sprite.addChild(this.usernameSprite);	
 	}
 
 	idle(cancel) {
