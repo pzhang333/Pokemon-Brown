@@ -341,11 +341,23 @@ class Net {
 		//	console.log(id + " : " + net.id)
 			if (id == net.id) {
 				//console.log('skip: ' + id);
-				Game.player.items = msg.payload.users[i].items;
-                Game.player.pokemon = msg.payload.users[i].pokemon;
-                Game.player.currency = msg.payload.users[i].currency;
-                Game.player.activePokemon = msg.payload.users[i].active_pokemon;
-				Game.player.elo = msg.payload.users[i].elo;
+				
+				Game.player.items = update.items;
+                Game.player.pokemon = update.pokemon;
+                Game.player.currency = update.currency;
+                Game.player.activePokemon = update.active_pokemon;
+				Game.player.elo = update.elo;
+				
+				if (dest == undefined) {
+
+					//if (!player.tweenRunning()) {
+					player.setPos(loc.col, loc.row);
+					player.idle();
+					//}
+
+					continue;
+				}
+				
 				continue;
 			}
 
