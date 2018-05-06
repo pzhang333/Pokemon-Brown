@@ -33,6 +33,14 @@ const OP_CODES = {
 	CHAT_RECEIVED: 4
 };
 
+const TRADE_STATUS = {
+	BUSY: 0,
+	OPEN: 1,
+	CANCELED: 2,
+	COMPLETE: 3,
+	FAILED: 4
+};
+
 function waitForSocketConnection(socket, callback) {
     setTimeout(
         function () {
@@ -57,7 +65,6 @@ class Net {
 	constructor() {
 
 		// this.host = 'localhost';
-		//this.host = 'localhost';
 		this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
@@ -88,6 +95,7 @@ class Net {
 		this.handlers[MESSAGE_TYPE.CHALLENGE_RESPONSE] = this.challengeResponseHandler;
 		this.handlers[MESSAGE_TYPE.CHALLENGE_REQUEST] = this.requestChallengeHandler;
 		this.handlers[MESSAGE_TYPE.OPEN_POKE_CONSOLE] = this.openTeamConsoleHandler;
+		this.handlers[MESSAGE_TYPE.TRADE] = this.handleTrade;
 
 		//this.handlers[MESSAGE_TYPE.PATH_REQUEST_RESPONSE] = this.pathApprovalHandler;
 
@@ -575,6 +583,71 @@ class Net {
   			renderTeamManager();
   		}
   		alreadyRenderingTeamManager = true;
+  	}
+
+  	requestTrade(id, other_id) {
+  		// initiates change
+  		let messageObject = new RequestTradeMessage(id, other_id);
+  		this.sendPacket(MESSAGE_TYPE.TRADE, messageObject.payload);  	
+  	}
+
+  	updateOpenTrade(id, other_id, me_accepted, me_currency, me_pokemon, other_currency, other_pokemon) {
+  		// initiates change
+  		let messageObject = new UpdateTradeMessage(id, other_id, me_accepted, me_currency, me_pokemon, other_currency, other_pokemon);
+  		this.sendPacket(MESSAGE_TYPE.TRADE, messageObject.payload);  	
+  	}
+
+  	handleTrade(msg) {
+  		let payload = msg.payload;
+
+  		if (activeTrade == null) {
+  			// initializing trade
+  			activeTrade = true;
+  			if (Game.player.id == payload.p1_id) {
+				renderTradeWindow([], 0, payload.p2_id);
+  			} else if (Game.player.id == payload.p2_id) {
+				renderTradeWindow([], 0, payload.p1_id);
+  			} else {
+  				console.log("ERROR: Invalid trade packet.");
+  			}
+		} else {
+			if (tradePanel != null && tradePanel != undefined) {
+				tradePanel.destroy();
+			}
+  			// updating active trade
+  			let status = payload.status;
+  			if (TRADE_STATUS.OPEN) {
+  				// updating their offer
+  				if (Game.player.id == payload.p1_id) {
+  					let accepted = payload.p2_accepted;
+  					let coins = payload.p2_currency;
+  					// note: pokemon are objects
+  					let pokemon = p2_pokemon;
+  					renderTradeWindow(pokemon, coins, payload.p2_id);
+  				} else if (Game.player.id == payload.p2_id) {
+					let accepted = payload.p1_accepted;
+  					let coins = payload.p1_currency;
+  					// note: pokemon are objects
+  					let pokemon = p1_pokemon;
+  					renderTradeWindow(pokemon, coins, payload.p1_id);
+  				} else {
+  					console.log("ERROR: Invalid trade packet.");
+  				}
+  			} else if (TRADE_STATUS.BUSY == status) {
+  				// display that they are busy
+  				renderTradeUpdate("User busy.");
+  			} else if (TRADE_STATUS.CANCELED == status) {
+  				// display that the trade was cancelled
+  				renderTradeUpdate("Trade canceled.");
+  			} else if (TRADE_STATUS.COMPLETE) {
+  				// do nothing, menu already is set to be destroyed
+  			} else if (TRADE_STATUS.FAILED == status) {
+  				// failed trade
+  				renderTradeUpdate("Trade failed (insufficient room).");
+  			} else {
+  				console.log("ERROR: Invalid trade packet.");
+  			}
+  		}
   	}
 }
 

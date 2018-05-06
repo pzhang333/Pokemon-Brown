@@ -37,3 +37,19 @@ class UpdateTeamMessage {
 		this.payload = {"id": id, "pokemon": team};
 	}
 }
+
+// Trading
+class RequestTradeMessage {
+	constructor(id, other_id) {
+		this.type = 5;
+		this.payload = {"id": id, "other_id": other_id, "starter": true};
+	}
+}
+
+class UpdateTradeMessage {
+	constructor(id, other_id, me_accepted, me_currency, me_pokemon, other_currency, other_pokemon) {
+		this.type = 5;
+		// note: me_pokemon and other_pokemon are ids, not objects
+		this.payload = {"id": id, "other_id": other_id, "me_accepted": me_accepted, "me_currency": me_currency, "me_pokemon": me_pokemon, "other_currency": other_currency, "other_pokemon": other_pokemon};
+	}
+}

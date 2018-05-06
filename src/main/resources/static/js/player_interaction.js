@@ -18,7 +18,9 @@ function playerInteraction() {
 		}
 		if (clicked_player != null) {
 			clicked_player.sprite.challenge.kill();
+			clicked_player.sprite.trade.kill();
 			clicked_player = null;
+			player.sprite.username.visible = true;	
 			return;
 		}
 	}
@@ -34,10 +36,20 @@ function playerInteraction() {
 }
 
 function drawOptionsMenu(player) {
+	// challenge
 	let challengeImage = game.add.image(-48/3, -2*Game.map.tileHeight, 'challenge_button');
 	challengeImage.inputEnabled = true;
 	challengeImage.events.onInputDown.add(challengePlayer, player);	
 	player.sprite.challenge = player.sprite.addChild(challengeImage);
+
+	// trade
+	let tradeImage = game.add.image(-48/3, -3.3*Game.map.tileHeight, 'trade');
+	tradeImage.inputEnabled = true;
+	tradeImage.events.onInputDown.add(tradeWithPlayer, player);	
+	player.sprite.trade = player.sprite.addChild(tradeImage);
+
+	// hide username sprite
+	player.sprite.username.visible = false;
 }
 
 function challengePlayer() {
@@ -51,6 +63,23 @@ function challengePlayer() {
 		let pendingImage = game.add.image(-48/3, -2*Game.map.tileHeight, 'pending_challenge_button');
 		pending = true;
 		player.sprite.challenge = player.sprite.addChild(pendingImage);
+		player.sprite.trade.kill();
+		Game.playerFrozen = true;
+	}
+}
+
+function tradeWithPlayer() {
+	battler = null;
+	let player = this;
+	player.sprite.trade.kill();
+	let dist = Math.sqrt(Math.pow(Game.player.x - player.x, 2) + Math.pow(Game.player.y - player.y, 2));
+	if (dist <= 5) {
+		net.requestTrade(Game.player.id, player.id);
+		battler = player;
+		let pendingImage = game.add.image(-48/3, -2*Game.map.tileHeight, 'pending_challenge_button');
+		pending = true;
+		player.sprite.trade = player.sprite.addChild(pendingImage);
+		player.sprite.challenge.kill();
 		Game.playerFrozen = true;
 	}
 }
@@ -137,4 +166,8 @@ function cancelChallengeUI(player) {
 	if (player.sprite.challenge != undefined) {
 		player.sprite.challenge.kill();
 	}
+	if (player.sprite.trade != undefined) {
+		player.sprite.trade.kill();
+	}
+	player.sprite.username.visible = true;	
 }
