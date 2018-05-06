@@ -242,6 +242,9 @@ public final class PacketSender {
   public static void sendOpenPokeConsolePacket(User u) {
     JsonObject packet = new JsonObject();
     packet.addProperty("type", MESSAGE_TYPE.OPEN_POKE_CONSOLE.ordinal());
+    JsonObject payload = new JsonObject();
+    payload.add("location", Main.GSON().toJsonTree(u.getLocation()));
+    packet.add("payload", payload);
     sendPacket(u, packet);
   }
 
