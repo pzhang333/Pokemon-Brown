@@ -33,7 +33,7 @@ public class BattleManager {
       levels += 1.0 * p.getLevel();
     }
     levels = levels / t.getTeam().size();
-    int avgLvl = levels.intValue();
+    int avgLvl = levels.intValue() + 1;
 
     return RandomWildPokemon.generateWildPokemon(avgLvl);
   }

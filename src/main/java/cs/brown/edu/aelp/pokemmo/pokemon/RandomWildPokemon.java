@@ -44,7 +44,8 @@ public class RandomWildPokemon {
         int level = (averageLevel < 35) ? 35 : averageLevel;
         return PokemonLoader.load(randomElementFromList(specialPokemon), Pokemon.calcXpByLevel(level));
       } else {
-        return PokemonLoader.load(randomElementFromList(normalPokemon), Pokemon.calcXpByLevel(averageLevel));
+        int level = (averageLevel <= 0) ? 1 : averageLevel - 2;
+        return PokemonLoader.load(randomElementFromList(normalPokemon), Pokemon.calcXpByLevel(level));
       }
   }
 
