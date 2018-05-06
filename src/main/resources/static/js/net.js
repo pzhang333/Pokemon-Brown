@@ -377,6 +377,10 @@ class Net {
 				if (!player.tweenRunning()) {
 					player.setPos(loc.col, loc.row);
 				} else {
+					if (this.pendingX == loc.col &&  this.pendingY == loc.row) {
+						continue;
+					}
+					
 					player.tween.onComplete.add(function() {
 						player.tween.stop(false);
 						player.setPos(loc.col, loc.row);
