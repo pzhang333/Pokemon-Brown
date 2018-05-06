@@ -496,6 +496,14 @@ public class WildBattle extends Battle {
 
   @Override
   public void updateXp(Trainer winner, Trainer loser) {
-
+    for (Pokemon winnerP : winner.getTeam()) {
+      Double expWon = 0.0;
+      if (!winnerP.isKnockedOut()){
+        for (Pokemon loserP : loser.getTeam()){
+          expWon += Pokemon.xpWon(winnerP, loserP);
+        }
+      }
+      winnerP.addExp(expWon.intValue());
+    }
   }
 }

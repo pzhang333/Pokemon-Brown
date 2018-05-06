@@ -53,7 +53,6 @@ Game.update = function() {
 Game.preload = function() {
 	game.stage.disableVisibilityChange = true;
 	game.load.image('tileset', 'assets/tilesets/tileset.png');
-	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
 
 	game.load.atlasJSONHash('atlas1', 'assets/sprites/pokemon_atlas1.png', 'assets/sprites/pokemon_atlas1.json');
 	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
@@ -73,7 +72,7 @@ Game.preload = function() {
     game.load.image('greatball', 'assets/HUD/greatball.png');
     game.load.image('ultraball', 'assets/HUD/ultraball.png');
     game.load.image('masterball', 'assets/HUD/masterball.png');
-    game.load.image('hyperpotion', 'assets/HUD/hyperpotion.png');
+    game.load.image('overload', 'assets/HUD/overload.png');
     game.load.image('fullrestore', 'assets/HUD/fullrestore.png');
 
     // loading font assets
@@ -408,42 +407,42 @@ function drawBackpack() {
     let pokeballtext = new SlickUI.Element.Text(Game.panel.width/3.8, 58, "x"+mapGet(items, 0, 0));
     pokeballtext.size = 9.5;
 
-    let greatball = game.add.sprite(0, 0, 'greatball');
-    greatball.anchor.setTo(0.5, 0.5);
-    let greatballtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58, "x"+mapGet(items, 1, 0));
-    greatballtext.size = 9.5;
-
-    let ultraball = game.add.sprite(0, 0, 'ultraball');
-    ultraball.anchor.setTo(0.5, 0.5);
-    let ultraballtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200 , 58, "x"+mapGet(items, 2, 0));
-    ultraballtext.size = 9.5;
-
     let masterball = game.add.sprite(0, 0, 'masterball');
     masterball.anchor.setTo(0.5, 0.5);
-    let masterballtext = new SlickUI.Element.Text(Game.panel.width/3.8, 58 + 100, "x"+mapGet(items, 3, 0));
+    let masterballtext = new SlickUI.Element.Text(Game.panel.width/3.8, 58 + 100, "x"+mapGet(items, 1, 0));
     masterballtext.size = 9.5;
-
-    let hyperpotion = game.add.sprite(0, 0, 'hyperpotion');
-    hyperpotion.anchor.setTo(0.5, 0.5);
-    let hyperpotiontext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58 + 100, "x"+mapGet(items, 4, 0));
-    hyperpotiontext.size = 9.5;
 
     let fullrestore = game.add.sprite(0, 0, 'fullrestore');
     fullrestore.anchor.setTo(0.5, 0.5);
-    let fullrestoretext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58 + 100, "x"+mapGet(items, 5, 0));
+    let fullrestoretext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58, "x"+mapGet(items, 2, 0));
     fullrestoretext.size = 9.5;
 
+    let overload = game.add.sprite(0, 0, 'overload');
+    overload.anchor.setTo(0.5, 0.5);
+    overload.scale.setTo(0.25, 0.25);
+    let overloadtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58 + 100, "x"+mapGet(items, 3, 0));
+    overloadtext.size = 9.5;
+
+    //let hyperpotion = game.add.sprite(0, 0, 'hyperpotion');
+    //hyperpotion.anchor.setTo(0.5, 0.5);
+    //hyperpotion.scale.setTo(0.25, 0.25);
+    //let hyperpotiontext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58 + 100, "x"+mapGet(items, 4, 0));
+    //hyperpotiontext.size = 9.5;
+
+    //let fullrestore = game.add.sprite(0, 0, 'fullrestore');
+    //fullrestore.anchor.setTo(0.5, 0.5);
+    //let fullrestoretext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58 + 100, "x"+mapGet(items, 5, 0));
+    //fullrestoretext.size = 9.5;
+
     Game.panel.add(header);
-    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5, Game.panel.height/2.75, pokeball));
-    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5 + 100, Game.panel.height/2.75, greatball));
-    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5 + 200, Game.panel.height/2.75, hyperpotion));
-    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5, Game.panel.height/2.75 + 100, ultraball));
-    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5 + 100, Game.panel.height/2.75 + 100, masterball));
-    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/5 + 200, Game.panel.height/2.75 + 100, fullrestore));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6, Game.panel.height/2.75, pokeball));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 100, Game.panel.height/2.75, fullrestore));
+    // Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 200, Game.panel.height/2.75, hyperpotion));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6, Game.panel.height/2.75 + 100, masterball));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 100, Game.panel.height/2.75 + 100, overload));
+    // Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 200, Game.panel.height/2.75 + 100, fullrestore));
 	Game.panel.add(pokeballtext);
-    Game.panel.add(greatballtext);
-    Game.panel.add(hyperpotiontext);
-    Game.panel.add(ultraballtext);
+    Game.panel.add(overloadtext);
     Game.panel.add(masterballtext);
     Game.panel.add(fullrestoretext);
 
