@@ -493,4 +493,9 @@ public class WildBattle extends Battle {
   private void sendBattleUpdate() {
     sendBattleUpdateTo(a);
   }
+
+  @Override
+  public void updateXp(Trainer winner, Trainer loser) {
+
+  }
 }
