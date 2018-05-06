@@ -3,7 +3,7 @@ package cs.brown.edu.aelp.pokemmo.pokemon.moves.complex;
 import cs.brown.edu.aelp.pokemmo.battle.Effect;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.EndOfBattleEvent;
-import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.EndOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.HealthChangeSummary;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
@@ -33,7 +33,7 @@ public class Wish extends Move {
     }
 
     @Override
-    public void handle(StartOfTurnEvent event) {
+    public void handle(EndOfTurnEvent event) {
       if (turnsLeft == 0) {
 
         Pokemon p = trainer.getActivePokemon();
@@ -61,7 +61,7 @@ public class Wish extends Move {
         evt.getDefendingPokemon(), this, evt.getBattle().getArena());
 
     evt.getAttackingTrainer().getEffectSlot()
-        .register(new WishEffect(evt.getAttackingTrainer(), 2));
+        .register(new WishEffect(evt.getAttackingTrainer(), 1));
 
     mr.setOutcome(MoveOutcome.NON_ATTACK_SUCCESS);
 

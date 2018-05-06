@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS users (
     username text NOT NULL,
     email text NOT NULL,
     chunk integer NOT NULL,
-    elo integer DEFAULT 100 NOT NULL,
+    elo integer DEFAULT 1200 NOT NULL,
     "row" integer NOT NULL,
     col integer NOT NULL,
     currency integer DEFAULT 1000 NOT NULL,

@@ -571,7 +571,7 @@ async function drawTeam() {
         Phaser.Canvas.setImageRenderingCrisp(game.canvas);
 
         let text = new SlickUI.Element.Text(100, 5, ucfirst(pokemon.nickname));
-        let level = new SlickUI.Element.Text(250, 5, 'Lvl: ' + String(pokemon.level));
+        let level = new SlickUI.Element.Text(225, 5, 'Lvl: ' + String(pokemon.level));
 
         const y = (buttonHeight * (1 + i)) + 30;
 
