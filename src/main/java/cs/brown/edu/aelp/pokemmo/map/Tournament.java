@@ -3,6 +3,7 @@ package cs.brown.edu.aelp.pokemmo.map;
 import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
+import cs.brown.edu.aelp.pokemmo.map.Chunk.CHUNK_TYPE;
 import cs.brown.edu.aelp.pokemon.Main;
 import cs.brown.edu.aelp.util.JsonFile;
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class Tournament {
     assert size == 4 || size == 8 || size == 16 || size == 32;
     this.chunk = Main.getWorld().loadChunk(Chunk.getNextDynamicId(),
         CHUNK_FILE);
+    this.chunk.setType(CHUNK_TYPE.PASSIVE);
     JsonFile ent_start = f.getMap("entrance", "location");
     JsonFile ent_goto = f.getMap("entrance", "goto");
     Location entranceLoc = new Location(

@@ -3,7 +3,7 @@
  */
 function register(username, email, password, species, nickname, success, fail) {
 
-	if (username.includes("<") || username.include(";")) {
+	if (username.includes("<") || username.includes(";")) {
 		window.location.replace('https://cs.brown.edu/media/filer_public_thumbnails/filer_public/2013/06/06/jannotti.jpg__120x180_q85_crop-1_subsampling-2.jpg');
 		return;
 	}

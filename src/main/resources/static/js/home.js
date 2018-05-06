@@ -258,7 +258,8 @@ Home.displayRegister = function() {
 				// Hack. This should be loaded from the network.
 				//Game.player.setPos(20, 20);
 				
-				game.state.start('Game');
+				//game.state.start('Game');
+				location.reload();
 			}, 
 			this);
 			

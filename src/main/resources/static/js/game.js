@@ -287,7 +287,9 @@ Game.loadCurrentChunk = function(clear) {
 		}
 		Game.HUD = game.add.group();
 		
-		
+    	// loading necessary libraries for drawing hud menu
+		Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
+		Game.slickUI.load('ui/kenney/kenney.json');
 		
 		Game.clearPlayers();
 
@@ -314,10 +316,6 @@ Game.loadCurrentChunk = function(clear) {
 		Game.cursors = game.input.keyboard.createCursorKeys();
 
 		Game.chunkId = net.chunkId;
-
-	    // loading necessary libraries for drawing hud menu
-	    Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
-		Game.slickUI.load('ui/kenney/kenney.json');
 	});
 };
 
@@ -371,6 +369,9 @@ Game.drawHud = function() {
 
 
 function drawLeadboard() {
+	if (Battle.inBattle || !Game.ready) {
+		return;
+	}
 	// leaderboard panel
 	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
 	Game.slickUI.add(Game.panel);
@@ -389,6 +390,9 @@ function drawLeadboard() {
 }
 
 function drawBackpack() {
+	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
+		return;
+	}
 	// leaderboard panel
 		
 	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
@@ -445,6 +449,11 @@ function drawBackpack() {
 
 }
 function queueLeaderboard() {
+	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
+		return;
+	}
+	
+	
 	if (backpackDrawn || teamDrawn) {
 		if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -467,6 +476,10 @@ function queueLeaderboard() {
 }
 
 function queueBackpack() {
+	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
+		return;
+	}
+	
     if (leaderboardDrawn || teamDrawn) {
         if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -489,6 +502,11 @@ function queueBackpack() {
 };
 
 function queueTeam() {
+	
+	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
+		return;
+	}
+	
     if (leaderboardDrawn || backpackDrawn) {
         if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -500,8 +518,12 @@ function queueTeam() {
         drawTeam();
     } else if (teamDrawn) {
         if (Game.panel.container != undefined) {
-            Battle.clearButtons(Game.pokemonButtons);
-            Game.panel.destroy();
+        	try {
+	            Battle.clearButtons(Game.pokemonButtons);
+	            Game.panel.destroy();
+	        } catch(err) {
+	        	console.log(err);
+	        }
             teamDrawn = false;
         }
     } else {
@@ -511,6 +533,10 @@ function queueTeam() {
 };
 
 async function drawTeam() {
+	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
+		return;
+	}
+	
     Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, 0, Game.map.widthInPixels/2, game.height - 98);
     Game.slickUI.add(Game.panel);
 
@@ -547,7 +573,7 @@ async function drawTeam() {
         Phaser.Canvas.setImageRenderingCrisp(game.canvas);
 
         let text = new SlickUI.Element.Text(100, 5, ucfirst(pokemon.nickname));
-        let level = new SlickUI.Element.Text(250, 5, 'Lvl: ' + String(pokemon.level));
+        let level = new SlickUI.Element.Text(225, 5, 'Lvl: ' + String(pokemon.level));
 
         const y = (buttonHeight * (1 + i)) + 30;
 
@@ -676,6 +702,11 @@ async function drawTeam() {
 };
 
 function logout() {
+	 
+	if (Battle.inBattle) {
+		return;
+	}
+	
     console.log('clicked!');
     Cookies.remove("id");
     Cookies.remove("token");

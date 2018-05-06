@@ -93,7 +93,7 @@
 		"flags": ["ENEMY"],
 		"stat": "def",
 		"statChance": [100, 100],
-		"stages": 1
+		"stages": -1
 	},
 	"44": {
 		"id": 44,
@@ -122,7 +122,7 @@
 		"flags": ["ENEMY"],
 		"stat": "atk",
 		"statChance": [100, 100],
-		"stages": 1
+		"stages": -1
 	},
 	"52": {
 		"id": 52,
@@ -361,7 +361,7 @@
 		"flags": ["DAMAGE", "SELF"],
 		"stat": "spd",
 		"statChance": [100, 100],
-		"stages": 1
+		"stages": -1
 	},
 	"394": {
 		"id": 394,
@@ -406,7 +406,7 @@
 		"flags": ["DAMAGE", "ENEMY"],
 		"stat": "specDef",
 		"statChance": [10, 100],
-		"stages": 1
+		"stages": -1
 	},
 	"412": {
 		"id": 412,
@@ -422,7 +422,7 @@
 		"flags": ["DAMAGE", "ENEMY"],
 		"stat": "specDef",
 		"statChance": [10, 100],
-		"stages": 1
+		"stages": -1
 	},
 	"421": {
 		"id": 421,
@@ -451,7 +451,7 @@
 		"flags": ["DAMAGE", "ENEMY"],
 		"stat": "specDef",
 		"statChance": [10, 100],
-		"stages": 1
+		"stages": -1
 	},
 	"434": {
 		"id": 434,
@@ -467,7 +467,7 @@
 		"flags": ["DAMAGE", "SELF"],
 		"stat": "specAtk",
 		"statChance": [100, 100],
-		"stages": 2
+		"stages": -2
 	},
 	"435": {
 		"id": 435,
@@ -564,18 +564,5 @@
 		"priority": 0,
 		"type": "Ground",
 		"flags": ["DAMAGE"]
-	},
-    "273": {
-		"id": 273,
-		"accuracy": 0,
-		"basePower": 0,
-		"category": "Special",
-		"desc": "No additional effect.",
-		"shortDesc": "Heals 50% health two turns later.",
-		"name": "Wish",
-		"pp": 10,
-		"priority": 0,
-		"type": "Normal",
-		"flags": ["COMPLEX"]
-    }
+	}
 }

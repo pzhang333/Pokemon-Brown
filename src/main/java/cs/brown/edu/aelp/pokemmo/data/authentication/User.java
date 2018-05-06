@@ -8,6 +8,7 @@ import com.google.gson.JsonSerializer;
 import cs.brown.edu.aelp.networking.Challenge;
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
+import cs.brown.edu.aelp.networking.Trade;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Entity;
@@ -48,6 +49,7 @@ public class User extends Trainer implements SQLBatchSavable {
   private int elo = 100;
   private Map<Integer, Pokemon> inactivePokemon = new HashMap<>();
   private Challenge pendingChallenge;
+  private Trade activeTrade;
 
   public User(int id, String username, String email, String sessionToken) {
     super(id);
@@ -67,6 +69,14 @@ public class User extends Trainer implements SQLBatchSavable {
 
   public void setChallenge(Challenge c) {
     this.pendingChallenge = c;
+  }
+
+  public Trade getActiveTrade() {
+    return this.activeTrade;
+  }
+
+  public void setActiveTrade(Trade t) {
+    this.activeTrade = t;
   }
 
   public Challenge getChallenge() {

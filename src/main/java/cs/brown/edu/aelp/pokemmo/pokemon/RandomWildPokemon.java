@@ -39,12 +39,13 @@ public class RandomWildPokemon {
     int random = ThreadLocalRandom.current().nextInt(0, 101);
       if (random > 95){
         int level = (averageLevel < 65) ? 65 : averageLevel;
-        return PokemonLoader.load(randomElementFromList(legendaryPokemon), level);
-      } else if (random <= 95 && random > 65) {
+        return PokemonLoader.load(randomElementFromList(legendaryPokemon), Pokemon.calcXpByLevel(level));
+      } else if (random > 65) {
         int level = (averageLevel < 35) ? 35 : averageLevel;
-        return PokemonLoader.load(randomElementFromList(specialPokemon), level);
+        return PokemonLoader.load(randomElementFromList(specialPokemon), Pokemon.calcXpByLevel(level));
       } else {
-        return PokemonLoader.load(randomElementFromList(normalPokemon), averageLevel);
+        int level = (averageLevel <= 0) ? 1 : averageLevel - 2;
+        return PokemonLoader.load(randomElementFromList(normalPokemon), Pokemon.calcXpByLevel(level));
       }
   }
 

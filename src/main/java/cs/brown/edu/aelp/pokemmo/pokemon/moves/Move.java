@@ -361,6 +361,10 @@ public class Move {
     return this.cost;
   }
 
+  public double getRecoilPercent() {
+    return this.recoil;
+  }
+
   public MoveResult getMoveResult(AttackEvent atkEvent) {
     return new MoveResult(atkEvent.getAttackingPokemon(),
         atkEvent.getDefendingPokemon(), this, atkEvent.getBattle().getArena());

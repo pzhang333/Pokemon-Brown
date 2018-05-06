@@ -9,18 +9,23 @@ function playerInteraction() {
 		return;
 	}
 	let player = this;
-	if (pending) {
-		cancelChallengeUI(clicked_player);
-		clicked_player = null;
-		pending = false;
-		return;
+	try {
+		if (pending) {
+			cancelChallengeUI(clicked_player);
+			clicked_player = null;
+			pending = false;
+			return;
+		}
+		if (clicked_player != null) {
+			clicked_player.sprite.challenge.kill();
+			clicked_player.sprite.trade.kill();
+			clicked_player = null;
+			player.sprite.username.visible = true;	
+			return;
+		}
 	}
-	if (clicked_player != null) {
-		clicked_player.sprite.challenge.kill();
-		clicked_player.sprite.trade.kill();
-		clicked_player = null;
-		player.sprite.username.visible = true;	
-		return;
+	catch(err) {
+		console.log(err);
 	}
 	let dist = Math.sqrt(Math.pow(Game.player.x - player.x, 2) + Math.pow(Game.player.y - player.y, 2));
 	if (dist > 5) {
@@ -80,12 +85,20 @@ function tradeWithPlayer() {
 }
 
 function renderChallenge(player) {
-	if (panelMessage != null) {
-		panelMessage.destroy();
+	try {
+		if (panelMessage != null) {
+			panelMessage.destroy();
+		}
+		if (clicked_player != null) {
+			clicked_player.sprite.challenge.kill();
+			clicked_player = null;
+		}
+	} catch(err) {
+		console.log(err)
 	}
-	if (clicked_player != null) {
-		clicked_player.sprite.challenge.kill();
-		clicked_player = null;
+	if (Battle.inBattle) {
+		net.rejectChallenge(Game.player.id, false);
+		return;
 	}
 	Game.playerFrozen = true;
 	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);

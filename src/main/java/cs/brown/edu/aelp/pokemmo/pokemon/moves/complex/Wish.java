@@ -3,7 +3,7 @@ package cs.brown.edu.aelp.pokemmo.pokemon.moves.complex;
 import cs.brown.edu.aelp.pokemmo.battle.Effect;
 import cs.brown.edu.aelp.pokemmo.battle.events.AttackEvent;
 import cs.brown.edu.aelp.pokemmo.battle.events.EndOfBattleEvent;
-import cs.brown.edu.aelp.pokemmo.battle.events.StartOfTurnEvent;
+import cs.brown.edu.aelp.pokemmo.battle.events.EndOfTurnEvent;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.HealthChangeSummary;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
@@ -33,14 +33,14 @@ public class Wish extends Move {
     }
 
     @Override
-    public void handle(StartOfTurnEvent event) {
+    public void handle(EndOfTurnEvent event) {
       if (turnsLeft == 0) {
 
         Pokemon p = trainer.getActivePokemon();
         int amt = (int) Math.ceil(p.getMaxHp() / 2);
         p.setHealth(p.getCurrHp() + amt);
         event.getBattle().getPendingBattleUpdate()
-            .addSummary(new HealthChangeSummary(p, amt, "Wish came true!"));
+            .addSummary(new HealthChangeSummary(p, "Wish came true!"));
         getEffectSlot().deregister(this);
         return;
       }

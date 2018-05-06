@@ -17,6 +17,7 @@ import cs.brown.edu.aelp.pokemmo.data.DataSource.AuthException;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Chunk.CHUNK_TYPE;
 import cs.brown.edu.aelp.pokemmo.map.Entity;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
@@ -84,8 +85,6 @@ public class PlayerWebSocketHandler {
 
   private static final MESSAGE_TYPE[] MESSAGE_TYPES = MESSAGE_TYPE.values();
   private static final ACTION_TYPE[] ACTION_TYPES = ACTION_TYPE.values();
-
-  private static Map<Integer, Trade> trades = new HashMap<>();
 
   @OnWebSocketConnect
   public void onConnect(Session session) throws Exception {
@@ -183,7 +182,7 @@ public class PlayerWebSocketHandler {
   }
 
   private static void handleTrade(Session session, JsonObject payload) {
-    int me_id = payload.get("me_id").getAsInt();
+    int me_id = payload.get("id").getAsInt();
     int other_id = payload.get("other_id").getAsInt();
     boolean isUser1 = payload.get("starter").getAsBoolean();
     User me = UserManager.getUserById(me_id);
@@ -193,35 +192,39 @@ public class PlayerWebSocketHandler {
       return;
     }
     if (other == null || !other.isConnected()) {
-      Trade t = trades.remove(me_id);
-      if (t == null) {
-        // dummy trade just to say CANCELED
-        t = new Trade(me, me);
-      }
+      // dummy trade for canceling
+      Trade t = new Trade(me, me);
       t.setStatus(TRADE_STATUS.CANCELED);
       PacketSender.sendTradePacket(me, t);
+      me.setActiveTrade(null);
       return;
     }
-    Trade t = trades.get(me_id);
-    if (trades.containsKey(other_id) && !trades.get(other_id).involves(me)) {
-      // other is busy, tell me with dummy trade
-      t = new Trade(me, other);
+    // TODO: Make challenge "busy" check for trades too
+    if ((other.getActiveTrade() != null && !other.getActiveTrade().involves(me)
+        || other.getChallenge() != null)) {
+      // dummy trade for busy
+      Trade t = new Trade(me, me);
       t.setStatus(TRADE_STATUS.BUSY);
       PacketSender.sendTradePacket(me, t);
+      me.setActiveTrade(null);
       return;
     }
-
-    if (t == null) {
+    if (me.getActiveTrade() != null && !me.getActiveTrade().involves(other)) {
+      // TODO: On disconnect cleanup, clear challenges and trades
+      me.kick();
+      return;
+    }
+    Trade t = me.getActiveTrade();
+    if (me.getActiveTrade() == null) {
       t = new Trade(me, other);
+      me.setActiveTrade(t);
+      other.setActiveTrade(t);
+      PacketSender.sendTradePacket(other, t);
+      return;
     }
     boolean me_accepted = payload.get("me_accepted").getAsBoolean();
     int me_curr = payload.get("me_currency").getAsInt();
     Map<Integer, Integer> me_items = new HashMap<>();
-    JsonObject items = payload.get("me_items").getAsJsonObject();
-    for (String key : items.keySet()) {
-      int item_id = Integer.parseInt(key);
-      me_items.put(item_id, items.get(key).getAsInt());
-    }
     Set<Integer> me_pokemon = new HashSet<>();
     JsonArray pokemon = payload.get("me_pokemon").getAsJsonArray();
     for (JsonElement o : pokemon) {
@@ -362,6 +365,11 @@ public class PlayerWebSocketHandler {
     User u1 = UserManager.getUserById(id);
     if (u1 == null || u1.getSession() != session) {
       session.close();
+      return;
+    }
+    CHUNK_TYPE t = u1.getLocation().getChunk().getType();
+    if (t == CHUNK_TYPE.HEAL || t == CHUNK_TYPE.PASSIVE) {
+      PacketSender.sendChallengeResponse(u1, "disabled");
       return;
     }
     if (u1.getChallenge() != null) {

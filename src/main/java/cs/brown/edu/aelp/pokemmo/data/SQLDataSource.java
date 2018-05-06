@@ -116,6 +116,7 @@ public class SQLDataSource implements DataSource {
     User user = new User(rs.getInt("id"), rs.getString("username"),
         rs.getString("email"), rs.getString("session_token"));
     user.setCurrency(rs.getInt("currency"));
+    user.setElo(rs.getInt("elo"));
     Chunk c = Main.getWorld().getChunk(rs.getInt("chunk"));
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
@@ -267,8 +268,10 @@ public class SQLDataSource implements DataSource {
           if (rs.next()) {
             u = new User(rs.getInt("id"), username, email, token);
             u.setLocation(Main.getWorld().getSpawn());
-            u.setCurrency(1000);
+            u.setCurrency(rs.getInt("currency"));
+            u.setElo(rs.getInt("elo"));
             u.getInventory().setItemAmount(ItemType.POKEBALL.ordinal(), 25);
+            u.getInventory().setItemAmount(ItemType.MASTER_BALL.ordinal(), 1);
           } else {
             conn.rollback();
             throw new AuthException();

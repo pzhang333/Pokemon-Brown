@@ -77,8 +77,8 @@ class Net {
 
 		// TODO: maybe use somekind of queue?
 
-		this.handlers = {}
-		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
+		this.handlers = {};
+		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler;
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
 		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler;
 		//this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
@@ -313,6 +313,7 @@ class Net {
 						} else {
 							user = Game.players[op.id].username;
 						}
+						
 						let cleanUser = user.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
 							return '&#' + i.charCodeAt(0) + ';';
 						});
@@ -383,6 +384,17 @@ class Net {
 
 				if (!player.tweenRunning()) {
 					player.setPos(loc.col, loc.row);
+				} else {
+					if (this.pendingX == loc.col &&  this.pendingY == loc.row) {
+						continue;
+					}
+					
+					player.tween.onComplete.add(function() {
+						player.tween.stop(false);
+						player.setPos(loc.col, loc.row);
+						player.idle();
+						player.tween.onComplete.removeAll();
+					}, this, 200);
 				}
 
 				continue;

@@ -68,9 +68,9 @@ public class RegisterHandler implements Route {
       throw new AuthException("Invalid species selected.");
     }
 
-    if (nickname.length() <= 3 || nickname.length() > 20) {
+    if (nickname.length() <= 3 || nickname.length() > 12) {
       throw new AuthException(
-          "Pokemon nickname must be greater than 3 and fewer than 21 characters.");
+          "Pokemon nickname must be greater than 3 and fewer than 13 characters.");
     }
 
     return true;
