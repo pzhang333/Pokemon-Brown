@@ -979,8 +979,8 @@ Battle.drawDefaultMenu = async function() {
 	itemButton.add(new SlickUI.Element.Text(0, 0, "Item")).center();
 	
 	if (Battle.frontPokemon.health <= 0) {
-		switchButton.events.onInputUp.removeAll();
-		switchButton.events.onInputDown.removeAll();
+		itemButton.events.onInputUp.removeAll();
+		itemButton.events.onInputDown.removeAll();
 	} else {
 		itemButton.events.onInputUp.add(async function () {
 			if (Battle.showing != undefined) {
