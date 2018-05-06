@@ -69,11 +69,11 @@ Game.preload = function() {
     game.load.image('pokedex', 'assets/HUD/pokedex.png');
 
     game.load.image('pokeball', 'assets/HUD/pokeball.png');
-    game.load.image('greatball', 'assets/HUD/greatball.png');
-    game.load.image('ultraball', 'assets/HUD/ultraball.png');
-    game.load.image('masterball', 'assets/HUD/masterball.png');
+    game.load.image('ether', 'assets/HUD/ether.png');
+    game.load.image('lasso', 'assets/HUD/lasso.png');
     game.load.image('overload', 'assets/HUD/overload.png');
     game.load.image('fullrestore', 'assets/HUD/fullrestore.png');
+    game.load.image('masterball', 'assets/HUD/masterball.png');
 
     // loading font assets
     game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
@@ -419,32 +419,34 @@ function drawBackpack() {
 
     let overload = game.add.sprite(0, 0, 'overload');
     overload.anchor.setTo(0.5, 0.5);
-    overload.scale.setTo(0.25, 0.25);
-    let overloadtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58 + 100, "x"+mapGet(items, 3, 0));
+    overload.scale.setTo(0.2, 0.2);
+    let overloadtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58, "x"+mapGet(items, 3, 0));
     overloadtext.size = 9.5;
 
-    //let hyperpotion = game.add.sprite(0, 0, 'hyperpotion');
-    //hyperpotion.anchor.setTo(0.5, 0.5);
-    //hyperpotion.scale.setTo(0.25, 0.25);
-    //let hyperpotiontext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58 + 100, "x"+mapGet(items, 4, 0));
-    //hyperpotiontext.size = 9.5;
+    let ether = game.add.sprite(0, 0, 'ether');
+    ether.anchor.setTo(0.5, 0.5);
+    let ethertext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58 + 100, "x"+mapGet(items, 4, 0));
+    ethertext.size = 9.5;
 
-    //let fullrestore = game.add.sprite(0, 0, 'fullrestore');
-    //fullrestore.anchor.setTo(0.5, 0.5);
-    //let fullrestoretext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58 + 100, "x"+mapGet(items, 5, 0));
-    //fullrestoretext.size = 9.5;
+    let lasso = game.add.sprite(0, 0, 'lasso');
+    lasso.anchor.setTo(0.5, 0.5);
+    let lassotext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58 + 100, "x"+mapGet(items, 5, 0));
+    lassotext.size = 9.5;
 
     Game.panel.add(header);
     Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6, Game.panel.height/2.75, pokeball));
     Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 100, Game.panel.height/2.75, fullrestore));
-    // Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 200, Game.panel.height/2.75, hyperpotion));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 200, Game.panel.height/2.75, overload));
     Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6, Game.panel.height/2.75 + 100, masterball));
-    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 100, Game.panel.height/2.75 + 100, overload));
-    // Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 200, Game.panel.height/2.75 + 100, fullrestore));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 100, Game.panel.height/2.75 + 100, ether));
+    Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6 + 200, Game.panel.height/2.75 + 100, lasso));
+
 	Game.panel.add(pokeballtext);
     Game.panel.add(overloadtext);
     Game.panel.add(masterballtext);
     Game.panel.add(fullrestoretext);
+    Game.panel.add(lassotext);
+    Game.panel.add(ethertext)
 
 }
 function queueLeaderboard() {
