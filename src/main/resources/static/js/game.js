@@ -443,6 +443,11 @@ function drawBackpack() {
 
 }
 function queueLeaderboard() {
+	if (Battle.inBattle) {
+		return;
+	}
+	
+	
 	if (backpackDrawn || teamDrawn) {
 		if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -465,6 +470,10 @@ function queueLeaderboard() {
 }
 
 function queueBackpack() {
+	if (Battle.inBattle) {
+		return;
+	}
+	
     if (leaderboardDrawn || teamDrawn) {
         if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -487,6 +496,11 @@ function queueBackpack() {
 };
 
 function queueTeam() {
+	
+	if (Battle.inBattle) {
+		return;
+	}
+	
     if (leaderboardDrawn || backpackDrawn) {
         if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -509,6 +523,10 @@ function queueTeam() {
 };
 
 async function drawTeam() {
+	if (Battle.inBattle) {
+		return;
+	}
+	
     Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, 0, Game.map.widthInPixels/2, game.height - 98);
     Game.slickUI.add(Game.panel);
 
@@ -674,6 +692,11 @@ async function drawTeam() {
 };
 
 function logout() {
+	
+	if (Battle.inBattle) {
+		return;
+	}
+	
     console.log('clicked!');
     Cookies.remove("id");
     Cookies.remove("token");
