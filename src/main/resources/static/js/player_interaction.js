@@ -51,6 +51,12 @@ function challengePlayer() {
 }
 
 function renderChallenge(player) {
+	
+	if (Battle.inBattle) {
+		net.rejectChallenge(Game.player.id, false);
+		return;
+	}
+	
 	if (panelMessage != null) {
 		panelMessage.destroy();
 	}
