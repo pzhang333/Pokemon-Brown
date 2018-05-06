@@ -871,7 +871,7 @@ Battle.useMove = async function(id) {
 		let move = moves[i];
 
 		if (move.id == id) {
-			move.pp -= move.cost;
+			//move.pp -= move.cost;
 		}
 	}
 
@@ -977,16 +977,22 @@ Battle.drawDefaultMenu = async function() {
 	let itemButton = new SlickUI.Element.Button(buttonOffsetX + 4 + buttonWidth + 4, 0, buttonWidth, 48);
 	Battle.panel.add(itemButton);
 	itemButton.add(new SlickUI.Element.Text(0, 0, "Item")).center();
-	itemButton.events.onInputUp.add(async function () {
-		if (Battle.showing != undefined) {
-			await Battle.showing;
-		}
-		if (Battle.invButtons == undefined || Battle.invButtons.length == 0) {
-			Battle.showInv();
-		} else {
-			Battle.clearInv();
-		}
-    });
+	
+	if (Battle.frontPokemon.health <= 0) {
+		switchButton.events.onInputUp.removeAll();
+		switchButton.events.onInputDown.removeAll();
+	} else {
+		itemButton.events.onInputUp.add(async function () {
+			if (Battle.showing != undefined) {
+				await Battle.showing;
+			}
+			if (Battle.invButtons == undefined || Battle.invButtons.length == 0) {
+				Battle.showInv();
+			} else {
+				Battle.clearInv();
+			}
+	    });
+	}
 
 
 	let forfeitButton = new SlickUI.Element.Button(buttonOffsetX + 4 + buttonWidth + 4, 50, buttonWidth, 48);
