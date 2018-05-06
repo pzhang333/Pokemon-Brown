@@ -57,8 +57,8 @@ class Net {
 	constructor() {
 
 		// this.host = 'localhost';
-		this.host = 'localhost';
-		//this.host = '10.38.37.243';
+		//this.host = 'localhost';
+		this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -70,8 +70,8 @@ class Net {
 
 		// TODO: maybe use somekind of queue?
 
-		this.handlers = {};
-		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler;
+		this.handlers = {}
+		this.handlers[MESSAGE_TYPE.CONNECT] = this.connectHandler
 		this.handlers[MESSAGE_TYPE.INITIALIZE_PACKET] = this.initPacketHandler;
 		this.handlers[MESSAGE_TYPE.GAME_PACKET] = this.gamePacketHandler;
 		//this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
@@ -305,6 +305,7 @@ class Net {
 						} else {
 							user = Game.players[op.id].username;
 						}
+						
 						let cleanUser = user.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
 							return '&#' + i.charCodeAt(0) + ';';
 						});
@@ -341,13 +342,11 @@ class Net {
 		//	console.log(id + " : " + net.id)
 			if (id == net.id) {
 				//console.log('skip: ' + id);
-				
-				Game.player.items = update.items;
-                Game.player.pokemon = update.pokemon;
-                Game.player.currency = update.currency;
-                Game.player.activePokemon = update.active_pokemon;
-				Game.player.elo = update.elo;
-				
+				Game.player.items = msg.payload.users[i].items;
+                Game.player.pokemon = msg.payload.users[i].pokemon;
+                Game.player.currency = msg.payload.users[i].currency;
+                Game.player.activePokemon = msg.payload.users[i].active_pokemon;
+				Game.player.elo = msg.payload.users[i].elo;
 				continue;
 			}
 
@@ -377,6 +376,12 @@ class Net {
 
 				if (!player.tweenRunning()) {
 					player.setPos(loc.col, loc.row);
+				} else {
+					player.tween.onComplete.add(function() {
+						player.tween.stop(false);
+						player.setPos(loc.col, loc.row);
+						player.tween.onComplete.removeAll();
+					}, this, 200);
 				}
 
 				continue;
@@ -559,16 +564,7 @@ class Net {
   		this.sendPacket(MESSAGE_TYPE.UPDATE_TEAM, messageObject.payload);
   	}
 
-  	openTeamConsoleHandler(msg) {
-  		
-  		let loc = msg.payload.location;
-
-		if (Game.player.tweenRunning()) {
-			Game.player.tween.stop(false);
-			Game.player.idle();
-			Game.player.setPos(loc.col, loc.row);
-		}
-  		
+  	openTeamConsoleHandler() {
   		// pulls up menu to pick team
   		if (!alreadyRenderingTeamManager) {
   			renderTeamManager();
