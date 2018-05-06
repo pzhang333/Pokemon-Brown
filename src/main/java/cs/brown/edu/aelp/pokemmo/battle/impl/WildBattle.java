@@ -220,6 +220,8 @@ public class WildBattle extends Battle {
 
     this.getPendingBattleUpdate().addSummary(
         new SwitchSummary(turn.getPokemonIn(), turn.getPokemonOut()));
+
+    turn.getPokemonOut().resetStatStages();
   }
 
   public void handleTurn(FightTurn turn) {
