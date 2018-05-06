@@ -53,4 +53,11 @@ public interface SQLBatchSavable {
    */
   public void setChanged(boolean b);
 
+  /**
+   * Whether or not we should try to insert before update.
+   *
+   * @return
+   */
+  public boolean useUpsert();
+
 }

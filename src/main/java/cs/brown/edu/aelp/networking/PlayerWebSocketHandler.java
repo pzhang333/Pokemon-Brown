@@ -25,10 +25,8 @@ import cs.brown.edu.aelp.pokemmo.map.PokeConsole;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -184,11 +182,20 @@ public class PlayerWebSocketHandler {
   private static void handleTrade(Session session, JsonObject payload) {
     int me_id = payload.get("id").getAsInt();
     int other_id = payload.get("other_id").getAsInt();
-    boolean isUser1 = payload.get("starter").getAsBoolean();
     User me = UserManager.getUserById(me_id);
     User other = UserManager.getUserById(other_id);
     if (me == null || me.getSession() != session) {
       session.close();
+      return;
+    }
+    if (me_id == other_id) {
+      if (me.getActiveTrade() != null) {
+        Trade t = me.getActiveTrade();
+        t.setStatus(TRADE_STATUS.CANCELED);
+        PacketSender.sendTradePacket(t.other(me), t);
+        me.setActiveTrade(null);
+        t.other(me).setActiveTrade(null);
+      }
       return;
     }
     if (other == null || !other.isConnected()) {
@@ -199,23 +206,21 @@ public class PlayerWebSocketHandler {
       me.setActiveTrade(null);
       return;
     }
-    // TODO: Make challenge "busy" check for trades too
-    if ((other.getActiveTrade() != null && !other.getActiveTrade().involves(me)
-        || other.getChallenge() != null)) {
+    if (other.isBusy() && (other.getActiveTrade() == null
+        || !other.getActiveTrade().involves(me))) {
       // dummy trade for busy
-      Trade t = new Trade(me, me);
+      Trade t = new Trade(me, other);
       t.setStatus(TRADE_STATUS.BUSY);
       PacketSender.sendTradePacket(me, t);
       me.setActiveTrade(null);
       return;
     }
     if (me.getActiveTrade() != null && !me.getActiveTrade().involves(other)) {
-      // TODO: On disconnect cleanup, clear challenges and trades
       me.kick();
       return;
     }
     Trade t = me.getActiveTrade();
-    if (me.getActiveTrade() == null) {
+    if (t == null) {
       t = new Trade(me, other);
       me.setActiveTrade(t);
       other.setActiveTrade(t);
@@ -224,22 +229,19 @@ public class PlayerWebSocketHandler {
     }
     boolean me_accepted = payload.get("me_accepted").getAsBoolean();
     int me_curr = payload.get("me_currency").getAsInt();
-    Map<Integer, Integer> me_items = new HashMap<>();
     Set<Integer> me_pokemon = new HashSet<>();
     JsonArray pokemon = payload.get("me_pokemon").getAsJsonArray();
     for (JsonElement o : pokemon) {
       me_pokemon.add(o.getAsInt());
     }
-    if (!t.setCurrency(me_curr, isUser1) || !t.setItems(me_items, isUser1)
+    boolean isUser1 = t.getUser1().getId() == me.getId();
+    if (!t.setCurrency(me_curr, isUser1)
         || !t.setPokemon(me_pokemon, isUser1)) {
       t.setStatus(TRADE_STATUS.CANCELED);
       me.kick();
       System.out.printf(
-          "WARNING: %s tried to trade items, pokemon, or currency that they don't have.%n",
+          "WARNING: %s tried to trade pokemon or currency that they don't have.%n",
           me.getUsername());
-    } else {
-      trades.put(other_id, t);
-      trades.put(me_id, t);
     }
     if (me_accepted && t.isSameTrade(payload, isUser1)) {
       t.setAccepted(isUser1);
@@ -386,7 +388,7 @@ public class PlayerWebSocketHandler {
     if (dist < 0 || dist > 8) {
       return;
     }
-    if (u2 == null || u2.getChallenge() != null || u2.isInBattle()) {
+    if (u2 == null || u2.isBusy()) {
       PacketSender.sendChallengeResponse(u1, "busy");
       return;
     }

@@ -67,6 +67,11 @@ public class User extends Trainer implements SQLBatchSavable {
     return super.getPokemonById(id);
   }
 
+  public boolean isBusy() {
+    return !this.isInBattle() && this.getChallenge() == null
+        && this.getActiveTrade() == null;
+  }
+
   public void setChallenge(Challenge c) {
     this.pendingChallenge = c;
   }
@@ -282,6 +287,10 @@ public class User extends Trainer implements SQLBatchSavable {
     if (this.isInBattle()) {
       this.getCurrentBattle().forfeit(this);
     }
+    if (this.getChallenge() != null) {
+      // TODO: FIX THIS
+      this.getChallenge().cancel();
+    }
     // remove them from the tournament
     World w = Main.getWorld();
     if (w.getTournament() != null) {
@@ -339,6 +348,11 @@ public class User extends Trainer implements SQLBatchSavable {
   @Override
   public void setChanged(boolean b) {
     this.changed = b;
+  }
+
+  @Override
+  public boolean useUpsert() {
+    return false;
   }
 
   public static class UserAdapter implements JsonSerializer<User> {

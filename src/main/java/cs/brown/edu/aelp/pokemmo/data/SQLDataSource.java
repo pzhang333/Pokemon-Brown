@@ -398,16 +398,38 @@ public class SQLDataSource implements DataSource {
     try {
       Connection conn = this.getConn();
       StringBuilder q = new StringBuilder();
-      q.append("UPDATE " + object.getTableName() + " SET ");
-      for (String col : object.getUpdatableColumns()) {
-        q.append(col + " = ?, ");
+      if (object.useUpsert()) {
+        List<String> allCols = object.getUpdatableColumns();
+        allCols.addAll(object.getIdentifyingColumns());
+        q.append("INSERT INTO " + object.getTableName() + " (");
+        for (String col : allCols) {
+          q.append(col + ", ");
+        }
+        q.replace(q.length() - 2, q.length(), ") VALUES (");
+        for (String col : allCols) {
+          q.append("?, ");
+        }
+        q.replace(q.length() - 2, q.length(), ") ON CONFLICT DO UPDATE SET (");
+        for (String col : object.getUpdatableColumns()) {
+          q.append(col + ", ");
+        }
+        q.replace(q.length() - 2, q.length(), ") = (");
+        for (String col : object.getUpdatableColumns()) {
+          q.append("?, ");
+        }
+        q.replace(q.length() - 2, q.length(), ");");
+      } else {
+        q.append("UPDATE " + object.getTableName() + " SET ");
+        for (String col : object.getUpdatableColumns()) {
+          q.append(col + " = ?, ");
+        }
+        q.replace(q.length() - 2, q.length(), " ");
+        q.append("WHERE ");
+        for (String col : object.getIdentifyingColumns()) {
+          q.append(col + " = ? AND ");
+        }
+        q.replace(q.length() - 5, q.length(), ";");
       }
-      q.replace(q.length() - 2, q.length(), " ");
-      q.append("WHERE ");
-      for (String col : object.getIdentifyingColumns()) {
-        q.append(col + " = ? AND");
-      }
-      q.replace(q.length() - 4, q.length(), ";");
       return conn.prepareStatement(q.toString());
     } catch (SQLException e) {
       e.printStackTrace();

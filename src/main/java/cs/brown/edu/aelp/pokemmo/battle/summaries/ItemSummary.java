@@ -21,6 +21,7 @@ public class ItemSummary extends BattleSummary {
 
     this.animation = animation;
     this.success = success;
+    this.item = item;
   }
 
 }

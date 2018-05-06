@@ -171,17 +171,22 @@ public final class Main {
       public void run() {
         Collection<User> users = UserManager.getAllUsers();
         Collection<Pokemon> pokemon = new ArrayList<>();
+        Collection<Inventory> inventories = new ArrayList<>();
         for (User u : users) {
           pokemon.addAll(u.getAllPokemon());
+          inventories.add(u.getInventory());
         }
         SQLDataSource data = (SQLDataSource) Main.getDataSource();
         try {
           if (Main.getDataSource() instanceof SQLDataSource) {
             System.out.printf("Saved %d users.%n", data.save(users));
             System.out.printf("Saved %d pokemon.%n", data.save(pokemon));
+            System.out.printf("Saved %d inventories.%n",
+                data.save(inventories));
             UserManager.purgeDisconnectedUsers();
             users.stream().forEach(user -> user.setChanged(false));
             pokemon.stream().forEach(p1 -> p1.setChanged(false));
+            inventories.stream().forEach(i1 -> i1.setChanged(false));
           }
           data.loadLeaderboards();
           System.out.println("Updated leaderboards.");
