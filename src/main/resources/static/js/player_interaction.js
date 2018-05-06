@@ -9,16 +9,21 @@ function playerInteraction() {
 		return;
 	}
 	let player = this;
-	if (pending) {
-		cancelChallengeUI(clicked_player);
-		clicked_player = null;
-		pending = false;
-		return;
+	try {
+		if (pending) {
+			cancelChallengeUI(clicked_player);
+			clicked_player = null;
+			pending = false;
+			return;
+		}
+		if (clicked_player != null) {
+			clicked_player.sprite.challenge.kill();
+			clicked_player = null;
+			return;
+		}
 	}
-	if (clicked_player != null) {
-		clicked_player.sprite.challenge.kill();
-		clicked_player = null;
-		return;
+	catch(err) {
+		console.log(err);
 	}
 	let dist = Math.sqrt(Math.pow(Game.player.x - player.x, 2) + Math.pow(Game.player.y - player.y, 2));
 	if (dist > 5) {
@@ -51,12 +56,16 @@ function challengePlayer() {
 }
 
 function renderChallenge(player) {
-	if (panelMessage != null) {
-		panelMessage.destroy();
-	}
-	if (clicked_player != null) {
-		clicked_player.sprite.challenge.kill();
-		clicked_player = null;
+	try {
+		if (panelMessage != null) {
+			panelMessage.destroy();
+		}
+		if (clicked_player != null) {
+			clicked_player.sprite.challenge.kill();
+			clicked_player = null;
+		}
+	} catch(err) {
+		console.log(err)
 	}
 	if (Battle.inBattle) {
 		net.rejectChallenge(Game.player.id, false);

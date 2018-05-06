@@ -23,6 +23,7 @@ public class PoisonMove extends Move {
   public class PoisonEffect extends Effect {
 
     private Pokemon p;
+    private int turn = 0;
 
     public PoisonEffect(Pokemon p) {
       this.p = p;
@@ -30,6 +31,10 @@ public class PoisonMove extends Move {
 
     @Override
     public void handle(EndOfTurnEvent evt) {
+      this.turn++;
+      if (this.turn == 1) {
+        return;
+      }
       System.out.println("Poison effect is processing end of turn");
       if (p.getStatus() == null || p.getStatus() != Status.POISON) {
         p.getEffectSlot().deregister(this);
@@ -37,10 +42,10 @@ public class PoisonMove extends Move {
       }
       System.out.println("Adding dmg summary for poison.");
       int dmg = (int) p.getMaxHp() / 8;
-      evt.getBattle().getPendingBattleUpdate()
-          .addSummary(new HealthChangeSummary(p, -dmg,
-              String.format("%s took poison damage.", p.toString())));
       p.setHealth(p.getCurrHp() - dmg);
+      evt.getBattle().getPendingBattleUpdate()
+          .addSummary(new HealthChangeSummary(p,
+              String.format("%s took poison damage.", p.toString())));
     }
 
   }

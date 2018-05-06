@@ -285,7 +285,9 @@ Game.loadCurrentChunk = function(clear) {
 		}
 		Game.HUD = game.add.group();
 		
-		
+    	// loading necessary libraries for drawing hud menu
+		Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
+		Game.slickUI.load('ui/kenney/kenney.json');
 		
 		Game.clearPlayers();
 
@@ -312,10 +314,6 @@ Game.loadCurrentChunk = function(clear) {
 		Game.cursors = game.input.keyboard.createCursorKeys();
 
 		Game.chunkId = net.chunkId;
-
-	    // loading necessary libraries for drawing hud menu
-	    Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
-		Game.slickUI.load('ui/kenney/kenney.json');
 	});
 };
 
@@ -369,6 +367,9 @@ Game.drawHud = function() {
 
 
 function drawLeadboard() {
+	if (Battle.inBattle || !Game.ready) {
+		return;
+	}
 	// leaderboard panel
 	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
 	Game.slickUI.add(Game.panel);
@@ -387,6 +388,9 @@ function drawLeadboard() {
 }
 
 function drawBackpack() {
+	if (Battle.inBattle || !Game.ready) {
+		return;
+	}
 	// leaderboard panel
 		
 	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
@@ -443,7 +447,7 @@ function drawBackpack() {
 
 }
 function queueLeaderboard() {
-	if (Battle.inBattle) {
+	if (Battle.inBattle || !Game.ready) {
 		return;
 	}
 	
@@ -470,7 +474,7 @@ function queueLeaderboard() {
 }
 
 function queueBackpack() {
-	if (Battle.inBattle) {
+	if (Battle.inBattle || !Game.ready) {
 		return;
 	}
 	
@@ -497,7 +501,7 @@ function queueBackpack() {
 
 function queueTeam() {
 	
-	if (Battle.inBattle) {
+	if (Battle.inBattle || !Game.ready) {
 		return;
 	}
 	
@@ -512,8 +516,12 @@ function queueTeam() {
         drawTeam();
     } else if (teamDrawn) {
         if (Game.panel.container != undefined) {
-            Battle.clearButtons(Game.pokemonButtons);
-            Game.panel.destroy();
+        	try {
+	            Battle.clearButtons(Game.pokemonButtons);
+	            Game.panel.destroy();
+	        } catch(err) {
+	        	console.log(err);
+	        }
             teamDrawn = false;
         }
     } else {
@@ -523,7 +531,7 @@ function queueTeam() {
 };
 
 async function drawTeam() {
-	if (Battle.inBattle) {
+	if (Battle.inBattle || !Game.ready) {
 		return;
 	}
 	

@@ -17,6 +17,7 @@ import cs.brown.edu.aelp.pokemmo.data.DataSource.AuthException;
 import cs.brown.edu.aelp.pokemmo.data.authentication.User;
 import cs.brown.edu.aelp.pokemmo.data.authentication.UserManager;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
+import cs.brown.edu.aelp.pokemmo.map.Chunk.CHUNK_TYPE;
 import cs.brown.edu.aelp.pokemmo.map.Entity;
 import cs.brown.edu.aelp.pokemmo.map.Location;
 import cs.brown.edu.aelp.pokemmo.map.Path;
@@ -362,6 +363,11 @@ public class PlayerWebSocketHandler {
     User u1 = UserManager.getUserById(id);
     if (u1 == null || u1.getSession() != session) {
       session.close();
+      return;
+    }
+    CHUNK_TYPE t = u1.getLocation().getChunk().getType();
+    if (t == CHUNK_TYPE.HEAL || t == CHUNK_TYPE.PASSIVE) {
+      PacketSender.sendChallengeResponse(u1, "disabled");
       return;
     }
     if (u1.getChallenge() != null) {

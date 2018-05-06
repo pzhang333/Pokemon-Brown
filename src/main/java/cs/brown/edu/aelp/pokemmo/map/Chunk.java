@@ -17,7 +17,8 @@ public class Chunk extends Identifiable {
 
   public enum CHUNK_TYPE {
     DEFAULT,
-    HEAL
+    HEAL,
+    PASSIVE
   }
 
   private final int width;

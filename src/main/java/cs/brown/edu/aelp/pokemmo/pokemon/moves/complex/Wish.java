@@ -40,7 +40,7 @@ public class Wish extends Move {
         int amt = (int) Math.ceil(p.getMaxHp() / 2);
         p.setHealth(p.getCurrHp() + amt);
         event.getBattle().getPendingBattleUpdate()
-            .addSummary(new HealthChangeSummary(p, amt, "Wish came true!"));
+            .addSummary(new HealthChangeSummary(p, "Wish came true!"));
         getEffectSlot().deregister(this);
         return;
       }
@@ -61,7 +61,7 @@ public class Wish extends Move {
         evt.getDefendingPokemon(), this, evt.getBattle().getArena());
 
     evt.getAttackingTrainer().getEffectSlot()
-        .register(new WishEffect(evt.getAttackingTrainer(), 1));
+        .register(new WishEffect(evt.getAttackingTrainer(), 2));
 
     mr.setOutcome(MoveOutcome.NON_ATTACK_SUCCESS);
 
