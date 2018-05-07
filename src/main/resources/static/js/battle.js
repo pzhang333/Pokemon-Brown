@@ -293,7 +293,7 @@ Battle.showItemUsage = function(summary, cb) {
 			try {
 				Battle.drawMessage(summary.message);
 				
-				Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
+				Game.time.events.add(Phaser.Timer.SECOND * 1.5, function() {
 					if (cb != undefined) {
 						cb();
 					}
