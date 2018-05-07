@@ -65,10 +65,8 @@ class Net {
 
 	constructor() {
 
-		//this.host = 'localhost';
-		this.host = '10.38.37.243';
-    	// this.host = '10.38.32.136';
-    	this.port = 4567;
+		this.host = '54.89.219.31';
+    	this.port = 80;
 
 		this.cfg = {
 			url: 'ws://' + this.host + ':' + this.port.toString() + '/game',

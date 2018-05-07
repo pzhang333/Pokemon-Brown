@@ -44,8 +44,6 @@ import java.util.Collection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
 import spark.Request;
@@ -60,7 +58,7 @@ import spark.template.freemarker.FreeMarkerEngine;
 public final class Main {
 
   private static World world = new World();
-  private static final int DEFAULT_PORT = 4567;
+  private static final int DEFAULT_PORT = 80;
   private static ThreadLocal<DataSource> datasrc;
   private static ThreadLocal<Gson> GSON = new ThreadLocal<Gson>() {
     @Override
@@ -101,12 +99,6 @@ public final class Main {
    *          Command line arguments
    */
   private void run(String[] args) {
-
-    // Parse command line arguments
-    OptionParser parser = new OptionParser();
-    parser.accepts("port").withRequiredArg().ofType(Integer.class)
-        .defaultsTo(DEFAULT_PORT);
-    OptionSet options = parser.parse(args);
 
     // ip, port, database, user, pass
     try {
@@ -201,7 +193,7 @@ public final class Main {
     scheduler.scheduleAtFixedRate(save, SAVE_PERIOD, SAVE_PERIOD,
         TimeUnit.SECONDS);
 
-    runSparkServer((int) options.valueOf("port"));
+    runSparkServer(DEFAULT_PORT);
 
     // sending our packet
 
