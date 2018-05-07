@@ -572,6 +572,14 @@ Battle.drawHealthBox = function(pokemon) {
 		width: 125,
 		height: 6
 	});
+
+	let level = pokemon.level;
+	let levelText = game.add.text(pokemon.sprite.x - (125 / 2), (pokemon.sprite.y - (pokemon.sprite.height) - 30) - 35, 'Lvl: ' + level, {
+        font: '25px pixel',
+        fill: '#ffffff'
+	});
+    levelText.stroke = '#000000';
+    levelText.strokeThickness = 5;
 };
 
 Battle.drawForeground = function(key) {
