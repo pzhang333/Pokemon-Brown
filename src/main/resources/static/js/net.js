@@ -252,7 +252,7 @@ class Net {
 
 		//msg = generateFakeGamePacket();
 
-		if (game.state.current != "Game") {
+		if (game.state.current != "Game" || !Game.ready) {
 			return;
 		}
 
