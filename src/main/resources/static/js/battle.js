@@ -203,7 +203,7 @@ Battle.showCapture = function(summary, ballKey, success, cb) {
 	
 	ball.tween = game.add.tween(ball);
 	
-	if (pokemon.id == Battle.frontPokemon.id) {
+	if (pokemon.id == Battle.backPokemon.id) {
 		ball.x = 0;
 	} else {
 		ball.x = game.width;

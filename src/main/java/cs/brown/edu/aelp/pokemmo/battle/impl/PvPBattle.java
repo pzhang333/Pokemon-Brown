@@ -161,7 +161,8 @@ public class PvPBattle extends Battle {
 
     if (item.isPokeball()) {
       getPendingBattleUpdate().addSummary(new ItemSummary(item, false,
-          "You can't use a Pokeball in a PVP Battle!"));
+          other(turn.getTrainer()).getActivePokemon(),
+          "Pokeballs don't work in a PvP battle!"));
       return;
     }
 
@@ -388,6 +389,21 @@ public class PvPBattle extends Battle {
     w.updateElo(true, l.getElo());
     l.updateElo(false, oldWinnerElo);
 
+    Random r = new Random();
+    int neg = r.nextBoolean() ? 1 : -1;
+    int currency = 50 + (neg * r.nextInt(26));
+    if (currency > l.getCurrency()) {
+      currency = l.getCurrency();
+    }
+    l.setCurrency(l.getCurrency() - currency);
+    w.setCurrency(w.getCurrency() + currency);
+    l.sendMessage(
+        String.format("You lost %d coins to %s for losing the battle.%n",
+            currency, w.getUsername()));
+    w.sendMessage(
+        String.format("You gained %d coins from %s for winning the battle.%n",
+            currency, l.getUsername()));
+
     World world = Main.getWorld();
     if (world.getTournament() != null) {
       Tournament tourn = world.getTournament();
@@ -515,8 +531,8 @@ public class PvPBattle extends Battle {
   public void updateXp(Trainer winner, Trainer loser) {
     for (Pokemon winnerP : winner.getTeam()) {
       Double expWon = 0.0;
-      if (!winnerP.isKnockedOut()){
-        for (Pokemon loserP : loser.getTeam()){
+      if (!winnerP.isKnockedOut()) {
+        for (Pokemon loserP : loser.getTeam()) {
           expWon += Pokemon.xpWon(winnerP, loserP);
         }
         expWon *= 1.5;
