@@ -254,7 +254,9 @@ public class PlayerWebSocketHandler {
           me.getUsername());
     }
     System.out.println("Same trade?: " + t.isSameTrade(payload, isUser1));
-    if (me_accepted && t.isSameTrade(payload, isUser1)) {
+    if (!me_accepted) {
+      t.invalidate();
+    } else if (t.isSameTrade(payload, isUser1)) {
       System.out.printf("Setting accepted for %s%n.", me.getUsername());
       t.setAccepted(isUser1);
     }

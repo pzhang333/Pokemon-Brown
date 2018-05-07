@@ -410,6 +410,9 @@ public class PvPBattle extends Battle {
       if (tourn.isParticipating(w)) {
         w.getTeam().forEach(p -> {
           p.fullRestore();
+          for (Move m : p.getMoves()) {
+            m.setPP(m.getPP());
+          }
         });
         tourn.logBattleResult(w, l);
       }
