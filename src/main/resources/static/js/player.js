@@ -81,13 +81,13 @@ class Player {
 	 	this.idle();
 
 	 	if (this.id == Game.player.id) {
-	 		this.usernameSprite = game.add.text(5, -2*16, this.username, {
+	 		this.usernameSprite = game.add.text(8, -2*16, this.username, {
 	 			font: '11px Arial',
 	 			fill: 'blue',
 	 			textAlign: 'center'
 	 		});
 	 	} else {
-	 		this.usernameSprite = game.add.text(5, -2*16, this.username, {
+	 		this.usernameSprite = game.add.text(8, -2*16, this.username, {
 	 			font: '11px Arial',
 	 			fill: 'white',
 	 			textAlign: 'center'

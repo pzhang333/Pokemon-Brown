@@ -173,14 +173,14 @@ public class WildBattle extends Battle {
 
       if (caught) {
         getPendingBattleUpdate()
-            .addSummary(new ItemSummary(item, true, "Caught!"));
+            .addSummary(new ItemSummary(item, true, wild, "Caught!"));
 
         u.addCaughtPokemon(wild);
 
         victory(u);
       } else {
         getPendingBattleUpdate().addSummary(
-            new ItemSummary(item, false, wild.toString() + " escaped!"));
+            new ItemSummary(item, false, wild, wild.toString() + " escaped!"));
       }
 
       return;
@@ -188,7 +188,8 @@ public class WildBattle extends Battle {
 
     if (item.getType() == ItemType.LASSO) {
       getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
-          "Lasso succeeded. Enemy pokemon cannot switch out."));
+          String.format("%s has been lasso'd and cannot switch out.",
+              this.getWildPokemon().toString())));
       return;
     }
 
@@ -386,7 +387,16 @@ public class WildBattle extends Battle {
 
     setBattleState(BattleState.DONE);
 
-    User u = (User) (winner instanceof User ? winner : loser);
+    User u;
+    if (winner instanceof User) {
+      u = (User) winner;
+      int won = new Random().nextInt(25) + 1;
+      u.setCurrency(u.getCurrency() + won);
+      u.sendMessage(String.format(
+          "You earned %d coins for beating a wild Pokemon in a battle.", won));
+    } else {
+      u = (User) loser;
+    }
 
     boolean needsHeal = true;
     for (Pokemon p : u.getTeam()) {
@@ -504,8 +514,8 @@ public class WildBattle extends Battle {
   public void updateXp(Trainer winner, Trainer loser) {
     for (Pokemon winnerP : winner.getTeam()) {
       Double expWon = 0.0;
-      if (!winnerP.isKnockedOut()){
-        for (Pokemon loserP : loser.getTeam()){
+      if (!winnerP.isKnockedOut()) {
+        for (Pokemon loserP : loser.getTeam()) {
           expWon += Pokemon.xpWon(winnerP, loserP);
         }
       }
