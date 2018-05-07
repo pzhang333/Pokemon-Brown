@@ -9,6 +9,7 @@ public class Item {
     MASTER_BALL,
     OVERLOAD,
     FULL_RESTORE,
+    ETHER,
     LASSO
   }
 

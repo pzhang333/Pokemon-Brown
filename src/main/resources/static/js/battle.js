@@ -403,12 +403,12 @@ Battle.preload = function() {
 	game.load.atlasJSONHash('atlas2', 'assets/sprites/pokemon_atlas2.png', 'assets/sprites/pokemon_atlas2.json');
 	game.load.atlasJSONHash('attacks', 'assets/pokemon/attacks.png', 'assets/pokemon/attacks.json');
 
-	game.load.image('pokeball', 'assets/HUD/pokeball.png');
-    game.load.image('greatball', 'assets/HUD/greatball.png');
-    game.load.image('ultraball', 'assets/HUD/ultraball.png');
-    game.load.image('masterball', 'assets/HUD/masterball.png');
-    game.load.image('hyperpotion', 'assets/HUD/hyperpotion.png');
+    game.load.image('pokeball', 'assets/HUD/pokeball.png');
+    game.load.image('ether', 'assets/HUD/ether.png');
+    game.load.image('lasso', 'assets/HUD/lasso.png');
+    game.load.image('overload', 'assets/HUD/overload.png');
     game.load.image('fullrestore', 'assets/HUD/fullrestore.png');
+    game.load.image('masterball', 'assets/HUD/masterball.png');
 
 	game.load.audio('battle', ['assets/audio/battle.mp3']);
 
@@ -763,34 +763,37 @@ Battle.showInv = async function() {
         let sprite;
 
         // If we want a throwing animation: https://www.spriters-resource.com/ds_dsi/pokemondiamondpearl/sheet/6924/
-        let itemId = 0;
+        let itemId;
         if (pos == 0) {
-            text = new SlickUI.Element.Text(50, 0, ucfirst('Pokeball'));
-            count = new SlickUI.Element.Text(50, 15, ucfirst("x"+mapGet(Game.player.items, 0, 0)));
+            text = new SlickUI.Element.Text(50, 0, ('Poke Ball'));
+            count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 0, 0)));
             sprite = game.add.sprite(0, 0, 'pokeball');
-            
+            itemId = 0;
 		} else if (pos == 1) {
-            text = new SlickUI.Element.Text(50, 0, ucfirst('Great Ball'));
-            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
-            sprite = game.add.sprite(0, 0, 'greatball');
+            text = new SlickUI.Element.Text(50, 0, ('Full Restore'));
+            count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 2, 0)));
+            sprite = game.add.sprite(0, 0, 'fullrestore');
+            itemId = 2;
 		} else if (pos == 2) {
-            text = new SlickUI.Element.Text(50, 0, ucfirst('Hyper Potion'));
-            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
-            sprite = game.add.sprite(0, 0, 'hyperpotion');
+            text = new SlickUI.Element.Text(50, 0, ('Overload'));
+            count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 3, 0)));
+            sprite = game.add.sprite(0, 0, 'overload');
+            itemId = 3;
 		} else if (pos == 3){
-            text = new SlickUI.Element.Text(50, 0, ucfirst('Ultra Ball'));
-            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
-            sprite = game.add.sprite(0, 0, 'ultraball');
-		} else if (pos == 4) {
-            text = new SlickUI.Element.Text(50, 0, ucfirst('Master Ball'));
-            count = new SlickUI.Element.Text(50, 15, ucfirst("x" + mapGet(Game.player.items, 1, 0)));
+            text = new SlickUI.Element.Text(50, 0, ('Master Ball'));
+            count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 1, 0)));
             sprite = game.add.sprite(0, 0, 'masterball');
             itemId = 1;
-            
+		} else if (pos == 4) {
+            text = new SlickUI.Element.Text(50, 0, ('PP Restore'));
+            count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 4, 0)));
+            sprite = game.add.sprite(0, 0, 'ether');
+            itemId = 4;
 		} else {
-            text = new SlickUI.Element.Text(50, 0, ucfirst('Full Restore'));
-            count = new SlickUI.Element.Text(50, 15, ucfirst("x0"));
-            sprite = game.add.sprite(0, 0, 'fullrestore');
+            text = new SlickUI.Element.Text(50, 0, ('Lasso'));
+            count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 5, 0)));
+            sprite = game.add.sprite(0, 0, 'lasso');
+            itemId = 5;
 		}
 
 
@@ -816,24 +819,15 @@ Battle.showInv = async function() {
 
 		sprite.scale.set(s, s);
 		sprite.x = x;
+		if (pos == 2){
+			sprite.x = x - 5;
+		}
 		sprite.y = y + 5;
 
 		Battle.invButtons.push(sprite);
         Battle.invButtons.push(itemButton);
         pos++;
     }
-};
-
-Battle.drawItem = function(index) {
-	if (index === 1) {
-
-	} else if (index === 2) {
-
-	} else if (index === 3) {
-
-	} else {
-
-	}
 };
 
 Battle.showTeam = async function() {

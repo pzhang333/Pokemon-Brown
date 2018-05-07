@@ -64,8 +64,8 @@ class Net {
 
 	constructor() {
 
-		// this.host = 'localhost';
-		this.host = '10.38.37.243';
+		 this.host = 'localhost';
+		//this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -588,16 +588,19 @@ class Net {
   	requestTrade(id, other_id) {
   		// initiates change
   		let messageObject = new RequestTradeMessage(id, other_id);
-  		this.sendPacket(MESSAGE_TYPE.TRADE, messageObject.payload);  	
+  		this.sendPacket(MESSAGE_TYPE.TRADE, messageObject.payload);
+  		activeTrade = true;
   	}
 
   	updateOpenTrade(id, other_id, me_accepted, me_currency, me_pokemon, other_currency, other_pokemon) {
   		// initiates change
   		let messageObject = new UpdateTradeMessage(id, other_id, me_accepted, me_currency, me_pokemon, other_currency, other_pokemon);
-  		this.sendPacket(MESSAGE_TYPE.TRADE, messageObject.payload);  	
+  		activeTrade = true;  	
+  		this.sendPacket(MESSAGE_TYPE.TRADE, messageObject.payload);
   	}
 
   	handleTrade(msg) {
+  		console.log("TRADE", msg);
   		let payload = msg.payload;
 
   		if (activeTrade == null) {
@@ -616,19 +619,20 @@ class Net {
 			}
   			// updating active trade
   			let status = payload.status;
-  			if (TRADE_STATUS.OPEN) {
+  			console.log(status);
+  			if (TRADE_STATUS.OPEN == status) {
   				// updating their offer
   				if (Game.player.id == payload.p1_id) {
   					let accepted = payload.p2_accepted;
   					let coins = payload.p2_currency;
   					// note: pokemon are objects
-  					let pokemon = p2_pokemon;
+  					let pokemon = payload.p2_pokemon;
   					renderTradeWindow(pokemon, coins, payload.p2_id);
   				} else if (Game.player.id == payload.p2_id) {
 					let accepted = payload.p1_accepted;
   					let coins = payload.p1_currency;
   					// note: pokemon are objects
-  					let pokemon = p1_pokemon;
+  					let pokemon = payload.p1_pokemon;
   					renderTradeWindow(pokemon, coins, payload.p1_id);
   				} else {
   					console.log("ERROR: Invalid trade packet.");
@@ -636,14 +640,17 @@ class Net {
   			} else if (TRADE_STATUS.BUSY == status) {
   				// display that they are busy
   				renderTradeUpdate("User busy.");
+  				activeTrade = false;
   			} else if (TRADE_STATUS.CANCELED == status) {
   				// display that the trade was cancelled
   				renderTradeUpdate("Trade canceled.");
+  				activeTrade = false;
   			} else if (TRADE_STATUS.COMPLETE) {
-  				// do nothing, menu already is set to be destroyed
+  				activeTrade = false;
   			} else if (TRADE_STATUS.FAILED == status) {
   				// failed trade
   				renderTradeUpdate("Trade failed (insufficient room).");
+  				activeTrade = false;
   			} else {
   				console.log("ERROR: Invalid trade packet.");
   			}
