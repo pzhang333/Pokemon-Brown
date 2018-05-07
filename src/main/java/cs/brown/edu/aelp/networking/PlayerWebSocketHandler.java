@@ -9,6 +9,7 @@ import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Battle.BattleState;
 import cs.brown.edu.aelp.pokemmo.battle.BattleManager;
 import cs.brown.edu.aelp.pokemmo.battle.Item;
+import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.SwitchTurn;
@@ -56,7 +57,8 @@ public class PlayerWebSocketHandler {
     CHALLENGE_RESPONSE,
     UPDATE_ACTIVE_POKEMON,
     UPDATE_TEAM,
-    OPEN_POKE_CONSOLE
+    OPEN_POKE_CONSOLE,
+    BUY_ITEM
   }
 
   public static enum OP_CODES {
@@ -136,6 +138,9 @@ public class PlayerWebSocketHandler {
       break;
     case UPDATE_TEAM:
       handleUpdateTeam(session, payload);
+      break;
+    case BUY_ITEM:
+      handleBuyItem(session, payload);
       break;
     default:
       // something went wrong, we got an unknown message type
@@ -494,5 +499,35 @@ public class PlayerWebSocketHandler {
       u.removeInactivePokemon(p);
       p.setStored(false);
     }
+  }
+
+  private static void handleBuyItem(Session session, JsonObject payload) {
+    int id = payload.get("id").getAsInt();
+    User u = UserManager.getUserById(id);
+    if (u == null || u.getSession() != session) {
+      session.close();
+      return;
+    }
+    int item_id = payload.get("item_id").getAsInt();
+    if (item_id >= ItemType.values().length) {
+      u.kick();
+      System.out.printf("%s tried to buy an invalid item: %d%n",
+          u.getUsername(), item_id);
+      return;
+    }
+    ItemType t = ItemType.values()[item_id];
+    int cost = Item.getCost(t);
+    int amt = payload.get("quantity").getAsInt();
+    int total = cost * amt;
+    // overflow?! :O
+    assert total >= 0;
+    if (total > u.getCurrency()) {
+      u.kick();
+      System.out.printf("%s tried to buy more than they could afford.%n",
+          u.getUsername());
+      return;
+    }
+    u.setCurrency(u.getCurrency() - total);
+    u.getInventory().addItems(item_id, amt);
   }
 }

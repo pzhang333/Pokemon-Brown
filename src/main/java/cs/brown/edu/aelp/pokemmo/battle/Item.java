@@ -19,6 +19,23 @@ public class Item {
     this.id = id;
   }
 
+  public static int getCost(ItemType t) {
+    if (t == ItemType.POKEBALL) {
+      return 50;
+    } else if (t == ItemType.MASTER_BALL) {
+      return 750;
+    } else if (t == ItemType.FULL_RESTORE) {
+      return 300;
+    } else if (t == ItemType.ETHER) {
+      return 200;
+    } else if (t == ItemType.OVERLOAD) {
+      return 150;
+    } else if (t == ItemType.LASSO) {
+      return 250;
+    }
+    throw new IllegalArgumentException("Unknown item");
+  }
+
   public boolean isPokeball() {
     ItemType type = getType();
 
