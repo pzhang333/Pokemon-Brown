@@ -1,16 +1,12 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Item;
+import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
+import cs.brown.edu.aelp.pokemmo.battle.LassoEffect;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
@@ -36,6 +32,12 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class PvPBattle extends Battle {
 
@@ -163,6 +165,20 @@ public class PvPBattle extends Battle {
       return;
     }
 
+    if (item.getType() == ItemType.LASSO) {
+      if (new Random().nextDouble() > 0.3) {
+        Pokemon p = other(turn.getTrainer()).getActivePokemon();
+        p.getEffectSlot().register(new LassoEffect());
+        getPendingBattleUpdate()
+            .addSummary(new ItemSummary(item, true, String.format(
+                "%s has been lasso'd and cannot switch out.", p.toString())));
+      } else {
+        getPendingBattleUpdate().addSummary(
+            new ItemSummary(item, false, "A lasso was thrown, but it missed."));
+      }
+      return;
+    }
+
     super.handleNonPokeballItem(turn);
   }
 
@@ -178,6 +194,14 @@ public class PvPBattle extends Battle {
     // Broadcast switch out
     trainer.getEffectSlot().handle(switchOutEvent);
     trainer.getActivePokemon().getEffectSlot().handle(switchOutEvent);
+
+    if (!switchOutEvent.isAllowed()) {
+      getPendingBattleUpdate()
+          .addSummary(new SwitchSummary(turn.getPokemonOut(),
+              turn.getPokemonOut(), turn.getPokemonOut().toString()
+                  + " tried to switch out but couldn't."));
+      return;
+    }
 
     // Do switch
     trainer.setActivePokemon(turn.getPokemonIn());
@@ -268,8 +292,8 @@ public class PvPBattle extends Battle {
 
         // recoil check
         if (turn.getMove().getFlags().contains(Move.Flags.RECOIL)) {
-          int dmg = (int) turn.getMove().getRecoilPercent()
-              * result.getDamage();
+          int dmg = (int) (turn.getMove().getRecoilPercent()
+              * result.getDamage());
           atkPokemon.setHealth(atkPokemon.getCurrHp() - dmg);
           this.getPendingBattleUpdate().addSummary(new HealthChangeSummary(
               atkPokemon,
@@ -489,6 +513,15 @@ public class PvPBattle extends Battle {
 
   @Override
   public void updateXp(Trainer winner, Trainer loser) {
-
+    for (Pokemon winnerP : winner.getTeam()) {
+      Double expWon = 0.0;
+      if (!winnerP.isKnockedOut()){
+        for (Pokemon loserP : loser.getTeam()){
+          expWon += Pokemon.xpWon(winnerP, loserP);
+        }
+        expWon *= 1.5;
+      }
+      winnerP.addExp(expWon.intValue());
+    }
   }
 }

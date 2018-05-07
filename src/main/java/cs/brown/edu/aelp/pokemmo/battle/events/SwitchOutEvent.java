@@ -8,7 +8,7 @@ import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
 public class SwitchOutEvent extends BattleEvent {
 
   private final Pokemon in;
-
+  private boolean allowed = true;
   private final Pokemon out;
 
   public SwitchOutEvent(Battle battle, Pokemon in, Pokemon out) {
@@ -23,6 +23,14 @@ public class SwitchOutEvent extends BattleEvent {
     for (Effect e : slot.getEffects()) {
       e.handle(this);
     }
+  }
+
+  public void disallow() {
+    this.allowed = false;
+  }
+
+  public boolean isAllowed() {
+    return this.allowed;
   }
 
 }

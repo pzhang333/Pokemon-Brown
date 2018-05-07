@@ -112,6 +112,20 @@ public class SQLDataSource implements DataSource {
     }
   }
 
+  private void loadInventoryForUser(User user)
+      throws IOException, SQLException {
+    try (PreparedStatement p = this.prepStatementFromFile(
+        "src/main/resources/sql/get_inventory_for_user.sql")) {
+      p.setInt(1, user.getId());
+      try (ResultSet rs = p.executeQuery()) {
+        while (rs.next()) {
+          user.getInventory().setItemAmount(rs.getInt("item_id"),
+              rs.getInt("amount"));
+        }
+      }
+    }
+  }
+
   private User loadUser(ResultSet rs) throws SQLException, IOException {
     User user = new User(rs.getInt("id"), rs.getString("username"),
         rs.getString("email"), rs.getString("session_token"));
@@ -120,6 +134,7 @@ public class SQLDataSource implements DataSource {
     Chunk c = Main.getWorld().getChunk(rs.getInt("chunk"));
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
+    loadInventoryForUser(user);
     for (Pokemon pokemon : this.loadPokemonForUser(user)) {
       if (pokemon.isStored()) {
         user.addInactivePokemon(pokemon);
@@ -398,16 +413,42 @@ public class SQLDataSource implements DataSource {
     try {
       Connection conn = this.getConn();
       StringBuilder q = new StringBuilder();
-      q.append("UPDATE " + object.getTableName() + " SET ");
-      for (String col : object.getUpdatableColumns()) {
-        q.append(col + " = ?, ");
+      if (object.useUpsert()) {
+        List<String> allCols = object.getUpdatableColumns();
+        allCols.addAll(object.getIdentifyingColumns());
+        q.append("INSERT INTO " + object.getTableName() + " (");
+        for (String col : allCols) {
+          q.append(col + ", ");
+        }
+        q.replace(q.length() - 2, q.length(), ") VALUES (");
+        for (String col : allCols) {
+          q.append("?, ");
+        }
+        q.replace(q.length() - 2, q.length(), ") ON CONFLICT (");
+        for (String col : object.getIdentifyingColumns()) {
+          q.append(col + ", ");
+        }
+        q.replace(q.length() - 2, q.length(), ") DO UPDATE SET (");
+        for (String col : object.getUpdatableColumns()) {
+          q.append(col + ", ");
+        }
+        q.replace(q.length() - 2, q.length(), ") = (");
+        for (String col : object.getUpdatableColumns()) {
+          q.append("?, ");
+        }
+        q.replace(q.length() - 2, q.length(), ");");
+      } else {
+        q.append("UPDATE " + object.getTableName() + " SET ");
+        for (String col : object.getUpdatableColumns()) {
+          q.append(col + " = ?, ");
+        }
+        q.replace(q.length() - 2, q.length(), " ");
+        q.append("WHERE ");
+        for (String col : object.getIdentifyingColumns()) {
+          q.append(col + " = ? AND ");
+        }
+        q.replace(q.length() - 5, q.length(), ";");
       }
-      q.replace(q.length() - 2, q.length(), " ");
-      q.append("WHERE ");
-      for (String col : object.getIdentifyingColumns()) {
-        q.append(col + " = ? AND");
-      }
-      q.replace(q.length() - 4, q.length(), ";");
       return conn.prepareStatement(q.toString());
     } catch (SQLException e) {
       e.printStackTrace();

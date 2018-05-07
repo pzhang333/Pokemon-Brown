@@ -1,16 +1,11 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
 import cs.brown.edu.aelp.pokemmo.battle.Battle;
 import cs.brown.edu.aelp.pokemmo.battle.Item;
+import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.NullTurn;
@@ -35,6 +30,11 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class WildBattle extends Battle {
 
@@ -183,6 +183,12 @@ public class WildBattle extends Battle {
             new ItemSummary(item, false, wild.toString() + " escaped!"));
       }
 
+      return;
+    }
+
+    if (item.getType() == ItemType.LASSO) {
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
+          "Lasso succeeded. Enemy pokemon cannot switch out."));
       return;
     }
 
@@ -496,6 +502,14 @@ public class WildBattle extends Battle {
 
   @Override
   public void updateXp(Trainer winner, Trainer loser) {
-
+    for (Pokemon winnerP : winner.getTeam()) {
+      Double expWon = 0.0;
+      if (!winnerP.isKnockedOut()){
+        for (Pokemon loserP : loser.getTeam()){
+          expWon += Pokemon.xpWon(winnerP, loserP);
+        }
+      }
+      winnerP.addExp(expWon.intValue());
+    }
   }
 }

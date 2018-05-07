@@ -692,7 +692,7 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   }
 
   public static Integer xpWon(Pokemon winner, Pokemon loser) {
-    Double expGained = ((1.0 * loser.getExpOnDefeat() * loser.getLevel()) / 5)
+    Double expGained = ((1.0 * loser.getExpOnDefeat() * loser.getLevel()) / 5.0)
         * ((Math.pow(2 * loser.getLevel() + 10, 2.5))
             / (Math.pow(winner.getLevel() + loser.getLevel() + 10, 2.5)))
         + 1;
@@ -768,6 +768,11 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
   @Override
   public List<String> getIdentifyingColumns() {
     return Lists.newArrayList("id");
+  }
+
+  @Override
+  public boolean useUpsert() {
+    return false;
   }
 
   public static class PokemonAdapter implements JsonSerializer<Pokemon> {
