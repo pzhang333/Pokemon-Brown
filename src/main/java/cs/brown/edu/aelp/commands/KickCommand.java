@@ -30,7 +30,7 @@ public class KickCommand extends Command {
       System.out.printf("Kicked %s (%d).\n", u.getUsername(), u.getId());
     } catch (NumberFormatException e) {
       System.out
-          .println("ERROR: All inputs must be integers. See 'battle help'.");
+          .println("ERROR: All inputs must be integers. See 'kick help'.");
     }
   }
 

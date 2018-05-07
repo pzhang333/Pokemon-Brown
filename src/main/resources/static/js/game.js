@@ -1,7 +1,24 @@
-
+let currencyTextObj = null;
 let leaderboardDrawn = false;
 let backpackDrawn = false;
 let teamDrawn = false;
+
+// prices
+let pokeballPrice = 50;
+let masterballPrice = 750;
+let fullrestorePrice = 300;
+let etherPrice = 200;
+let overloadPrice = 150;
+let lasooCost = 250;
+
+var itemIdToMap = new Object(); // or var map = {};
+itemIdToMap[0] = pokeballPrice;
+itemIdToMap[1] = masterballPrice;
+itemIdToMap[2] = overloadPrice;
+itemIdToMap[3] = fullrestorePrice;
+itemIdToMap[4] = etherPrice;
+itemIdToMap[5] = lasooCost;
+
 
 var Game = {
 	players: {}
@@ -18,7 +35,7 @@ Game.init = function() {
 Game.shutdown = function() {
 	console.log('test!');
 	game.world.removeAll();
-	
+
 	Game.chunkId = false;
 	Game.player.sprite = undefined;
 	Game.ready = false;
@@ -74,9 +91,11 @@ Game.preload = function() {
     game.load.image('overload', 'assets/HUD/overload.png');
     game.load.image('fullrestore', 'assets/HUD/fullrestore.png');
     game.load.image('masterball', 'assets/HUD/masterball.png');
+    game.load.image('coin_small', 'assets/HUD/coin_small.png');
 
     // loading font assets
-    game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
+    // game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
+    game.load.bitmapFont('nokia16black', 'assets/fonts/nokia16black.png', 'assets/fonts/nokia16black.xml');
 
     // loading buttons
     game.load.image('challenge_button', 'assets/buttons/button_challenge.png');
@@ -95,24 +114,24 @@ Game.create = function() {
 
 	Game.ready = true;
 	game.camera.roundPx = true;
-	
+
 	$("#chat-container").css('width', '300px').css('visibility', 'visible');
-	
+
 	$("#chat-input").on('keypress', function (e) {
          if (e.which === 13) {
 
         	let msg = $(this).val();
-        	
+
         	if (msg.length == 0) {
         		return;
         	}
-        	
+
             $(this).attr("disabled", "disabled");
 
             net.sendPacket(MESSAGE_TYPE.CHAT, {
             	message: msg
             });
-            
+
             $(this).val('');
             $(this).removeAttr("disabled");
          }
@@ -152,7 +171,7 @@ Game.drawLayers = function() {
 		let layerName = Game.layerNames[idx];
 
 		let group = (layerName != 'Top') ? Game.groundMapLayers : Game.highMapLayers;
-		
+
 		Game.map.gameLayers[layerName] = Game.map.createLayer(layerName, 0, 0, group);
 		Game.map.gameLayers[layerName].resizeWorld();
 	}
@@ -160,17 +179,17 @@ Game.drawLayers = function() {
 	Game.map.gameLayers['Base'].inputEnabled = true;
 	Game.map.gameLayers['Base'].events.onInputUp.add(Game.handleMapClick, this);
 	Game.drawHud();
-	
+
 	/*Game.moveGroupTo(game.world, Game.groundMapLayers, 0);
 	Game.moveGroupTo(game.world, Game.entities, 1);
 	Game.moveGroupTo(game.world, Game.highMapLayers, 2);
 	Game.moveGroupTo(game.world, Game.HUD, 200);*/
-	
+
 	//game.world.sendToBack(Game.entities);
 	//game.world.sendToBack(Game.highMapLayers);
 	//game.world.sendToBack(Game.groundMapLayers);
 	/*game.world.bringToTop(Game.entities);
-	
+
 	game.world.bringToTop(Game.highMapLayers);
 	game.world.bringToTop(Game.HUD);*/
 };
@@ -187,7 +206,7 @@ Game.handleMapClick = function(layer, pointer) {
 	if (!Game.playerFrozen) {
 		Game.player.prepareMovement(coords);
 	}
-};	
+};
 
 Game.computeTileCoords = function(x, y){
 	let layer = Game.map.gameLayers['Base'];
@@ -263,37 +282,37 @@ Game.loadCurrentChunk = function(clear) {
 	Game.clearPlayers();
 
 	net.getChunk(function(chunk) {
-		
+
 		if (Game.groundMapLayers != undefined) {
 			Game.groundMapLayers.destroy();
 		}
 		Game.groundMapLayers = game.add.group();
-		
+
 
 		if (Game.entities != undefined) {
 			Game.entities.destroy();
 		}
 		Game.entities = game.add.group();
-		
+
 		if (Game.highMapLayers != undefined) {
 			Game.highMapLayers.destroy();
 		}
 		Game.highMapLayers = game.add.group();
-		
-		
+
+
 		if (Game.HUD != undefined) {
 			Game.HUD.destroy();
 		}
 		Game.HUD = game.add.group();
-		
+
     	// loading necessary libraries for drawing hud menu
 		Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
 		Game.slickUI.load('ui/kenney/kenney.json');
-		
+
 		Game.clearPlayers();
 
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
-	    
+
 		Game.map = game.add.tilemap(chunk.id, 16, 16);
 		Game.map.addTilesetImage('tileset', 'tileset', 16, 16);
 
@@ -328,23 +347,31 @@ Game.drawHud = function() {
     completionSprite.fixedToCamera = true;
     completionSprite.inputEnabled = true;
 
+    // hud white bar behind coins
+    let whiteBar = game.add.graphics(0, 0);
+  	whiteBar.beginFill(0xffffff, 1);
+  	whiteBar.drawRect(Game.map.widthInPixels*0.85, Game.map.heightInPixels-0.53*Game.map.heightInPixels, Game.map.widthInPixels*0.15, Game.map.heightInPixels*0.02);
+  	whiteBar.boundsPadding = 0;
+    whiteBar.fixedToCamera = true;
+    whiteBar.inputEnabled = true;
+
+    // coin icon
+  let coinIcon = game.add.sprite(Game.map.widthInPixels*0.85 + 4, Game.map.heightInPixels-0.53*Game.map.heightInPixels + 4, 'coin');
+  //coinIcon.anchor.setTo(0.5, 0.5);
+  coinIcon.inputEnabled = false;
+  coinIcon.fixedToCamera = true;
+
+    let coinText = game.add.bitmapText(Game.map.widthInPixels*0.85 + 24, Game.map.heightInPixels-0.53*Game.map.heightInPixels + 5, 'nokia16black', 'x'+Game.player.currency, 7.5*2);
+    coinText.inputEnabled = false;
+    coinText.fixedToCamera = true;
+    currencyTextObj = coinText;
+
     // team management icon
     let teamIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/4 - 35, Game.map.heightInPixels-Game.map.heightInPixels/2 + 35, 'pokedex');
     teamIcon.anchor.setTo(0.5, 0.5);
     teamIcon.inputEnabled = true;
     teamIcon.fixedToCamera = true;
     teamIcon.events.onInputDown.add(queueTeam, this);
-
-    // coin icon
-	let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 20, Game.map.heightInPixels-Game.map.heightInPixels/2 + 75, 'coin');
-	coinIcon.anchor.setTo(0.5, 0.5);
-	coinIcon.inputEnabled = false;
-	coinIcon.fixedToCamera = true;
-
-    // coin text
-    let coinText = game.add.bitmapText(Game.map.widthInPixels-Game.map.widthInPixels/4 - 50, Game.map.heightInPixels-Game.map.heightInPixels/2.2 + 25, 'carrier_command','x'+Game.player.currency, 7.5);
-    coinText.inputEnabled = false;
-    coinText.fixedToCamera = true;
 
     // backpack icon
     let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 100, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");
@@ -393,7 +420,7 @@ function drawBackpack() {
 		return;
 	}
 	// leaderboard panel
-		
+
 	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
 	Game.slickUI.add(Game.panel);
 
@@ -404,34 +431,70 @@ function drawBackpack() {
 
 	let pokeball = game.add.sprite(0, 0, 'pokeball');
     pokeball.anchor.setTo(0.5, 0.5);
+    pokeball.inputEnabled = true;
     let pokeballtext = new SlickUI.Element.Text(Game.panel.width/3.8, 58, "x"+mapGet(items, 0, 0));
     pokeballtext.size = 9.5;
+    let pokeballpricetext = new SlickUI.Element.Text(Game.panel.width/9.2, 58+63, "Cost: " + pokeballPrice);
+    pokeballpricetext.size = 9.5;
+    pokeball.events.onInputDown.add(function() {
+    	renderItemPurchase(0);
+    });
 
     let masterball = game.add.sprite(0, 0, 'masterball');
     masterball.anchor.setTo(0.5, 0.5);
+    masterball.inputEnabled = true;
     let masterballtext = new SlickUI.Element.Text(Game.panel.width/3.8, 58 + 100, "x"+mapGet(items, 1, 0));
     masterballtext.size = 9.5;
+    let masterballpricetext = new SlickUI.Element.Text(Game.panel.width/9.2, 58+100+63, "Cost: " + masterballPrice);
+    masterballpricetext.size = 9.5;
+    masterball.events.onInputDown.add(function() {
+    	renderItemPurchase(1);
+    });
 
     let fullrestore = game.add.sprite(0, 0, 'fullrestore');
     fullrestore.anchor.setTo(0.5, 0.5);
+    fullrestore.inputEnabled = true;
     let fullrestoretext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58, "x"+mapGet(items, 3, 0));
     fullrestoretext.size = 9.5;
+    let fullrestorepricetext = new SlickUI.Element.Text(Game.panel.width/9.2+100, 58+63, "Cost: " + fullrestorePrice);
+    fullrestorepricetext.size = 9.5;
+    fullrestore.events.onInputDown.add(function() {
+    	renderItemPurchase(3);
+    });
 
     let overload = game.add.sprite(0, 0, 'overload');
     overload.anchor.setTo(0.5, 0.5);
     overload.scale.setTo(0.2, 0.2);
+    overload.inputEnabled = true;
     let overloadtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58, "x"+mapGet(items, 2, 0));
     overloadtext.size = 9.5;
+    let overloadpricetext = new SlickUI.Element.Text(Game.panel.width/9.2+200, 58+63, "Cost: " + overloadPrice);
+    overloadpricetext.size = 9.5;
+    overload.events.onInputDown.add(function() {
+    	renderItemPurchase(2);
+    });
 
     let ether = game.add.sprite(0, 0, 'ether');
     ether.anchor.setTo(0.5, 0.5);
     let ethertext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58 + 100, "x"+mapGet(items, 4, 0));
     ethertext.size = 9.5;
+    let etherpricetext = new SlickUI.Element.Text(Game.panel.width/9.2+100, 58+100+63, "Cost: " + etherPrice);
+    etherpricetext.size = 9.5;
+    ether.inputEnabled = true;
+    ether.events.onInputDown.add(function() {
+    	renderItemPurchase(4);
+    });
 
     let lasso = game.add.sprite(0, 0, 'lasso');
     lasso.anchor.setTo(0.5, 0.5);
     let lassotext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58 + 100, "x"+mapGet(items, 5, 0));
     lassotext.size = 9.5;
+    let lassopricetext = new SlickUI.Element.Text(Game.panel.width/9.2+200, 58+63+100, "Cost: " + lasooCost);
+    lassopricetext.size = 9.5;
+    lasso.inputEnabled = true;
+    lasso.events.onInputDown.add(function() {
+    	renderItemPurchase(5);
+    });
 
     Game.panel.add(header);
     Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6, Game.panel.height/2.75, pokeball));
@@ -448,13 +511,21 @@ function drawBackpack() {
     Game.panel.add(lassotext);
     Game.panel.add(ethertext)
 
+    Game.panel.add(pokeballpricetext);
+    Game.panel.add(masterballpricetext);
+    Game.panel.add(fullrestorepricetext);
+    Game.panel.add(overloadpricetext);
+    Game.panel.add(etherpricetext);
+    Game.panel.add(lassopricetext);
+
+
 }
 function queueLeaderboard() {
 	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
-	
-	
+
+
 	if (backpackDrawn || teamDrawn) {
 		if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -480,7 +551,7 @@ function queueBackpack() {
 	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
-	
+
     if (leaderboardDrawn || teamDrawn) {
         if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -503,11 +574,11 @@ function queueBackpack() {
 };
 
 function queueTeam() {
-	
+
 	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
-	
+
     if (leaderboardDrawn || backpackDrawn) {
         if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -537,7 +608,7 @@ async function drawTeam() {
 	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
-	
+
     Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, 0, Game.map.widthInPixels/2, game.height - 98);
     Game.slickUI.add(Game.panel);
 
@@ -703,11 +774,11 @@ async function drawTeam() {
 };
 
 function logout() {
-	 
+
 	if (Battle.inBattle) {
 		return;
 	}
-	
+
     console.log('clicked!');
     Cookies.remove("id");
     Cookies.remove("token");

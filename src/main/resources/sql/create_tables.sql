@@ -94,7 +94,7 @@ CREATE SEQUENCE IF NOT EXISTS pokemon_user_id_seq
 -- Name: pokemon_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE pokemon_user_id_seq OWNED BY pokemon.user_id
+ALTER SEQUENCE pokemon_user_id_seq OWNED BY pokemon.user_id;
 
 --
 -- TOC entry 186 (class 1259 OID 17727)

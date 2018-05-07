@@ -15,7 +15,8 @@ const MESSAGE_TYPE = {
     CHALLENGE_RESPONSE: 13,
     UPDATE_ACTIVE_POKEMON: 14,
     UPDATE_TEAM: 15,
-    OPEN_POKE_CONSOLE: 16
+    OPEN_POKE_CONSOLE: 16,
+    PURCHASE_ORDER: 17
 };
 
 const BATTLE_ACTION = {
@@ -84,12 +85,12 @@ class Net {
 		//this.handlers[MESSAGE_TYPE.WILD_ENCOUNTER] = this.wildEncounterPacketHandler;
 		this.handlers[MESSAGE_TYPE.START_BATTLE] = this.startBattleHandler;
 		this.handlers[MESSAGE_TYPE.END_BATTLE] = this.endBattleHandler;
-		this.handlers[MESSAGE_TYPE.BATTLE_TURN_UPDATE] = this.battleUpdateHandler;		
+		this.handlers[MESSAGE_TYPE.BATTLE_TURN_UPDATE] = this.battleUpdateHandler;
 		this.handlers[MESSAGE_TYPE.SERVER_MESSAGE] = function(event) {
 			let cleanMsg = event.payload.message.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
 				return '&#' + i.charCodeAt(0) + ';';
 			});
-			
+
 			this.displayChatMsg(cleanMsg, 'color: darkred; font-weight: bold;');
 		}.bind(this);
 		this.handlers[MESSAGE_TYPE.CHALLENGE_RESPONSE] = this.challengeResponseHandler;
@@ -188,10 +189,10 @@ class Net {
 			if (Battle.showing != undefined) {
 				await Battle.showing;
 			}
-			
+
 			Battle.endBattle();
 		}
-		
+
 		Cookies.set("id", net.id);
 		Cookies.set("token", net.token);
 
@@ -304,8 +305,8 @@ class Net {
 					Game.players[op.id] = player;
 
 				} else if (code == OP_CODES.CHAT_RECEIVED) {
-					
-					
+
+
 					try {
 						let user = "";
 						if (id == Game.player.id) {
@@ -313,7 +314,7 @@ class Net {
 						} else {
 							user = Game.players[op.id].username;
 						}
-						
+
 						let cleanUser = user.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
 							return '&#' + i.charCodeAt(0) + ';';
 						});
@@ -321,7 +322,7 @@ class Net {
 						let cleanMsg = op.message.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
 							return '&#' + i.charCodeAt(0) + ';';
 						});
-						
+
 						net.displayChatMsg('<b>' + cleanUser + ':</b> ' + cleanMsg);
 					} catch(err) {
 						console.log(err);
@@ -355,6 +356,9 @@ class Net {
                 Game.player.currency = msg.payload.users[i].currency;
                 Game.player.activePokemon = msg.payload.users[i].active_pokemon;
 				Game.player.elo = msg.payload.users[i].elo;
+        if (currencyTextObj != null) {
+          currencyTextObj.text = 'x' + Game.player.currency;
+        }
 				continue;
 			}
 
@@ -394,7 +398,7 @@ class Net {
 					if (this.pendingX == loc.col &&  this.pendingY == loc.row) {
 						continue;
 					}
-					
+
 					player.tween.onComplete.add(function() {
 						player.tween.stop(false);
 						player.setPos(loc.col, loc.row);
@@ -465,38 +469,38 @@ class Net {
 		//game.state.start('Battle');
 		//alert('Encountered wild pokemon with id: ' + pokemon.id);
 	}
-	
+
 	displayChatMsg(msg, style) {
 		if (game.state.current != "Game") {
 			return;
 		}
-		
+
 		let chat = $("#chat");
-		
+
 		if (msg.length == 0) {
 			return;
 		}
-		
+
 		let doScroll = false;
 		if (chat.scrollTop() + chat.innerHeight() >= chat[0].scrollHeight) {
 			doScroll = true;
 		}
-			
+
 		if (style == undefined) {
 			style = "";
 		}
-		
+
 		if (chatIdx % 2 != 0) {
 			chat.append('<li class="chat-msg" style="background-color: lightgray;' + style + '">' + msg + '</li>');
 		} else {
 			chat.append('<li class="chat-msg" style="background-color: darkgray;' + style + '">' + msg + '</li>');
 
 		}
-		
+
 		if (doScroll) {
 			chat.scrollTop(chat[0].scrollHeight);
 		}
-	
+
 		chatIdx++;
 	}
 
@@ -566,20 +570,20 @@ class Net {
   	requestChallenge(id, challengedId) {
   		// sends a requesting a p2p battle
   		let messageObject = new RequestChallengeMessage(id, challengedId);
-  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_REQUEST, messageObject.payload);  	
+  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_REQUEST, messageObject.payload);
   	}
 
   	cancelChallenge(id) {
   		// sends a requesting a p2p battle
   		let messageObject = new RequestChallengeMessage(id, -1);
   		console.log(messageObject);
-  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_REQUEST, {id: messageObject.payload.id});  	
+  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_REQUEST, {id: messageObject.payload.id});
   	}
 
   	rejectChallenge(id) {
   		// rejects a p2p battle request
   		let messageObject = new ChallengeResponseMessage(id, false);
-  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_RESPONSE, messageObject.payload);  	
+  		this.sendPacket(MESSAGE_TYPE.CHALLENGE_RESPONSE, messageObject.payload);
   	}
 
   	acceptChallenge(id) {
@@ -605,11 +609,10 @@ class Net {
   	requestTrade(id, other_id) {
   		yourCoinOffer = 0;
   		yourPokemonOffer = [];
-  		lockedIn = false;
   		// initiates change
   		let messageObject = new RequestTradeMessage(id, other_id);
   		if (id != other_id) {
-			renderTradeWindow([], 0, other_id);
+			renderTradeWindow([], 0, other_id, false, false, true);
 		}
   		this.sendPacket(MESSAGE_TYPE.TRADE, messageObject.payload);
   		activeTrade = true;
@@ -622,7 +625,6 @@ class Net {
   	}
 
   	handleTrade(msg) {
-  		console.log("TRADE", msg);
   		let payload = msg.payload;
 
   		if (activeTrade == null) {
@@ -630,20 +632,24 @@ class Net {
 				tradePanel.destroy();
 			}
 			yourCoinOffer = 0;
-  			yourPokemonOffer = [];
- 			lockedIn = false;
+  		yourPokemonOffer = [];
 			// initializing trade
   			activeTrade = true;
   			if (Game.player.id == payload.p1_id) {
-				renderTradeWindow([], 0, payload.p2_id);
+				      renderTradeWindow([], 0, payload.p2_id, false, false, true);
   			} else if (Game.player.id == payload.p2_id) {
-				renderTradeWindow([], 0, payload.p1_id);
+				      renderTradeWindow([], 0, payload.p1_id, false, false, true);
   			} else {
   				console.log("ERROR: Invalid trade packet.");
   			}
 		} else {
 			if (tradePanel != null && tradePanel != undefined) {
-				tradePanel.destroy();
+        try {
+          tradePanel.destroy();
+        } catch(err) {
+          console.log(err);
+        }
+        tradePanel = null;
 			}
   			// updating active trade
   			let status = payload.status;
@@ -655,13 +661,13 @@ class Net {
   					let coins = payload.p2_currency;
   					// note: pokemon are objects
   					let pokemon = payload.p2_pokemon;
-  					renderTradeWindow(pokemon, coins, payload.p2_id, accepted);
+  					renderTradeWindow(pokemon, coins, payload.p2_id, accepted, payload.p1_accepted);
   				} else if (Game.player.id == payload.p2_id) {
 					let accepted = payload.p1_accepted;
   					let coins = payload.p1_currency;
   					// note: pokemon are objects
   					let pokemon = payload.p1_pokemon;
-  					renderTradeWindow(pokemon, coins, payload.p1_id, accepted);
+  					renderTradeWindow(pokemon, coins, payload.p1_id, accepted, payload.p2_accepted);
   				} else {
   					console.log("ERROR: Invalid trade packet.");
   				}
@@ -673,19 +679,25 @@ class Net {
   				// display that the trade was cancelled
   				renderTradeUpdate("Trade canceled.");
   				activeTrade = false;
-  			} else if (TRADE_STATUS.COMPLETE) {
+  			} else if (TRADE_STATUS.COMPLETE == status) {
   				activeTrade = false;
   				console.log("TRADE EXECUTED");
   				Game.playerFrozen = false;
+          destroyAllOverhead(battler);
   			} else if (TRADE_STATUS.FAILED == status) {
   				// failed trade
-  				renderTradeUpdate("Trade failed (insufficient room).");
+  				renderTradeUpdate("Trade failed.");
   				activeTrade = false;
-  				Game.playerFrozen = false;
   			} else {
   				console.log("ERROR: Invalid trade packet.");
   			}
   		}
+  	}
+
+  	purchaseItem(id, item_id, quantity) {
+  		// purchase an item
+   		let messageObject = new ItemPurchaseMessage(id, item_id, quantity);
+  		this.sendPacket(MESSAGE_TYPE.PURCHASE_ORDER, messageObject.payload);
   	}
 }
 

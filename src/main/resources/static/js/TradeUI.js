@@ -1,16 +1,30 @@
 let tradeWindowRowSize = 2;
 let tradeWindowColumnSize = 2;
-let lockedIn = false;
-let coinInputField;
 let activeTrade = null;
 let tradePanel = null;
 let yourCoinOffer = 0;
 let yourPokemonOffer = [];
+let youAccepted = false;
+let otherPlayerPokemon = [];
+let otherPlayerCoins = 0;
+let otherPlayerId = -1;
+let otherPlayerAccepted = false;
 
-function renderTradeWindow(otherPlayerPokemon, otherPlayerCoins, otherPlayerId, otherAccepted) {
+function renderTradeWindow(otherPokemon, otherCoins, otherId, otherAccept, youAccept, first) {
 	// initialization
 
-	let pokemonSelected = 0;
+  youAccepted = false;
+
+  if (first) {
+    yourCoinOffer = 0;
+    yourPokemonOffer = [];
+  }
+
+  otherPlayerPokemon = otherPokemon;
+  otherPlayerCoins = otherCoins;
+  otherPlayerId = otherId;
+  otherPlayerAccepted = otherAccept;
+  youAccepted = youAccept;
 
 	let team = Game.player.pokemon.filter(pokemon => pokemon.stored == false);
 	console.log(team);
@@ -19,7 +33,7 @@ function renderTradeWindow(otherPlayerPokemon, otherPlayerCoins, otherPlayerId, 
 	} catch (err) {
 		tradePanel = null;
 	}
-	
+
 	Game.playerFrozen = true;
 
 	// panel
@@ -43,101 +57,134 @@ function renderTradeWindow(otherPlayerPokemon, otherPlayerCoins, otherPlayerId, 
 	tradePanel.add(new SlickUI.Element.DisplayObject(tradePanel.width-35, 10, xOut));
 
 	// accept trade button
-	let acceptTradeButton = new SlickUI.Element.Button(tradePanel.width/2-tradePanel.width/8, tradePanel.height*0.885, tradePanel.width/4, tradePanel.height/9.2);
+	let acceptTradeButton = new SlickUI.Element.Button(tradePanel.width/4-tradePanel.width/8, tradePanel.height*0.885, tradePanel.width/4, tradePanel.height/9.2);
 	tradePanel.add(acceptTradeButton);
-	acceptTradeButton.add(new SlickUI.Element.Text(0, 0, "Accept Trade")).center();
+  let acceptText = new SlickUI.Element.Text(0, 0, "Accept Trade");
+  acceptTradeButton.add(acceptText)
+  if (youAccepted) {
+    acceptText.text.text = "Cancel";
+    acceptTradeButton.sprite.loadTexture(acceptTradeButton.spriteOn.texture)
+  } else {
+    acceptTradeButton.sprite.loadTexture(acceptTradeButton.spriteOff.texture)
+  }
+  acceptText.center();
 	acceptTradeButton.inputEnabled = true;
 	acceptTradeButton.events.onInputDown.add(function () {
-    	// accept trade
-    	let pokemonIds = yourPokemonOffer.map(index => team[index].id);
-    	let otherPlayerPokemonIds = otherPlayerPokemon.map(pokemon => pokemon.id);
-    	net.updateOpenTrade(Game.player.id, otherPlayerId, true, yourCoinOffer, pokemonIds, otherPlayerCoins, otherPlayerPokemonIds);
-    });
-
-    if (otherAccepted) {
-    	acceptTradeButton.sprite.loadTexture(acceptTradeButton.spriteOn.texture);
+    sendTradeUpdate(!youAccepted)
+    youAccepted = !youAccepted
+    /*if (youAccepted) {
+      acceptText.text.text = "Cancel";
+    } else {
+      acceptText.text.text = "Accept Trade";
     }
+    acceptText.center();*/
+  });
+
+  let otherStatusText = new SlickUI.Element.Text(tradePanel.width*3/4, tradePanel.height*0.905, "Waiting");
+  tradePanel.otherStatusText = otherStatusText;
+  tradePanel.add(otherStatusText)
+  otherStatusText.x = tradePanel.width*3/4 - (otherStatusText.text.width / 2);
+  if (otherPlayerAccepted) {
+    otherStatusText.text.text = "Accepted";
+    otherStatusText.x = tradePanel.width*3/4 - (otherStatusText.text.width / 2);
+  }
 
 	// core panels
 	let yourPanel = new SlickUI.Element.Panel(tradePanel.width/50, tradePanel.height/10, tradePanel.width/2.1, tradePanel.height/1.3);
 	tradePanel.add(yourPanel);
 	let otherPanel = new SlickUI.Element.Panel(tradePanel.width/1.98, tradePanel.height/10, tradePanel.width/2.1, tradePanel.height/1.3);
 	tradePanel.add(otherPanel);
-	renderTradeWindowHelper(0, yourPokemonOffer, yourPanel, team, pokemonSelected, true, otherPlayerCoins, otherPlayerId, otherPlayerPokemon);
-	renderTradeWindowHelper(0, yourPokemonOffer, otherPanel, otherPlayerPokemon, pokemonSelected, false, otherPlayerCoins, otherPlayerId, otherPlayerPokemon);
+	renderTradeWindowHelper(0, yourPanel, true);
+	renderTradeWindowHelper(0, otherPanel, false);
 }
 
-function renderTradeWindowHelper(startIndex, selectedPokemon, panel, team, pokemonSelected, yourMenu, otherPlayerCoins, otherPlayerId, otherPlayerPokemon) {
+function sendTradeUpdate(accepted) {
+  // send update packet
+    let pokemonIds = yourPokemonOffer.map(index => Game.player.pokemon.filter(pokemon => pokemon.stored == false)[index].id);
+    let otherPlayerPokemonIds = otherPlayerPokemon.map(pokemon => pokemon.id);
+    net.updateOpenTrade(Game.player.id, otherPlayerId, accepted, yourCoinOffer, pokemonIds, otherPlayerCoins, otherPlayerPokemonIds);
+}
+
+function renderTradeWindowHelper(startIndex, panel, yourMenu) {
+  let team;
+  if (yourMenu) {
+    team = Game.player.pokemon.filter(pokemon => pokemon.stored == false);
+  } else {
+    team = otherPlayerPokemon;
+  }
 	// panel headers
 	let header;
 	if (yourMenu) {
 		header = new SlickUI.Element.Text(0 , 10, "Your offer:");
-		let updateTradeButton = new SlickUI.Element.Button(panel.width/2, panel.height*0.85, panel.width/2.2, panel.height/7.5);
-		panel.add(updateTradeButton);
-		updateTradeButton.add(new SlickUI.Element.Text(0, 0, "Lock Offer")).center();
-		if (lockedIn){
-			updateTradeButton.sprite.loadTexture(updateTradeButton.spriteOn.texture);
-		}
-		updateTradeButton.inputEnabled = true;
-		updateTradeButton.events.onInputUp.add(function () {
-			if (lockedIn){
-				updateTradeButton.sprite.loadTexture(updateTradeButton.spriteOff.texture);
-				coinInputField.inputEnabled = true;
-			} else {
-				updateTradeButton.sprite.loadTexture(updateTradeButton.spriteOn.texture);
-				coinInputField.inputEnabled = false;
-				yourCoinOffer = coinInputField.value;
-				if (yourCoinOffer == "") {
-					yourCoinOffer = 0;
-				}		
-				// send update packet
-    			let pokemonIds = yourPokemonOffer.map(index => team[index].id);
-		    	let otherPlayerPokemonIds = otherPlayerPokemon.map(pokemon => pokemon.id);    			
-		    	net.updateOpenTrade(Game.player.id, otherPlayerId, false, yourCoinOffer, pokemonIds, otherPlayerCoins, otherPlayerPokemonIds);
-    		}
-    		lockedIn = !lockedIn;
-    	});
 
+    // page changers
+ 		let upArrowSmall = game.add.sprite(0, 0, 'up_arrow');
+    upArrowSmall.scale.setTo(0.5);
+ 		let downArrowSmall = game.add.sprite(0, 0, 'down_arrow');
+    downArrowSmall.scale.setTo(0.5);
 
+  	// coin
+  	let coin = game.add.sprite(0, 0, 'coin_trade');
+    let coinObj = new SlickUI.Element.DisplayObject(0, panel.height*0.843, coin)
+  	panel.add(coinObj);
+    let coinText = new SlickUI.Element.Text(0, panel.height*0.87, "x" + yourCoinOffer)
+    panel.add(coinText);
+    let coinUp = new SlickUI.Element.DisplayObject(0, 0, upArrowSmall);
+    let coinDown = new SlickUI.Element.DisplayObject(0, 0, downArrowSmall);
+    panel.add(coinUp);
+    panel.add(coinDown);
+    coinObj.x = (panel.width / 2) - ((coinObj.sprite.width + 3 + coinText.text.textWidth + 3 + coinUp.sprite.width) / 2)
+    coinText.x = coinObj._x + 3 + coinObj.sprite.width
+    coinUp.x = coinText.x + coinText.text.textWidth + 6
+    coinDown.x = coinUp._x
+    coinUp.y = coinObj._y + (coinObj.sprite.height / 2) - coinUp.sprite.height - 3
+    coinDown.y = coinUp._y + coinUp.sprite.height + 6
 
-    	// coin
-    	let coin = game.add.sprite(0, 0, 'coin_trade');
-    	panel.add(new SlickUI.Element.DisplayObject(10, panel.height*0.843, coin));
-		// coin input field
- 		coinInputField = game.add.inputField(0, 0, {
- 			width: 40,
- 			padding: 5,
- 			fill: '#000000',
- 			stroke: '#000000',
- 			backgroundColor: '#ffffff',
- 			borderWidth: 2,
- 			borderColor: '#919191',
- 			borderRadius: 3,	
- 			textAlign: 'center',
- 			font: '18px Arial',
- 			placeHolder: yourCoinOffer,
- 			placeHolderColor: '#000000',
- 			cursorColor: '#000000'
- 		});
+    upArrowSmall.inputEnabled = true;
+    downArrowSmall.inputEnabled = true;
 
- 		panel.add(new SlickUI.Element.DisplayObject(75, panel.height*0.863, coinInputField));
- 		panel.add(new SlickUI.Element.Text(58, panel.height*0.87, "x"));
+    upArrowSmall.events.onInputUp.add(function () {
+      if (yourCoinOffer < 100) {
+        yourCoinOffer += 5;
+      } else if (yourCoinOffer < 500) {
+        yourCoinOffer += 25;
+      } else {
+        yourCoinOffer += 50;
+      }
+      yourCoinOffer = Math.max(0, yourCoinOffer)
+      yourCoinOffer = Math.min(yourCoinOffer, Game.player.currency)
+      sendTradeUpdate(false);
+    });
 
- 		// page changers
- 		let upArrow = game.add.sprite(0, 0, 'up_arrow');
- 		let downArrow = game.add.sprite(0, 0, 'down_arrow');
+    downArrowSmall.events.onInputUp.add(function () {
+      if (yourCoinOffer < 100) {
+        yourCoinOffer -= 5;
+      } else if (yourCoinOffer < 500) {
+        yourCoinOffer -= 25;
+      } else {
+        yourCoinOffer -= 50;
+      }
+      yourCoinOffer = Math.max(0, yourCoinOffer)
+      yourCoinOffer = Math.min(yourCoinOffer, Game.player.currency)
+      sendTradeUpdate(false);
+    });
+
+    // page changers
+    let upArrow = game.add.sprite(0, 0, 'up_arrow');
+    let downArrow = game.add.sprite(0, 0, 'down_arrow');
+
  		downArrow.inputEnabled = true;
  		upArrow.inputEnabled = true;
  		downArrow.events.onInputUp.add(function () {
     	// scroll down
     	if (startIndex+tradeWindowRowSize*tradeWindowColumnSize < team.length) {
-    		renderTradeWindowHelper(startIndex+tradeWindowRowSize*tradeWindowColumnSize, selectedPokemon, panel, team, pokemonSelected, yourMenu, otherPlayerCoins, otherPlayerId, otherPlayerPokemon);
+    		renderTradeWindowHelper(startIndex+tradeWindowRowSize*tradeWindowColumnSize, panel, yourMenu);
     	}
     });
  		upArrow.events.onInputUp.add(function () {
     	// scroll up
     	if (startIndex-tradeWindowRowSize*tradeWindowColumnSize >= 0) {
-    		renderTradeWindowHelper(startIndex-tradeWindowRowSize*tradeWindowColumnSize, selectedPokemon, panel, team, pokemonSelected, yourMenu, otherPlayerCoins, otherPlayerId, otherPlayerPokemon);
+    		renderTradeWindowHelper(startIndex-tradeWindowRowSize*tradeWindowColumnSize, panel, yourMenu);
     	}
     });
 
@@ -147,8 +194,8 @@ function renderTradeWindowHelper(startIndex, selectedPokemon, panel, team, pokem
  		header = new SlickUI.Element.Text(0, 10, "Their offer:");
     	// coin
     	let coin = game.add.sprite(0, 0, 'coin_trade');
-    	panel.add(new SlickUI.Element.DisplayObject(panel.width/2-panel.width/7, panel.height*0.843, coin)); 
- 		panel.add(new SlickUI.Element.Text(panel.width/1.97, panel.height*0.87, "x" + otherPlayerCoins));    
+    	panel.add(new SlickUI.Element.DisplayObject(panel.width/2-panel.width/7, panel.height*0.843, coin));
+ 		panel.add(new SlickUI.Element.Text(panel.width/1.97, panel.height*0.87, "x" + otherPlayerCoins));
  	}
 
  	panel.add(header).centerHorizontally();
@@ -171,52 +218,27 @@ function renderTradeWindowHelper(startIndex, selectedPokemon, panel, team, pokem
 					pokemon.anchor.setTo(0.5, 0.5);
 
 					if (yourMenu) {
-						if (selectedPokemon.includes(tradeWindowRowSize*i + k + startIndex)) {
+						if (yourPokemonOffer.includes(tradeWindowRowSize*i + k + startIndex)) {
 							button.sprite.loadTexture(button.spriteOn.texture);
-						} 
+						}
 						button.events.onInputDown.add(function () {
-							if (pokemonSelected >= 4 && !selectedPokemon.includes(tradeWindowRowSize*i + k + startIndex)){
-								if (!lockedIn) {
-									button.sprite.loadTexture(button.spriteOff.texture);
-								} else {
-									button.sprite.loadTexture(button.spriteOn.texture);
-								}
-							} else {
-								if (lockedIn && selectedPokemon.includes(tradeWindowRowSize*i + k + startIndex)) {
-									button.sprite.loadTexture(button.spriteOn.texture);
-								} else if (lockedIn) {
-									button.sprite.loadTexture(button.spriteOff.texture);
-								}
-							}
-							}, this);
-
-						button.events.onInputUp.add(function () {
-							if (selectedPokemon.includes(tradeWindowRowSize*i + k + startIndex)) {
-								if(!lockedIn) {
-									button.sprite.loadTexture(button.spriteOff.texture);
-									selectedPokemon.splice(selectedPokemon.indexOf(tradeWindowRowSize*i + k + startIndex), 1);
-									pokemonSelected--;
-								} else {
-									button.sprite.loadTexture(button.spriteOn.texture);
-								}
-							} else if (pokemonSelected < 4){
-								if(!lockedIn) {
-									button.sprite.loadTexture(button.spriteOn.texture);
-									selectedPokemon.push(tradeWindowRowSize*i + k + startIndex);
-									pokemonSelected++;
-								} else {
-									button.sprite.loadTexture(button.spriteOff.texture);
-								}
-							}
+              let changed = false;
+              if (!yourPokemonOffer.includes(tradeWindowRowSize*i + k + startIndex)) {
+                button.sprite.loadTexture(button.spriteOn.texture);
+                yourPokemonOffer.push(tradeWindowRowSize*i + k + startIndex);
+                changed = true;
+              } else if (yourPokemonOffer.length <= 4) {
+                button.sprite.loadTexture(button.spriteOff.texture);
+                yourPokemonOffer.splice(yourPokemonOffer.indexOf(tradeWindowRowSize*i + k + startIndex), 1);
+                changed = true;
+              }
+              if (changed) {
+                sendTradeUpdate(false);
+              }
 						}, this);
-					} else {
-						button.events.onInputDown.add(function () {
-							button.sprite.loadTexture(button.spriteOff.texture);
-						});
-					}
+          }
 
 					let level = new SlickUI.Element.Text(button.width/1.5, button.height/2.75, "lvl " + pok.level);
-
 
 					scaleFont(button, pok.nickname, 16)
 
