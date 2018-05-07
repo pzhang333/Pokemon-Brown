@@ -188,8 +188,11 @@ public class PlayerWebSocketHandler {
       session.close();
       return;
     }
+    System.out.printf("%s sent a trade packet.%n", me.getUsername());
     if (me_id == other_id) {
+      System.out.printf("%s send a cancel trade packet.%n", me.getUsername());
       if (me.getActiveTrade() != null) {
+        System.out.printf("Canceling his trade%n");
         Trade t = me.getActiveTrade();
         t.setStatus(TRADE_STATUS.CANCELED);
         PacketSender.sendTradePacket(t.other(me), t);
@@ -199,6 +202,7 @@ public class PlayerWebSocketHandler {
       return;
     }
     if (other == null || !other.isConnected()) {
+      System.out.printf("other is null or disconnected, canceling%n");
       // dummy trade for canceling
       Trade t = new Trade(me, me);
       t.setStatus(TRADE_STATUS.CANCELED);
@@ -208,6 +212,7 @@ public class PlayerWebSocketHandler {
     }
     if (other.isBusy() && (other.getActiveTrade() == null
         || !other.getActiveTrade().involves(me))) {
+      System.out.printf("%s is busy%n", other.getUsername());
       // dummy trade for busy
       Trade t = new Trade(me, other);
       t.setStatus(TRADE_STATUS.BUSY);
@@ -221,12 +226,14 @@ public class PlayerWebSocketHandler {
     }
     Trade t = me.getActiveTrade();
     if (t == null) {
+      System.out.printf("Active trade was null, creating a new one%n");
       t = new Trade(me, other);
       me.setActiveTrade(t);
       other.setActiveTrade(t);
       PacketSender.sendTradePacket(other, t);
       return;
     }
+    System.out.println("Made it past all initial checks");
     boolean me_accepted = payload.get("me_accepted").getAsBoolean();
     int me_curr = payload.get("me_currency").getAsInt();
     Set<Integer> me_pokemon = new HashSet<>();
@@ -243,11 +250,17 @@ public class PlayerWebSocketHandler {
           "WARNING: %s tried to trade pokemon or currency that they don't have.%n",
           me.getUsername());
     }
+    System.out.println("Same trade?: " + t.isSameTrade(payload, isUser1));
     if (me_accepted && t.isSameTrade(payload, isUser1)) {
+      System.out.printf("Setting accepted for %s%n.", me.getUsername());
       t.setAccepted(isUser1);
     }
-    PacketSender.sendTradePacket(me, t);
-    PacketSender.sendTradePacket(other, t);
+    if (t.getStatus() != TRADE_STATUS.COMPLETE
+        && t.getStatus() != TRADE_STATUS.FAILED) {
+      System.out.println("Not yet complete.");
+      PacketSender.sendTradePacket(me, t);
+      PacketSender.sendTradePacket(other, t);
+    }
   }
 
   private static void handleClientBattleUpdate(Session session,

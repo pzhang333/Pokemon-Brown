@@ -112,6 +112,20 @@ public class SQLDataSource implements DataSource {
     }
   }
 
+  private void loadInventoryForUser(User user)
+      throws IOException, SQLException {
+    try (PreparedStatement p = this.prepStatementFromFile(
+        "src/main/resources/sql/get_inventory_for_user.sql")) {
+      p.setInt(1, user.getId());
+      try (ResultSet rs = p.executeQuery()) {
+        while (rs.next()) {
+          user.getInventory().setItemAmount(rs.getInt("item_id"),
+              rs.getInt("amount"));
+        }
+      }
+    }
+  }
+
   private User loadUser(ResultSet rs) throws SQLException, IOException {
     User user = new User(rs.getInt("id"), rs.getString("username"),
         rs.getString("email"), rs.getString("session_token"));
@@ -120,6 +134,7 @@ public class SQLDataSource implements DataSource {
     Chunk c = Main.getWorld().getChunk(rs.getInt("chunk"));
     Location loc = new Location(c, rs.getInt("row"), rs.getInt("col"));
     user.setLocation(loc);
+    loadInventoryForUser(user);
     for (Pokemon pokemon : this.loadPokemonForUser(user)) {
       if (pokemon.isStored()) {
         user.addInactivePokemon(pokemon);
@@ -409,7 +424,11 @@ public class SQLDataSource implements DataSource {
         for (String col : allCols) {
           q.append("?, ");
         }
-        q.replace(q.length() - 2, q.length(), ") ON CONFLICT DO UPDATE SET (");
+        q.replace(q.length() - 2, q.length(), ") ON CONFLICT (");
+        for (String col : object.getIdentifyingColumns()) {
+          q.append(col + ", ");
+        }
+        q.replace(q.length() - 2, q.length(), ") DO UPDATE SET (");
         for (String col : object.getUpdatableColumns()) {
           q.append(col + ", ");
         }

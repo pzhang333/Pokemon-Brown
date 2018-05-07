@@ -8,7 +8,8 @@ public class Item {
     POKEBALL,
     MASTER_BALL,
     OVERLOAD,
-    FULL_RESTORE
+    FULL_RESTORE,
+    LASSO
   }
 
   private final int id;

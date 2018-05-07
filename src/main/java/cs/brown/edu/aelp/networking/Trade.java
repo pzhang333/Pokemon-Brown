@@ -40,6 +40,10 @@ public class Trade {
     this.player2 = p2;
   }
 
+  public TRADE_STATUS getStatus() {
+    return this.status;
+  }
+
   public void setStatus(TRADE_STATUS s) {
     this.status = s;
   }
@@ -79,7 +83,7 @@ public class Trade {
       for (Pokemon p : this.p1PokemonOffer) {
         p.setOwner(this.player2);
         this.player2.addPokemonToTeam(p);
-        this.player1.addPokemonToTeam(p);
+        this.player1.removePokemonFromTeam(p);
       }
       if (!this.player1.getActivePokemon().getOwner().equals(this.player1)) {
         this.player1.setActivePokemon(this.player1.getTeam().get(0));
@@ -93,6 +97,14 @@ public class Trade {
     PacketSender.sendTradePacket(this.player2, this);
     this.player1.setActiveTrade(null);
     this.player2.setActiveTrade(null);
+    System.out.printf("Completed trade between %s and %s.%n",
+        this.player1.getUsername(), player2.getUsername());
+    System.out.printf("%s gave away %d coins and %d pokemon.%n",
+        player1.getUsername(), this.p1CurrencyOffer,
+        this.p1PokemonOffer.size());
+    System.out.printf("%s gave away %d coins and %d pokemon.%n",
+        player2.getUsername(), this.p2CurrencyOffer,
+        this.p2PokemonOffer.size());
   }
 
   public boolean involves(User u) {
@@ -112,36 +124,43 @@ public class Trade {
 
   public boolean setCurrency(int curr, boolean user1) {
     User u = user1 ? this.player1 : this.player2;
-    if (u.getCurrency() < curr) {
+    if (u.getCurrency() < curr || curr < 0
+        || other(u).getCurrency() + curr < 0) {
       return false;
     }
-    if (user1) {
+    if (user1 && this.p1CurrencyOffer != curr) {
       this.p1CurrencyOffer = curr;
-    } else {
+      this.invalidate();
+    } else if (!user1 && this.p2CurrencyOffer != curr) {
       this.p2CurrencyOffer = curr;
+      this.invalidate();
     }
-    this.invalidate();
     return true;
   }
 
   public boolean setPokemon(Set<Integer> pokemon, boolean user1) {
-    User u = user1 ? this.player1 : this.player1;
+    User u = user1 ? this.player1 : this.player2;
+    System.out.println("Setting pokemon for user1: " + user1);
     if (pokemon.size() >= 5) {
+      System.out.println(pokemon.size() + " is too many");
       return false;
     }
     for (int id : pokemon) {
+      System.out.println("Checking pokemon id: " + id);
       if (u.getPokemonById(id) == null || u.getPokemonById(id).isStored()) {
+        System.out.println("Stored: " + u.getPokemonById(id).isStored());
         return false;
       }
     }
     Set<Pokemon> newPokemon = pokemon.stream().map(id -> u.getPokemonById(id))
         .collect(Collectors.toSet());
-    if (user1) {
+    if (user1 && !this.p1PokemonOffer.equals(newPokemon)) {
       this.p1PokemonOffer = newPokemon;
-    } else {
+      this.invalidate();
+    } else if (!user1 && !this.p2PokemonOffer.equals(newPokemon)) {
       this.p2PokemonOffer = newPokemon;
+      this.invalidate();
     }
-    this.invalidate();
     return true;
   }
 
@@ -153,14 +172,14 @@ public class Trade {
     JsonArray pokemon1;
     JsonArray pokemon2;
     if (user1) {
-      id1 = o.get("me_id").getAsInt();
+      id1 = o.get("id").getAsInt();
       id2 = o.get("other_id").getAsInt();
       curr1 = o.get("me_currency").getAsInt();
       curr2 = o.get("other_currency").getAsInt();
       pokemon1 = o.get("me_pokemon").getAsJsonArray();
       pokemon2 = o.get("other_pokemon").getAsJsonArray();
     } else {
-      id2 = o.get("me_id").getAsInt();
+      id2 = o.get("id").getAsInt();
       id1 = o.get("other_id").getAsInt();
       curr2 = o.get("me_currency").getAsInt();
       curr1 = o.get("other_currency").getAsInt();

@@ -9,11 +9,11 @@ public class ItemTurn extends Turn {
 
   public ItemTurn(Trainer trainer, Item item) {
     super(trainer, Turn.Action.USE_ITEM);
-
     this.item = item;
   }
 
   public Item getItem() {
     return item;
   }
+
 }

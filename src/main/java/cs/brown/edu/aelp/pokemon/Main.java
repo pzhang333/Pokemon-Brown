@@ -181,7 +181,7 @@ public final class Main {
           if (Main.getDataSource() instanceof SQLDataSource) {
             System.out.printf("Saved %d users.%n", data.save(users));
             System.out.printf("Saved %d pokemon.%n", data.save(pokemon));
-            System.out.printf("Saved %d inventories.%n",
+            System.out.printf("Saved %d inventory entries.%n",
                 data.save(inventories));
             UserManager.purgeDisconnectedUsers();
             users.stream().forEach(user -> user.setChanged(false));

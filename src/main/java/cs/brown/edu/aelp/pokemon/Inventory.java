@@ -78,6 +78,7 @@ public class Inventory implements SQLBatchSavable {
       p.setInt(1, this.items.get(item));
       p.setInt(2, this.owner.getId());
       p.setInt(3, item);
+      p.setInt(4, this.items.get(item));
       p.addBatch();
     }
   }
