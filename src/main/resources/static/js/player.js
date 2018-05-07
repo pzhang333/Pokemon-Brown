@@ -241,6 +241,7 @@ class Player {
 	 * dir 		- 'left', 'right', 'up', or 'down'.
 	 */
 	 step(dir) {
+	 	return;
 	 	if (debounce(this, 'lastStep', 50)) {
 	 		return;
 	 	}

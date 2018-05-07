@@ -129,6 +129,10 @@ public class Trade {
       System.out.printf("%s gave away %d coins and %d pokemon.%n",
           player2.getUsername(), this.p2CurrencyOffer,
           this.p2PokemonOffer.size());
+      this.player1.sendMessage(String.format("You completed a trade with %s!",
+          this.player2.getUsername()));
+      this.player2.sendMessage(String.format("You completed a trade with %s!",
+          this.player1.getUsername()));
     }
     PacketSender.sendTradePacket(this.player1, this);
     PacketSender.sendTradePacket(this.player2, this);
