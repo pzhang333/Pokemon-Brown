@@ -54,8 +54,8 @@ Battle.showKO = function(pokemon) {
 		pokemon.healthbar.healthBar.destroy();
 		pokemon.sprite.kill();
 	});
-
 	tween.start();
+    pokemon.levelText.destroy();
 };
 
 Battle.setHealth = function(pokemon, health) {
@@ -368,6 +368,7 @@ Battle.switchOut = function(pokemon, cb) {
 
 	tween.onComplete.add(function () {
 		pokemon.healthbar.destroy();
+		pokemon.levelText.destroy();
 		pokemon.sprite.kill();
 
 		if (cb != undefined) {
@@ -574,12 +575,12 @@ Battle.drawHealthBox = function(pokemon) {
 	});
 
 	let level = pokemon.level;
-	let levelText = game.add.text(pokemon.sprite.x - (125 / 2), (pokemon.sprite.y - (pokemon.sprite.height) - 30) - 35, 'Lvl: ' + level, {
+	pokemon.levelText = game.add.text(pokemon.sprite.x - (125 / 2), (pokemon.sprite.y - (pokemon.sprite.height) - 30) - 35, 'Lvl: ' + level, {
         font: '25px pixel',
         fill: '#ffffff'
 	});
-    levelText.stroke = '#000000';
-    levelText.strokeThickness = 5;
+    pokemon.levelText.stroke = '#000000';
+    pokemon.levelText.strokeThickness = 5;
 };
 
 Battle.drawForeground = function(key) {
