@@ -329,7 +329,7 @@ Game.loadCurrentChunk = function(clear) {
 		Game.player.initSprite();
 		Game.player.setVisible();
 		Game.player.setCameraFocus(Game.camera);
-		Game.clearPlayers();
+		//Game.clearPlayers();
 
 		Game.cursors = game.input.keyboard.createCursorKeys();
 
