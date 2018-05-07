@@ -529,8 +529,10 @@ class Net {
   			renderChallengeUpdate("Challenge canceled.");
   		} else if (payload.reason == "busy") {
   			renderChallengeUpdate("Challenge busy.");
-  		} else {
+  		} else if (payload.reason == "expired") {
   			renderChallengeUpdate("Challenge expired.");
+  		} else {
+  			renderChallengeUpdate("Challenging disabled.");
   		}
   	}
 
@@ -659,10 +661,12 @@ class Net {
   			} else if (TRADE_STATUS.COMPLETE) {
   				activeTrade = false;
   				console.log("TRADE EXECUTED");
+  				Game.playerFrozen = false;
   			} else if (TRADE_STATUS.FAILED == status) {
   				// failed trade
   				renderTradeUpdate("Trade failed (insufficient room).");
   				activeTrade = false;
+  				Game.playerFrozen = false;
   			} else {
   				console.log("ERROR: Invalid trade packet.");
   			}

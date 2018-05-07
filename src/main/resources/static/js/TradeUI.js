@@ -19,6 +19,8 @@ function renderTradeWindow(otherPlayerPokemon, otherPlayerCoins, otherPlayerId, 
 	} catch (err) {
 		tradePanel = null;
 	}
+	
+	Game.playerFrozen = true;
 
 	// panel
 	tradePanel = new SlickUI.Element.Panel(Game.map.widthInPixels/6, Game.map.heightInPixels/25, Game.map.widthInPixels/1.5, Game.map.heightInPixels/2.3);
@@ -31,9 +33,10 @@ function renderTradeWindow(otherPlayerPokemon, otherPlayerCoins, otherPlayerId, 
 	let xOut = game.add.sprite(0, 0, 'x_icon');
 	xOut.inputEnabled = true;
 	xOut.events.onInputUp.add(function () {
-		tradePanel.destroy();
+			tradePanel.destroy();
 	    	// opening trade with yourself cancels open trade
 	    	net.requestTrade(Game.player.id, Game.player.id);
+	    	Game.playerFrozen = false;
 	    });
 
 	tradePanel.add(header);

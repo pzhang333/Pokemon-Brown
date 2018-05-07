@@ -167,6 +167,9 @@ public class PlayerWebSocketHandler {
       session.close();
       return;
     }
+    if (u.isBusy()) {
+      return;
+    }
     JsonArray path = payload.getAsJsonArray("path");
     Chunk c = u.getLocation().getChunk();
     List<Location> locs = new ArrayList<>();

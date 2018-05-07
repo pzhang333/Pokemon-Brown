@@ -414,11 +414,12 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     this.exp += experience;
     this.lvl = calcLevel(this.exp);
     if (this.lvl >= this.evolveAt) {
+      String old_species = this.species;
       boolean evolved = evolve();
       if (evolved) {
         if (this.getOwner() instanceof User) {
-          ((User) this.getOwner()).sendMessage(
-              String.format("Your %s evolved!", this.getSpecies()));
+          ((User) this.getOwner())
+              .sendMessage(String.format("Your %s evolved!", old_species));
         }
       }
     }
@@ -464,6 +465,12 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     if (!evolvedSpecies.isEmpty()) {
       // We don't care about the level of the Pokemon
       Pokemon temp = PokemonLoader.load(evolvedSpecies, 0);
+
+      if (this.getNickname().equals(this.species.substring(0, 1).toUpperCase()
+          + this.species.substring(1))) {
+        this.changeNickname(temp.species.substring(0, 1).toUpperCase()
+            + temp.species.substring(1));
+      }
 
       this.species = temp.species;
       this.baseHp = temp.baseHp;
