@@ -279,7 +279,7 @@ Game.loadCurrentChunk = function(clear) {
 
 	let self = this;
 
-	//Game.clearPlayers();
+	Game.clearPlayers();
 
 	net.getChunk(function(chunk) {
 
@@ -309,7 +309,7 @@ Game.loadCurrentChunk = function(clear) {
 		Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
 		Game.slickUI.load('ui/kenney/kenney.json');
 
-		//Game.clearPlayers();
+		Game.clearPlayers();
 
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
 
@@ -329,7 +329,7 @@ Game.loadCurrentChunk = function(clear) {
 		Game.player.initSprite();
 		Game.player.setVisible();
 		Game.player.setCameraFocus(Game.camera);
-		//Game.clearPlayers();
+		Game.clearPlayers();
 
 		Game.cursors = game.input.keyboard.createCursorKeys();
 
