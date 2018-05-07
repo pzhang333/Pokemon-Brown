@@ -4,8 +4,10 @@ import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
 import cs.brown.edu.aelp.pokemmo.battle.action.FightTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.ItemTurn;
 import cs.brown.edu.aelp.pokemmo.battle.action.Turn;
+import cs.brown.edu.aelp.pokemmo.battle.summaries.HealthChangeSummary;
 import cs.brown.edu.aelp.pokemmo.battle.summaries.ItemSummary;
 import cs.brown.edu.aelp.pokemmo.pokemon.Pokemon;
+import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.util.Identifiable;
 
@@ -109,30 +111,26 @@ public abstract class Battle extends Identifiable {
     ItemType type = item.getType();
 
     if (type == ItemType.OVERLOAD) {
-
-      Pokemon pokemon = turn.getTrainer().getActivePokemon();
-
-      getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
-          String.format("%s overloaded!", pokemon.toString())));
-
-    } else if (type == ItemType.FULL_RESTORE) {
-
-      Pokemon pokemon = turn.getTrainer().getActivePokemon();
-      pokemon.fullRestore();
-
-      getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
-          String.format("%s was fully restored.", pokemon.toString())));
-
-    } else if (type == ItemType.OVERLOAD) {
-
       Pokemon pokemon = turn.getTrainer().getActivePokemon();
       pokemon.overload();
 
       getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
           String.format("The Overload increased %s power at the cost of health",
               pokemon.toString())));
-    } else if (type == ItemType.LASSO) {
-      // turn.getTrainer().
+    } else if (type == ItemType.FULL_RESTORE) {
+      Pokemon pokemon = turn.getTrainer().getActivePokemon();
+      pokemon.fullRestore();
+
+      getPendingBattleUpdate()
+          .addSummary(new HealthChangeSummary(pokemon, String.format(
+              "%s was fully restored by a potion.", pokemon.toString())));
+    } else if (type == ItemType.ETHER) {
+      Pokemon pokemon = turn.getTrainer().getActivePokemon();
+      for (Move m : pokemon.getMoves()) {
+        m.setPP(Math.min(m.getCurrPP() + 5, m.getPP()));
+      }
+      getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
+          String.format("Ether restored %s's power.", pokemon.toString())));
     } else {
       Pokemon pokemon = turn.getTrainer().getActivePokemon();
 

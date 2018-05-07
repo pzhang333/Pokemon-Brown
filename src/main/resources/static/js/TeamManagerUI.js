@@ -87,7 +87,7 @@ function renderTeamManagerHelper(startIndex, selectedTeamManager, panel, team, t
 
 					if (selectedTeamManager.includes(3*i + k + startIndex)) {
 						button.sprite.loadTexture(button.spriteOn.texture);
-					} 
+					}
 
 					button.events.onInputDown.add(function () {
 						if (teamMembersSelected >= 5 && !selectedTeamManager.includes(3*i + k + startIndex)){
@@ -126,6 +126,7 @@ function renderTradeUpdate(response) {
 	if (panelMessage != null) {
 		panelMessage.destroy();
 	}
+  destroyAllOverhead(battler);
 
 	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
 	Game.slickUI.add(panelMessage);
@@ -138,12 +139,6 @@ function renderTradeUpdate(response) {
 	okButton.add(new SlickUI.Element.Text(0, 0, "Ok")).center();
 	okButton.events.onInputUp.add(function () {
 		panelMessage.destroy();
-		if (battler != null && battler.sprite.challenge != undefined) {
-			battler.sprite.challenge.kill();
-		}
-		if (battler != null && battler.sprite.trade != undefined) {
-			battler.sprite.trade.kill();
-		}
 		Game.playerFrozen = false;
 		panelMessage = null;
 		pending = false;

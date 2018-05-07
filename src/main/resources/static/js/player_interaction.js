@@ -17,10 +17,8 @@ function playerInteraction() {
 			return;
 		}
 		if (clicked_player != null) {
-			clicked_player.sprite.challenge.kill();
-			clicked_player.sprite.trade.kill();
-			clicked_player = null;
-			player.sprite.username.visible = true;	
+      destroyAllOverhead(clicked_player);
+      clicked_player = null;
 			return;
 		}
 	}
@@ -39,13 +37,13 @@ function drawOptionsMenu(player) {
 	// challenge
 	let challengeImage = game.add.image(-48/3, -2*Game.map.tileHeight, 'challenge_button');
 	challengeImage.inputEnabled = true;
-	challengeImage.events.onInputDown.add(challengePlayer, player);	
+	challengeImage.events.onInputDown.add(challengePlayer, player);
 	player.sprite.challenge = player.sprite.addChild(challengeImage);
 
 	// trade
 	let tradeImage = game.add.image(-48/3, -3.3*Game.map.tileHeight, 'trade');
 	tradeImage.inputEnabled = true;
-	tradeImage.events.onInputDown.add(tradeWithPlayer, player);	
+	tradeImage.events.onInputDown.add(tradeWithPlayer, player);
 	player.sprite.trade = player.sprite.addChild(tradeImage);
 
 	// hide username sprite
@@ -68,18 +66,35 @@ function challengePlayer() {
 	}
 }
 
+function destroyAllOverhead(player) {
+  if (player != null && player.sprite.challenge != undefined) {
+    player.sprite.challenge.kill();
+  }
+  if (player != null && player.sprite.trade != undefined) {
+    player.sprite.trade.kill();
+  }
+  if (battler != null && battler.sprite.challenge != undefined) {
+    battler.sprite.challenge.kill();
+  }
+  if (battler != null && battler.sprite.trade != undefined) {
+    battler.sprite.trade.kill();
+  }
+  if (player != null) {
+      player.sprite.username.visible = true;
+  }
+  if (battler != null) {
+      battler.sprite.username.visible = true;
+  }
+}
+
 function tradeWithPlayer() {
 	battler = null;
 	let player = this;
-	player.sprite.trade.kill();
+  destroyAllOverhead(player);
 	let dist = Math.sqrt(Math.pow(Game.player.x - player.x, 2) + Math.pow(Game.player.y - player.y, 2));
 	if (dist <= 5) {
 		net.requestTrade(Game.player.id, player.id);
 		battler = player;
-		let pendingImage = game.add.image(-48/3, -2*Game.map.tileHeight, 'pending_challenge_button');
-		pending = true;
-		player.sprite.trade = player.sprite.addChild(pendingImage);
-		player.sprite.challenge.kill();
 		Game.playerFrozen = true;
 	}
 }
@@ -90,7 +105,7 @@ function renderChallenge(player) {
 			panelMessage.destroy();
 		}
 		if (clicked_player != null) {
-			clicked_player.sprite.challenge.kill();
+      destroyAllOverhead(clicked_player);
 			clicked_player = null;
 		}
 	} catch(err) {
@@ -134,7 +149,7 @@ function renderChallengeUpdate(response) {
 		panelMessage.destroy();
 	}
 	if (clicked_player != null) {
-		clicked_player.sprite.challenge.kill();
+    destroyAllOverhead(clicked_player);
 		clicked_player = null;
 	}
 	panelMessage = new SlickUI.Element.Panel(Game.map.widthInPixels/4, Game.map.heightInPixels/6, Game.map.widthInPixels/2, Game.map.heightInPixels/10);
@@ -148,9 +163,7 @@ function renderChallengeUpdate(response) {
 	okButton.add(new SlickUI.Element.Text(0, 0, "Ok")).center();
 	okButton.events.onInputUp.add(function () {
 		panelMessage.destroy();
-		if (battler != null && battler.sprite.challenge != undefined) {
-			battler.sprite.challenge.kill();
-		}
+    destroyAllOverhead();
 		Game.playerFrozen = false;
 		panelMessage = null;
 		pending = false;
@@ -163,11 +176,5 @@ function cancelChallengeUI(player) {
 	pending = false;
 	battler = null;
 	panelMessage = null;
-	if (player.sprite.challenge != undefined) {
-		player.sprite.challenge.kill();
-	}
-	if (player.sprite.trade != undefined) {
-		player.sprite.trade.kill();
-	}
-	player.sprite.username.visible = true;	
+  destroyAllOverhead(player);
 }

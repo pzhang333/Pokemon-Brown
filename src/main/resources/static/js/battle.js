@@ -185,6 +185,7 @@ Battle.showCapture = function(summary, ballKey, success, cb) {
 	ball = game.add.sprite(0, game.height, ballKey);
 	ball.anchor.setTo(0.5, 0.5);
 	ball.scale.setTo(0.5, 0.5);
+	
 	/*
 	 *   //NOTE THAT Y GOES FROM ZERO TO MATH.PI
     var from = {x:10, y: 0};
@@ -1320,7 +1321,7 @@ Battle.showSummaries = async function(summaries, packet, resolveShow) {
 						break;
 					}
 				}
-			}else {
+			} else {
 				pIn = summary.pokemonIn;
 			}
 

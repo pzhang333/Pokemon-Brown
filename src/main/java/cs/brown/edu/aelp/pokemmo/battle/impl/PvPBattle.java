@@ -408,13 +408,13 @@ public class PvPBattle extends Battle {
     if (world.getTournament() != null) {
       Tournament tourn = world.getTournament();
       if (tourn.isParticipating(w)) {
-        tourn.logBattleResult(w, l);
         w.getTeam().forEach(p -> {
           p.fullRestore();
+          for (Move m : p.getMoves()) {
+            m.setPP(m.getPP());
+          }
         });
-        l.getTeam().forEach(p -> {
-          p.fullRestore();
-        });
+        tourn.logBattleResult(w, l);
       }
     }
     for (User u : Arrays.asList(w, l)) {

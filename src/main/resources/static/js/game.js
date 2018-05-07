@@ -1,4 +1,4 @@
-
+let currencyTextObj = null;
 let leaderboardDrawn = false;
 let backpackDrawn = false;
 let teamDrawn = false;
@@ -26,7 +26,7 @@ Game.init = function() {
 Game.shutdown = function() {
 	console.log('test!');
 	game.world.removeAll();
-	
+
 	Game.chunkId = false;
 	Game.player.sprite = undefined;
 	Game.ready = false;
@@ -104,24 +104,24 @@ Game.create = function() {
 
 	Game.ready = true;
 	game.camera.roundPx = true;
-	
+
 	$("#chat-container").css('width', '300px').css('visibility', 'visible');
-	
+
 	$("#chat-input").on('keypress', function (e) {
          if (e.which === 13) {
 
         	let msg = $(this).val();
-        	
+
         	if (msg.length == 0) {
         		return;
         	}
-        	
+
             $(this).attr("disabled", "disabled");
 
             net.sendPacket(MESSAGE_TYPE.CHAT, {
             	message: msg
             });
-            
+
             $(this).val('');
             $(this).removeAttr("disabled");
          }
@@ -161,7 +161,7 @@ Game.drawLayers = function() {
 		let layerName = Game.layerNames[idx];
 
 		let group = (layerName != 'Top') ? Game.groundMapLayers : Game.highMapLayers;
-		
+
 		Game.map.gameLayers[layerName] = Game.map.createLayer(layerName, 0, 0, group);
 		Game.map.gameLayers[layerName].resizeWorld();
 	}
@@ -169,17 +169,17 @@ Game.drawLayers = function() {
 	Game.map.gameLayers['Base'].inputEnabled = true;
 	Game.map.gameLayers['Base'].events.onInputUp.add(Game.handleMapClick, this);
 	Game.drawHud();
-	
+
 	/*Game.moveGroupTo(game.world, Game.groundMapLayers, 0);
 	Game.moveGroupTo(game.world, Game.entities, 1);
 	Game.moveGroupTo(game.world, Game.highMapLayers, 2);
 	Game.moveGroupTo(game.world, Game.HUD, 200);*/
-	
+
 	//game.world.sendToBack(Game.entities);
 	//game.world.sendToBack(Game.highMapLayers);
 	//game.world.sendToBack(Game.groundMapLayers);
 	/*game.world.bringToTop(Game.entities);
-	
+
 	game.world.bringToTop(Game.highMapLayers);
 	game.world.bringToTop(Game.HUD);*/
 };
@@ -196,7 +196,7 @@ Game.handleMapClick = function(layer, pointer) {
 	if (!Game.playerFrozen) {
 		Game.player.prepareMovement(coords);
 	}
-};	
+};
 
 Game.computeTileCoords = function(x, y){
 	let layer = Game.map.gameLayers['Base'];
@@ -272,37 +272,37 @@ Game.loadCurrentChunk = function(clear) {
 	Game.clearPlayers();
 
 	net.getChunk(function(chunk) {
-		
+
 		if (Game.groundMapLayers != undefined) {
 			Game.groundMapLayers.destroy();
 		}
 		Game.groundMapLayers = game.add.group();
-		
+
 
 		if (Game.entities != undefined) {
 			Game.entities.destroy();
 		}
 		Game.entities = game.add.group();
-		
+
 		if (Game.highMapLayers != undefined) {
 			Game.highMapLayers.destroy();
 		}
 		Game.highMapLayers = game.add.group();
-		
-		
+
+
 		if (Game.HUD != undefined) {
 			Game.HUD.destroy();
 		}
 		Game.HUD = game.add.group();
-		
+
     	// loading necessary libraries for drawing hud menu
 		Game.slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
 		Game.slickUI.load('ui/kenney/kenney.json');
-		
+
 		Game.clearPlayers();
 
 		game.cache.addTilemap(chunk.id, null, chunk.data, Phaser.Tilemap.TILED_JSON);
-	    
+
 		Game.map = game.add.tilemap(chunk.id, 16, 16);
 		Game.map.addTilesetImage('tileset', 'tileset', 16, 16);
 
@@ -354,6 +354,7 @@ Game.drawHud = function() {
     let coinText = game.add.bitmapText(Game.map.widthInPixels-Game.map.widthInPixels/4 - 50, Game.map.heightInPixels-Game.map.heightInPixels/2.2 + 25, 'carrier_command','x'+Game.player.currency, 7.5);
     coinText.inputEnabled = false;
     coinText.fixedToCamera = true;
+    currencyTextObj = coinText;
 
     // backpack icon
     let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 100, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");
@@ -402,7 +403,7 @@ function drawBackpack() {
 		return;
 	}
 	// leaderboard panel
-		
+
 	Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, Game.map.heightInPixels/4.15, Game.map.widthInPixels/2, Game.map.heightInPixels/4);
 	Game.slickUI.add(Game.panel);
 
@@ -506,8 +507,8 @@ function queueLeaderboard() {
 	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
-	
-	
+
+
 	if (backpackDrawn || teamDrawn) {
 		if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -533,7 +534,7 @@ function queueBackpack() {
 	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
-	
+
     if (leaderboardDrawn || teamDrawn) {
         if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -556,11 +557,11 @@ function queueBackpack() {
 };
 
 function queueTeam() {
-	
+
 	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
-	
+
     if (leaderboardDrawn || backpackDrawn) {
         if (Game.panel.container != undefined) {
             Battle.clearButtons(Game.pokemonButtons);
@@ -590,7 +591,7 @@ async function drawTeam() {
 	if (Battle.inBattle || !Game.ready || !Game.slickUI.game.load.hasLoaded) {
 		return;
 	}
-	
+
     Game.panel = new SlickUI.Element.Panel(Game.map.widthInPixels/1.5, 0, Game.map.widthInPixels/2, game.height - 98);
     Game.slickUI.add(Game.panel);
 
@@ -756,11 +757,11 @@ async function drawTeam() {
 };
 
 function logout() {
-	 
+
 	if (Battle.inBattle) {
 		return;
 	}
-	
+
     console.log('clicked!');
     Cookies.remove("id");
     Cookies.remove("token");

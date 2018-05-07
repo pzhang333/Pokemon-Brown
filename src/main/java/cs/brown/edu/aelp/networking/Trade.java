@@ -60,21 +60,24 @@ public class Trade {
     return this.player2;
   }
 
-  private void invalidate() {
+  protected void invalidate() {
     this.p1Accepted = false;
     this.p2Accepted = false;
   }
 
   private void completeTrade() {
-    int newsize1 = this.player1.getTeam().size() + this.p2PokemonOffer.size();
-    int newsize2 = this.player2.getTeam().size() + this.p1PokemonOffer.size();
-    if (newsize1 == 0 || newsize1 > 5 || newsize2 == 0 || newsize2 > 5) {
+    int newsize1 = this.player1.getTeam().size() + this.p2PokemonOffer.size()
+        - this.p1PokemonOffer.size();
+    int newsize2 = this.player2.getTeam().size() + this.p1PokemonOffer.size()
+        - this.p2PokemonOffer.size();
+    if (newsize1 <= 0 || newsize1 > 5 || newsize2 <= 0 || newsize2 > 5) {
       this.setStatus(TRADE_STATUS.FAILED);
+      System.out.println("Trade failed.");
     } else {
-      this.player1
-          .setCurrency(this.player1.getCurrency() + this.p2CurrencyOffer);
-      this.player2
-          .setCurrency(this.player2.getCurrency() + this.p1CurrencyOffer);
+      this.player1.setCurrency(this.player1.getCurrency() + this.p2CurrencyOffer
+          - this.p1CurrencyOffer);
+      this.player2.setCurrency(this.player2.getCurrency() + this.p1CurrencyOffer
+          - this.p2CurrencyOffer);
       for (Pokemon p : this.p2PokemonOffer) {
         p.setOwner(this.player1);
         this.player1.addPokemonToTeam(p);
@@ -92,19 +95,19 @@ public class Trade {
         this.player2.setActivePokemon(this.player2.getTeam().get(0));
       }
       this.setStatus(TRADE_STATUS.COMPLETE);
+      System.out.printf("Completed trade between %s and %s.%n",
+          this.player1.getUsername(), player2.getUsername());
+      System.out.printf("%s gave away %d coins and %d pokemon.%n",
+          player1.getUsername(), this.p1CurrencyOffer,
+          this.p1PokemonOffer.size());
+      System.out.printf("%s gave away %d coins and %d pokemon.%n",
+          player2.getUsername(), this.p2CurrencyOffer,
+          this.p2PokemonOffer.size());
     }
     PacketSender.sendTradePacket(this.player1, this);
     PacketSender.sendTradePacket(this.player2, this);
     this.player1.setActiveTrade(null);
     this.player2.setActiveTrade(null);
-    System.out.printf("Completed trade between %s and %s.%n",
-        this.player1.getUsername(), player2.getUsername());
-    System.out.printf("%s gave away %d coins and %d pokemon.%n",
-        player1.getUsername(), this.p1CurrencyOffer,
-        this.p1PokemonOffer.size());
-    System.out.printf("%s gave away %d coins and %d pokemon.%n",
-        player2.getUsername(), this.p2CurrencyOffer,
-        this.p2PokemonOffer.size());
   }
 
   public boolean involves(User u) {
