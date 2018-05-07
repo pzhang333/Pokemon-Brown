@@ -292,8 +292,8 @@ public class PvPBattle extends Battle {
 
         // recoil check
         if (turn.getMove().getFlags().contains(Move.Flags.RECOIL)) {
-          int dmg = (int) turn.getMove().getRecoilPercent()
-              * result.getDamage();
+          int dmg = (int) (turn.getMove().getRecoilPercent()
+              * result.getDamage());
           atkPokemon.setHealth(atkPokemon.getCurrHp() - dmg);
           this.getPendingBattleUpdate().addSummary(new HealthChangeSummary(
               atkPokemon,
