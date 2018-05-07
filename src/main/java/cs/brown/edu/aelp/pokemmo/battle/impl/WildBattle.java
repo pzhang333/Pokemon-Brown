@@ -1,11 +1,5 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
@@ -36,6 +30,11 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class WildBattle extends Battle {
 
@@ -285,7 +284,17 @@ public class WildBattle extends Battle {
 
       if (result.getOutcome().equals(MoveOutcome.HIT)) {
 
-        base.append(".");
+        double t = result.calcType();
+        if (t == 0.0) {
+          base.append(", but it had no effect.");
+        } else if (t > 0.0 && t < 1.0) {
+          base.append(", but it's not very effective.");
+        } else if (t > 1.0) {
+          base.append(", it's super effective!");
+        } else {
+          base.append(".");
+        }
+
         // Other events...
 
         // System.out.println("The attack was effective or perhaps not...");

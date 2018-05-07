@@ -36,7 +36,7 @@ public class Inventory implements SQLBatchSavable {
   }
 
   public int addItems(int id, int amount) {
-    items.put(id, items.getOrDefault(id, 0));
+    items.put(id, items.getOrDefault(id, 0) + amount);
     this.changed = true;
     return items.get(id);
   }

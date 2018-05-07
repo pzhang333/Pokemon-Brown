@@ -466,7 +466,7 @@ function drawBackpack() {
     ether.inputEnabled = true;
     ether.events.onInputDown.add(function() {
     	renderItemPurchase(4);
-    });    
+    });
 
     let lasso = game.add.sprite(0, 0, 'lasso');
     lasso.anchor.setTo(0.5, 0.5);
@@ -477,7 +477,7 @@ function drawBackpack() {
     lasso.inputEnabled = true;
     lasso.events.onInputDown.add(function() {
     	renderItemPurchase(5);
-    });       
+    });
 
     Game.panel.add(header);
     Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6, Game.panel.height/2.75, pokeball));

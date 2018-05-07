@@ -18,7 +18,7 @@ function renderItemPurchase(itemId) {
  			backgroundColor: '#ffffff',
  			borderWidth: 2,
  			borderColor: '#919191',
- 			borderRadius: 3,	
+ 			borderRadius: 3,
  			textAlign: 'center',
  			font: '18px Arial',
  			placeHolder: "0",
@@ -39,7 +39,7 @@ function renderItemPurchase(itemId) {
 		panelMessage.destroy();
 		// send purchase
 		if (! (quantityField.value == "")) {
-			purchaseItem(Game.player.id, itemId, quantityField.value);
+			net.purchaseItem(Game.player.id, itemId, quantityField.value);
 		}
 	});
 }
