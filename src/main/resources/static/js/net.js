@@ -367,7 +367,7 @@ class Net {
 				continue;
 			}
 
-			if (Game.players[id].sprite == undefined || Game.players[id].sprite.alive == false) {
+			if (Game.players[id].sprite == undefined || Game.players[id].sprite.alive == false || Game.players[id].sprite.x < 0) {
 				let player = Game.players[id];
 				try {
 					
