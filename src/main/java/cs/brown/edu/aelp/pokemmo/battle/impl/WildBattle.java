@@ -1,5 +1,11 @@
 package cs.brown.edu.aelp.pokemmo.battle.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.TURN_STATE;
 import cs.brown.edu.aelp.pokemmo.battle.Arena;
@@ -30,11 +36,6 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult;
 import cs.brown.edu.aelp.pokemmo.pokemon.moves.MoveResult.MoveOutcome;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 public class WildBattle extends Battle {
 
@@ -143,6 +144,10 @@ public class WildBattle extends Battle {
 
       turn.getTrainer().getEffectSlot().handle(endEvent);
       turn.getTrainer().getActivePokemon().getEffectSlot().handle(endEvent);
+
+      if (turn.getTrainer().allPokemonKnockedOut()) {
+        victory(other(turn.getTrainer()));
+      }
     }
 
     turnsMap.clear();
@@ -504,8 +509,8 @@ public class WildBattle extends Battle {
   public void updateXp(Trainer winner, Trainer loser) {
     for (Pokemon winnerP : winner.getTeam()) {
       Double expWon = 0.0;
-      if (!winnerP.isKnockedOut()){
-        for (Pokemon loserP : loser.getTeam()){
+      if (!winnerP.isKnockedOut()) {
+        for (Pokemon loserP : loser.getTeam()) {
           expWon += Pokemon.xpWon(winnerP, loserP);
         }
       }
