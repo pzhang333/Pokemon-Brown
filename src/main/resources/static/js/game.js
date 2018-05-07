@@ -414,13 +414,13 @@ function drawBackpack() {
 
     let fullrestore = game.add.sprite(0, 0, 'fullrestore');
     fullrestore.anchor.setTo(0.5, 0.5);
-    let fullrestoretext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58, "x"+mapGet(items, 2, 0));
+    let fullrestoretext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58, "x"+mapGet(items, 3, 0));
     fullrestoretext.size = 9.5;
 
     let overload = game.add.sprite(0, 0, 'overload');
     overload.anchor.setTo(0.5, 0.5);
     overload.scale.setTo(0.2, 0.2);
-    let overloadtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58, "x"+mapGet(items, 3, 0));
+    let overloadtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58, "x"+mapGet(items, 2, 0));
     overloadtext.size = 9.5;
 
     let ether = game.add.sprite(0, 0, 'ether');
