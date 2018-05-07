@@ -508,6 +508,10 @@ public class PlayerWebSocketHandler {
       session.close();
       return;
     }
+    if (u.getLocation().getChunk().getType() != CHUNK_TYPE.HEAL) {
+      u.sendMessage("You can only buy items in the PokeCenter!");
+      return;
+    }
     int item_id = payload.get("item_id").getAsInt();
     if (item_id >= ItemType.values().length) {
       u.kick();
