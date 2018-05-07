@@ -1172,12 +1172,14 @@ Battle.battleOver = async function(packet) {
 	console.log('battle over');
 
 	//Battle.clearMenu();
-	Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
-	Battle.slickUI.add(Battle.panel);
+	//Battle.panel = new SlickUI.Element.Panel(8, game.height - (108 + 8), game.width - 16, 108)
+	//Battle.slickUI.add(Battle.panel);
 
 	Battle.showing = new Promise(async function(resolve, reject) {
 
 		Game.time.events.add(Phaser.Timer.SECOND * .25, async function() {
+			Battle.clearInv();
+			Battle.clearTeam();
 			Battle.clearMoves();
 			Battle.clearButtons(Battle.stdButtons);
 			Battle.clearMessageText();
