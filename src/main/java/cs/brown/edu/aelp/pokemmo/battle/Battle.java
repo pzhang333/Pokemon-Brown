@@ -12,7 +12,11 @@ import cs.brown.edu.aelp.util.Identifiable;
 public abstract class Battle extends Identifiable {
 
   public enum BattleState {
-    SETUP, WAITING, READY, DONE, WORKING
+    SETUP,
+    WAITING,
+    READY,
+    DONE,
+    WORKING
   }
 
   private final Arena arena;
@@ -127,8 +131,9 @@ public abstract class Battle extends Identifiable {
       getPendingBattleUpdate().addSummary(new ItemSummary(item, true,
           String.format("The Overload increased %s power at the cost of health",
               pokemon.toString())));
+    } else if (type == ItemType.LASSO) {
+      // turn.getTrainer().
     } else {
-
       Pokemon pokemon = turn.getTrainer().getActivePokemon();
 
       getPendingBattleUpdate().addSummary(new ItemSummary(item, true, String

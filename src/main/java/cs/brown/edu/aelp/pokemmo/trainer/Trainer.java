@@ -38,6 +38,11 @@ public class Trainer extends Identifiable {
     return new ArrayList<>(pokemonMap.values());
   }
 
+  public void removePokemonFromTeam(Pokemon p) {
+    // DANGER: Does not change active pokemon
+    this.pokemonMap.remove(p.getId());
+  }
+
   public boolean allPokemonKnockedOut() {
     for (Pokemon p : getTeam()) {
       if (!p.isKnockedOut()) {

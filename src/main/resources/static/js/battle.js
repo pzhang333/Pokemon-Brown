@@ -180,7 +180,7 @@ Battle.doSwitch = function(pOut, pIn, cb) {
 
 Battle.showCapture = function(summary, ballKey, success, cb) {
 	
-	let pokemon = Battle.getPokemonById(this.backPokemon.id);
+	let pokemon = Battle.getPokemonById(summary.target.id);
 	
 	ball = game.add.sprite(0, game.height, ballKey);
 	ball.anchor.setTo(0.5, 0.5);
@@ -199,13 +199,22 @@ Battle.showCapture = function(summary, ballKey, success, cb) {
     });
     tw.start();
 	 */
+	
+	
 	ball.tween = game.add.tween(ball);
-	ball.y = 0;
+	
+	if (pokemon.id == Battle.frontPokemon.id) {
+		ball.x = 0;
+	} else {
+		ball.x = game.width;
+	}
 	
 	ball.tween.to({
 		x: pokemon.sprite.x,
 		y: Math.PI
 	}, Phaser.Timer.SECOND * .75);
+	
+	ball.y = 0;
 	
 	ball.tween.onUpdateCallback(function () {
 		ball.y = pokemon.sprite.y - (200 * Math.sin(ball.y));
@@ -289,7 +298,19 @@ Battle.showItemUsage = function(summary, cb) {
 			Battle.showCapture(summary, 'pokeball', summary.success, cb);
 		}
 	} else {
-		cb();
+		if (summary.message != undefined && summary.message.length != 0) {
+			try {
+				Battle.drawMessage(summary.message);
+				
+				Game.time.events.add(Phaser.Timer.SECOND * 1.5, function() {
+					if (cb != undefined) {
+						cb();
+					}
+				});
+			} catch(err) {
+				console.log('an err: ' + err);
+			}
+		}
 	}
 	
 };

@@ -1,0 +1,1 @@
+SELECT * FROM inventories WHERE user_id = ?;

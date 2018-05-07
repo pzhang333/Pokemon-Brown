@@ -770,6 +770,11 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     return Lists.newArrayList("id");
   }
 
+  @Override
+  public boolean useUpsert() {
+    return false;
+  }
+
   public static class PokemonAdapter implements JsonSerializer<Pokemon> {
 
     @Override

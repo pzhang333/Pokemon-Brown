@@ -161,10 +161,18 @@ public class Tournament {
       if (inBattle.contains(u)) {
         continue;
       }
-      if (this.bracket.containsKey(u) && this.bracket.get(u) != null)
-        BattleManager.getInstance().createPvPBattle(u, this.bracket.get(u));
-      inBattle.add(u);
-      inBattle.add(this.bracket.get(u));
+      if (this.bracket.containsKey(u) && this.bracket.get(u) != null) {
+        User other = this.bracket.get(u);
+        if (this.users.contains(other)) {
+          BattleManager.getInstance().createPvPBattle(u, this.bracket.get(u));
+          inBattle.add(u);
+          inBattle.add(this.bracket.get(u));
+        } else {
+          u.sendMessage(
+              "The round has started, but your opponent already forfeited. "
+                  + "The next round will begin when all battles are complete.");
+        }
+      }
     }
   }
 

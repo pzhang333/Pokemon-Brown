@@ -9,6 +9,7 @@ import cs.brown.edu.aelp.networking.Challenge;
 import cs.brown.edu.aelp.networking.PacketSender;
 import cs.brown.edu.aelp.networking.PlayerWebSocketHandler.OP_CODES;
 import cs.brown.edu.aelp.networking.Trade;
+import cs.brown.edu.aelp.networking.Trade.TRADE_STATUS;
 import cs.brown.edu.aelp.pokemmo.data.SQLBatchSavable;
 import cs.brown.edu.aelp.pokemmo.map.Chunk;
 import cs.brown.edu.aelp.pokemmo.map.Entity;
@@ -65,6 +66,11 @@ public class User extends Trainer implements SQLBatchSavable {
       return this.inactivePokemon.get(id);
     }
     return super.getPokemonById(id);
+  }
+
+  public boolean isBusy() {
+    return this.isInBattle() || this.getChallenge() != null
+        || this.getActiveTrade() != null;
   }
 
   public void setChallenge(Challenge c) {
@@ -282,6 +288,18 @@ public class User extends Trainer implements SQLBatchSavable {
     if (this.isInBattle()) {
       this.getCurrentBattle().forfeit(this);
     }
+    if (this.getChallenge() != null) {
+      PacketSender.sendChallengeResponse(this.getChallenge().other(this),
+          "canceled");
+      this.getChallenge().cancel();
+    }
+    if (this.getActiveTrade() != null) {
+      Trade t = this.getActiveTrade();
+      t.setStatus(TRADE_STATUS.CANCELED);
+      PacketSender.sendTradePacket(t.other(this), t);
+      t.other(this).setActiveTrade(null);
+      this.setActiveTrade(null);
+    }
     // remove them from the tournament
     World w = Main.getWorld();
     if (w.getTournament() != null) {
@@ -339,6 +357,11 @@ public class User extends Trainer implements SQLBatchSavable {
   @Override
   public void setChanged(boolean b) {
     this.changed = b;
+  }
+
+  @Override
+  public boolean useUpsert() {
+    return false;
   }
 
   public static class UserAdapter implements JsonSerializer<User> {

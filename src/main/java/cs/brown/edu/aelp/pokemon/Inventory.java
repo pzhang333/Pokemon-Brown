@@ -22,7 +22,6 @@ public class Inventory implements SQLBatchSavable {
   // 4 hyper potions
   // 5 full restore
 
-
   private final User owner;
   private final HashMap<Integer, Integer> items = new HashMap<>();
   private boolean changed = false;
@@ -79,6 +78,7 @@ public class Inventory implements SQLBatchSavable {
       p.setInt(1, this.items.get(item));
       p.setInt(2, this.owner.getId());
       p.setInt(3, item);
+      p.setInt(4, this.items.get(item));
       p.addBatch();
     }
   }
@@ -91,6 +91,11 @@ public class Inventory implements SQLBatchSavable {
   @Override
   public void setChanged(boolean b) {
     this.changed = false;
+  }
+
+  @Override
+  public boolean useUpsert() {
+    return true;
   }
 
   public static class InventoryAdapter implements JsonSerializer<Inventory> {
