@@ -53,3 +53,12 @@ class UpdateTradeMessage {
 		this.payload = {"id": id, "other_id": other_id, "me_accepted": me_accepted, "me_currency": me_currency, "me_pokemon": me_pokemon, "other_currency": other_currency, "other_pokemon": other_pokemon};
 	}
 }
+
+// Item Purchaing
+
+class ItemPurchaseMessage {
+	constructor(id, item_id, quantity) {
+		this.type = 17;
+		this.payload = {"id": id, "item_id": item_id, "quantity": quantity};
+	}
+}
