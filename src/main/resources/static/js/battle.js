@@ -289,7 +289,19 @@ Battle.showItemUsage = function(summary, cb) {
 			Battle.showCapture(summary, 'pokeball', summary.success, cb);
 		}
 	} else {
-		cb();
+		if (summary.message != undefined && summary.message.length != 0) {
+			try {
+				Battle.drawMessage(summary.message);
+				
+				Game.time.events.add(Phaser.Timer.SECOND * .75, function() {
+					if (cb != undefined) {
+						cb();
+					}
+				});
+			} catch(err) {
+				console.log('an err: ' + err);
+			}
+		}
 	}
 	
 };
