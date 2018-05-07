@@ -146,6 +146,7 @@ public class WildBattle extends Battle {
 
       if (turn.getTrainer().allPokemonKnockedOut()) {
         victory(other(turn.getTrainer()));
+        break;
       }
     }
 

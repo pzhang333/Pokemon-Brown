@@ -128,6 +128,11 @@ public class PvPBattle extends Battle {
 
       turn.getTrainer().getEffectSlot().handle(endEvent);
       turn.getTrainer().getActivePokemon().getEffectSlot().handle(endEvent);
+
+      if (turn.getTrainer().allPokemonKnockedOut()) {
+        victory(other(turn.getTrainer()));
+        break;
+      }
     }
 
     turnsMap.clear();

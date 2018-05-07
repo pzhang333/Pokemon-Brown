@@ -85,7 +85,8 @@ Game.preload = function() {
     game.load.image('coin_small', 'assets/HUD/coin_small.png');
 
     // loading font assets
-    game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
+    // game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
+    game.load.bitmapFont('nokia16black', 'assets/fonts/nokia16black.png', 'assets/fonts/nokia16black.xml');
 
     // loading buttons
     game.load.image('challenge_button', 'assets/buttons/button_challenge.png');
@@ -337,24 +338,31 @@ Game.drawHud = function() {
     completionSprite.fixedToCamera = true;
     completionSprite.inputEnabled = true;
 
+    // hud white bar behind coins
+    let whiteBar = game.add.graphics(0, 0);
+  	whiteBar.beginFill(0xffffff, 1);
+  	whiteBar.drawRect(Game.map.widthInPixels*0.85, Game.map.heightInPixels-0.53*Game.map.heightInPixels, Game.map.widthInPixels*0.15, Game.map.heightInPixels*0.02);
+  	whiteBar.boundsPadding = 0;
+    whiteBar.fixedToCamera = true;
+    whiteBar.inputEnabled = true;
+
+    // coin icon
+  let coinIcon = game.add.sprite(Game.map.widthInPixels*0.85 + 4, Game.map.heightInPixels-0.53*Game.map.heightInPixels + 4, 'coin');
+  //coinIcon.anchor.setTo(0.5, 0.5);
+  coinIcon.inputEnabled = false;
+  coinIcon.fixedToCamera = true;
+
+    let coinText = game.add.bitmapText(Game.map.widthInPixels*0.85 + 24, Game.map.heightInPixels-0.53*Game.map.heightInPixels + 5, 'nokia16black', 'x'+Game.player.currency, 7.5*2);
+    coinText.inputEnabled = false;
+    coinText.fixedToCamera = true;
+    currencyTextObj = coinText;
+
     // team management icon
     let teamIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/4 - 35, Game.map.heightInPixels-Game.map.heightInPixels/2 + 35, 'pokedex');
     teamIcon.anchor.setTo(0.5, 0.5);
     teamIcon.inputEnabled = true;
     teamIcon.fixedToCamera = true;
     teamIcon.events.onInputDown.add(queueTeam, this);
-
-    // coin icon
-	let coinIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 20, Game.map.heightInPixels-Game.map.heightInPixels/2 + 75, 'coin');
-	coinIcon.anchor.setTo(0.5, 0.5);
-	coinIcon.inputEnabled = false;
-	coinIcon.fixedToCamera = true;
-
-    // coin text
-    let coinText = game.add.bitmapText(Game.map.widthInPixels-Game.map.widthInPixels/4 - 50, Game.map.heightInPixels-Game.map.heightInPixels/2.2 + 25, 'carrier_command','x'+Game.player.currency, 7.5);
-    coinText.inputEnabled = false;
-    coinText.fixedToCamera = true;
-    currencyTextObj = coinText;
 
     // backpack icon
     let backpackIcon = game.add.sprite(Game.map.widthInPixels-Game.map.widthInPixels/3 + 100, Game.map.heightInPixels-Game.map.heightInPixels/2.032, "backpack");

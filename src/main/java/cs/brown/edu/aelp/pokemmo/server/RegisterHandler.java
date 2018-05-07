@@ -39,23 +39,17 @@ public class RegisterHandler implements Route {
 
   public boolean validateInput(String name, String pass, String email,
       String species, String nickname) throws AuthException {
-
-    if (name.length() <= 3 || name.length() > 12) {
-      throw new AuthException(
-          "Username must have greater than 3 and fewer than 13 characters.");
+    if (name.length() <= 3) {
+      throw new AuthException("Username too short.");
+    }
+    if (name.length() >= 13) {
+      throw new AuthException("Username too long.");
     }
     for (int i = 0; i < name.length(); i++) {
       char c = name.charAt(i);
       if (!Character.isAlphabetic(c) && !Character.isDigit(c)) {
-        throw new AuthException(
-            "Username can only contain letters and numbers.");
+        throw new AuthException("Username must be alpha-numeric.");
       }
-    }
-
-    if (!pass.matches(
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}")) {
-      throw new AuthException("Password must be at least 8 characters,"
-          + " containing an upper case letter, a lower case letter, a number, and a symbol.");
     }
 
     if (!email.toUpperCase()
@@ -63,14 +57,27 @@ public class RegisterHandler implements Route {
       throw new AuthException("Email must be of a valid format.");
     }
 
+    // if (!pass.matches(
+    // "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}"))
+    // {
+    // throw new AuthException(
+    // "Password must have 8 chars, a digit, symbol, and both cases.");
+    // }
+
+    if (pass.length() < 8) {
+      throw new AuthException("Password must be at least 8 characters.");
+    }
+
     if (!(species.equals("bulbasaur") || species.equals("squirtle")
         || species.equals("charmander"))) {
       throw new AuthException("Invalid species selected.");
     }
 
-    if (nickname.length() <= 3 || nickname.length() > 12) {
-      throw new AuthException(
-          "Pokemon nickname must be greater than 3 and fewer than 13 characters.");
+    if (nickname.length() <= 3) {
+      throw new AuthException("Pokemon nickname too short.");
+    }
+    if (nickname.length() >= 13) {
+      throw new AuthException("Pokemon nickname too long.");
     }
 
     return true;
