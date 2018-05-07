@@ -204,7 +204,7 @@ Battle.showCapture = function(summary, ballKey, success, cb) {
 	
 	ball.tween = game.add.tween(ball);
 	
-	if (pokemon.id == Battle.frontPokemon.id) {
+	if (pokemon.id == Battle.backPokemon.id) {
 		ball.x = 0;
 	} else {
 		ball.x = game.width;
@@ -793,14 +793,14 @@ Battle.showInv = async function() {
             itemId = 0;
 		} else if (pos == 1) {
             text = new SlickUI.Element.Text(50, 0, ('Full Restore'));
-            count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 2, 0)));
+            count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 3, 0)));
             sprite = game.add.sprite(0, 0, 'fullrestore');
-            itemId = 2;
+            itemId = 3;
 		} else if (pos == 2) {
             text = new SlickUI.Element.Text(50, 0, ('Overload'));
-            count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 3, 0)));
+            count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 2, 0)));
             sprite = game.add.sprite(0, 0, 'overload');
-            itemId = 3;
+            itemId = 2;
 		} else if (pos == 3){
             text = new SlickUI.Element.Text(50, 0, ('Master Ball'));
             count = new SlickUI.Element.Text(50, 15, ("x" + mapGet(Game.player.items, 1, 0)));

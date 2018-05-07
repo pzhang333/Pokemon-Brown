@@ -64,8 +64,8 @@ class Net {
 
 	constructor() {
 
-		 this.host = 'localhost';
-		//this.host = '10.38.37.243';
+		//this.host = 'localhost';
+		this.host = '10.38.37.243';
     	// this.host = '10.38.32.136';
     	this.port = 4567;
 
@@ -529,8 +529,10 @@ class Net {
   			renderChallengeUpdate("Challenge canceled.");
   		} else if (payload.reason == "busy") {
   			renderChallengeUpdate("Challenge busy.");
-  		} else {
+  		} else if (payload.reason == "expired") {
   			renderChallengeUpdate("Challenge expired.");
+  		} else {
+  			renderChallengeUpdate("Challenging disabled.");
   		}
   	}
 
@@ -586,8 +588,14 @@ class Net {
   	}
 
   	requestTrade(id, other_id) {
+  		yourCoinOffer = 0;
+  		yourPokemonOffer = [];
+  		lockedIn = false;
   		// initiates change
   		let messageObject = new RequestTradeMessage(id, other_id);
+  		if (id != other_id) {
+			renderTradeWindow([], 0, other_id);
+		}
   		this.sendPacket(MESSAGE_TYPE.TRADE, messageObject.payload);
   		activeTrade = true;
   	}
@@ -595,7 +603,6 @@ class Net {
   	updateOpenTrade(id, other_id, me_accepted, me_currency, me_pokemon, other_currency, other_pokemon) {
   		// initiates change
   		let messageObject = new UpdateTradeMessage(id, other_id, me_accepted, me_currency, me_pokemon, other_currency, other_pokemon);
-  		activeTrade = true;  	
   		this.sendPacket(MESSAGE_TYPE.TRADE, messageObject.payload);
   	}
 
@@ -604,7 +611,13 @@ class Net {
   		let payload = msg.payload;
 
   		if (activeTrade == null) {
-  			// initializing trade
+			if (tradePanel != null && tradePanel != undefined) {
+				tradePanel.destroy();
+			}
+			yourCoinOffer = 0;
+  			yourPokemonOffer = [];
+ 			lockedIn = false;
+			// initializing trade
   			activeTrade = true;
   			if (Game.player.id == payload.p1_id) {
 				renderTradeWindow([], 0, payload.p2_id);
@@ -627,13 +640,13 @@ class Net {
   					let coins = payload.p2_currency;
   					// note: pokemon are objects
   					let pokemon = payload.p2_pokemon;
-  					renderTradeWindow(pokemon, coins, payload.p2_id);
+  					renderTradeWindow(pokemon, coins, payload.p2_id, accepted);
   				} else if (Game.player.id == payload.p2_id) {
 					let accepted = payload.p1_accepted;
   					let coins = payload.p1_currency;
   					// note: pokemon are objects
   					let pokemon = payload.p1_pokemon;
-  					renderTradeWindow(pokemon, coins, payload.p1_id);
+  					renderTradeWindow(pokemon, coins, payload.p1_id, accepted);
   				} else {
   					console.log("ERROR: Invalid trade packet.");
   				}
@@ -647,10 +660,13 @@ class Net {
   				activeTrade = false;
   			} else if (TRADE_STATUS.COMPLETE) {
   				activeTrade = false;
+  				console.log("TRADE EXECUTED");
+  				Game.playerFrozen = false;
   			} else if (TRADE_STATUS.FAILED == status) {
   				// failed trade
   				renderTradeUpdate("Trade failed (insufficient room).");
   				activeTrade = false;
+  				Game.playerFrozen = false;
   			} else {
   				console.log("ERROR: Invalid trade packet.");
   			}

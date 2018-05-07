@@ -1,19 +1,11 @@
 package cs.brown.edu.aelp.pokemmo.pokemon;
 
-import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
 import cs.brown.edu.aelp.pokemmo.battle.EffectSlot;
 import cs.brown.edu.aelp.pokemmo.battle.Item;
 import cs.brown.edu.aelp.pokemmo.battle.Item.ItemType;
@@ -23,6 +15,12 @@ import cs.brown.edu.aelp.pokemmo.pokemon.moves.Move;
 import cs.brown.edu.aelp.pokemmo.trainer.Trainer;
 import cs.brown.edu.aelp.pokemon.Main;
 import cs.brown.edu.aelp.util.Identifiable;
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 // TODO: We probably need a status column in our pokemon DB
 
@@ -414,10 +412,22 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
 
   public void addExp(Integer experience) {
     this.exp += experience;
+    int oldLvl = this.lvl;
     this.lvl = calcLevel(this.exp);
+    if (this.lvl > oldLvl){
+      int oldHp = this.hp;
+      this.hp = hpScale(this.baseHp, this.getLevel());
+      this.currHp = this.hp - oldHp + this.currHp;
+    }
     if (this.lvl >= this.evolveAt) {
-      // TODO: Inform user that their pokemon evolved!
-      evolve();
+      String old_species = this.species;
+      boolean evolved = evolve();
+      if (evolved) {
+        if (this.getOwner() instanceof User) {
+          ((User) this.getOwner())
+              .sendMessage(String.format("Your %s evolved!", old_species));
+        }
+      }
     }
     this.setChanged(true);
   }
@@ -455,12 +465,18 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
     return fps;
   }
 
-  public void evolve() {
+  public boolean evolve() {
     String evolvedSpecies = PokemonLoader.getEvolutionName(this.species);
 
     if (!evolvedSpecies.isEmpty()) {
       // We don't care about the level of the Pokemon
       Pokemon temp = PokemonLoader.load(evolvedSpecies, 0);
+
+      if (this.getNickname().equals(this.species.substring(0, 1).toUpperCase()
+          + this.species.substring(1))) {
+        this.changeNickname(temp.species.substring(0, 1).toUpperCase()
+            + temp.species.substring(1));
+      }
 
       this.species = temp.species;
       this.baseHp = temp.baseHp;
@@ -483,7 +499,9 @@ public class Pokemon extends Identifiable implements SQLBatchSavable {
       this.fps = temp.fps;
 
       this.setChanged(true);
+      return true;
     }
+    return false;
   }
 
   public Double getEffectiveAttack() {

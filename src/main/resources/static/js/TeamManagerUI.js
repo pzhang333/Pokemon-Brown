@@ -55,7 +55,7 @@ function renderTeamManagerHelper(startIndex, selectedTeamManager, panel, team, t
 	upArrow.inputEnabled = true;
 	downArrow.events.onInputUp.add(function () {
     	// scroll down
-    	if (startIndex+6+1 < team.length) {
+    	if (startIndex+6 < team.length) {
     		renderTeamManagerHelper(startIndex+6, selectedTeamManager, panel, team, teamMembersSelected);
     	}
     });
@@ -73,8 +73,9 @@ function renderTeamManagerHelper(startIndex, selectedTeamManager, panel, team, t
 
 	for (let i=0; i<2; i++) {
 		for (let k=0; k<3; k++) {
+			let button = new SlickUI.Element.Button(k*panel.width/3, i*panel.height/3 + panel.height/7.5, panel.width/3, panel.height/3);
+			panel.add(button);
 			if (3*i + k + startIndex < team.length) {
-				let button = new SlickUI.Element.Button(k*panel.width/3, i*panel.height/3 + panel.height/7.5, panel.width/3, panel.height/3);
 				// getting pokemon
 
 				let pok = team[3*i+k+startIndex];
@@ -83,7 +84,6 @@ function renderTeamManagerHelper(startIndex, selectedTeamManager, panel, team, t
 					let scale = Math.min(65/pokemon.width, 65/pokemon.height);
 					pokemon.scale.setTo(scale, scale);
 					pokemon.anchor.setTo(0.5, 0.5);
-					panel.add(button);
 
 					if (selectedTeamManager.includes(3*i + k + startIndex)) {
 						button.sprite.loadTexture(button.spriteOn.texture);
