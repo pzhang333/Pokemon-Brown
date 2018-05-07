@@ -15,7 +15,8 @@ const MESSAGE_TYPE = {
     CHALLENGE_RESPONSE: 13,
     UPDATE_ACTIVE_POKEMON: 14,
     UPDATE_TEAM: 15,
-    OPEN_POKE_CONSOLE: 16
+    OPEN_POKE_CONSOLE: 16,
+    PURCHASE_ORDER: 17
 };
 
 const BATTLE_ACTION = {
@@ -605,7 +606,6 @@ class Net {
   	}
 
   	handleTrade(msg) {
-  		console.log("TRADE", msg);
   		let payload = msg.payload;
 
   		if (activeTrade == null) {
@@ -667,6 +667,12 @@ class Net {
   				console.log("ERROR: Invalid trade packet.");
   			}
   		}
+  	}
+
+  	purchaseItem(id, item_id, quantity) {
+  		// purchase an item
+   		let messageObject = new ItemPurchaseMessage(id, item_id, quantity);
+  		this.sendPacket(MESSAGE_TYPE.PURCHASE_ORDER, messageObject.payload);
   	}
 }
 

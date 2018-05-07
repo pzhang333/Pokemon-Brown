@@ -3,6 +3,14 @@ let leaderboardDrawn = false;
 let backpackDrawn = false;
 let teamDrawn = false;
 
+// prices
+let pokeballPrice = 50;
+let masterballPrice = 750;
+let fullrestorePrice = 300;
+let etherPrice = 200;
+let overloadPrice = 150;
+let lasooCost = 250;
+
 var Game = {
 	players: {}
 }
@@ -74,6 +82,7 @@ Game.preload = function() {
     game.load.image('overload', 'assets/HUD/overload.png');
     game.load.image('fullrestore', 'assets/HUD/fullrestore.png');
     game.load.image('masterball', 'assets/HUD/masterball.png');
+    game.load.image('coin_small', 'assets/HUD/coin_small.png');
 
     // loading font assets
     game.load.bitmapFont('carrier_command', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
@@ -404,34 +413,70 @@ function drawBackpack() {
 
 	let pokeball = game.add.sprite(0, 0, 'pokeball');
     pokeball.anchor.setTo(0.5, 0.5);
+    pokeball.inputEnabled = true;
     let pokeballtext = new SlickUI.Element.Text(Game.panel.width/3.8, 58, "x"+mapGet(items, 0, 0));
     pokeballtext.size = 9.5;
+    let pokeballpricetext = new SlickUI.Element.Text(Game.panel.width/9.2, 58+63, "Cost: " + pokeballPrice);
+    pokeballpricetext.size = 9.5;
+    pokeball.events.onInputDown.add(function() {
+    	renderItemPurchase(0);
+    });
 
     let masterball = game.add.sprite(0, 0, 'masterball');
     masterball.anchor.setTo(0.5, 0.5);
+    masterball.inputEnabled = true;
     let masterballtext = new SlickUI.Element.Text(Game.panel.width/3.8, 58 + 100, "x"+mapGet(items, 1, 0));
     masterballtext.size = 9.5;
+    let masterballpricetext = new SlickUI.Element.Text(Game.panel.width/9.2, 58+100+63, "Cost: " + masterballPrice);
+    masterballpricetext.size = 9.5;
+    masterball.events.onInputDown.add(function() {
+    	renderItemPurchase(1);
+    });
 
     let fullrestore = game.add.sprite(0, 0, 'fullrestore');
     fullrestore.anchor.setTo(0.5, 0.5);
+    fullrestore.inputEnabled = true;
     let fullrestoretext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58, "x"+mapGet(items, 3, 0));
     fullrestoretext.size = 9.5;
+    let fullrestorepricetext = new SlickUI.Element.Text(Game.panel.width/9.2+100, 58+63, "Cost: " + fullrestorePrice);
+    fullrestorepricetext.size = 9.5;
+    fullrestore.events.onInputDown.add(function() {
+    	renderItemPurchase(3);
+    });
 
     let overload = game.add.sprite(0, 0, 'overload');
     overload.anchor.setTo(0.5, 0.5);
     overload.scale.setTo(0.2, 0.2);
+    overload.inputEnabled = true;
     let overloadtext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58, "x"+mapGet(items, 2, 0));
     overloadtext.size = 9.5;
+    let overloadpricetext = new SlickUI.Element.Text(Game.panel.width/9.2+200, 58+63, "Cost: " + overloadPrice);
+    overloadpricetext.size = 9.5;
+    overload.events.onInputDown.add(function() {
+    	renderItemPurchase(2);
+    });
 
     let ether = game.add.sprite(0, 0, 'ether');
     ether.anchor.setTo(0.5, 0.5);
     let ethertext = new SlickUI.Element.Text(Game.panel.width/3.8 + 100, 58 + 100, "x"+mapGet(items, 4, 0));
     ethertext.size = 9.5;
+    let etherpricetext = new SlickUI.Element.Text(Game.panel.width/9.2+100, 58+100+63, "Cost: " + etherPrice);
+    etherpricetext.size = 9.5;
+    ether.inputEnabled = true;
+    ether.events.onInputDown.add(function() {
+    	renderItemPurchase(4);
+    });    
 
     let lasso = game.add.sprite(0, 0, 'lasso');
     lasso.anchor.setTo(0.5, 0.5);
     let lassotext = new SlickUI.Element.Text(Game.panel.width/3.8 + 200, 58 + 100, "x"+mapGet(items, 5, 0));
     lassotext.size = 9.5;
+    let lassopricetext = new SlickUI.Element.Text(Game.panel.width/9.2+200, 58+63+100, "Cost: " + lasooCost);
+    lassopricetext.size = 9.5;
+    lasso.inputEnabled = true;
+    lasso.events.onInputDown.add(function() {
+    	renderItemPurchase(5);
+    });       
 
     Game.panel.add(header);
     Game.panel.add(new SlickUI.Element.DisplayObject(Game.panel.width/6, Game.panel.height/2.75, pokeball));
@@ -447,6 +492,14 @@ function drawBackpack() {
     Game.panel.add(fullrestoretext);
     Game.panel.add(lassotext);
     Game.panel.add(ethertext)
+
+    Game.panel.add(pokeballpricetext);
+    Game.panel.add(masterballpricetext);
+    Game.panel.add(fullrestorepricetext);
+    Game.panel.add(overloadpricetext);
+    Game.panel.add(etherpricetext);
+    Game.panel.add(lassopricetext);
+
 
 }
 function queueLeaderboard() {
