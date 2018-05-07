@@ -70,6 +70,32 @@ public class Trade {
         - this.p1PokemonOffer.size();
     int newsize2 = this.player2.getTeam().size() + this.p1PokemonOffer.size()
         - this.p2PokemonOffer.size();
+    if (newsize1 <= 0) {
+      this.player1.sendMessage(
+          "You cannot make a trade that would leave you without an active Pokemon!");
+      this.player2.sendMessage(String.format(
+          "%s cannot give away all his Pokemon.", this.player1.getUsername()));
+    }
+    if (newsize1 > 5) {
+      this.player1.sendMessage(
+          "You don't have room on your team for that many Pokemon!");
+      this.player2.sendMessage(String.format(
+          "%s does not have room on his team for that many Pokemon.",
+          this.player1.getUsername()));
+    }
+    if (newsize2 <= 0) {
+      this.player2.sendMessage(
+          "You cannot make a trade that would leave you without an active Pokemon!");
+      this.player1.sendMessage(String.format(
+          "%s cannot give away all his Pokemon.", this.player2.getUsername()));
+    }
+    if (newsize2 > 5) {
+      this.player2.sendMessage(
+          "You don't have room on your team for that many Pokemon!");
+      this.player1.sendMessage(String.format(
+          "%s does not have room on his team for that many Pokemon.",
+          this.player2.getUsername()));
+    }
     if (newsize1 <= 0 || newsize1 > 5 || newsize2 <= 0 || newsize2 > 5) {
       this.setStatus(TRADE_STATUS.FAILED);
       System.out.println("Trade failed.");

@@ -533,5 +533,7 @@ public class PlayerWebSocketHandler {
     }
     u.setCurrency(u.getCurrency() - total);
     u.getInventory().addItems(item_id, amt);
+    System.out.printf("%s bought %d of item ID %s%n.", u.getUsername(), amt,
+        t.toString());
   }
 }
