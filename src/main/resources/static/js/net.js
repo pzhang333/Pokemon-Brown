@@ -365,11 +365,17 @@ class Net {
 
 			if (Game.players[id].sprite == undefined || Game.players[id].sprite.alive == false) {
 				let player = Game.players[id];
-				player.initSprite();
-				player.setVisible(true);
-				player.setPos(loc.col, loc.row);
-				player.sprite.inputEnabled = true;
-    			player.sprite.events.onInputDown.add(playerInteraction, player);
+				try {
+					
+					player.initSprite();
+					player.setVisible(true);
+					player.setPos(loc.col, loc.row);
+					player.sprite.inputEnabled = true;
+	    			player.sprite.events.onInputDown.add(playerInteraction, player);
+				} catch(err) {
+					console.log(err);
+					Game.players[id].sprite = undefined;
+				}
 				/*console.log('ayyy');*/
 				//continue;
 			}
@@ -402,10 +408,19 @@ class Net {
 
 			//console.log(player);
 			if (player != undefined) {
-				player.prepareMovement({
-					x: dest.col,
-					y: dest.row
-				}, true);
+				try {
+					player.prepareMovement({
+						x: dest.col,
+						y: dest.row
+					}, true);
+				} catch(err) {
+					try {
+						player.sprite.kill();
+					} catch(err) {
+						
+					}
+					player.sprite = undefined;
+				}
 			}
 		}
 
