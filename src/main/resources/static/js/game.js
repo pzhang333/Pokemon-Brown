@@ -11,6 +11,15 @@ let etherPrice = 200;
 let overloadPrice = 150;
 let lasooCost = 250;
 
+var itemIdToMap = new Object(); // or var map = {};
+itemIdToMap[0] = pokeballPrice;
+itemIdToMap[1] = masterballPrice;
+itemIdToMap[2] = overloadPrice;
+itemIdToMap[3] = fullrestorePrice;
+itemIdToMap[4] = etherPrice;
+itemIdToMap[5] = lasooCost;
+
+
 var Game = {
 	players: {}
 }
