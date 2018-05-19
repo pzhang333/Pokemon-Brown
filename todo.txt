@@ -1,3 +1,0 @@
-Add Traped/Status/Flinched
-
-When a player enters a battle the server must update they're destination

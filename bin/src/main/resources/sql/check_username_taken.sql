@@ -1,1 +1,0 @@
-SELECT COUNT(*) FROM users WHERE UPPER(username) = UPPER(?);
